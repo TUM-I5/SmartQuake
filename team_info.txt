@@ -19,7 +19,7 @@ Integration: Max, Lukas S, Vincent
 
 Kernel 1: Flex, Patrick, Nepomuk, Zain, Amelie, Paul
 
-Kernel 2: Claudius, John, Felix, Lukas K
+Kernel 2: Claudius, John, Felix W., Lukas K
 
 GUI & Vis: Yuriy, Michael, Nicolas, Max, Ivana
 
