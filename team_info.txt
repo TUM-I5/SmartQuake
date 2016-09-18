@@ -1,0 +1,26 @@
+Mon: AM presentation, PM intro hike
+
+Tue: Full Workday
+
+Wed: Full day hiking, Evening
+
+Thur: Full workday
+
+Fri: Full day hiking
+
+Sat: AM/PM Bozen trip
+
+Sun: Full day hiking
+
+
+
+PM: Oleksandr
+Integration: Max, Lukas S, Vincent
+
+Kernel 1: Flex, Patrick, Nepomuk, Zain, Amelie, Paul
+
+Kernel 2: Claudius, John, Felix, Lukas K
+
+GUI & Vis: Yuriy, Michael, Nicolas, Max, Ivana
+
+Excitation: Yehor, David, Simon
