@@ -24,7 +24,8 @@ public class Node {
     /**
      * List of ALL adjacent beams
      */
-    private List<Beam>      beams;
+     //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
+    private List<Beam> beams;
 
 
 
@@ -81,6 +82,7 @@ public class Node {
         this.y = y;
     }
 
+    //Probably obsolete, look above.
     public List<Beam> getBeams() {
         return beams;
     }
@@ -93,10 +95,12 @@ public class Node {
         this.radius = radius;
     }
 
+    //Probably obsolete, look above.
     public void addBeam(Beam beam) {
         beams.add(beam);
     }
 
+    //Probably obsolete, look above.
     public void clearBeams() {
         beams.clear();
     }
