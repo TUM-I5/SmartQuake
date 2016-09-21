@@ -1,7 +1,13 @@
 package de.ferienakademie.smartquake.model;
 
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.ejml.data.*;
 
@@ -9,8 +15,8 @@ import org.ejml.data.*;
  * Class for the whole structure.
  */
 public class Structure {
-    private List<Node>         nodes;
-    private List<Beam>         beams;
+    private List<Node> nodes = new ArrayList<Node>();
+    private List<Beam> beams = new ArrayList<Beam>();
     private DenseMatrix64F     StiffnessMatrix;
     private DenseMatrix64F     DampingMatrix;
     private DenseMatrix64F     MassMatrix;
