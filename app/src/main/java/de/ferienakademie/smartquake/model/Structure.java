@@ -4,13 +4,36 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.ejml.data.*;
+
 /**
  * Class for the whole structure.
  */
 public class Structure {
+    private DenseMatrix64F     StiffnessMatrix;
+    private DenseMatrix64F     DampingMatrix;
+    private DenseMatrix64F     MassMatrix;
+    private DenseMatrix64F     LoadVector;
+    private int numDOF;
     private List<Node> nodes;
     private List<Beam> beams;
 
+    public int[] getConDOF() {
+        return conDOF;
+    }
+
+    public void setConDOF(int[] conDOF) {
+        this.conDOF = conDOF;
+    }
+
+    private int[] conDOF ; //constraint dofs
+    private int numconDOF= conDOF.length; //
+
+    public void Structure(List<Node> nodes,List<Beam> beams){
+        this.nodes= nodes;
+        this.beams= beams;
+        this.numDOF = 3*nodes.size();
+        initMatrices();
     public Structure() {
         nodes = new ArrayList<>();
         beams = new ArrayList<>();
@@ -32,6 +55,27 @@ public class Structure {
         this.nodes.add(node);
     }
 
+    public void initMatrices(){
+        calcDampingMatrix();
+        calcMassMatrix();
+        calcStiffnessMatrix();
+    };
+
+    public void calcStiffnessMatrix(){
+        for (int i = 0; i < numDOF-numconDOF; i++) {
+            StiffnessMatrix.add(i,i,1);
+        }
+    };
+    public void calcMassMatrix(){
+        for (int i = 0; i < numDOF-numconDOF; i++) {
+            MassMatrix.add(i,i,1);
+        }
+    };
+    public void calcDampingMatrix(){
+        for (int i = 0; i < numDOF-numconDOF; i++) {
+            DampingMatrix.add(i,i,1);
+        }
+    };
 
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);

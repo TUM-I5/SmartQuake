@@ -12,15 +12,28 @@ public class Node {
     private double x;
     private double y;
 
-    private double displacementX = 0;
-    private double displacementY = 0;
+
+    private List<Integer>[] DOF; //Degrees of freedom
+
+
+
+    private List<Double>[] u; //Displacement
 
     private double radius = 15;
 
     /**
      * List of ALL adjacent beams
      */
+     //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
     private List<Beam> beams;
+
+
+
+    public Node(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
 
     public Node(double x, double y, List<Beam> beams) {
         this.x = x;
@@ -28,17 +41,29 @@ public class Node {
         this.beams = beams;
     }
 
-    public Node(double x, double y, double displacementX, double displacementY, List<Beam> beams) {
+    public Node(double x, double y, List<Integer>[] DOF, List<Double>[] u, List<Beam> beams) {
         this.x = x;
         this.y = y;
-        this.displacementX = displacementX;
-        this.displacementY = displacementY;
+        this.DOF = DOF;
+        this.u = u;
         this.beams = beams;
     }
 
-    public Node(double x, double y) {
-        this.x = x;
-        this.y = y;
+
+    public List<Double>[] getU() {
+        return u;
+    }
+
+    public void setU(List<Double>[] u) {
+        this.u = u;
+    }
+
+    public List<Integer>[] getDOF() {
+        return DOF;
+    }
+
+    public void setDOF(List<Integer>[] DOF) {
+        this.DOF = DOF;
     }
 
     public double getX() {
@@ -57,22 +82,7 @@ public class Node {
         this.y = y;
     }
 
-    public double getDisplacementX() {
-        return displacementX;
-    }
-
-    public void setDisplacementX(double displacementX) {
-        this.displacementX = displacementX;
-    }
-
-    public double getDisplacementY() {
-        return displacementY;
-    }
-
-    public void setDisplacementY(double displacementY) {
-        this.displacementY = displacementY;
-    }
-
+    //Probably obsolete, look above.
     public List<Beam> getBeams() {
         return beams;
     }
@@ -85,10 +95,12 @@ public class Node {
         this.radius = radius;
     }
 
+    //Probably obsolete, look above.
     public void addBeam(Beam beam) {
         beams.add(beam);
     }
 
+    //Probably obsolete, look above.
     public void clearBeams() {
         beams.clear();
     }
