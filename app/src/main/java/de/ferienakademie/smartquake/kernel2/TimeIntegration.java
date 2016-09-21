@@ -1,6 +1,8 @@
 package de.ferienakademie.smartquake.kernel2;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
+
 import de.ferienakademie.smartquake.model.Structure;
 
 /**
@@ -15,6 +17,13 @@ public class TimeIntegration {
     **/
     public void startSimulation(Structure k1){
 
+        TimeIntegrationSolver solver = new Euler();
+        DenseMatrix64F xDot = new DenseMatrix64F(k1.getNumDOF());
+        xDot.zero();
+
+        for (int i = 0; i < 100000; i++) {
+
+        }
 
     }
 
