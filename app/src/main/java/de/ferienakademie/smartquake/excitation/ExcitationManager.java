@@ -15,7 +15,6 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     private double Xacceleration;
     private double Yacceleration;
 
-    private LinkedList<double[]> RecentMeasurements;
 
     /**
      * @param event:  change of accelerometer measurements
@@ -24,7 +23,6 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     public void onSensorChanged(SensorEvent event) {
         Xacceleration = event.values[0];
         Yacceleration = event.values[1];
-        RecentMeasurements.add(new double[] {Xacceleration,Yacceleration, event.timestamp});
     }
 
     @Override
@@ -48,14 +46,6 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        double retrievedtimestamp;
-        double Xacceleration;
-        double Yacceleartion;
-
-        do {
-            [Xacceleration, Yacceleartion, retrievedtimestamp] = RecentMeasurements.poll();
-        } while (retrievedtimestamp < timestamp);
-
         return new double[] {Xacceleration, Yacceleration};
     }
 
