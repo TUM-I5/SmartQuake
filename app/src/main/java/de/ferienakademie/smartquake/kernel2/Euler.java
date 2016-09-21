@@ -23,7 +23,7 @@ public class Euler implements TimeIntegrationSolver {
         CommonOps.addEquals(averageXDot,1, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, delta_t, averageXDot);
+        CommonOps.addEquals(x, 0.5*delta_t, averageXDot);
 
 
     }
