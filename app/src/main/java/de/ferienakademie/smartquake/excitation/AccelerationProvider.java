@@ -9,5 +9,12 @@ public interface AccelerationProvider {
      *
      * @return first element acceleration in X axis, second element acceleration in Y axis
      */
-    public double[] getAccelaration();
+    public double[] getAcceleration();
+
+    /**
+     *
+     * @param timestamp closest time moment w.r.t. start of the simulation when accelearation measured
+     * @return first element acceleration in X axis, second element acceleration in Y axis
+     */
+    public double[] getAcceleration(double timestamp);
 }
