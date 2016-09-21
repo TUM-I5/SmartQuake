@@ -14,9 +14,18 @@ public class Structure {
     private DenseMatrix64F     DampingMatrix;
     private DenseMatrix64F     MassMatrix;
     private DenseMatrix64F     LoadVector;
+    private DenseMatrix64F     DisplacementVector;  //project manager advice
+
     private int numDOF;
     private List<Node> nodes;
     private List<Beam> beams;
+
+    private int[] conDOF ; //constraint dofs
+
+
+    public int getNumDOF(){
+        return numDOF;
+    }
 
     public int[] getConDOF() {
         return conDOF;
@@ -26,7 +35,6 @@ public class Structure {
         this.conDOF = conDOF;
     }
 
-    private int[] conDOF ; //constraint dofs
 
     public Structure(List<Node> nodes,List<Beam> beams) {
         this.nodes = nodes;
@@ -56,6 +64,15 @@ public class Structure {
     }
 
     public void initMatrices(){
+        StiffnessMatrix = new DenseMatrix64F(numDOF, numDOF);
+        MassMatrix = new DenseMatrix64F(numDOF, numDOF);
+        DampingMatrix = new DenseMatrix64F(numDOF, numDOF);
+
+
+        StiffnessMatrix.zero();
+        MassMatrix.zero();
+        DampingMatrix.zero();
+
         calcDampingMatrix();
         calcMassMatrix();
         calcStiffnessMatrix();
