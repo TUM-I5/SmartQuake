@@ -26,6 +26,10 @@ public class Structure {
         this.nodes.add(node);
     }
 
+    public void initMatrices(this.nodes,this.beams){
+        public void calcStiffnessMatrix();
+        public void calcMassMatrix();
+    };
 
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
