@@ -48,17 +48,12 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     @Override
     public double[] getAcceleration(double timestamp) {
         double[] retrievedreading;
-        double retrievedXacceleration;
-        double retrievedYacceleration;
 
         do {
             retrievedreading = RecentMeasurements.poll();
         } while (retrievedreading[2] < timestamp);
 
-        retrievedXacceleration = retrievedreading[0];
-        retrievedYacceleration = retrievedreading[1];
-
-        return new double[] {retrievedXacceleration, retrievedYacceleration};
+        return new double[] {retrievedreading[0], retrievedreading[1]};
     }
 
 }
