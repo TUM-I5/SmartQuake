@@ -5,17 +5,16 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
- * Created by user on 21.09.2016.
+ * Created by Yehor on 21.09.2016.
  */
 public class ExcitationManager implements SensorEventListener, AccelerationProvider {
 
     private double Xacceleration;
     private double Yacceleration;
 
-    private LinkedList<double[]> RecentMeasurements;
+    private LinkedList<double[]> RecentMeasurements = new LinkedList<>();
 
     /**
      * @param event:  change of accelerometer measurements
@@ -43,20 +42,23 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
 
     /**
      *
-     * @param timestamp closest time moment w.r.t. start of the simulation when accelearation measured
+     * @param timestamp closest time moment w.r.t. start of the simulation when acceleration measured
      * @return measurement of accelerometer in X,Y axis at time point @timestamp
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        double retrievedtimestamp;
-        double Xacceleration;
-        double Yacceleartion;
+        double[] retrievedreading;
+        double retrievedXacceleration;
+        double retrievedYacceleration;
 
         do {
-            [Xacceleration, Yacceleartion, retrievedtimestamp] = RecentMeasurements.poll();
-        } while (retrievedtimestamp < timestamp);
+            retrievedreading = RecentMeasurements.poll();
+        } while (retrievedreading[2] < timestamp);
 
-        return new double[] {Xacceleration, Yacceleration};
+        retrievedXacceleration = retrievedreading[0];
+        retrievedYacceleration = retrievedreading[1];
+
+        return new double[] {retrievedXacceleration, retrievedYacceleration};
     }
 
 }
