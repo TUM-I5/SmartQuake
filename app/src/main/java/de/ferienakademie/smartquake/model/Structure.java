@@ -1,15 +1,10 @@
 package de.ferienakademie.smartquake.model;
 
-import android.support.annotation.NonNull;
+import org.ejml.data.DenseMatrix64F;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-
-import org.ejml.data.*;
 
 /**
  * Class for the whole structure.
@@ -31,10 +26,8 @@ public class Structure {
         this.conDOF = conDOF;
     }
 
-    private int[] conDOF ; //constraint dofs
-    private int numconDOF= conDOF.length; //
-
-    public void Structure(List<Node> nodes,List<Beam> beams){
+    private int[] conDOF; //constraint dofs
+       public void Structure(List<Node> nodes,List<Beam> beams, int[] conDOF){
         this.nodes= nodes;
         this.beams= beams;
         this.numDOF = 3*nodes.size();
@@ -64,17 +57,17 @@ public class Structure {
     };
 
     public void calcStiffnessMatrix(){
-        for (int i = 0; i < numDOF-numconDOF; i++) {
+        for (int i = 0; i < numDOF-conDOF.length; i++) {
             StiffnessMatrix.add(i,i,1);
         }
     };
     public void calcMassMatrix(){
-        for (int i = 0; i < numDOF-numconDOF; i++) {
+        for (int i = 0; i < numDOF-conDOF.length; i++) {
             MassMatrix.add(i,i,1);
         }
     };
     public void calcDampingMatrix(){
-        for (int i = 0; i < numDOF-numconDOF; i++) {
+        for (int i = 0; i < numDOF-conDOF.length; i++) {
             DampingMatrix.add(i,i,1);
         }
     };

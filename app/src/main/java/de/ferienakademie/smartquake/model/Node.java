@@ -12,10 +12,7 @@ public class Node {
     private double x;
     private double y;
 
-
     private List<Integer>[] DOF; //Degrees of freedom
-
-
 
     private List<Double>[] u; //Displacement
 

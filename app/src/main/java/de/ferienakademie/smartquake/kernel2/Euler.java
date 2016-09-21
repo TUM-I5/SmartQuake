@@ -3,6 +3,8 @@ import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
 
+import org.ejml.data.DenseMatrix64F;
+
 /**
  * Created by Felix Wechsler on 21/09/16.
  */
