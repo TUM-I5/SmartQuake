@@ -13,11 +13,13 @@ public class DrawHelper {
 
     public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
         Node startNode = beam.getStartNode();
-        canvas.drawCircle((float) startNode.getX(), (float) startNode.getY(), (float) startNode.getRadius(), paint);
-        Node endNode = beam.getEndNode();
-        canvas.drawCircle((float) endNode.getX(), (float) endNode.getY(), (float) endNode.getRadius(), paint);
+        Node endNode   = beam.getEndNode();
         paint.setStrokeWidth(beam.getThickness());
         canvas.drawLine((float) startNode.getX(), (float) startNode.getY(), (float) endNode.getX(), (float) endNode.getY(), paint);
+    }
+
+    public static void drawNode(Node node, Canvas canvas, Paint paint) {
+        canvas.drawCircle((float) node.getX(), (float) node.getY(), (float) node.getRadius(), paint);
     }
 
 }

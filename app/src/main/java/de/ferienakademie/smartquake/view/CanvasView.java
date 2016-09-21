@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
 
 /**
  * Created by yuriy on 19/09/16.
@@ -18,6 +19,7 @@ import de.ferienakademie.smartquake.model.Beam;
 public class CanvasView extends View {
 
     private List<Beam> beams = new ArrayList<>();
+    private List<Node> nodes = new ArrayList<>();
 
     public CanvasView(Context context) {
         super(context);
@@ -35,13 +37,15 @@ public class CanvasView extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void addJoint(Beam beam) { beams.add(beam); }
+    public void addBeam(Beam beam) { beams.add(beam); }
+
+    public void addNode(Node node) { nodes.add(node); }
 
     public void drawStructure() {
         invalidate();
     }
 
-    public void emptyJoints() { beams = new ArrayList<>(); }
+    public void emptyBeams() { beams = new ArrayList<>(); }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -52,8 +56,17 @@ public class CanvasView extends View {
         red.setStyle(Paint.Style.FILL_AND_STROKE);
         red.setAntiAlias(true);
 
+        Paint green = new Paint();
+        green.setColor(Color.GREEN);
+        green.setStyle(Paint.Style.FILL_AND_STROKE);
+        green.setAntiAlias(true);
+
         for (Beam beam : beams) {
             DrawHelper.drawBeam(beam, canvas, red);
+        }
+
+        for (Node node : nodes) {
+            DrawHelper.drawNode(node, canvas, green);
         }
     }
 }
