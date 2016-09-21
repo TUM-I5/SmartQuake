@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,6 +10,11 @@ import java.util.List;
 public class Structure {
     private List<Node> nodes;
     private List<Beam> beams;
+
+    public Structure() {
+        nodes = new ArrayList<>();
+        beams = new ArrayList<>();
+    }
 
     public List<Node> getNodes() {
         return nodes;

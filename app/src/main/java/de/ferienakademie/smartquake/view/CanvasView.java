@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
+import de.ferienakademie.smartquake.model.Structure;
 
-/**
- * Created by yuriy on 19/09/16.
- */
 public class CanvasView extends View {
 
+    public static final Paint PAINT = new Paint();
     private List<Beam> beams = new ArrayList<>();
 
     public CanvasView(Context context) {
@@ -35,25 +35,31 @@ public class CanvasView extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void addJoint(Beam beam) { beams.add(beam); }
-
-    public void drawStructure() {
+    public void drawStructure(Structure structure) {
+        beams = structure.getBeams();
         invalidate();
     }
 
-    public void emptyJoints() { beams = new ArrayList<>(); }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Paint red = new Paint();
-        red.setColor(Color.RED);
-        red.setStyle(Paint.Style.FILL_AND_STROKE);
-        red.setAntiAlias(true);
+        PAINT.setColor(Color.RED);
+        PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+        PAINT.setAntiAlias(true);
 
         for (Beam beam : beams) {
-            DrawHelper.drawBeam(beam, canvas, red);
+            drawBeam(beam, canvas, PAINT);
         }
+    }
+
+    public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
+        Node startNode = beam.getStartNode();
+        canvas.drawCircle((float) startNode.getX(), (float) startNode.getY(), (float) startNode.getRadius(), paint);
+        Node endNode = beam.getEndNode();
+        canvas.drawCircle((float) endNode.getX(), (float) endNode.getY(), (float) endNode.getRadius(), paint);
+        paint.setStrokeWidth(beam.getThickness());
+        canvas.drawLine((float) startNode.getX(), (float) startNode.getY(), (float) endNode.getX(), (float) endNode.getY(), paint);
     }
 }
