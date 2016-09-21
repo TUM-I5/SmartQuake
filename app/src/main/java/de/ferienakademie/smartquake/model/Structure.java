@@ -31,8 +31,7 @@ public class Structure {
         this.conDOF = conDOF;
     }
 
-    private int[] conDOF ; //constraint dofs
-    private int numconDOF= conDOF.length; //
+    private int[] conDOF; //
 
     public void Structure(List<Node> nodes,List<Beam> beams){
         this.nodes= nodes;
@@ -64,17 +63,17 @@ public class Structure {
     };
 
     public void calcStiffnessMatrix(){
-        for (int i = 0; i < numDOF-numconDOF; i++) {
+        for (int i = 0; i < numDOF-conDOF.length; i++) {
             StiffnessMatrix.add(i,i,1);
         }
     };
     public void calcMassMatrix(){
-        for (int i = 0; i < numDOF-numconDOF; i++) {
+        for (int i = 0; i < numDOF-conDOF.length; i++) {
             MassMatrix.add(i,i,1);
         }
     };
     public void calcDampingMatrix(){
-        for (int i = 0; i < numDOF-numconDOF; i++) {
+        for (int i = 0; i < numDOF-conDOF.length; i++) {
             DampingMatrix.add(i,i,1);
         }
     };
