@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mExcitationManager = new ExcitationManager();
 
         final CanvasView structure = (CanvasView) findViewById(R.id.shape);
 
