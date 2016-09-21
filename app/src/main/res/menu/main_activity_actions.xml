@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:smartquake="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/load_replay_button"
+        android:icon="@android:drawable/ic_input_get"
+        android:title="@string/replay_button"
+        smartquake:showAsAction="ifRoom"/>
+    <item android:id="@+id/save_replay_button"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/replay_button"
+        smartquake:showAsAction="ifRoom"/>
+    <item android:id="@+id/reset_button"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:title="@string/reset_button"
+        smartquake:showAsAction="ifRoom"/>
+    <item android:id="@+id/load_data_button"
+        android:icon="@android:drawable/btn_star"
+        android:title="@string/load_data_button"
+        smartquake:showAsAction="ifRoom"/>
+<item android:id="@+id/settings_button"
+    android:icon="@android:drawable/ic_menu_preferences"
+    android:title="@string/settings_button"
+    smartquake:showAsAction="ifRoom"/>
+</menu>
