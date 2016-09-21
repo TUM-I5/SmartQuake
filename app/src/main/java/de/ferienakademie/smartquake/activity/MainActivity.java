@@ -2,6 +2,10 @@ package de.ferienakademie.smartquake.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.ViewTreeObserver;
 
 import de.ferienakademie.smartquake.R;
@@ -11,12 +15,20 @@ import de.ferienakademie.smartquake.view.CanvasView;
 /**
  * Created by yuriy on 18/09/16.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater i = getMenuInflater();
+        i.inflate(R.menu.main_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         final CanvasView structure = (CanvasView) findViewById(R.id.shape);
 
