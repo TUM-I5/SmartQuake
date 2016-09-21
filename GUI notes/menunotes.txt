@@ -1,0 +1,14 @@
+Potential settings:
+    - Replay speed
+    - Acceleration scaling
+    - No setting for the action mode: One button for shaking, one for importing data
+    - Save/load replay?
+    - robustness of the beams
+
+buttons:
+    - start
+    - stop
+    - replay
+    - reset
+    - load earthquake data
+    - load beam model
