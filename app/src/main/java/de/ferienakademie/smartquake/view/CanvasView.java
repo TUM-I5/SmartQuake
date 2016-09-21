@@ -11,61 +11,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 
-/**
- * Created by yuriy on 19/09/16.
- */
 public class CanvasView extends View {
 
-    private Structure s = new Structure();
-    private Paint p = new Paint();
+    public static final Paint PAINT = new Paint();
+    private List<Beam> beams = new ArrayList<>();
 
     public CanvasView(Context context) {
         super(context);
-        p.setColor(Color.RED);
-        p.setStyle(Paint.Style.FILL_AND_STROKE);
-        p.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        p.setColor(Color.RED);
-        p.setStyle(Paint.Style.FILL_AND_STROKE);
-        p.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        p.setColor(Color.RED);
-        p.setStyle(Paint.Style.FILL_AND_STROKE);
-        p.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        p.setColor(Color.RED);
-        p.setStyle(Paint.Style.FILL_AND_STROKE);
-        p.setAntiAlias(true);
     }
 
-    public void addJoint(Beam beam) {
-        s.addBeam(beam);
-    }
-
-    public void forceRedraw() {
+    public void drawStructure(Structure structure) {
+        beams = structure.getBeams();
         invalidate();
     }
 
-    public void emptyJoints() {
-        s.clearAll();
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        for (Beam beam : s.getBeams()) {
-            DrawHelper.drawBeam(beam, canvas, p);
+
+        PAINT.setColor(Color.RED);
+        PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+        PAINT.setAntiAlias(true);
+
+        for (Beam beam : beams) {
+            drawBeam(beam, canvas, PAINT);
         }
+    }
+
+    public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
+        Node startNode = beam.getStartNode();
+        canvas.drawCircle((float) startNode.getX(), (float) startNode.getY(), (float) startNode.getRadius(), paint);
+        Node endNode = beam.getEndNode();
+        canvas.drawCircle((float) endNode.getX(), (float) endNode.getY(), (float) endNode.getRadius(), paint);
+        paint.setStrokeWidth(beam.getThickness());
+        canvas.drawLine((float) startNode.getX(), (float) startNode.getY(), (float) endNode.getX(), (float) endNode.getY(), paint);
     }
 }

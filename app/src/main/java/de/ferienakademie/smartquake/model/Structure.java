@@ -10,13 +10,13 @@ import java.util.List;
  * Class for the whole structure.
  */
 public class Structure {
-    private List<Node> nodes = new ArrayList<Node>();
-    private List<Beam> beams = new ArrayList<Beam>();
     private DenseMatrix64F     StiffnessMatrix;
     private DenseMatrix64F     DampingMatrix;
     private DenseMatrix64F     MassMatrix;
     private DenseMatrix64F     LoadVector;
     private int numDOF;
+    private List<Node> nodes;
+    private List<Beam> beams;
 
     public int[] getConDOF() {
         return conDOF;
@@ -26,12 +26,17 @@ public class Structure {
         this.conDOF = conDOF;
     }
 
-    private int[] conDOF; //constraint dofs
-       public void Structure(List<Node> nodes,List<Beam> beams, int[] conDOF){
-        this.nodes= nodes;
-        this.beams= beams;
-        this.numDOF = 3*nodes.size();
+    private int[] conDOF ; //constraint dofs
+
+    public Structure(List<Node> nodes,List<Beam> beams) {
+        this.nodes = nodes;
+        this.beams = beams;
+        this.numDOF = 3 * nodes.size();
         initMatrices();
+    }
+
+    public Structure() {
+        this(new ArrayList<Node>(), new ArrayList<Beam>());
     }
 
     public List<Node> getNodes() {

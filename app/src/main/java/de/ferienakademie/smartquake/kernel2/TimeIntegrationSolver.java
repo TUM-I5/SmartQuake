@@ -9,7 +9,7 @@ public interface TimeIntegrationSolver {
     /**
      * This is a interface for the time integration solver.
      * @param x
-     *        position
+     *        displacement
      *
      * @param xDot
      *        velocity
