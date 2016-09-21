@@ -1,23 +1,23 @@
 Mon: AM presentation, PM intro hike
 
-Tue: Full Workday
+Tue: Full day hike
 
-Wed: Full day hiking, Evening
+Wed: Workday. Evening gathering event.
 
-Thur: Full workday
+Thur: Full day hike
 
-Fri: Full day hiking
+Fri: Workday
 
 Sat: AM/PM Bozen trip
 
-Sun: Full day hiking
+Sun: Full day hike (all courses together)
 
 
 
 PM: Oleksandr
 Integration: Max, Lukas S, Vincent
 
-Kernel 1: Flex, Patrick, Nepomuk, Zain, Amelie, Paul
+Kernel 1: Alex, Patrick, Nepomuk, Zain, Amelie, Paul
 
 Kernel 2: Claudius, John, Felix W., Lukas K
 
