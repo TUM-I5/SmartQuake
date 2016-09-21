@@ -5,6 +5,9 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.ViewTreeObserver;
 
 import de.ferienakademie.smartquake.R;
@@ -15,7 +18,14 @@ import de.ferienakademie.smartquake.view.CanvasView;
 /**
  * Created by yuriy on 18/09/16.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater i = getMenuInflater();
+        i.inflate(R.menu.main_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
@@ -50,7 +60,7 @@ public class MainActivity extends Activity {
                     structure.addJoint(new Beam(middle, height - middle, 2*middle, height - 2*middle));
                     structure.addJoint(new Beam(2*middle, height - 2*middle, width - middle, height - middle));
 
-                    structure.drawStructure();
+                    structure.forceRedraw();
                 }
             });
         }

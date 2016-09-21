@@ -11,49 +11,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Structure;
 
 /**
  * Created by yuriy on 19/09/16.
  */
 public class CanvasView extends View {
 
-    private List<Beam> beams = new ArrayList<>();
+    private Structure s = new Structure();
+    private Paint p = new Paint();
 
     public CanvasView(Context context) {
         super(context);
+        p.setColor(Color.RED);
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        p.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        p.setColor(Color.RED);
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        p.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        p.setColor(Color.RED);
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        p.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        p.setColor(Color.RED);
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        p.setAntiAlias(true);
     }
 
-    public void addJoint(Beam beam) { beams.add(beam); }
+    public void addJoint(Beam beam) {
+        s.addBeam(beam);
+    }
 
-    public void drawStructure() {
+    public void forceRedraw() {
         invalidate();
     }
 
-    public void emptyJoints() { beams = new ArrayList<>(); }
+    public void emptyJoints() {
+        s.clearAll();
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        Paint red = new Paint();
-        red.setColor(Color.RED);
-        red.setStyle(Paint.Style.FILL_AND_STROKE);
-        red.setAntiAlias(true);
-
-        for (Beam beam : beams) {
-            DrawHelper.drawBeam(beam, canvas, red);
+        for (Beam beam : s.getBeams()) {
+            DrawHelper.drawBeam(beam, canvas, p);
         }
     }
 }
