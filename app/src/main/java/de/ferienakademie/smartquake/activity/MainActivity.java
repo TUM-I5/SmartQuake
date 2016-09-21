@@ -1,8 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     structure.addJoint(new Beam(middle, height - middle, 2*middle, height - 2*middle));
                     structure.addJoint(new Beam(2*middle, height - 2*middle, width - middle, height - middle));
 
-                    structure.drawStructure();
+                    structure.forceRedraw();
                 }
             });
         }
