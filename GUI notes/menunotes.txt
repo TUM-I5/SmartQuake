@@ -1,0 +1,26 @@
+Potential settings:
+    - Replay speed
+    - Acceleration scaling
+    - No setting for the action mode: One button for shaking, one for importing data
+    - Save/load replay?
+    - robustness of the beams
+
+buttons:
+    - start
+    - pause?
+    - stop
+    - replay
+    - reset
+    - load earthquake data
+    - load beam model
+
+Editing interface:
+    - Generally: Structures don't move until the simulation is started, even if they aren't stable
+    - Would a contextual action mode work for editing?
+    - Button/selectable item for adding a beam. In each case, the starting and end point snaps to
+        existing vertices. Options:
+        - (easier, but uglier) Prompt to touch the starting point, then prompt to touch the endpoint
+        - (harder, but nicer) Touch the starting point; a beam appears which can be dragged until it
+            reaches the desired length and orientation
+    - Button/selectable item for deleting beams
+
