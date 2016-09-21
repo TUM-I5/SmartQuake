@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.model;
 /**
  * Created by yuriy on 21/09/16.
  */
+
 public class Beam {
 
     private Node startNode;
