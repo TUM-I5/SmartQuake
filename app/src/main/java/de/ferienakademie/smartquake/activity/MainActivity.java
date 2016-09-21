@@ -13,11 +13,10 @@ import android.view.ViewTreeObserver;
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
+import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 
-/**
- * Created by yuriy on 18/09/16.
- */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -39,28 +38,37 @@ public class MainActivity extends AppCompatActivity {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        final CanvasView structure = (CanvasView) findViewById(R.id.shape);
+        final CanvasView canvasView = (CanvasView) findViewById(R.id.shape);
 
-        ViewTreeObserver viewTreeObserver = structure.getViewTreeObserver();
+        ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    structure.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    double width = structure.getWidth();
-                    double height = structure.getHeight();
-                    double middle = structure.getWidth() * 0.25f;
+                    canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    double width = canvasView.getWidth();
+                    double height = canvasView.getHeight();
+                    double middle = canvasView.getWidth() * 0.25f;
 
-                    structure.emptyJoints();
+                    Structure structure = new Structure();
 
-                    structure.addJoint(new Beam(middle, height, width - middle, height));
-                    structure.addJoint(new Beam(width - middle, height, width - middle, height - middle));
-                    structure.addJoint(new Beam(width - middle, height - middle, middle, height - middle));
-                    structure.addJoint(new Beam(middle, height - middle, middle, height));
-                    structure.addJoint(new Beam(middle, height - middle, 2*middle, height - 2*middle));
-                    structure.addJoint(new Beam(2*middle, height - 2*middle, width - middle, height - middle));
+                    Node n1 = new Node(middle, height);
+                    Node n2 = new Node(width - middle, height);
+                    Node n3 = new Node(width - middle, height - middle);
+                    Node n4 = new Node(middle, height - middle);
+                    Node n5 = new Node(2 * middle, height - 2 * middle);
 
-                    structure.forceRedraw();
+                    Beam b1 = new Beam(n1, n2);
+                    Beam b2 = new Beam(n2, n3);
+                    Beam b3 = new Beam(n3, n4);
+                    Beam b4 = new Beam(n4, n1);
+                    Beam b5 = new Beam(n4, n5);
+                    Beam b6 = new Beam(n5, n3);
+
+                    structure.addNodes(n1, n2, n3, n4, n5);
+                    structure.addBeams(b1, b2, b3, b4, b5, b6);
+
+                    canvasView.drawStructure(structure);
                 }
             });
         }
