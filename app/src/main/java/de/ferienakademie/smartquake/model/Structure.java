@@ -23,6 +23,10 @@ public class Structure {
     private int[] conDOF ; //constraint dofs
 
 
+    public DenseMatrix64F getDisplacementVector(){
+        return DisplacementVector;
+    }
+
     public int getNumDOF(){
         return numDOF;
     }
