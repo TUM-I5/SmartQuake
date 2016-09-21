@@ -4,8 +4,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Created by user on 21.09.2016.
@@ -41,7 +39,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
 
     /**
      *
-     * @param timestamp closest time moment w.r.t. start of the simulation when accelearation measured
+     * @param timestamp closest time moment w.r.t. start of the simulation when acceleration measured
      * @return measurement of accelerometer in X,Y axis at time point @timestamp
      */
     @Override
