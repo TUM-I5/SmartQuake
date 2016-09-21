@@ -80,7 +80,14 @@ public class AccelerationFile implements AccelerationProvider
     }
 
     @Override
-    public double[] getAccelaration()
+    public double[] getAcceleration()
+    {
+        //TODO: Scale!
+        return new double[] { getNextValue(), 0 };
+    }
+
+    @Override
+    public double[] getAcceleration(double timestamp)
     {
         //TODO: Scale!
         return new double[] { getNextValue(), 0 };
