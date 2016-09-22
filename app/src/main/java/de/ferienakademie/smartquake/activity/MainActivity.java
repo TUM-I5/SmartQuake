@@ -10,8 +10,10 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.Toast;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
@@ -21,7 +23,7 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class MainActivity extends AppCompatActivity implements TimeIntegration.SimulationProgressListener{
+public class MainActivity extends AppCompatActivity implements Simulation.SimulationProgressListener{
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements TimeIntegration.S
     TimeIntegration timeIntegration;
     Structure structure;
     Kernel1 kernel1;
+    Simulation simulation;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -54,10 +57,9 @@ public class MainActivity extends AppCompatActivity implements TimeIntegration.S
             @Override
             public void onClick(View v) {
                 startButton.setEnabled(false);
-                timeIntegration = new TimeIntegration(kernel1);
-                timeIntegration.setListener(MainActivity.this);
-                timeIntegration.startSimulation();
-            }
+                startSimulation();
+                Toast.makeText(MainActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
+             }
         });
 
         canvasView = (CanvasView) findViewById(R.id.shape);
@@ -109,12 +111,20 @@ public class MainActivity extends AppCompatActivity implements TimeIntegration.S
         mSensorManager.unregisterListener(mExcitationManager);// do not receive updates when paused
     }
 
+    void startSimulation() {
+        timeIntegration = new TimeIntegration(kernel1);
+        simulation = new Simulation(kernel1, timeIntegration, canvasView);
+        simulation.setListener(MainActivity.this);
+        simulation.start();
+    }
+
     @Override
     public void onFinish() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 startButton.setEnabled(true);
+                Toast.makeText(MainActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
             }
         });
     }

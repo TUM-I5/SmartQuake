@@ -1,0 +1,69 @@
+package de.ferienakademie.smartquake;
+
+import android.util.Log;
+
+import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.view.CanvasView;
+import de.ferienakademie.smartquake.view.DrawHelper;
+
+/**
+ * Class that wires everything together.
+ */
+public class Simulation {
+
+    Kernel1 kernel1;
+    TimeIntegration kernel2;
+    CanvasView view;
+    SimulationProgressListener listener;
+
+    public Simulation(Kernel1 kernel1, TimeIntegration kernel2, CanvasView view) {
+        this.kernel1 = kernel1;
+        this.kernel2 = kernel2;
+        this.view = view;
+    }
+
+    public void start() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                kernel2.start();
+                simulationLoop: for (int i = 0; i < 10000; i++) {
+                    while(view.isBeingDrawn) {
+                        try {
+                            Thread.sleep(2);
+                            break simulationLoop;
+                        } catch (InterruptedException ex) {
+                            Log.e("Simulation", ex.getMessage());
+                        }
+                    }
+                    DrawHelper.drawStructure(kernel1.getStructure(), view);
+                    try {
+                        Thread.sleep(16);
+                    } catch (InterruptedException ex) {
+                        Log.e("Simulation", ex.getMessage());
+                        break simulationLoop;
+                    }
+                }
+                if (listener != null) {
+                    listener.onFinish();
+                }
+                kernel2.stop();
+            }
+
+        }).start();
+    }
+
+    public void setListener(SimulationProgressListener listener) {
+        this.listener = listener;
+    }
+
+    public interface SimulationProgressListener {
+
+        /**
+         * Is called after simulation finishes. Is called from background thread.
+         */
+        void onFinish();
+    }
+
+}
