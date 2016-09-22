@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.model;
 /**
  * Created by yuriy on 21/09/16.
  */
+
 public class Beam {
 
     private Node startNode;
@@ -10,7 +11,15 @@ public class Beam {
 
     private float thickness;
 
+
     public Beam(Node startNode, Node endNode, float thickness) {
+        this.startNode = startNode;
+        this.endNode = endNode;
+        this.thickness = thickness;
+    }
+
+    //Kernel1 constructor
+    public Beam(Node startNode, Node endNode, float thickness, Material material) {
         this.startNode = startNode;
         this.endNode = endNode;
         this.thickness = thickness;

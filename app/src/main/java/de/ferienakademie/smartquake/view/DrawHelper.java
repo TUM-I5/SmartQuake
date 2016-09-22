@@ -1,23 +1,30 @@
 package de.ferienakademie.smartquake.view;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
+import de.ferienakademie.smartquake.model.Structure;
 
 /**
- * Created by yuriy on 21/09/16.
+ * Created by yuriy on 22/09/16.
  */
 public class DrawHelper {
 
-    public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
-        Node startNode = beam.getStartNode();
-        canvas.drawCircle((float) startNode.getX(), (float) startNode.getY(), (float) startNode.getRadius(), paint);
-        Node endNode = beam.getEndNode();
-        canvas.drawCircle((float) endNode.getX(), (float) endNode.getY(), (float) endNode.getRadius(), paint);
-        paint.setStrokeWidth(beam.getThickness());
-        canvas.drawLine((float) startNode.getX(), (float) startNode.getY(), (float) endNode.getX(), (float) endNode.getY(), paint);
+    public static List<Node> snapNodes = new ArrayList<>();
+    public static List<Beam> snapBeams = new ArrayList<>();
+
+    public static void drawStructure(Structure structure, CanvasView view) {
+        snapShot(structure.getNodes(), structure.getBeams());
+        view.postInvalidate();
+    }
+
+    private static void snapShot(List<Node> nodes, List<Beam> beams) {
+        snapBeams.clear();
+        snapNodes.clear();
+        snapBeams.addAll(beams);
+        snapNodes.addAll(nodes);
     }
 
 }
