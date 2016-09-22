@@ -4,8 +4,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
-import org.ejml.data.DenseMatrix64F;
-
 import java.util.LinkedList;
 
 /**
@@ -13,24 +11,24 @@ import java.util.LinkedList;
  */
 public class ExcitationManager implements SensorEventListener, AccelerationProvider {
 
-    private double Xacceleration;
-    private double Yacceleration;
+    private double xAcceleration;
+    private double yAcceleration;
 
-    private LinkedList<double[]> RecentMeasurements = new LinkedList<>();
+    private LinkedList<double[]> recentMeasurements = new LinkedList<>();
 
     /**
      * @param event:  change of accelerometer measurements
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Xacceleration = event.values[0];
-        Yacceleration = event.values[1];
-        RecentMeasurements.add(new double[] {Xacceleration,Yacceleration, event.timestamp});
+        xAcceleration = event.values[0];
+        yAcceleration = event.values[1];
+        // put new element to the queue of sensor measurements
+        recentMeasurements.add(new double[] {xAcceleration, yAcceleration, event.timestamp});
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     /**
@@ -39,7 +37,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public double[] getAcceleration() {
-        return new double[] {Xacceleration, Yacceleration};
+        return new double[] {xAcceleration, yAcceleration};
     }
 
     /**
@@ -50,19 +48,19 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        double[] retrievedreading = {0.0, 0.0, 0.0};
-        double[] oldretrievedreading ;
+        double[] nextReading = {0.0, 0.0, 0.0};
+        double[] prevReading ;
 
         // poll entries of the queue until the first reading with timestep greater larger than wanted timestep found
         do {
-            oldretrievedreading = retrievedreading;
-            retrievedreading = RecentMeasurements.poll();
-        } while (retrievedreading[2] < timestamp);
+            prevReading = nextReading;
+            nextReading = recentMeasurements.poll();
+        } while (nextReading[2] < timestamp);
 
         // calculated as y(x) = y1+(y2-y1)*(x-x1)/(x2-x1)
-        return new double[] {oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
-                (retrievedreading[2]-oldretrievedreading[2])/(timestamp-oldretrievedreading[2]),
-                oldretrievedreading[1]+(retrievedreading[1]-oldretrievedreading[1])*
-                        (retrievedreading[2]-oldretrievedreading[2])/(timestamp-oldretrievedreading[2])};
+        return new double[] {prevReading[0] + (nextReading[0] - prevReading[0]) *
+                (nextReading[2] - prevReading[2]) / (timestamp - prevReading[2]),
+                prevReading[1] + ( nextReading[1] - prevReading[1]) *
+                        (nextReading[2] - prevReading[2]) / (timestamp - prevReading[2])};
     }
 }
