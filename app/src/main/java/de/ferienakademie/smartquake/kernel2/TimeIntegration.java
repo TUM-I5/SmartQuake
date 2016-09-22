@@ -49,17 +49,10 @@ public class TimeIntegration {
                 xDotDot.zero();
 
                 //only for fixed stepsize
-                delta_t = 0.0001;
+                delta_t = 0.00001;
                 while(isRunning) {
                     //calculate new position
                     solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
-                    while (kernel1.getView().isBeingDrawn) {
-                        try {
-                            Thread.sleep(2);
-                        } catch (InterruptedException ex) {
-                            Log.e("TimeIntegration", ex.getMessage());
-                        }
-                    }
                     for(int j=0; j<kernel1.getNumDOF(); j+=3){
                         xDotDot.add(j,0, -10*kernel1.getDisplacementVector().get(j, 0));
                     }

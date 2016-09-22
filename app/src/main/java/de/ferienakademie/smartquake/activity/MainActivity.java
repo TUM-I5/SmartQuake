@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements Simulation.Simula
                     structure.addNodes(n1, n2, n3, n4, n5);
                     structure.addBeams(b1, b2, b3, b4, b5, b6);
                     DrawHelper.drawStructure(structure, canvasView);
-                    kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
+                    kernel1 = new Kernel1(structure, mExcitationManager);
                 }
             });
         }

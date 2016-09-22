@@ -24,12 +24,10 @@ public class Kernel1 {
     private int[] conDOF;
 
     Structure structure;
-    CanvasView view;
     AccelerationProvider accelerationProvider;
 
-    public Kernel1(Structure structure, CanvasView view, AccelerationProvider accelerationProvider) {
+    public Kernel1(Structure structure, AccelerationProvider accelerationProvider) {
         this.structure = structure;
-        this.view = view;
         this.accelerationProvider = accelerationProvider;
 
         this.numDOF = 3 * structure.getNodes().size();
@@ -42,7 +40,6 @@ public class Kernel1 {
         initMatrices();
 
     }
-
 
     public void initMatrices(){
         StiffnessMatrix = new DenseMatrix64F(numDOF, numDOF);
@@ -93,14 +90,6 @@ public class Kernel1 {
 
     public void setStructure(Structure structure) {
         this.structure = structure;
-    }
-
-    public CanvasView getView() {
-        return view;
-    }
-
-    public void setView(CanvasView view) {
-        this.view = view;
     }
 
     public AccelerationProvider getAccelerationProvider() {

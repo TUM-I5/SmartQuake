@@ -28,7 +28,13 @@ public class Simulation {
             @Override
             public void run() {
                 kernel2.start();
-                for (int i = 0; i < 10000; i++) {
+                for (int i = 0; i < 1000; i++) {
+                    try {
+                        Thread.sleep(2);
+                    } catch (InterruptedException ex) {
+                        Log.e("Simulation", ex.getMessage());
+                        continue;
+                    }
                     while(view.isBeingDrawn) {
                         try {
                             Thread.sleep(2);
@@ -37,11 +43,6 @@ public class Simulation {
                         }
                     }
                     DrawHelper.drawStructure(kernel1.getStructure(), view);
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException ex) {
-                        Log.e("Simulation", ex.getMessage());
-                    }
                 }
                 if (listener != null) {
                     listener.onFinish();
