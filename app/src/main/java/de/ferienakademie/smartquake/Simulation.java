@@ -16,6 +16,7 @@ public class Simulation {
     TimeIntegration kernel2;
     CanvasView view;
     SimulationProgressListener listener;
+    boolean isRunning;
 
     public Simulation(Kernel1 kernel1, TimeIntegration kernel2, CanvasView view) {
         this.kernel1 = kernel1;
@@ -24,11 +25,15 @@ public class Simulation {
     }
 
     public void start() {
+        isRunning = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 kernel2.start();
                 for (int i = 0; i < 1000; i++) {
+                    if (!isRunning) {
+                        break;
+                    }
                     try {
                         Thread.sleep(2);
                     } catch (InterruptedException ex) {
@@ -51,6 +56,13 @@ public class Simulation {
             }
 
         }).start();
+    }
+
+    /**
+     * Stop simulation. This will also kill all background threads.
+     */
+    public void stop() {
+        isRunning = false;
     }
 
     public void setListener(SimulationProgressListener listener) {

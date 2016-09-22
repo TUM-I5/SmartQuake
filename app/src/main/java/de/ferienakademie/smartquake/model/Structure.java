@@ -14,7 +14,6 @@ public class Structure {
     // TODO: somebody plz initialize this array conDOF
     private int[] conDOF ; //constraint dofs
 
-
     public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
         this.nodes = nodes;
         this.beams = beams;
@@ -52,7 +51,6 @@ public class Structure {
 
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
-
     }
 
     public void addBeams(Beam... beams) {
