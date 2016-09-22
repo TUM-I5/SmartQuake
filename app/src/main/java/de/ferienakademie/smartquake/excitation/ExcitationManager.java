@@ -4,15 +4,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
+import org.ejml.data.DenseMatrix64F;
+
+import java.util.LinkedList;
 
 /**
- * Created by user on 21.09.2016.
+ * Created by Yehor on 21.09.2016.
  */
 public class ExcitationManager implements SensorEventListener, AccelerationProvider {
 
     private double Xacceleration;
     private double Yacceleration;
 
+    private LinkedList<double[]> RecentMeasurements = new LinkedList<>();
 
     /**
      * @param event:  change of accelerometer measurements
@@ -21,6 +25,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     public void onSensorChanged(SensorEvent event) {
         Xacceleration = event.values[0];
         Yacceleration = event.values[1];
+        RecentMeasurements.add(new double[] {Xacceleration,Yacceleration, event.timestamp});
     }
 
     @Override
@@ -44,7 +49,17 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        return new double[] {Xacceleration, Yacceleration};
-    }
+        double[] retrievedreading = {0.0, 0.0};
+        double[] oldretrievedreading ;
 
+        do {
+            oldretrievedreading = retrievedreading;
+            retrievedreading = RecentMeasurements.poll();
+        } while (retrievedreading[2] < timestamp);
+
+        return new double[] {oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
+                (retrievedreading[3]-oldretrievedreading[3])/(timestamp-oldretrievedreading[3]),
+                oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
+                        (retrievedreading[3]-oldretrievedreading[3])/(timestamp-oldretrievedreading[3])};
+    }
 }
