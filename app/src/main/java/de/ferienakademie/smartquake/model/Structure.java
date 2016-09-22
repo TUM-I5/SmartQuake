@@ -23,29 +23,16 @@ public class Structure {
     // TODO somebody plz initialize this array conDOF
     private int[] conDOF ; //constraint dofs
 
-
-    public DenseMatrix64F getDisplacementVector(){
-        return DisplacementVector;
-    }
-
-    public int getNumDOF(){
-        return numDOF;
-    }
-
-    public int[] getConDOF() {
-        return conDOF;
-    }
-
-    public void setConDOF(int[] conDOF) {
-        this.conDOF = conDOF;
-    }
-
-
     public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
         this.nodes = nodes;
         this.beams = beams;
         this.numDOF = 3 * nodes.size();
         this.conDOF = conDOF;
+
+        //initialize displacement with zeros
+        DisplacementVector = new DenseMatrix64F(numDOF, 1);
+        DisplacementVector.zero();
+
         initMatrices();
     }
 
@@ -82,23 +69,41 @@ public class Structure {
         calcDampingMatrix();
         calcMassMatrix();
         calcStiffnessMatrix();
-    };
+    }
 
     public void calcStiffnessMatrix(){
         for (int i = 0; i < numDOF-conDOF.length; i++) {
             StiffnessMatrix.add(i,i,1);
         }
-    };
+    }
+
     public void calcMassMatrix(){
         for (int i = 0; i < numDOF-conDOF.length; i++) {
             MassMatrix.add(i,i,1);
         }
-    };
+    }
+
     public void calcDampingMatrix(){
         for (int i = 0; i < numDOF-conDOF.length; i++) {
             DampingMatrix.add(i,i,1);
         }
-    };
+    }
+
+    public DenseMatrix64F getDisplacementVector(){
+        return DisplacementVector;
+    }
+
+    public int getNumDOF(){
+        return numDOF;
+    }
+
+    public int[] getConDOF() {
+        return conDOF;
+    }
+
+    public void setConDOF(int[] conDOF) {
+        this.conDOF = conDOF;
+    }
 
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
