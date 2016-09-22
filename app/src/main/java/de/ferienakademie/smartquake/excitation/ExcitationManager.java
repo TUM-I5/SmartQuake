@@ -4,6 +4,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
+import org.ejml.data.DenseMatrix64F;
+
 import java.util.LinkedList;
 
 /**
@@ -47,13 +49,17 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        double[] retrievedreading;
+        double[] retrievedreading = {0.0, 0.0};
+        double[] oldretrievedreading ;
 
         do {
+            oldretrievedreading = retrievedreading;
             retrievedreading = RecentMeasurements.poll();
         } while (retrievedreading[2] < timestamp);
 
-        return new double[] {retrievedreading[0], retrievedreading[1]};
+        return new double[] {oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
+                (retrievedreading[3]-oldretrievedreading[3])/(timestamp-oldretrievedreading[3]),
+                oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
+                        (retrievedreading[3]-oldretrievedreading[3])/(timestamp-oldretrievedreading[3])};
     }
-
 }
