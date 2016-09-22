@@ -35,11 +35,6 @@ public class CanvasView extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void drawStructure(Structure structure) {
-        beams = structure.getBeams();
-        invalidate();
-    }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
