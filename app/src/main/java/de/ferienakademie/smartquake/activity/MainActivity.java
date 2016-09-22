@@ -37,7 +37,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     Structure structure;
     Kernel1 kernel1;
     Simulation simulation;
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
@@ -65,7 +65,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     private void createStructure() {
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();

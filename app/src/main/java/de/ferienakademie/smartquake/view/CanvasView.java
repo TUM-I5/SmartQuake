@@ -38,7 +38,7 @@ public class CanvasView extends View {
         isBeingDrawn = true;
         super.onDraw(canvas);
 
-        PAINT.setColor(Color.RED);
+        PAINT.setColor(Color.MAGENTA);
         PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
         PAINT.setAntiAlias(true);
 
