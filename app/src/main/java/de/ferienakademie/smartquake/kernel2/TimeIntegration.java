@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 
 import java.util.concurrent.ExecutorService;
@@ -71,7 +73,7 @@ public class TimeIntegration {
         xDotDot.zero();
 
         //only for fixed stepsize
-        delta_t = 0.004;
+        delta_t = 0.001;
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -94,7 +96,8 @@ public class TimeIntegration {
                 @Override
                 public void run() {
                     t = 0;
-                    while(t < 0.02 && isRunning) {
+                    //long firstTime = System.nanoTime();
+                    while(t < 0.021 && isRunning) {
                         //calculate new position
                         solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
                         acceleration=kernel1.getAccelerationProvider().getAcceleration();
@@ -106,6 +109,8 @@ public class TimeIntegration {
                         kernel1.updateStructure(kernel1.getDisplacementVector());
                         t += delta_t;
                     }
+                    //long secondTime = System.nanoTime();
+                    //Log.e("TImestamp",""+(secondTime-firstTime));
                     isRunning = false;
                 }
             });
