@@ -50,7 +50,7 @@ public class Structure {
     }
 
     public Structure() {
-        this(new ArrayList<Node>(), new ArrayList<Beam>());
+        this(new ArrayList<Node>(), new ArrayList<Beam>(), new int[] {});
     }
 
     public List<Node> getNodes() {
