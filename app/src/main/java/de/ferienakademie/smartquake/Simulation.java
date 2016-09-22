@@ -28,11 +28,10 @@ public class Simulation {
             @Override
             public void run() {
                 kernel2.start();
-                simulationLoop: for (int i = 0; i < 10000; i++) {
+                for (int i = 0; i < 10000; i++) {
                     while(view.isBeingDrawn) {
                         try {
                             Thread.sleep(2);
-                            break simulationLoop;
                         } catch (InterruptedException ex) {
                             Log.e("Simulation", ex.getMessage());
                         }
@@ -42,7 +41,6 @@ public class Simulation {
                         Thread.sleep(16);
                     } catch (InterruptedException ex) {
                         Log.e("Simulation", ex.getMessage());
-                        break simulationLoop;
                     }
                 }
                 if (listener != null) {
