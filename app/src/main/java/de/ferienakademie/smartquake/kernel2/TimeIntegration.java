@@ -44,8 +44,9 @@ public class TimeIntegration {
                 DenseMatrix64F xDotDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
                 xDotDot.zero();
                 //fill withs 1s
-                for(int i = 0; i< kernel1.getNumDOF(); i++){
-                    xDotDot.add(i,0  , 1);
+                for(int i = 0; i< kernel1.getNumDOF(); i+=2){
+                    xDotDot.add(i,0 , 0);
+                    xDotDot.add(i+1,0 , 0);
                 }
 
                 //only for fixed stepsize
@@ -62,6 +63,9 @@ public class TimeIntegration {
                     }
                     kernel1.updateStructure(kernel1.getDisplacementVector());
                     t += delta_t;
+                    for(int j=0; i<kernel1.getNumDOF(); j+=2){
+                        xDotDot.add(j,0, 3*Math.sin(t/40*delta_t));
+                    }
                 }
 
             }
