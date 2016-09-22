@@ -30,7 +30,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     SensorManager mSensorManager; // manager to subscribe for sensor events
     ExcitationManager mExcitationManager; // custom accelerometer listener
 
-    Button startButton;
+    Button startButton, stopButton;
     CanvasView canvasView;
     TimeIntegration timeIntegration;
     Structure structure;
@@ -100,6 +100,15 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
                 startSimulation();
                 Toast.makeText(MainActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
              }
+        });
+
+        stopButton = (Button) findViewById(R.id.stop_button);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                simulation.stop();
+                Toast.makeText(MainActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+            }
         });
 
         canvasView = (CanvasView) findViewById(R.id.shape);
