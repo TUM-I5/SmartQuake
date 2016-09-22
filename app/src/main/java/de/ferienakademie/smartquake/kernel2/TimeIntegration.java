@@ -37,7 +37,9 @@ public class TimeIntegration {
                 //initial condition for the velocity
                 DenseMatrix64F xDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
                 xDot.zero();
-
+                for(int j=0; j<kernel1.getNumDOF(); j+=3){
+                    xDot.add(j,0, 1);
+                }
                 //xDotDot must be calculated by the external load forces and the differnetial equation
 
                 //THIS IS JUST A WORKAROUND/MINIMAL EXAMPLE
@@ -45,7 +47,7 @@ public class TimeIntegration {
                 xDotDot.zero();
 
                 //only for fixed stepsize
-                delta_t = 0.001;
+                delta_t = 0.0001;
                 for (int i = 0; i < 100000; i++) {
                     //calculate new position
                     solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
@@ -56,11 +58,11 @@ public class TimeIntegration {
                             Log.e("TimeIntegration", ex.getMessage());
                         }
                     }
+                    for(int j=0; j<kernel1.getNumDOF(); j+=3){
+                        xDotDot.add(j,0, -10*kernel1.getDisplacementVector().get(j, 0));
+                    }
                     kernel1.updateStructure(kernel1.getDisplacementVector());
                     t += delta_t;
-                    for(int j=0; i<kernel1.getNumDOF(); j+=2){
-                        xDotDot.add(j,0, 3*Math.sin(t/40*delta_t));
-                    }
                 }
 
             }
