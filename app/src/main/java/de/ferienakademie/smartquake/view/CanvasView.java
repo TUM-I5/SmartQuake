@@ -21,6 +21,11 @@ public class CanvasView extends View {
     private List<Beam> beams = new ArrayList<>();
     private List<Node> nodes = new ArrayList<>();
 
+    private List<Beam> snapBeams = new ArrayList<>();
+    private List<Node> snapNodes = new ArrayList<>();
+
+    public boolean isBeingDrawn = false;
+
     public CanvasView(Context context) {
         super(context);
     }
@@ -42,13 +47,22 @@ public class CanvasView extends View {
     public void addNode(Node node) { nodes.add(node); }
 
     public void drawStructure() {
-        invalidate();
+        snapShot();
+        postInvalidate();
+    }
+
+    private void snapShot() {
+        snapBeams.clear();
+        snapNodes.clear();
+        snapBeams.addAll(beams);
+        snapNodes.addAll(nodes);
     }
 
     public void emptyBeams() { beams = new ArrayList<>(); }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        isBeingDrawn = true;
         super.onDraw(canvas);
 
         Paint red = new Paint();
@@ -61,12 +75,13 @@ public class CanvasView extends View {
         green.setStyle(Paint.Style.FILL_AND_STROKE);
         green.setAntiAlias(true);
 
-        for (Beam beam : beams) {
+        for (Beam beam : snapBeams) {
             DrawHelper.drawBeam(beam, canvas, red);
         }
 
-        for (Node node : nodes) {
+        for (Node node : snapNodes) {
             DrawHelper.drawNode(node, canvas, green);
         }
+        isBeingDrawn = false;
     }
 }

@@ -49,20 +49,31 @@ public class MainActivity extends Activity {
                         @Override
                         public void run() {
                             int i = 1;
-                            while (i < 100) {
+                            boolean backwards = false;
+
+                            while (true) {
                                 structure.emptyBeams();
                                 addNewNodes(structure, i);
                                 addNewBeams(structure, i);
 
-                                i++;
+                                if (!backwards) i++;
+                                else if (backwards) i--;
 
-                                structure.postInvalidate();
+                                if (i >= 1000) backwards = true;
+                                if (i <= 0) backwards = false;
 
+                                while (structure.isBeingDrawn)
+                                    try {
+                                        Thread.sleep(0);
+                                    } catch (InterruptedException e) { e.printStackTrace(); }
+
+                                structure.drawStructure();
+/*
                                 try {
-                                    Thread.sleep(50);
+                                    Thread.sleep(4);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                }
+                                }*/
                             }
                         }
                     }).start();
@@ -81,9 +92,12 @@ public class MainActivity extends Activity {
         final double middle = canvasView.getWidth() * 0.25f;
 
 
-        for (int i = 0; i < 100; i++) {
-            canvasView.addBeam(new Beam(step * 10, i * height / 100, step * 10, (i + 1) * height / 100));
-            canvasView.addBeam(new Beam(i*width/100, step * 10, (i + 1) * width/100, step * 10));
+        for (int i = 0; i < 200; i++) {
+            canvasView.addBeam(new Beam(step, (2*i+1) * height / 400, step, (2*i + 2) * height / 400));
+            canvasView.addBeam(new Beam((2*i+1)*width/400, step, (2*i + 2) * width/400, step));
+
+            canvasView.addBeam(new Beam(width - step, 2*i * height / 400, width - step, (2*i + 1) * height / 400));
+            canvasView.addBeam(new Beam(2*i*width/400, height - step, (2*i + 1) * width/400, height - step));
         }
 
     }
