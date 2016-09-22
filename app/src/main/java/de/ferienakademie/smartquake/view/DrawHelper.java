@@ -17,6 +17,7 @@ public class DrawHelper {
 
     public static void drawStructure(Structure structure, CanvasView view) {
         snapShot(structure.getNodes(), structure.getBeams());
+        view.isBeingDrawn = true;
         view.postInvalidate();
     }
 

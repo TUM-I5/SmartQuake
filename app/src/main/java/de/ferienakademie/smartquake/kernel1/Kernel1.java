@@ -110,11 +110,10 @@ public class Kernel1 {
     }
 
     public void updateStructure(DenseMatrix64F displacementVector) {
-        //TODO: update nodes and beams from displacementVector
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            node.setX(displacementVector.get(3*i, 0));
-            node.setY(displacementVector.get(3*i+1, 0));
+            node.setX(node.getX() + displacementVector.get(3*i, 0));
+            node.setY(node.getY() + displacementVector.get(3*i+1, 0));
         }
         DrawHelper.drawStructure(structure, view);
 

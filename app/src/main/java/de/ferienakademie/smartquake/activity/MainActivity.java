@@ -49,12 +49,12 @@ public class MainActivity extends AppCompatActivity {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mExcitationManager = new ExcitationManager();
-        timeIntegration = new TimeIntegration();
         startButton = (Button) findViewById(R.id.start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timeIntegration.startSimulation(kernel1, structure);
+                timeIntegration = new TimeIntegration(kernel1);
+                timeIntegration.startSimulation();
             }
         });
 
