@@ -35,23 +35,10 @@ public class CreateActivity extends Activity {
         canvasView = (CanvasView) findViewById(R.id.shape);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
-
-        canvasView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-//                Toast.makeText(CreateActivity.this, "" + event.getX() + " " + event.getY(), Toast.LENGTH_SHORT).show();
-
-                return false;
-            }
-        });
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        Log.w("LOLOLOL", event.toString());
-        Log.w("POINTER_COUNT", ""+event.getPointerCount());
 
         if (event.getPointerCount() == 2) {
 
