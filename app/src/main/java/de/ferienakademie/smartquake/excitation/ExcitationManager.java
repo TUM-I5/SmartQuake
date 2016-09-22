@@ -58,8 +58,8 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         } while (retrievedreading[2] < timestamp);
 
         return new double[] {oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
-                (retrievedreading[3]-oldretrievedreading[3])/(timestamp-oldretrievedreading[3]),
-                oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
-                        (retrievedreading[3]-oldretrievedreading[3])/(timestamp-oldretrievedreading[3])};
+                (retrievedreading[2]-oldretrievedreading[2])/(timestamp-oldretrievedreading[2]),
+                oldretrievedreading[1]+(retrievedreading[1]-oldretrievedreading[1])*
+                        (retrievedreading[2]-oldretrievedreading[2])/(timestamp-oldretrievedreading[2])};
     }
 }
