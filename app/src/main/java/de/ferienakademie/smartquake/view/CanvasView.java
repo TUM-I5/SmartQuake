@@ -17,7 +17,8 @@ import de.ferienakademie.smartquake.model.Structure;
 public class CanvasView extends View {
 
     public static final Paint PAINT = new Paint();
-    private List<Beam> beams = new ArrayList<>();
+
+    public boolean isBeingDrawn = false;
 
     public CanvasView(Context context) {
         super(context);
@@ -38,18 +39,18 @@ public class CanvasView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        isBeingDrawn = true;
         super.onDraw(canvas);
 
         PAINT.setColor(Color.RED);
         PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
         PAINT.setAntiAlias(true);
 
-        for (Beam beam : beams) {
+        for (Beam beam : DrawHelper.snapBeams) {
             drawBeam(beam, canvas, PAINT);
         }
+        isBeingDrawn = false;
     }
-
-    public void emptyBeams() { beams = new ArrayList<>(); }
 
     public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
         Node startNode = beam.getStartNode();
