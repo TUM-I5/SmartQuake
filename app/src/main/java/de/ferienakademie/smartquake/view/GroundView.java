@@ -33,7 +33,7 @@ class GroundView extends View {
         super.onDraw(canvas);
 
         Paint red = new Paint();
-        red.setColor(Color.GRAY);
+        red.setColor(Color.DKGRAY);
         red.setStyle(Paint.Style.FILL_AND_STROKE);
         red.setAntiAlias(true);
 

@@ -2,6 +2,7 @@ package de.ferienakademie.smartquake.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     SensorManager mSensorManager; // manager to subscribe for sensor events
     ExcitationManager mExcitationManager; // custom accelerometer listener
 
-    Button startButton;
+    Button startButton, stopButton;
     CanvasView canvasView;
     TimeIntegration timeIntegration;
     Structure structure;
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.main_activity_actions, menu);
+        menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.findItem(R.id.load_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.findItem(R.id.save_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
@@ -54,6 +56,11 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
             createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
+        }
+
+        if (id == R.id.create_button) {
+            if (simulation != null) simulation.stop();
+            startActivity(new Intent(this, CreateActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -99,6 +106,15 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
                 startSimulation();
                 Toast.makeText(MainActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
              }
+        });
+
+        stopButton = (Button) findViewById(R.id.stop_button);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                simulation.stop();
+                Toast.makeText(MainActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+            }
         });
 
         canvasView = (CanvasView) findViewById(R.id.shape);

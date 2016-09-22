@@ -1,6 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
 import org.ejml.data.DenseMatrix64F;
+
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -27,7 +28,7 @@ public class TimeIntegration {
     //this solver provides the numerical algorithm  for calculating the displacement
     TimeIntegrationSolver solver;
 
-    /*
+    /**
     * @param kernel1
     *          object to obtain all matrices, displacements, external forces
     *
@@ -74,6 +75,7 @@ public class TimeIntegration {
             @Override
             public void run() {
 
+
                 prepareSimulation();
                 while(isRunning) {
                     //calculate new position
@@ -81,9 +83,9 @@ public class TimeIntegration {
 
                     acceleration=kernel1.getAccelerationProvider().getAcceleration();
                     for(int j=0; j<kernel1.getNumDOF(); j+=3){
-                        //xDotDot.add(j,0, -5*xDot.get(j,0)-10*kernel1.getDisplacementVector().get(j, 0));
-                        //xDotDot.add(j+1,0, -5*xDot.get(j+1,0)-10*kernel1.getDisplacementVector().get(j+1, 0));
-                        xDotDot.add(j,0,1*acceleration[0]-0.1*xDot.get(j+1,0));
+                        xDotDot.add(j,0, 1*acceleration[0]-5*xDot.get(j,0)-10*kernel1.getDisplacementVector().get(j, 0));
+                        xDotDot.add(j+1,0, 1*acceleration[1]-5*xDot.get(j+1,0)-10*kernel1.getDisplacementVector().get(j+1, 0));
+                        //xDotDot.add(j,0,1*acceleration[0]-0.1*xDot.get(j+1,0));
                     }
                     kernel1.updateStructure(kernel1.getDisplacementVector());
                     t += delta_t;
