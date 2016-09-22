@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
@@ -13,9 +15,12 @@ public class TimeIntegration {
 
     Kernel1 kernel1;
 
+    SimulationProgressListener listener;
+
     public TimeIntegration(Kernel1 kernel1) {
         this.kernel1 = kernel1;
     }
+
     /*
     * @param k1
     *          object of type structure to obtain all matrices, displacements, external forces
@@ -48,7 +53,7 @@ public class TimeIntegration {
 
                 //only for fixed stepsize
                 delta_t = 0.0001;
-                for (int i = 0; i < 100000; i++) {
+                for (int i = 0; i < 1000; i++) {
                     //calculate new position
                     solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
                     while (kernel1.getView().isBeingDrawn) {
@@ -64,10 +69,24 @@ public class TimeIntegration {
                     kernel1.updateStructure(kernel1.getDisplacementVector());
                     t += delta_t;
                 }
+                if (listener != null) {
+                    listener.onFinish();
+                }
 
             }
         }).start();
+    }
 
+    public void setListener(SimulationProgressListener listener) {
+        this.listener = listener;
+    }
+
+    public interface SimulationProgressListener {
+
+        /**
+         * Is called after simulation finishes. Is called from background thread.
+         */
+        void onFinish();
     }
 
 }

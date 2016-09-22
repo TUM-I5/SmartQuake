@@ -21,7 +21,7 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TimeIntegration.SimulationProgressListener{
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
@@ -53,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startButton.setEnabled(false);
                 timeIntegration = new TimeIntegration(kernel1);
+                timeIntegration.setListener(MainActivity.this);
                 timeIntegration.startSimulation();
             }
         });
@@ -107,4 +109,13 @@ public class MainActivity extends AppCompatActivity {
         mSensorManager.unregisterListener(mExcitationManager);// do not receive updates when paused
     }
 
+    @Override
+    public void onFinish() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startButton.setEnabled(true);
+            }
+        });
+    }
 }
