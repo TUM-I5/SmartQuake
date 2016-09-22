@@ -46,6 +46,11 @@ public class Structure {
         this.beams = beams;
         this.numDOF = 3 * nodes.size();
         this.conDOF = conDOF;
+
+        //initialize displacement with zeros
+        DisplacementVector = new DenseMatrix64F(numDOF, 1);
+        DisplacementVector.zero();
+
         initMatrices();
     }
 
