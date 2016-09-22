@@ -19,6 +19,7 @@ import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
+import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
                     structure.addNodes(n1, n2, n3, n4, n5);
                     structure.addBeams(b1, b2, b3, b4, b5, b6);
-                    canvasView.drawStructure(structure);
+                    DrawHelper.drawStructure(structure, canvasView);
                     kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
                 }
             });
