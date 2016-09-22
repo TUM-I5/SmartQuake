@@ -1,12 +1,15 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -23,7 +26,7 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class MainActivity extends AppCompatActivity implements Simulation.SimulationProgressListener{
+public class MainActivity extends Activity implements Simulation.SimulationProgressListener{
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
@@ -40,9 +43,47 @@ public class MainActivity extends AppCompatActivity implements Simulation.Simula
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.main_activity_actions, menu);
+        menu.findItem(R.id.load_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.findItem(R.id.save_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.load_replay_button) {
+            restartStructure();
+            DrawHelper.drawStructure(structure, canvasView);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void restartStructure() {
+        double width = canvasView.getWidth();
+        double height = canvasView.getHeight();
+        double middle = canvasView.getWidth() * 0.25f;
+
+        structure = new Structure();
+
+        Node n1 = new Node(middle, height);
+        Node n2 = new Node(width - middle, height);
+        Node n3 = new Node(width - middle, height - middle);
+        Node n4 = new Node(middle, height - middle);
+        Node n5 = new Node(2 * middle, height - 2 * middle);
+
+        Beam b1 = new Beam(n1, n2);
+        Beam b2 = new Beam(n2, n3);
+        Beam b3 = new Beam(n3, n4);
+        Beam b4 = new Beam(n4, n1);
+        Beam b5 = new Beam(n4, n5);
+        Beam b6 = new Beam(n5, n3);
+
+        structure.addNodes(n1, n2, n3, n4, n5);
+        structure.addBeams(b1, b2, b3, b4, b5, b6);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,27 +111,9 @@ public class MainActivity extends AppCompatActivity implements Simulation.Simula
                 @Override
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    double width = canvasView.getWidth();
-                    double height = canvasView.getHeight();
-                    double middle = canvasView.getWidth() * 0.25f;
 
-                    structure = new Structure();
+                    restartStructure();
 
-                    Node n1 = new Node(middle, height);
-                    Node n2 = new Node(width - middle, height);
-                    Node n3 = new Node(width - middle, height - middle);
-                    Node n4 = new Node(middle, height - middle);
-                    Node n5 = new Node(2 * middle, height - 2 * middle);
-
-                    Beam b1 = new Beam(n1, n2);
-                    Beam b2 = new Beam(n2, n3);
-                    Beam b3 = new Beam(n3, n4);
-                    Beam b4 = new Beam(n4, n1);
-                    Beam b5 = new Beam(n4, n5);
-                    Beam b6 = new Beam(n5, n3);
-
-                    structure.addNodes(n1, n2, n3, n4, n5);
-                    structure.addBeams(b1, b2, b3, b4, b5, b6);
                     DrawHelper.drawStructure(structure, canvasView);
                     kernel1 = new Kernel1(structure, mExcitationManager);
                 }
