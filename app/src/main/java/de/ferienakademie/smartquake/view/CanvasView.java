@@ -49,6 +49,8 @@ public class CanvasView extends View {
         }
     }
 
+    public void emptyBeams() { beams = new ArrayList<>(); }
+
     public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
         Node startNode = beam.getStartNode();
         canvas.drawCircle((float) startNode.getX(), (float) startNode.getY(), (float) startNode.getRadius(), paint);
