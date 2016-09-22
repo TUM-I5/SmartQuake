@@ -16,7 +16,7 @@ public class Kernel1 {
     private DenseMatrix64F     StiffnessMatrix;
     private DenseMatrix64F     DampingMatrix;
     private DenseMatrix64F     MassMatrix;
-    private DenseMatrix64F     LoadVector;
+    private DenseMatrix64F     LoadVector; // vector with the forces.
     private DenseMatrix64F     DisplacementVector;  //project manager advice
 
     //TODO: ask why we have three degrees of freedom while modelling in 2D
@@ -77,7 +77,9 @@ public class Kernel1 {
         }
     }
 
-    public DenseMatrix64F getDisplacementVector(){
+    public DenseMatrix64F getDisplacementVector() {
+        double[] acceleration = accelerationProvider.getAcceleration();
+        updateLoadVector(acceleration);
         return DisplacementVector;
     }
 
@@ -116,6 +118,9 @@ public class Kernel1 {
             node.setY(node.getY() + displacementVector.get(3*i+1, 0));
         }
         DrawHelper.drawStructure(structure, view);
+    }
 
+    void updateLoadVector(double[] acceleration) {
+        //TODO: update load vector using acceleration values.
     }
 }
