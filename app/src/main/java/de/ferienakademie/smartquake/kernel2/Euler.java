@@ -20,10 +20,10 @@ public class Euler implements TimeIntegrationSolver {
 
         //create average matrix of velocities at step n and n+1
         DenseMatrix64F averageXDot=xDot.copy();
-        CommonOps.addEquals(averageXDot,1, oldxDot);
+        CommonOps.addEquals(averageXDot,0.5, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, 0.5 * delta_t, averageXDot);
+        CommonOps.addEquals(x, 3/2.0 * delta_t, averageXDot);
 
     }
 
