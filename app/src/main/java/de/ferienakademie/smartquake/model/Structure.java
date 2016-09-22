@@ -16,11 +16,12 @@ public class Structure {
     private DenseMatrix64F     LoadVector;
     private DenseMatrix64F     DisplacementVector;  //project manager advice
 
+    //TODO: ask why we have three degrees of freedom while modelling in 2D
     private int numDOF;
     private List<Node> nodes;
     private List<Beam> beams;
 
-    // TODO somebody plz initialize this array conDOF
+    // TODO: somebody plz initialize this array conDOF
     private int[] conDOF ; //constraint dofs
 
     public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
@@ -45,14 +46,17 @@ public class Structure {
     }
 
     public void addNodes(List<Node> nodes) {
+        numDOF += 3 * nodes.size();
         this.nodes.addAll(nodes);
     }
 
     public void addNodes(Node... nodes) {
+        numDOF += 3 * nodes.length;
         Collections.addAll(this.nodes, nodes);
     }
 
     public void addNode(Node node) {
+        numDOF += 3;
         this.nodes.add(node);
     }
 
@@ -107,6 +111,7 @@ public class Structure {
 
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
+
     }
 
     public void addBeams(Beam... beams) {

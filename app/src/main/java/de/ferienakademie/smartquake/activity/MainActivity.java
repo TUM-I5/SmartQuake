@@ -1,6 +1,5 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -54,13 +53,12 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timeIntegration.startSimulation(structure);
+                timeIntegration.startSimulation(kernel1, structure);
             }
         });
 
         canvasView = (CanvasView) findViewById(R.id.shape);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
-        kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
 
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -88,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
                     structure.addNodes(n1, n2, n3, n4, n5);
                     structure.addBeams(b1, b2, b3, b4, b5, b6);
-
                     canvasView.drawStructure(structure);
+                    kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
                 }
             });
         }
@@ -98,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
     }
@@ -106,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-
         mSensorManager.unregisterListener(mExcitationManager);// do not receive updates when paused
     }
 
