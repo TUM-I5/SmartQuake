@@ -4,19 +4,21 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 /**
  * Created by Yehor on 21.09.2016.
  */
-public class ExcitationManager implements SensorEventListener, AccelerationProvider {
+public class SensorExcitation implements SensorEventListener, AccelerationProvider {
 
     private AccelerometerReading currAcceleration;
+    private ArrayList<AccelerometerReading> recentMeasurements = new ArrayList<>();
 
-    private LinkedList<AccelerometerReading> recentMeasurements = new LinkedList<>();
+    private int queue_pos = 0;
 
     /**
-     * @param event:  change of accelerometer measurements
+     * @param event: change of accelerometer measurements
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -26,17 +28,24 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         recentMeasurements.add(new AccelerometerReading(currAcceleration));
     }
 
+    public void reset() {
+        currAcceleration = new AccelerometerReading();
+        queue_pos = 0;
+        //TODO write queue
+        recentMeasurements.clear();
+        recentMeasurements.add(currAcceleration);
+    }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
     /**
-     *
      * @return latest measurements of accelerometer in X,Y axis
      */
     @Override
     public double[] getAcceleration() {
-        return new double[] {currAcceleration.xAcceleration, currAcceleration.yAcceleration};
+        return new double[]{currAcceleration.xAcceleration, currAcceleration.yAcceleration};
     }
 
     @Override
@@ -44,28 +53,46 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         return null;
     }
 
+    public boolean store() {
+
+    }
+
     /**
-     *
      * @param timestamp closest time moment w.r.t. start of the simulation when acceleration measured
      * @return measurement of accelerometer in X,Y axis at time point @timestamp
      * calculated as linear interpolation of two closet recorded readings
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        AccelerometerReading nextReading = new AccelerometerReading() ;
-        AccelerometerReading prevReading = new AccelerometerReading();
-
         // poll entries of the queue until the first reading with timestep greater larger than wanted timestep found
-        do {
-            prevReading = nextReading;
-            nextReading = recentMeasurements.poll();
-        } while (nextReading.timestamp < timestamp);
+        while (recentMeasurements.size() > queue_pos
+                && recentMeasurements.get(queue_pos).timestamp < timestamp) {
+            ++queue_pos;
+        }
 
+        if(queue_pos == 0 && queue_pos == recentMeasurements.size()){
+            return currAcceleration;
+        } else {
+            return recentMeasurements.get(queue_pos);
+        }
         // calculated as y(x) = y1+(y2-y1)*(x-x1)/(x2-x1)
+        /*
         return new double[] {prevReading.xAcceleration +
+
                 (nextReading.xAcceleration - prevReading.yAcceleration) *
                 (nextReading.timestamp - prevReading.timestamp) / (timestamp - prevReading.timestamp),
                 prevReading.yAcceleration + (nextReading.yAcceleration - prevReading.yAcceleration) *
                         (nextReading.yAcceleration - prevReading.yAcceleration) / (timestamp - prevReading.timestamp)};
+        */
     }
+
+    private double[] interpolate(int queue_pos, long timestamp) {
+        AccelerometerReading curr = recentMeasurements.get(queue_pos);
+        AccelerometerReading prev = recentMeasurements.get(queue_pos - 1);
+        long factor = (curr.timestamp - prev.timestamp) / (timestamp - prev.timestamp);
+        return new double[] {prev.xAcceleration +
+        (curr.xAcceleration - prev.yAcceleration) * factor,
+                prev.yAcceleration + (curr.yAcceleration - prev.yAcceleration) * factor};
+
+}
 }
