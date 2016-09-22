@@ -43,11 +43,6 @@ public class TimeIntegration {
                 //THIS IS JUST A WORKAROUND/MINIMAL EXAMPLE
                 DenseMatrix64F xDotDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
                 xDotDot.zero();
-                //fill withs 1s
-                for(int i = 0; i< kernel1.getNumDOF(); i+=2){
-                    xDotDot.add(i,0 , 0);
-                    xDotDot.add(i+1,0 , 0);
-                }
 
                 //only for fixed stepsize
                 delta_t = 0.001;
