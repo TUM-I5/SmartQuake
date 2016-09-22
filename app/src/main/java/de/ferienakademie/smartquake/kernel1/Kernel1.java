@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import org.ejml.data.DenseMatrix64F;
+
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -41,5 +43,10 @@ public class Kernel1 {
 
     public void setAccelerationProvider(AccelerationProvider accelerationProvider) {
         this.accelerationProvider = accelerationProvider;
+    }
+
+    public void updateStructure(DenseMatrix64F displacementVector) {
+        //TODO: update nodes and beams from displacementVector
+        view.drawStructure(structure);
     }
 }

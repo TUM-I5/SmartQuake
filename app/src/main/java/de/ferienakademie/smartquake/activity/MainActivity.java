@@ -1,6 +1,5 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timeIntegration.startSimulation(structure);
+                timeIntegration.startSimulation(kernel1, structure);
             }
         });
 
@@ -98,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
     }
@@ -106,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-
         mSensorManager.unregisterListener(mExcitationManager);// do not receive updates when paused
     }
 
