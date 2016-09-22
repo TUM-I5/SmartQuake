@@ -38,7 +38,7 @@ public class TimeIntegration {
         xDotDot.zero();
         //fill withs 1s
         for(int i = 0; i< structure.getNumDOF(); i++){
-            xDotDot.set(i,i, 1);
+            xDotDot.add(i,0  , 1);
         }
 
 
