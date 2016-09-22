@@ -4,6 +4,10 @@ import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -29,6 +33,9 @@ public class TimeIntegration {
 
     //this solver provides the numerical algorithm  for calculating the displacement
     TimeIntegrationSolver solver;
+
+
+    ExecutorService executorService;
 
     /**
     * @param kernel1
@@ -69,39 +76,39 @@ public class TimeIntegration {
 
         //only for fixed stepsize
         delta_t = 0.001;
+
+        executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void start() {
+    public void performSimulationStep() {
         isRunning = true;
-        new Thread(new Runnable() {
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-
-
-                prepareSimulation();
-                while(isRunning) {
+                t = 0;
+                long startTime = System.currentTimeMillis();
+                while(t < 0.01 && isRunning) {
                     //calculate new position
-
-
                     solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
-
                     acceleration=kernel1.getAccelerationProvider().getAcceleration();
                     for(int j=6; j<kernel1.getNumDOF(); j+=3){
                         xDotDot.set(j,0, 1*acceleration[0]-0.08*xDot.get(j,0)-0.2*kernel1.getDisplacementVector().get(j, 0));
-
-
                         xDotDot.set(j+1,0, 1*acceleration[1]-0.08*xDot.get(j+1,0)-0.2*kernel1.getDisplacementVector().get(j+1, 0));
                     }
-
                     //Log.d("lol", "hallo"+xDotDot.get(9,0));
                     //temporarily fix the ground
-
                     kernel1.updateStructure(kernel1.getDisplacementVector());
                     t += delta_t;
                 }
+                //Log.e("DEBUG", "" + (System.currentTimeMillis() - startTime));
 
+                isRunning = false;
             }
-        }).start();
+        });
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
     public void stop() {
