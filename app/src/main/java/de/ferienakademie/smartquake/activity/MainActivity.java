@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         canvasView = (CanvasView) findViewById(R.id.shape);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
-        kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
 
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -87,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
                     structure.addNodes(n1, n2, n3, n4, n5);
                     structure.addBeams(b1, b2, b3, b4, b5, b6);
-
                     canvasView.drawStructure(structure);
+                    kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
                 }
             });
         }
