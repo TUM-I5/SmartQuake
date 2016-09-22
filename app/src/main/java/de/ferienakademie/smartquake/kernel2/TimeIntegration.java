@@ -12,18 +12,20 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
 public class TimeIntegration {
 
     Kernel1 kernel1;
+    boolean isRunning;
 
+
+    /*
+    * @param kernel1
+    *          object to obtain all matrices, displacements, external forces
+    *
+    **/
     public TimeIntegration(Kernel1 kernel1) {
         this.kernel1 = kernel1;
     }
-    /*
-    * @param k1
-    *          object of type structure to obtain all matrices, displacements, external forces
-    *
-    **/
-    public void startSimulation() {
-        //TODO sent frequently data to GUI.
 
+    public void start() {
+        isRunning = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -48,7 +50,7 @@ public class TimeIntegration {
 
                 //only for fixed stepsize
                 delta_t = 0.0001;
-                for (int i = 0; i < 100000; i++) {
+                while(isRunning) {
                     //calculate new position
                     solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
                     while (kernel1.getView().isBeingDrawn) {
@@ -67,7 +69,10 @@ public class TimeIntegration {
 
             }
         }).start();
+    }
 
+    public void stop() {
+        isRunning = false;
     }
 
 }

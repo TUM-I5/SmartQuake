@@ -117,7 +117,6 @@ public class Kernel1 {
             node.setX(node.getX() + displacementVector.get(3*i, 0));
             node.setY(node.getY() + displacementVector.get(3*i+1, 0));
         }
-        DrawHelper.drawStructure(structure, view);
     }
 
     void updateLoadVector(double[] acceleration) {
