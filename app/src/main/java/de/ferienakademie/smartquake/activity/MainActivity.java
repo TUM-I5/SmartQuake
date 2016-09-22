@@ -2,6 +2,7 @@ package de.ferienakademie.smartquake.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -55,6 +56,11 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
             createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
+        }
+
+        if (id == R.id.create_button) {
+            if (simulation != null) simulation.stop();
+            startActivity(new Intent(this, CreateActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

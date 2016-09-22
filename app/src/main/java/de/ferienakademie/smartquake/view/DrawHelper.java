@@ -21,6 +21,13 @@ public class DrawHelper {
         view.postInvalidate();
     }
 
+    public static void clearCanvas(CanvasView view) {
+        snapBeams.clear();
+        snapBeams.clear();
+        view.isBeingDrawn = true;
+        view.postInvalidate();
+    }
+
     private static void snapShot(List<Node> nodes, List<Beam> beams) {
         snapBeams.clear();
         snapNodes.clear();
