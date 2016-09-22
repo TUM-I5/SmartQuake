@@ -8,16 +8,28 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
+import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 
 public class MainActivity extends AppCompatActivity {
+
+    Sensor mAccelerometer; //sensor object
+    SensorManager mSensorManager; // manager to subscribe for sensor events
+    ExcitationManager mExcitationManager; // custom accelerometer listener
+
+    Button startButton;
+    CanvasView canvasView;
+    TimeIntegration timeIntegration;
+    Structure structure;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -26,9 +38,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    Sensor mAccelerometer; //sensor object
-    SensorManager mSensorManager; // manager to subscribe for sensor events
-    ExcitationManager mExcitationManager; // custom accelerometer listener
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,8 +47,16 @@ public class MainActivity extends AppCompatActivity {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mExcitationManager = new ExcitationManager();
+        timeIntegration = new TimeIntegration();
+        startButton = (Button) findViewById(R.id.start_button);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timeIntegration.startSimulation(structure);
+            }
+        });
 
-        final CanvasView canvasView = (CanvasView) findViewById(R.id.shape);
+        canvasView = (CanvasView) findViewById(R.id.shape);
 
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
@@ -51,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     double height = canvasView.getHeight();
                     double middle = canvasView.getWidth() * 0.25f;
 
-                    Structure structure = new Structure();
+                    structure = new Structure();
 
                     Node n1 = new Node(middle, height);
                     Node n2 = new Node(width - middle, height);

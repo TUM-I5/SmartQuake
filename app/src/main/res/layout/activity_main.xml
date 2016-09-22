@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Start"
-            android:id="@+id/button"
+            android:id="@+id/start_button"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_weight="1" />
 
