@@ -2,11 +2,9 @@ package de.ferienakademie.smartquake.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,7 +51,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
         int id = item.getItemId();
 
         if (id == R.id.load_replay_button) {
-            restartStructure();
+            createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
         }
@@ -61,7 +59,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
         return super.onOptionsItemSelected(item);
     }
 
-    private void restartStructure() {
+    private void createStructure() {
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();
         double middle = canvasView.getWidth() * 0.25f;
@@ -112,10 +110,9 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                    restartStructure();
+                    createStructure();
 
                     DrawHelper.drawStructure(structure, canvasView);
-                    kernel1 = new Kernel1(structure, mExcitationManager);
                 }
             });
         }
@@ -135,6 +132,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     }
 
     void startSimulation() {
+        kernel1 = new Kernel1(structure, mExcitationManager);
         timeIntegration = new TimeIntegration(kernel1);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
         simulation.setListener(MainActivity.this);
