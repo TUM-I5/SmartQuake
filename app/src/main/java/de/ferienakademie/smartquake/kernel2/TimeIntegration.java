@@ -68,7 +68,7 @@ public class TimeIntegration {
         xDotDot.zero();
 
         //only for fixed stepsize
-        delta_t = 0.000005;
+        delta_t = 0.001;
     }
 
     public void start() {
@@ -87,9 +87,10 @@ public class TimeIntegration {
 
                     acceleration=kernel1.getAccelerationProvider().getAcceleration();
                     for(int j=6; j<kernel1.getNumDOF(); j+=3){
-                        xDotDot.set(j,0, 1*acceleration[0]-5*xDot.get(j,0)-600*kernel1.getDisplacementVector().get(j, 0));
+                        xDotDot.set(j,0, 1*acceleration[0]-0.08*xDot.get(j,0)-0.2*kernel1.getDisplacementVector().get(j, 0));
 
-                        xDotDot.set(j+1,0, 1*acceleration[1]-5*xDot.get(j+1,0)-600*kernel1.getDisplacementVector().get(j+1, 0));
+
+                        xDotDot.set(j+1,0, 1*acceleration[1]-0.08*xDot.get(j+1,0)-0.2*kernel1.getDisplacementVector().get(j+1, 0));
                     }
 
                     //Log.d("lol", "hallo"+xDotDot.get(9,0));
