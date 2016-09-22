@@ -23,16 +23,17 @@ public class TimeIntegration {
         double t = 0;
         double delta_t;
 
+        //this solver provides the numerical algorith  for calculating the displacement
         TimeIntegrationSolver solver = new Euler();
 
         //initial condition for the velocity
-        DenseMatrix64F xDot = new DenseMatrix64F(k1.getNumDOF());
+        DenseMatrix64F xDot = new DenseMatrix64F(k1.getNumDOF(),1);
         xDot.zero();
 
         //xDotDot must be calculated by the external load forces and the differnetial equation
 
         //THIS IS JUST A WORKAROUND/MINIMAL EXAMPLE
-        DenseMatrix64F xDotDot = new DenseMatrix64F(k1.getNumDOF());
+        DenseMatrix64F xDotDot = new DenseMatrix64F(k1.getNumDOF(),1);
         xDotDot.zero();
         //fill withs 1s
         for(int i = 0; i< k1.getNumDOF(); i++){
