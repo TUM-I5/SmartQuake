@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.model;
 
-import org.ejml.data.DenseMatrix64F;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
