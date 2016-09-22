@@ -29,30 +29,35 @@ public class Simulation {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                kernel2.start();
-                for (int i = 0; i < 1000; i++) {
+                kernel2.prepareSimulation();
+                TimeIntegration.SimulationStep currentStep;
+                for (int i = 0; i < 400; i++) {
                     if (!isRunning) {
                         break;
                     }
+                    currentStep = kernel2.performSimulationStep();
                     try {
-                        Thread.sleep(2);
+                        Thread.sleep(30);
                     } catch (InterruptedException ex) {
                         Log.e("Simulation", ex.getMessage());
                         continue;
                     }
                     while(view.isBeingDrawn) {
                         try {
-                            Thread.sleep(2);
+                            Thread.sleep(30);
                         } catch (InterruptedException ex) {
                             Log.e("Simulation", ex.getMessage());
                         }
+                    }
+                    if (currentStep.isRunning()) {
+                        Log.e("Simulation", "Kernel2 can not catch up the gui");
+                        currentStep.stop();
                     }
                     DrawHelper.drawStructure(kernel1.getStructure(), view);
                 }
                 if (listener != null) {
                     listener.onFinish();
                 }
-                kernel2.stop();
             }
 
         }).start();
