@@ -1,12 +1,9 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
@@ -16,7 +13,6 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
 public class TimeIntegration {
 
     Kernel1 kernel1;
-    boolean isRunning;
 
     //total computed time
     double t;
@@ -80,39 +76,49 @@ public class TimeIntegration {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void performSimulationStep() {
-        isRunning = true;
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                t = 0;
-                long startTime = System.currentTimeMillis();
-                while(t < 0.02 && isRunning) {
-                    //calculate new position
-                    solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
-                    acceleration=kernel1.getAccelerationProvider().getAcceleration();
-                    for(int j=6; j<kernel1.getNumDOF(); j+=3){
-                        xDotDot.set(j,0, 2000*acceleration[0]-5*xDot.get(j,0)-100*kernel1.getDisplacementVector().get(j, 0));
-                        xDotDot.set(j+1,0, 2000*acceleration[1]-5*xDot.get(j+1,0)-100*kernel1.getDisplacementVector().get(j+1, 0));
+    public SimulationStep performSimulationStep() {
+        return new SimulationStep().execute();
+    }
+
+    /**
+     * Class that represent single simulation step of {@link TimeIntegration}.
+     * If simulation step can not be performed during a single frame, it will be stopped.
+     */
+    public class SimulationStep {
+
+        boolean isRunning;
+
+        public SimulationStep execute() {
+            isRunning = true;
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    t = 0;
+                    while(t < 0.02 && isRunning) {
+                        //calculate new position
+                        solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
+                        acceleration=kernel1.getAccelerationProvider().getAcceleration();
+                        for(int j=6; j<kernel1.getNumDOF(); j+=3){
+                            xDotDot.set(j,0, 2000*acceleration[0]-5*xDot.get(j,0)-100*kernel1.getDisplacementVector().get(j, 0));
+                            xDotDot.set(j+1,0, 2000*acceleration[1]-5*xDot.get(j+1,0)-100*kernel1.getDisplacementVector().get(j+1, 0));
+                        }
+                        //temporarily fix the ground
+                        kernel1.updateStructure(kernel1.getDisplacementVector());
+                        t += delta_t;
                     }
-                    //Log.d("lol", "hallo"+xDotDot.get(9,0));
-                    //temporarily fix the ground
-                    kernel1.updateStructure(kernel1.getDisplacementVector());
-                    t += delta_t;
+                    isRunning = false;
                 }
-                //Log.e("DEBUG", "" + (System.currentTimeMillis() - startTime));
+            });
+            return this;
+        }
 
-                isRunning = false;
-            }
-        });
+        public boolean isRunning() {
+            return isRunning;
+        }
+
+        public void stop() {
+            isRunning = false;
+        }
+
     }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void stop() {
-        isRunning = false;
-    }
-
 }
