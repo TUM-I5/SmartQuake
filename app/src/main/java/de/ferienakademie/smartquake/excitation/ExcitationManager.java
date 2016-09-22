@@ -46,17 +46,20 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      *
      * @param timestamp closest time moment w.r.t. start of the simulation when acceleration measured
      * @return measurement of accelerometer in X,Y axis at time point @timestamp
+     * calculated as linear interpolation of two closet recorded readings
      */
     @Override
     public double[] getAcceleration(double timestamp) {
-        double[] retrievedreading = {0.0, 0.0};
+        double[] retrievedreading = {0.0, 0.0, 0.0};
         double[] oldretrievedreading ;
 
+        // poll entries of the queue until the first reading with timestep greater larger than wanted timestep found
         do {
             oldretrievedreading = retrievedreading;
             retrievedreading = RecentMeasurements.poll();
         } while (retrievedreading[2] < timestamp);
 
+        // calculated as y(x) = y1+(y2-y1)*(x-x1)/(x2-x1)
         return new double[] {oldretrievedreading[0]+(retrievedreading[0]-oldretrievedreading[0])*
                 (retrievedreading[2]-oldretrievedreading[2])/(timestamp-oldretrievedreading[2]),
                 oldretrievedreading[1]+(retrievedreading[1]-oldretrievedreading[1])*
