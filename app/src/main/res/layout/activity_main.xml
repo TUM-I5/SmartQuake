@@ -31,12 +31,6 @@
             android:layout_gravity="bottom|center_horizontal"
             android:layout_weight="1" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Stop"
-            android:id="@+id/button2"
-            android:layout_weight="1" />
     </LinearLayout>
 
 </LinearLayout>
