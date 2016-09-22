@@ -14,6 +14,7 @@ import android.widget.Button;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
+import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     CanvasView canvasView;
     TimeIntegration timeIntegration;
     Structure structure;
+    Kernel1 kernel1;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -57,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         canvasView = (CanvasView) findViewById(R.id.shape);
-
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
+        kernel1 = new Kernel1(structure, canvasView, mExcitationManager);
+
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
