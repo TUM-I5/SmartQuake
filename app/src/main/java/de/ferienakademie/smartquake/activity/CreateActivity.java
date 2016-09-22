@@ -76,11 +76,11 @@ public class CreateActivity extends Activity {
 
                 Node node1 = nodes.get(nodes.size() - 2);
                 Node node2 = nodes.get(nodes.size() - 1);
-                node1.setX(event.getX(0));
-                node1.setY(event.getY(0) - 220);
+                node1.setCurrX(event.getX(0));
+                node1.setCurrY(event.getY(0) - 220);
 
-                node2.setX(event.getX(1));
-                node2.setY(event.getY(1) - 220);
+                node2.setCurrX(event.getX(1));
+                node2.setCurrY(event.getY(1) - 220);
 
                 Beam beam = new Beam(node1, node2);
                 node1.addBeam(beam);
@@ -93,13 +93,13 @@ public class CreateActivity extends Activity {
                     Node node = nodes.get(i);
 
                     if (nearNodes(node1, node)) {
-                        node1.setX(node.getX());
-                        node1.setY(node.getY());
+                        node1.setCurrX(node.getCurrX());
+                        node1.setCurrY(node.getCurrY());
                     }
 
                     if (nearNodes(node2, node)) {
-                        node2.setX(node.getX());
-                        node2.setY(node.getY());
+                        node2.setCurrX(node.getCurrX());
+                        node2.setCurrY(node.getCurrY());
                     }
 
                 }
@@ -115,6 +115,6 @@ public class CreateActivity extends Activity {
     }
 
     private static boolean nearNodes(Node node1, Node node2) {
-        return (Math.abs(node1.getX() - node2.getX()) <= DELTA && Math.abs(node1.getY() - node2.getY()) <= DELTA);
+        return (Math.abs(node1.getCurrX() - node2.getCurrX()) <= DELTA && Math.abs(node1.getCurrY() - node2.getCurrY()) <= DELTA);
     }
 }
