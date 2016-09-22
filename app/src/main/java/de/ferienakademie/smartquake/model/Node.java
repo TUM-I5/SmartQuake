@@ -2,15 +2,16 @@ package de.ferienakademie.smartquake.model;
 
 import java.util.List;
 
-import de.ferienakademie.smartquake.model.Beam;
-
 /**
  * Created by yuriy on 21/09/16.
  */
 public class Node {
-
-    private double x;
-    private double y;
+    //Current node position
+    private double currX;
+    private double currY;
+    //Initial node position
+    private double initX;
+    private double initY;
 
     private List<Integer>[] DOF; //Degrees of freedom
 
@@ -26,25 +27,41 @@ public class Node {
 
 
     public Node(double x, double y) {
-        this.x = x;
-        this.y = y;
+        this.currX = x;
+        this.currY = y;
+        this.initX = x;
+        this.initY = y;
     }
 
 
     public Node(double x, double y, List<Beam> beams) {
-        this.x = x;
-        this.y = y;
+        this(x,y);
         this.beams = beams;
     }
 
     public Node(double x, double y, List<Integer>[] DOF, List<Double>[] u, List<Beam> beams) {
-        this.x = x;
-        this.y = y;
+        this(x, y, beams);
         this.DOF = DOF;
         this.u = u;
         this.beams = beams;
     }
 
+
+    public double getInitX() {
+        return initX;
+    }
+
+    public void setInitX(double initX) {
+        this.initX = initX;
+    }
+
+    public double getInitY() {
+        return initY;
+    }
+
+    public void setInitY(double initY) {
+        this.initY = initY;
+    }
 
     public List<Double>[] getU() {
         return u;
@@ -62,20 +79,20 @@ public class Node {
         this.DOF = DOF;
     }
 
-    public double getX() {
-        return x;
+    public double getCurrX() {
+        return currX;
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public void setCurrX(double currX) {
+        this.currX = currX;
     }
 
-    public double getY() {
-        return y;
+    public double getCurrY() {
+        return currY;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    public void setCurrY(double currY) {
+        this.currY = currY;
     }
 
     //Probably obsolete, look above.
