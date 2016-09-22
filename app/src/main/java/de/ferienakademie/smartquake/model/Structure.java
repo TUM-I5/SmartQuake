@@ -12,7 +12,7 @@ public class Structure {
     private List<Node> nodes;
     private List<Beam> beams;
     // TODO: somebody plz initialize this array conDOF
-    private int[] conDOF ; //constraint dofs
+    private int[] conDOF ; //constraint dofs TODO: But how's the data structure?
 
     public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
         this.nodes = nodes;

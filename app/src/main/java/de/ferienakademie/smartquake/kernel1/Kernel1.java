@@ -5,8 +5,6 @@ import org.ejml.data.DenseMatrix64F;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.view.CanvasView;
-import de.ferienakademie.smartquake.view.DrawHelper;
 
 /**
  * Created by alex on 22.09.16.
@@ -109,8 +107,8 @@ public class Kernel1 {
     public void updateStructure(DenseMatrix64F displacementVector) {
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            node.setX(node.getX() + displacementVector.get(3 * i, 0));
-            node.setY(node.getY() + displacementVector.get(3 * i + 1, 0));
+            node.setCurrX(node.getInitX() + displacementVector.get(3*i, 0));
+            node.setCurrY(node.getInitY() + displacementVector.get(3*i+1, 0));
         }
     }
 

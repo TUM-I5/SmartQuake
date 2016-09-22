@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 
 import de.ferienakademie.smartquake.kernel1.Kernel1;
@@ -50,14 +52,14 @@ public class TimeIntegration {
         for(int j=0; j<kernel1.getNumDOF(); j+=3){
             xDot.add(j,0, 10);
         }
-        xDot.add(3,0,20);
-        xDot.add(1,0,40);
-        xDot.add(6,0,-20);
-        xDot.add(10,0,-10);
-        xDot.add(4,0,-10);
-        xDot.add(7,0,-80);
-        xDot.add(12,0,150);
-        xDot.add(13,0,100);
+        //xDot.add(3,0,20);
+        //xDot.add(1,0,40);
+        //xDot.add(6,0,-20);
+        //xDot.add(10,0,-10);
+        //xDot.add(4,0,-10);
+        //xDot.add(7,0,-80);
+        //xDot.add(12,0,150);
+        //xDot.add(13,0,100);
         xDot.zero();
         //xDotDot must be calculated by the external load forces and the differnetial equation
 
@@ -66,7 +68,7 @@ public class TimeIntegration {
         xDotDot.zero();
 
         //only for fixed stepsize
-        delta_t = 0.0000001;
+        delta_t = 0.001;
     }
 
     public void start() {
@@ -79,14 +81,21 @@ public class TimeIntegration {
                 prepareSimulation();
                 while(isRunning) {
                     //calculate new position
+
+
                     solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
 
                     acceleration=kernel1.getAccelerationProvider().getAcceleration();
-                    for(int j=0; j<kernel1.getNumDOF(); j+=3){
-                        xDotDot.add(j,0, 1*acceleration[0]-5*xDot.get(j,0)-10*kernel1.getDisplacementVector().get(j, 0));
-                        xDotDot.add(j+1,0, 1*acceleration[1]-5*xDot.get(j+1,0)-10*kernel1.getDisplacementVector().get(j+1, 0));
-                        //xDotDot.add(j,0,1*acceleration[0]-0.1*xDot.get(j+1,0));
+                    for(int j=6; j<kernel1.getNumDOF(); j+=3){
+                        xDotDot.set(j,0, 1*acceleration[0]-0.08*xDot.get(j,0)-0.2*kernel1.getDisplacementVector().get(j, 0));
+
+
+                        xDotDot.set(j+1,0, 1*acceleration[1]-0.08*xDot.get(j+1,0)-0.2*kernel1.getDisplacementVector().get(j+1, 0));
                     }
+
+                    //Log.d("lol", "hallo"+xDotDot.get(9,0));
+                    //temporarily fix the ground
+
                     kernel1.updateStructure(kernel1.getDisplacementVector());
                     t += delta_t;
                 }
