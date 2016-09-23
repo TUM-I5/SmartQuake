@@ -32,8 +32,7 @@ public class Node {
 
 
     public Node(double x, double y, List<Integer> DOF) {
-        this.initX=x;
-        this.initY=y;
+        this(x, y);
         this.DOF = DOF;
     }
 

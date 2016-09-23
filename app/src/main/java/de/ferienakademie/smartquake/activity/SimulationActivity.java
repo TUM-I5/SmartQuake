@@ -71,6 +71,7 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
         if (id == R.id.create_button) {
             if (simulation != null) simulation.stop();
             startActivity(new Intent(this, CreateActivity.class));
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -80,7 +81,6 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();
         structure = StructureFactory.getSimpleHouse(width, height);
-
     }
 
     @Override
@@ -123,7 +123,6 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     createStructure();
-
                     DrawHelper.drawStructure(structure, canvasView);
                 }
             });

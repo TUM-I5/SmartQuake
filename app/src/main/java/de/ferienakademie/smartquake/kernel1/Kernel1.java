@@ -88,7 +88,6 @@ public class Kernel1 {
                 }
             }
         }
-        Log.e("test", "test");
     }
 
     public void calcMassMatrix() {
