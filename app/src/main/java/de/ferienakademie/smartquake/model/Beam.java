@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.model;
 import org.ejml.data.DenseMatrix64F;
 import org.junit.runner.Describable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,11 @@ public class Beam {
     private Material material;
     private float thickness;
     private double l;
+    private double s;
+    private double c;
+    private double theta;
+
+    private List<Double> localdisplacements;
 
     // array of degrees of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
     private int[] Dofs;
@@ -46,6 +52,9 @@ public class Beam {
         double x2 = endNode.getInitX(), y2 = endNode.getInitY();
         l = Math.sqrt((x1 - x2) * (x1 - x2)) + (y1 - y2) * (y1 - y2);
 
+        theta = Math.atan((y2 - y1) / (x2 - x1));
+        c = Math.cos(theta); //rotation of displacement
+        s = Math.sin(theta);
         computeStiffnessMatrix();
         eleStiffnessMatrix_globalized = GlobalizeElementMatrix(eleStiffnessMatrix);
 
@@ -150,11 +159,8 @@ public class Beam {
 
     public DenseMatrix64F GlobalizeElementMatrix(DenseMatrix64F elementMatrix) {
 
-        double x1 = startNode.getInitX(), y1 = startNode.getInitY();
-        double x2 = endNode.getInitX(), y2 = endNode.getInitY();
-        double theta = Math.atan((y2 - y1) / (x2 - x1));
-        double c = Math.cos(theta);
-        double s = Math.sin(theta);
+
+
 
         DenseMatrix64F elementMatrix_globalized;
         elementMatrix_globalized = new DenseMatrix64F(6, 6);
@@ -209,6 +215,26 @@ public class Beam {
         this(new Node(startX, startY), new Node(endX, endY));
     }
 
+    public void rotateDOFsToLocal(){
+        double[] u= new double[6];
+        u[0]= startNode.getCurrX(); //x-displacement of startnode
+        u[1]=startNode.getCurrY(); //y-displacement of startnode
+        u[2]=endNode.getCurrX();   //x-displacement of endnode
+        u[3]=endNode.getCurrY();
+
+        u[4]=  //TODO if hinges will be modelled  getCurr is of arbitrary size
+        u[5]= (endNode.getCurrROT().get(0));
+
+        //TODO: mabye refactor and remove u and always use localdisplacement array
+
+        localdisplacements.add(u[0]*Math.cos(theta)-u[1]*Math.sin(theta));
+        localdisplacements.add(u[0]*Math.sin(theta)+u[1]*Math.cos(theta));
+        localdisplacements.add(u[2]*Math.cos(theta)-u[3]*Math.sin(theta));
+        localdisplacements.add(u[2]*Math.sin(theta)+u[3]*Math.cos(theta));
+        localdisplacements.add((startNode.getCurrROT().get(0)));
+        localdisplacements.add((endNode.getCurrROT().get(0)));
+
+    }
     public int[] getDofs() {
         return Dofs;
     }
