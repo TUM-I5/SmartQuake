@@ -221,8 +221,7 @@ public class Beam {
         u[2]=endNode.getCurrX();   //x-displacement of endnode
         u[3]=endNode.getCurrY();
 
-        u[4]=  //TODO if hinges will be modelled  getCurr is of arbitrary size
-        u[5]= (endNode.getCurrROT().get(0));
+        //TODO if hinges will be modelled  getCurr is of arbitrary size
 
         //TODO: mabye refactor and remove u and always use localdisplacement array
 

@@ -22,7 +22,6 @@ public class StructureFactory {
         Material testMaterial = new Material();
 
         //Kernel1 stuff
-        //TODO Alex: redesign with ID Matrix
         //TODO Paul: setConstraint(true) for fixed nodes
         List<Integer> DOFnode1 = new LinkedList<>();
         List<Integer> DOFnode2 = new LinkedList<>();
