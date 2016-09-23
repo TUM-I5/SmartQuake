@@ -13,7 +13,7 @@
         android:theme="@android:style/Theme.Material.Light.DarkActionBar">
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.SimulationActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName=".activity.SimulationActivity"
             android:name=".activity.CreateActivity"
             android:screenOrientation="portrait">
         </activity>
