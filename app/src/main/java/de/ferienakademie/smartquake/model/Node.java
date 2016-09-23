@@ -10,6 +10,9 @@ public class Node {
     //Current node position
     private double currX;
     private double currY;
+
+    private List<Double> currROT; //List of all rotations at the node
+
     //Initial node position
     private double initX;
     private double initY;
@@ -24,6 +27,8 @@ public class Node {
         this.currY = y;
         this.initX = x;
         this.initY = y;
+        currROT = new ArrayList<>();
+        currROT.add(0.0);
     }
 
 
@@ -43,6 +48,14 @@ public class Node {
 
     public double getInitY() {
         return initY;
+    }
+
+    public List<Double> getCurrROT() {
+        return currROT;
+    }
+
+    public void setCurrROT(List<Double> currROT) {
+        this.currROT = currROT;
     }
 
     public void setInitY(double initY) {
