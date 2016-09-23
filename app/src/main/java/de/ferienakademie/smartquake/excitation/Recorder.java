@@ -1,20 +1,19 @@
 package de.ferienakademie.smartquake.excitation;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by simon on 22.09.16.
  */
 public class Recorder implements ExcitationListener, AccelerationProvider{
-    ArrayList<AccelerometerReading> readings;
+    ArrayList<AccelData> readings;
     int currPos;
+
 
     public Recorder(){
         initRecord();
         readings = new ArrayList<>();
-        readings.add(new AccelerometerReading());
+        readings.add(new AccelData());
         currPos = 0;
     }
 
@@ -24,11 +23,11 @@ public class Recorder implements ExcitationListener, AccelerationProvider{
 
     public void initRecord(){
         readings = new ArrayList<>();
-        readings.add(new AccelerometerReading());
+        readings.add(new AccelData());
     }
 
     @Override
-    public void excited(AccelerometerReading reading) {
+    public void excited(AccelData reading) {
         readings.add(reading);
     }
 
@@ -39,7 +38,12 @@ public class Recorder implements ExcitationListener, AccelerationProvider{
     }
 
     @Override
-    public double[] getAcceleration(double timestamp) {
+    public AccelData getAccelerationMeasurement() {
+        return null;
+    }
+
+    @Override
+    public AccelData getAccelerationMeasurement(long timestamp) {
         while (readings.size() > currPos
                 && readings.get(currPos).timestamp < timestamp) {
             ++currPos;
@@ -49,6 +53,16 @@ public class Recorder implements ExcitationListener, AccelerationProvider{
             return null;
         } else {
             return readings.get(currPos);
+        }
+    }
+
+    @Override
+    public double[] getAcceleration(long timestamp) {
+        if(currPos == readings.size()){
+            return null;
+        } else {
+            AccelData temp = getAccelerationMeasurement(timestamp);
+            return new double[]{temp.xAcceleration, temp.yAcceleration};
         }
     }
 }

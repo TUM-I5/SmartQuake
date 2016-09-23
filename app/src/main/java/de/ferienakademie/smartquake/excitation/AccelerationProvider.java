@@ -14,11 +14,13 @@ public interface AccelerationProvider {
      *
      * @return datastructure with timestamp, X axis acceleration, Y axis acceleration
      */
-    AccelerometerReading getAccelerationMeasurement();
+    AccelData getAccelerationMeasurement();
+
+    AccelData getAccelerationMeasurement(long timestamp);
 
     /**
      * @param timestamp closest time moment w.r.t. start of the simulation when accelearation measured
      * @return first element acceleration in X axis, second element acceleration in Y axis
      */
-    double[] getAcceleration(double timestamp);
+    double[] getAcceleration(long timestamp);
 }

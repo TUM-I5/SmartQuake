@@ -5,15 +5,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.Future;
 
 /**
  * Created by Yehor on 21.09.2016.
  */
 public class SensorExcitation implements SensorEventListener, AccelerationProvider {
 
-    private AccelerometerReading currAcceleration;
-    private ArrayList<AccelerometerReading> recentMeasurements = new ArrayList<>();
+    private AccelData currAcceleration;
+    private ArrayList<AccelData> recentMeasurements = new ArrayList<>();
 
     private int queue_pos = 0;
 
@@ -25,11 +24,11 @@ public class SensorExcitation implements SensorEventListener, AccelerationProvid
         currAcceleration.xAcceleration = event.values[0];
         currAcceleration.yAcceleration = event.values[1];
         // put new element to the queue of sensor measurements
-        recentMeasurements.add(new AccelerometerReading(currAcceleration));
+        recentMeasurements.add(new AccelData(currAcceleration));
     }
 
     public void reset() {
-        currAcceleration = new AccelerometerReading();
+        currAcceleration = new AccelData();
         queue_pos = 0;
         //TODO write queue
         recentMeasurements.clear();
@@ -49,12 +48,13 @@ public class SensorExcitation implements SensorEventListener, AccelerationProvid
     }
 
     @Override
-    public AccelerometerReading getAccelerationMeasurement() {
+    public AccelData getAccelerationMeasurement() {
         return null;
     }
 
-    public boolean store() {
-
+    @Override
+    public AccelData getAccelerationMeasurement(long timestamp) {
+        return null;
     }
 
     /**
@@ -63,17 +63,18 @@ public class SensorExcitation implements SensorEventListener, AccelerationProvid
      * calculated as linear interpolation of two closet recorded readings
      */
     @Override
-    public double[] getAcceleration(double timestamp) {
+    public double[] getAcceleration(long timestamp) {
         // poll entries of the queue until the first reading with timestep greater larger than wanted timestep found
         while (recentMeasurements.size() > queue_pos
                 && recentMeasurements.get(queue_pos).timestamp < timestamp) {
             ++queue_pos;
         }
 
-        if(queue_pos == 0 && queue_pos == recentMeasurements.size()){
-            return currAcceleration;
+        if(queue_pos == 0 || queue_pos == recentMeasurements.size()){
+            return new double[]{currAcceleration.xAcceleration, currAcceleration.yAcceleration};
         } else {
-            return recentMeasurements.get(queue_pos);
+            return new double[]{recentMeasurements.get(queue_pos).xAcceleration,
+                    recentMeasurements.get(queue_pos).yAcceleration};
         }
         // calculated as y(x) = y1+(y2-y1)*(x-x1)/(x2-x1)
         /*
@@ -87,8 +88,8 @@ public class SensorExcitation implements SensorEventListener, AccelerationProvid
     }
 
     private double[] interpolate(int queue_pos, long timestamp) {
-        AccelerometerReading curr = recentMeasurements.get(queue_pos);
-        AccelerometerReading prev = recentMeasurements.get(queue_pos - 1);
+        AccelData curr = recentMeasurements.get(queue_pos);
+        AccelData prev = recentMeasurements.get(queue_pos - 1);
         long factor = (curr.timestamp - prev.timestamp) / (timestamp - prev.timestamp);
         return new double[] {prev.xAcceleration +
         (curr.xAcceleration - prev.yAcceleration) * factor,

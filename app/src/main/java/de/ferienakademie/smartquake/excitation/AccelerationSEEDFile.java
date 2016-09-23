@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.DataInput;
-import java.util.LinkedList;
 
 import edu.iris.dmc.seedcodec.CodecException;
 import edu.iris.dmc.seedcodec.DecompressedData;
@@ -88,7 +87,19 @@ public class AccelerationSEEDFile implements AccelerationProvider
     }
 
     @Override
-    public double[] getAcceleration(double timestamp)
+    public AccelData getAccelerationMeasurement() {
+        //TODO implementation
+        return null;
+    }
+
+    @Override
+    public AccelData getAccelerationMeasurement(long timestamp) {
+        //TODO implementation
+        return null;
+    }
+
+    @Override
+    public double[] getAcceleration(long timestamp)
     {
         //TODO: Scale!
         return new double[] { getNextValue(), 0 };
