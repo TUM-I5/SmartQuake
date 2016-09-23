@@ -15,7 +15,7 @@ import edu.sc.seis.seisFile.mseed.DataRecord;
 /**
  * Created by David Schneller on 21.09.2016.
  */
-public class AccelerationFile implements AccelerationProvider
+public class AccelerationSEEDFile extends AccelerationProvider
 {
     private DataInput stream;
     private double[] cachedData;
@@ -74,7 +74,7 @@ public class AccelerationFile implements AccelerationProvider
         return out;
     }
 
-    public AccelerationFile(InputStream stream)
+    public AccelerationSEEDFile(InputStream stream)
     {
         this.stream = new DataInputStream(stream);
     }
@@ -87,7 +87,19 @@ public class AccelerationFile implements AccelerationProvider
     }
 
     @Override
-    public double[] getAcceleration(double timestamp)
+    public AccelData getAccelerationMeasurement() {
+        //TODO implementation
+        return null;
+    }
+
+    @Override
+    public AccelData getAccelerationMeasurement(long timestamp) {
+        //TODO implementation
+        return null;
+    }
+
+    @Override
+    public double[] getAcceleration(long timestamp)
     {
         //TODO: Scale!
         return new double[] { getNextValue(), 0 };

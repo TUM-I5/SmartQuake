@@ -1,26 +1,68 @@
 package de.ferienakademie.smartquake.model;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class StructureFactory {
     public static Structure getSimpleHouse(double width, double height) {
         double quarter = width * 0.25;
 
+        List<Double> unode1 = new LinkedList<>();
+        unode1.add(0.0);
+        unode1.add(0.0);
+        unode1.add(0.0);
+
         Structure structure = new Structure();
+        Material testMaterial = new Material();
 
-        Node n1 = new Node(quarter, height);
-        Node n2 = new Node(width - quarter, height);
-        Node n3 = new Node(width - quarter, height - quarter);
-        Node n4 = new Node(quarter, height - quarter);
-        Node n5 = new Node(2 * quarter, height - 2 * quarter);
+        //Kernel1 stuff
+        //TODO Alex: redesign with ID Matrix
+        List<Integer> DOFnode1 = new LinkedList<>();
+        List<Integer> DOFnode2 = new LinkedList<>();
+        List<Integer> DOFnode3 = new LinkedList<>();
+        List<Integer> DOFnode4 = new LinkedList<>();
+        List<Integer> DOFnode5 = new LinkedList<>();
 
-        Beam b1 = new Beam(n1, n2);
-        Beam b2 = new Beam(n2, n3);
-        Beam b3 = new Beam(n3, n4);
-        Beam b4 = new Beam(n4, n1);
-        Beam b5 = new Beam(n4, n5);
-        Beam b6 = new Beam(n5, n3);
+        DOFnode1.add(0); //constraint
+        DOFnode1.add(1);//constraint
+        DOFnode1.add(2);//constraint
+
+        DOFnode2.add(3);//constraint
+        DOFnode2.add(4);//constraint
+        DOFnode2.add(5);//constraint
+
+        DOFnode3.add(6);
+        DOFnode3.add(7);
+        DOFnode3.add(8);
+
+        DOFnode4.add(9);
+        DOFnode4.add(10);
+        DOFnode4.add(11);
+
+        DOFnode5.add(12);
+        DOFnode5.add(13);
+        DOFnode5.add(14);
+
+        Node n1 = new Node(quarter, height, DOFnode1);
+        Node n2 = new Node(width - quarter, height, DOFnode2);
+        Node n3 = new Node(width - quarter, height - quarter, DOFnode3);
+        Node n4 = new Node(quarter, height - quarter, DOFnode4);
+        Node n5 = new Node(2 * quarter, height - 2 * quarter, DOFnode5);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
 
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
+
+        List<Integer> condof= new ArrayList<>( );
+        structure.setConDOF(condof);
+
         return structure;
     }
 
