@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -54,6 +55,20 @@ public class CanvasView extends View {
         Node endNode = beam.getEndNode();
         canvas.drawCircle((float) endNode.getCurrX(), (float) endNode.getCurrY(), (float) endNode.getRadius(), paint);
         paint.setStrokeWidth(beam.getThickness());
-        canvas.drawLine((float) startNode.getCurrX(), (float) startNode.getCurrY(), (float) endNode.getCurrX(), (float) endNode.getCurrY(), paint);
+
+        double startX = startNode.getCurrX();
+        double startY = startNode.getCurrY();
+        double endX = endNode.getCurrX();
+        double endY = endNode.getCurrY();
+
+        float cp1x = (float)((2 * startX + endX) / 3);
+        float cp1y = (float)((2 * startY + endY) / 3);
+        float cp2x = (float)((startX + 2 * endX) / 3);
+        float cp2y = (float)((startY + 2 * endY) / 3);
+
+        Path p = new Path();
+        p.moveTo((float) startNode.getCurrX(), (float) startNode.getCurrY());
+        p.cubicTo(cp1x, cp1y, cp2x, cp2y, (float) endNode.getCurrX(), (float) endNode.getCurrY());
+        canvas.drawPath(p, paint);
     }
 }
