@@ -4,11 +4,13 @@ package de.ferienakademie.smartquake.model;
  * Created by alex on 21.09.16.
  */
 public class Material {
-    private double E = 0;
-    private double A = 0;
-    private double I = 0;
-    private double EA = 0;
-    private double EI = 0;
+    private double E = 0;   //Young's modulus
+    private double A = 0;   //cross section
+    private double I = 0;   //moment of inertia
+    private double EA = 0;  //
+    private double EI = 0;  //rigidity
+    private double h = 0;   //height of beam (input)
+    private double b = 0;   //width of beam (input)
 
 
 
