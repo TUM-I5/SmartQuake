@@ -18,12 +18,16 @@ public class Material {
     public Material(double b, double h ,double E){
         this.b=b;
         this.h=h;
-        this.A=b*h;
         this.E=E;
+        this.A=b*h;
         this.I=b*h*h*h/12.;
         this.EA=E*A;
         this.EI=E*I;
 
+    }
+
+    public Material(){
+        this(0.1, 0.1, 210e9); //SI-Units
     }
 
     public Material(String test){
