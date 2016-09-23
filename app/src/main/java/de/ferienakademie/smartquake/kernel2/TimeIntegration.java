@@ -102,8 +102,8 @@ public class TimeIntegration {
                         solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
                         acceleration=kernel1.getAccelerationProvider().getAcceleration();
                         for(int j=6; j<kernel1.getNumDOF(); j+=3){
-                            xDotDot.set(j,0, 2000*acceleration[0]-5*xDot.get(j,0)-100*kernel1.getDisplacementVector().get(j, 0));
-                            xDotDot.set(j+1,0, 2000*acceleration[1]-5*xDot.get(j+1,0)-100*kernel1.getDisplacementVector().get(j+1, 0));
+                            xDotDot.set(j,0, 20*acceleration[0]-5*xDot.get(j,0)-100*kernel1.getDisplacementVector().get(j, 0));
+                            xDotDot.set(j+1,0, 20*acceleration[1]-5*xDot.get(j+1,0)-100*kernel1.getDisplacementVector().get(j+1, 0));
                         }
                         //temporarily fix the ground
                         kernel1.updateStructure(kernel1.getDisplacementVector());
