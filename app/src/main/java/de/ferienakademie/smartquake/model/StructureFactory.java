@@ -14,7 +14,7 @@ public class StructureFactory {
         unode1.add(0.0);
 
         Structure structure = new Structure();
-        Material testMaterial = new Material("testmat");
+        Material testMaterial = new Material();
 
         //Kernel1 stuff
         //TODO Alex: redesign with ID Matrix

@@ -34,7 +34,7 @@ public class Kernel1 {
         this.structure = structure;
         this.accelerationProvider = accelerationProvider;
         //initialize displacement with zeros
-        DisplacementVector = new DenseMatrix64F(numDOF, 1);
+        DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
         initMatrices();
     }
