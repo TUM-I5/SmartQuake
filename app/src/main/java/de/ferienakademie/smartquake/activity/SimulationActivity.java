@@ -1,17 +1,17 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.Toast;
 
 import de.ferienakademie.smartquake.R;
@@ -24,18 +24,33 @@ import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class SimulationActivity extends Activity implements Simulation.SimulationProgressListener{
+public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener {
 
-    Sensor mAccelerometer; //sensor object
-    SensorManager mSensorManager; // manager to subscribe for sensor events
-    ExcitationManager mExcitationManager; // custom accelerometer listener
+    private Sensor mAccelerometer; //sensor object
+    private SensorManager mSensorManager; // manager to subscribe for sensor events
+    private ExcitationManager mExcitationManager; // custom accelerometer listener
 
-    Button startButton, stopButton;
-    CanvasView canvasView;
-    TimeIntegration timeIntegration;
-    Structure structure;
-    Kernel1 kernel1;
-    Simulation simulation;
+    private FloatingActionButton simFab;
+    private CanvasView canvasView;
+    private TimeIntegration timeIntegration;
+    private Structure structure;
+    private Kernel1 kernel1;
+    private Simulation simulation;
+
+    // Click listeners
+    private View.OnClickListener startSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStartButtonClicked();
+        }
+    };
+
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,26 +95,11 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mExcitationManager = new ExcitationManager();
-        startButton = (Button) findViewById(R.id.start_button);
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startButton.setEnabled(false);
-                startSimulation();
-                Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
-             }
-        });
 
-        stopButton = (Button) findViewById(R.id.stop_button);
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                simulation.stop();
-                Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
-            }
-        });
+        simFab = (FloatingActionButton) findViewById(R.id.simFab);
+        simFab.setOnClickListener(startSimulationListener);
 
-        canvasView = (CanvasView) findViewById(R.id.shape);
+        canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
         if (viewTreeObserver.isAlive()) {
@@ -126,10 +126,26 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
     @Override
     public void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(mExcitationManager);// do not receive updates when paused
+        mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+    }
+
+    private void onStartButtonClicked() {
+        startSimulation();
+
+        simFab.setOnClickListener(stopSimulationListener);
+        simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+    }
+
+    private void onStopButtonClicked() {
+        simulation.stop();
+        Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+
+        simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        simFab.setOnClickListener(startSimulationListener);
     }
 
     void startSimulation() {
+        Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
         kernel1 = new Kernel1(structure, mExcitationManager);
         timeIntegration = new TimeIntegration(kernel1);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
@@ -138,11 +154,13 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
     }
 
     @Override
-    public void onFinish() {
+    public void onSimulationFinished() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                startButton.setEnabled(true);
+                simFab.setOnClickListener(startSimulationListener);
+                simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+
                 Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
             }
         });

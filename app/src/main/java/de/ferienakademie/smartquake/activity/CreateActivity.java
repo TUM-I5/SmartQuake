@@ -1,11 +1,8 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
-import android.app.usage.UsageEvents;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
 import java.util.List;
@@ -17,10 +14,7 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-/**
- * Created by yuriy on 22/09/16.
- */
-public class CreateActivity extends Activity {
+public class CreateActivity extends AppCompatActivity {
 
     private static final int DELTA = 80;
     private static boolean adding = false;
@@ -34,7 +28,7 @@ public class CreateActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-        canvasView = (CanvasView) findViewById(R.id.shape);
+        canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
     }

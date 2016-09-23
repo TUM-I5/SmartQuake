@@ -1,45 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <de.ferienakademie.smartquake.view.CanvasView
-        android:id="@+id/shape"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:layout_weight="2" />
-
-    <de.ferienakademie.smartquake.view.GroundView
-        android:id="@+id/ground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_weight="8" />
-
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/groundColor"
-        android:layout_weight="8">
+        android:orientation="vertical">
 
-        <Button
+        <de.ferienakademie.smartquake.view.CanvasView
+            android:id="@+id/simCanvasView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Start"
-            android:id="@+id/start_button"
-            android:layout_gravity="bottom|center_horizontal"
             android:layout_weight="1" />
 
-        <Button
+        <View
+            android:id="@+id/simGround"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Stop"
-            android:id="@+id/stop_button"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_weight="1" />
+            android:layout_gravity="center"
+            android:layout_weight="12"
+            android:background="@color/groundColor" />
 
     </LinearLayout>
 
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/simFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_play_arrow_white_24dp" />
+
+
+</RelativeLayout>
