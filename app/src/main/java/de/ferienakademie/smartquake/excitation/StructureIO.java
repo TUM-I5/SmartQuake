@@ -26,25 +26,30 @@ public class StructureIO {
         writer.beginArray();
         for (Node node : structure.getNodes())
         {
+            writer.beginObject();
             writer.name("x");
             writer.value(node.getInitX());
             writer.name("y");
             writer.value(node.getInitY());
+            writer.endObject();
         }
         writer.endArray();
         writer.name("beams");
         writer.beginArray();
         for (Beam beam : structure.getBeams())
         {
+            writer.beginObject();
             writer.name("start");
             int indexStart = structure.getNodes().indexOf(beam.getStartNode());
             writer.value(indexStart);
             writer.name("end");
             int indexEnd = structure.getNodes().indexOf(beam.getEndNode());
             writer.value(indexEnd);
+            writer.endObject();
         }
         writer.endArray();
         writer.endObject();
+        writer.flush();
     }
 
     private static Node parseNode(JsonReader reader) throws IOException {
