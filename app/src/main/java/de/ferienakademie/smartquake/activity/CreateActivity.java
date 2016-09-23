@@ -43,9 +43,7 @@ public class CreateActivity extends Activity {
     public boolean onTouchEvent(MotionEvent event) {
 
         if (event.getPointerCount() == 2) {
-
-            if (event.getAction() != MotionEvent.ACTION_MOVE && event.getAction() != MotionEvent.ACTION_POINTER_UP
-                    && event.getAction() != MotionEvent.ACTION_UP) {
+            if (event.getAction() == 261) {
                 adding = true;
 
                 node1 = new Node(event.getX(0), event.getY(0) - 220);
@@ -112,13 +110,14 @@ public class CreateActivity extends Activity {
 
             }
 
-            if (event.getAction() == MotionEvent.ACTION_POINTER_UP ||
-                    event.getAction() == MotionEvent.ACTION_UP) {
+            if (event.getAction() == MotionEvent.ACTION_POINTER_UP
+                    || event.getAction() == 262) {
                 List<Node> nodes = structure.getNodes();
                 for (int i = 0; i < nodes.size() - 2; i++) {
                     if (nodes.get(i).equals(node1)) nodes.remove(node1);
                     if (nodes.get(i).equals(node2)) nodes.remove(node2);
                 }
+                Toast.makeText(CreateActivity.this, "Nodes count: " + nodes.size(), Toast.LENGTH_SHORT).show();
             }
 
             DrawHelper.clearCanvas(canvasView);
