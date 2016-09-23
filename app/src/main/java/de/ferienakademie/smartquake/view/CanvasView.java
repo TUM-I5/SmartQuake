@@ -17,69 +17,54 @@ public class CanvasView extends View {
     // for future reference: 1 dpi = 100 / 2.54 pixels per meter
     // get dpi with context.getResources().getDisplayMetrics().xdpi
 
-    private final Paint paint = new Paint();
+    public static final Paint PAINT = new Paint();
+
+    static {
+        PAINT.setColor(Color.RED);
+        PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+        PAINT.setAntiAlias(true);
+    }
 
     public boolean isBeingDrawn = false;
 
     public CanvasView(Context context) {
         super(context);
-        paint.setColor(Color.RED);
-        paint.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        paint.setColor(Color.RED);
-        paint.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        paint.setColor(Color.RED);
-        paint.setAntiAlias(true);
     }
 
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        paint.setColor(Color.RED);
-        paint.setAntiAlias(true);
-    }
-
-    private void drawAll(List<Beam> beams, double[] modelSize) {
-        double displayScaling = Math.min(0.75 * canvas.getWidth() / modelSize[0], 0.75 * canvas.getWidth() / modelSize[1]);
-
-        double xOffset = 0.5 * (canvas.getWidth() - modelSize[0] * displayScaling);
-        double yOffset = canvas.getHeight() - modelSize[1] * displayScaling;
-        for (Beam beam : DrawHelper.snapBeams) {
-            drawBeam(beam, canvas);
-        }
-        for (Node node : DrawHelper.snapNodes) {
-            drawNode(node, canvas);
-        }
     }
 
     private void drawBeam(Beam beam, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
         Node startNode = beam.getStartNode();
         canvas.drawCircle((float) (startNode.getCurrX() * displayScaling + xOffset), (float) (startNode.getCurrY()* displayScaling + yOffset),
-                (float) (startNode.getRadius() * displayScaling), paint);
+                (float) (startNode.getRadius() * displayScaling), PAINT);
         Node endNode = beam.getEndNode();
         canvas.drawCircle((float) (endNode.getCurrX() * displayScaling + xOffset), (float) (endNode.getCurrY() * displayScaling+ yOffset),
-                (float) (endNode.getRadius() * displayScaling), paint);
+                (float) (endNode.getRadius() * displayScaling), PAINT);
 
         Path p = new Path();
         p.moveTo((float) (startNode.getCurrX() * displayScaling + xOffset), (float) (startNode.getCurrY() * displayScaling + yOffset));
         p.lineTo((float) (endNode.getCurrX() * displayScaling + xOffset), (float) (endNode.getCurrY() * displayScaling + yOffset));
 
 
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth((float) (beam.getThickness() * displayScaling));
-        canvas.drawPath(p, paint);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        PAINT.setStyle(Paint.Style.STROKE);
+        PAINT.setStrokeWidth((float) (beam.getThickness() * displayScaling));
+        canvas.drawPath(p, PAINT);
+        PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
     public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
         canvas.drawCircle((float) (node.getCurrX() * displayScaling + xOffset), (float) (node.getCurrY()* displayScaling + yOffset),
-                (float) (node.getRadius() * displayScaling), paint);
+                (float) (node.getRadius() * displayScaling), PAINT);
     }
 
     @Override
