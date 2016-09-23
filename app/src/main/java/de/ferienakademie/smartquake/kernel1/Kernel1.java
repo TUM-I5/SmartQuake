@@ -190,16 +190,17 @@ public class Kernel1 {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     void updateLoadVector(double[] acceleration) {
-        //TODO: update load vector using acceleration values.
         LoadVector.zero();
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            List<Integer> DOF = node.getDOF();
-            int DOFx = DOF.get(1);
-            int DOFy = DOF.get(2);
-            LoadVector.set(DOFx,1,acceleration[1]);
-            LoadVector.set(DOFy,1,acceleration[2]);
-            CommonOps.mult(MassMatrix, LoadVector, LoadVector);
+            if (node.isConstraint()) {
+                List<Integer> DOF = node.getDOF();
+                int DOFx = DOF.get(1);
+                int DOFy = DOF.get(2);
+                LoadVector.set(DOFx, 1, acceleration[1]);
+                LoadVector.set(DOFy, 1, acceleration[2]);
+            }
         }
+        CommonOps.mult(MassMatrix, LoadVector, LoadVector);
     }
 }
