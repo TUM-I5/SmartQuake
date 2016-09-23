@@ -30,7 +30,7 @@ public class ExplicitSolver extends Solver {
         //sets up fast linear solver
         linearSolverM = LinearSolverFactory.chol(k1.getNumDOF());
         for(int i=0; i<k1.getNumDOF(); i++){
-            M.set(i,i,1);
+            M.set(i,i,1000);
         }
         linearSolverM.setA(M);
 
@@ -46,13 +46,13 @@ public class ExplicitSolver extends Solver {
         acceleration = k1.getAccelerationProvider().getAcceleration();
         tempVector = k1.getLoadVector().copy();
 
-        C.zero();
-        K.zero();
+        //C.zero();
+        //K.zero();
         for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            C.set(j,j,0.50);
-            C.set(j+1,j+1,50);
-            K.set(j,j,100);
-            K.set(j+1,j+1,100);
+            //C.set(j,j,0.50);
+            //C.set(j+1,j+1,50);
+            //K.set(j,j,100);
+            //K.set(j+1,j+1,100);
             tempVector.set(j, 0, 2000 * acceleration[0] );
             tempVector.set(j + 1, 0, 2000 * acceleration[1] );
         }
