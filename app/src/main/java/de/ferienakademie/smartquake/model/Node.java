@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class Node {
      * List of ALL adjacent beams
      */
     //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
-    private List<Beam> beams;
+    private List<Beam> beams = new ArrayList<>();
 
 
     public Node(double x, double y) {
@@ -116,5 +117,15 @@ public class Node {
     //Probably obsolete, look above.
     public void clearBeams() {
         beams.clear();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof Node)) return false;
+
+        Node node = (Node) obj;
+
+        return node.currX == currX && node.currY == currY;
     }
 }

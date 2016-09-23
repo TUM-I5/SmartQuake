@@ -5,10 +5,9 @@ import java.util.ArrayList;
 /**
  * Created by simon on 22.09.16.
  */
-public class Recorder implements ExcitationListener, AccelerationProvider{
+public class Recorder extends AccelerationProvider implements ExcitationListener{
     ArrayList<AccelData> readings;
     int currPos;
-
 
     public Recorder(){
         initRecord();

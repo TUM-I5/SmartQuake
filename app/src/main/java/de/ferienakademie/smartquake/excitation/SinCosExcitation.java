@@ -1,17 +1,12 @@
 package de.ferienakademie.smartquake.excitation;
 
 /**
- * Created by simon on 22.09.16.
+ * Created by simon on 23.09.16.
  */
-
-/**
- * class for reading/storing data from a file with java Objectstreams
- */
-public class AccelerationFile implements AccelerationProvider{
-    //TODO implementation
+public class SinCosExcitation extends AccelerationProvider {
     @Override
     public double[] getAcceleration() {
-        return null;
+        return new double[0];
     }
 
     @Override
@@ -26,6 +21,6 @@ public class AccelerationFile implements AccelerationProvider{
 
     @Override
     public double[] getAcceleration(long timestamp) {
-        return null;
+        return new double[0];
     }
 }

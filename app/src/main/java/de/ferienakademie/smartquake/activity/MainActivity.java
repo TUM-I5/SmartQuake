@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,12 +17,12 @@ import android.widget.Toast;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
+import de.ferienakademie.smartquake.excitation.Recorder;
 import de.ferienakademie.smartquake.excitation.SensorExcitation;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
-import de.ferienakademie.smartquake.model.Beam;
-import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
@@ -30,6 +31,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
     SensorExcitation mExcitationManager; // custom accelerometer listener
+    Recorder recorder;
 
     Button startButton, stopButton;
     CanvasView canvasView;
@@ -69,25 +71,8 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     private void createStructure() {
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();
-        double middle = canvasView.getWidth() * 0.25f;
 
-        structure = new Structure();
-
-        Node n1 = new Node(middle, height);
-        Node n2 = new Node(width - middle, height);
-        Node n3 = new Node(width - middle, height - middle);
-        Node n4 = new Node(middle, height - middle);
-        Node n5 = new Node(2 * middle, height - 2 * middle);
-
-        Beam b1 = new Beam(n1, n2);
-        Beam b2 = new Beam(n2, n3);
-        Beam b3 = new Beam(n3, n4);
-        Beam b4 = new Beam(n4, n1);
-        Beam b5 = new Beam(n4, n5);
-        Beam b6 = new Beam(n5, n3);
-
-        structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4, b5, b6);
+        structure = StructureFactory.getSimpleHouse(width, height);
     }
 
     @Override
@@ -98,11 +83,15 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mExcitationManager = new SensorExcitation();
+        recorder = new Recorder();
+        mExcitationManager.registerLstnr(recorder);
+
         startButton = (Button) findViewById(R.id.start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startButton.setEnabled(false);
+                recorder.initRecord();
                 startSimulation();
                 Toast.makeText(MainActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
              }

@@ -15,7 +15,7 @@ import edu.sc.seis.seisFile.mseed.DataRecord;
 /**
  * Created by David Schneller on 21.09.2016.
  */
-public class AccelerationSEEDFile implements AccelerationProvider
+public class AccelerationSEEDFile extends AccelerationProvider
 {
     private DataInput stream;
     private double[] cachedData;
