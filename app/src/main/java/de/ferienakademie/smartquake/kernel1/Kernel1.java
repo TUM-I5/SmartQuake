@@ -199,7 +199,7 @@ public class Kernel1 {
             int DOFy = DOF.get(2);
             LoadVector.set(DOFx,1,acceleration[1]);
             LoadVector.set(DOFy,1,acceleration[2]);
-            //LoadVector = MassMatrix * LoadVector;
+            CommonOps.mult(MassMatrix, LoadVector, LoadVector);
         }
     }
 }
