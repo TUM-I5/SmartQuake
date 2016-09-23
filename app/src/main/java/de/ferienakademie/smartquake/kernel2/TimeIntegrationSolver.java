@@ -8,14 +8,6 @@ import org.ejml.data.DenseMatrix64F;
 public interface TimeIntegrationSolver {
     /**
      * This is a interface for the time integration solver.
-     * @param x
-     *        displacement
-     *
-     * @param xDot
-     *        velocity
-     *
-     * @param xDotDot
-     *        acceleration
      *
      * @param t
      *        global time since start in seconds
@@ -24,6 +16,6 @@ public interface TimeIntegrationSolver {
      *        time step in seconds
      *
      */
-    void nextStep(DenseMatrix64F x, DenseMatrix64F xDot , DenseMatrix64F xDotDot, double t, double delta_t);
+    void nextStep( double t, double delta_t);
 
 }
