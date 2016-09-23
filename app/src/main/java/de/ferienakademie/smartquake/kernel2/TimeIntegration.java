@@ -50,6 +50,7 @@ public class TimeIntegration {
         xDot.zero();
 
         //stores the numerical scheme
+        //solver = new Newmark(kernel1, xDot,delta_t);
         solver = new Euler(kernel1, xDot);
 
         //only for fixed stepsize
