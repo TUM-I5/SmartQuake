@@ -73,11 +73,7 @@ public class Material {
     public double getb(){return b;}
     public double geth(){return h;}
     public double getA(){return A;}
-
-    public double getC() {
-        return c;
-    }
-
+    public double getC() {return c;}
     public double getM(){return m;}
     public double getI(){return I;}
     public double getEA(){return EA;}

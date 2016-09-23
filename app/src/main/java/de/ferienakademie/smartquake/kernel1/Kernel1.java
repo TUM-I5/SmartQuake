@@ -22,7 +22,7 @@ public class Kernel1 {
     private DenseMatrix64F DampingMatrix;
     private DenseMatrix64F MassMatrix;
 
-    private DenseMatrix64F LoadVector; // vector with the forces.
+    private DenseMatrix64F LoadVector; // vector with the forces
     private DenseMatrix64F DisplacementVector;  //project manager advic
 
     private int numDOF;
@@ -149,7 +149,6 @@ public class Kernel1 {
         return material;
     }
 
-
     public void setMaterial(Material material) {
         this.material = material;
     }
@@ -181,7 +180,6 @@ public class Kernel1 {
         }
     }
 
-
     public DenseMatrix64F getLoadVector() {
         return LoadVector;
     }
@@ -200,7 +198,17 @@ public class Kernel1 {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     void updateLoadVector(double[] acceleration) {
-        DenseMatrix64F Loadvector
-        //TODO: update load vector using acceleration values.
+        LoadVector.zero();
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+            if (node.isConstraint()) {
+                List<Integer> DOF = node.getDOF();
+                int DOFx = DOF.get(1);
+                int DOFy = DOF.get(2);
+                LoadVector.set(DOFx, 1, acceleration[1]);
+                LoadVector.set(DOFy, 1, acceleration[2]);
+            }
+        }
+        CommonOps.mult(MassMatrix, LoadVector, LoadVector);
     }
 }

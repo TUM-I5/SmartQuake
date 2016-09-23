@@ -14,9 +14,11 @@ public class Node {
     private double initX;
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
+    private boolean IsConstraint;
 
     private double radius = 15;
 
+    private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
         this.currX = x;
@@ -48,6 +50,9 @@ public class Node {
         this.initY = initY;
     }
 
+    public void addBeam(Beam beam) {
+        beams.add(beam);
+    }
     public List<Integer> getDOF() {
         return DOF;
     }
@@ -81,7 +86,13 @@ public class Node {
         this.radius = radius;
     }
 
+    public boolean isConstraint() {
+        return IsConstraint;
+    }
 
+    public void setConstraint(boolean constraint) {
+        IsConstraint = constraint;
+    }
 
     @Override
     public boolean equals(Object obj) {
