@@ -14,7 +14,6 @@ public class Node {
     private double initX;
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
-    private boolean IsConstraint;
 
     private double radius = 15;
 
@@ -86,12 +85,12 @@ public class Node {
         this.radius = radius;
     }
 
-    public boolean isConstraint() {
-        return IsConstraint;
+    public void clearBeams() {
+        beams.clear();
     }
 
-    public void setConstraint(boolean constraint) {
-        IsConstraint = constraint;
+    public List<Beam> getBeams() {
+        return beams;
     }
 
     @Override
