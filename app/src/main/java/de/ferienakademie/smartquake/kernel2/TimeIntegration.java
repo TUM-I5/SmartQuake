@@ -81,10 +81,11 @@ public class TimeIntegration {
                     //long firstTime = System.nanoTime();
 
                     //calculates time step
-                    while(t < 0.021 && isRunning) {
+                    while(t < 0.02+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         t += delta_t;
+
                     }
                     //long secondTime = System.nanoTime();
                     //Log.e("Timestamp",""+(secondTime-firstTime));
