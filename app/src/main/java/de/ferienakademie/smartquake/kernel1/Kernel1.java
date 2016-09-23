@@ -41,6 +41,27 @@ public class Kernel1 {
     }
 
     /**
+     * return StiffnessMatrix
+     */
+    public DenseMatrix64F getStiffnessMatrix(){
+        return StiffnessMatrix;
+    }
+
+    /**
+     * return DampingMatrix
+     */
+    public DenseMatrix64F getDampingMatrix(){
+        return DampingMatrix;
+    }
+
+    /**
+     * return MassMatrix
+     */
+    public DenseMatrix64F getMassMatrix(){
+        return MassMatrix;
+    }
+
+    /**
      * Calculate the stiffness, mass and damping matrices.
      */
     public void initMatrices() {
