@@ -192,7 +192,6 @@ public class Kernel1 {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     public void updateLoadVector(double[] acceleration) {
-        LoadVector.zero();
         CommonOps.scale(acceleration[0], influenceVectorx);
         CommonOps.scale(acceleration[1], influenceVectory);
         CommonOps.addEquals(influenceVectorx, influenceVectory);
