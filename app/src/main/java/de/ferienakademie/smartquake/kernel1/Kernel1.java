@@ -22,11 +22,6 @@ public class Kernel1 {
 
     private DenseMatrix64F LoadVector; // vector with the forces.
     private DenseMatrix64F DisplacementVector;  //project manager advic
-    private List<Integer> conDOF ; //constraint dofs
-
-
-
-    private List<Integer> DOF ;
 
     private int numDOF;
     private Material material;
@@ -67,7 +62,7 @@ public class Kernel1 {
     }
 
     public void calcStiffnessMatrix() {
-        for (int i = 0; i < numDOF - conDOF.size(); i++) {
+        for (int i = 0; i < numDOF - structure.getDOF().size(); i++) {
             StiffnessMatrix.add(i, i, 1);
 
         }
@@ -83,13 +78,13 @@ public class Kernel1 {
     }
 
     public void calcMassMatrix() {
-        for (int i = 0; i < numDOF - conDOF.size(); i++) {
+        for (int i = 0; i < numDOF - structure.getDOF().size(); i++) {
             MassMatrix.add(i, i, 1);
         }
     }
 
     public void calcDampingMatrix() {
-        for (int i = 0; i < numDOF - conDOF.size(); i++) {
+        for (int i = 0; i < numDOF - structure.getDOF().size(); i++) {
             DampingMatrix.add(i, i, 1);
         }
     }
@@ -102,29 +97,10 @@ public class Kernel1 {
         return numDOF;
     }
 
-    public List<Integer> getConDOF() {
-        return conDOF;
-    }
-
-    public void setConDOF(List<Integer> conDOF) {
-        this.conDOF = conDOF;
-    }
-
     public Material getMaterial() {
         return material;
     }
 
-    public List<Integer> getDOF() {
-        return DOF;
-    }
-
-    public void setDOF(List<Integer> DOF) {
-        this.DOF = DOF;
-    }
-
-    public void addDof(List<Integer> DOF) {
-        this.DOF.addAll(DOF);
-    }
 
     public void setMaterial(Material material) {
         this.material = material;

@@ -14,6 +14,7 @@ public class StructureFactory {
         unode1.add(0.0);
 
         Structure structure = new Structure();
+        Material testMaterial = new Material("testmat");
 
         Node n1 = new Node(quarter, height);
         Node n2 = new Node(width - quarter, height);
@@ -21,12 +22,12 @@ public class StructureFactory {
         Node n4 = new Node(quarter, height - quarter);
         Node n5 = new Node(2 * quarter, height - 2 * quarter);
 
-        Beam b1 = new Beam(n1, n2);
-        Beam b2 = new Beam(n2, n3);
-        Beam b3 = new Beam(n3, n4);
-        Beam b4 = new Beam(n4, n1);
-        Beam b5 = new Beam(n4, n5);
-        Beam b6 = new Beam(n5, n3);
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
 
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
@@ -64,27 +65,12 @@ public class StructureFactory {
 
 
         List<Integer> condof= new ArrayList<>( );
-        List<Integer> dof= new ArrayList<>( );
-        List<Integer[]> IDMatrix = new ArrayList<Integer[]>();
-
-        IDMatrix.add(b1.getDofs()); //get right notation
+        List<Integer> dof= new ArrayList<>();
 
         condof.addAll(n1.getDOF()); //ground connected Nodes
         condof.addAll(n2.getDOF());
 
-
-
-        Material test = new Material("testmat");
-        structure.kernel1.setMaterial(test);
-        structure.kernel1.setConDOF(condof);
-
-        //structure.addNodes(n1, n2, n3, n4, n5);
-
-        //for (int i = 0; i < structure.; i++) {
-        //    kernel1.addDof(structure.getNodes().get(i).getDOF());
-        //}
-        //structure.addBeams(b1, b2, b3, b4, b5);
-
+        structure.setConDOF(condof);
 
         return structure;
     }

@@ -41,13 +41,13 @@ public class Beam {
     }
 
     //Kernel1 constructor
-    public Beam(Node startNode, Node endNode, float thickness, Material material) {
+    public Beam(Node startNode, Node endNode, Material material) {
         this.startNode = startNode;
         this.endNode = endNode;
         this.Dofs.addAll(startNode.getDOF());
         this.Dofs.addAll(endNode.getDOF());
-        this.thickness = thickness;
         this.material = material;
+        this.thickness = 15;
         l=Math.sqrt((x1-x2)*(x1-x2))+(y1-y2)*(y1-y2);
         A=this.material.getA();
         EA=this.material.getEA();
