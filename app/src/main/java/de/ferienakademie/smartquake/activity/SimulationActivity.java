@@ -152,8 +152,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         recorder.initRecord();
 
-        kernel1 = new Kernel1(structure, mExcitationManager);
-        timeIntegration = new TimeIntegration(kernel1);
+        kernel1 = new Kernel1(structure);
+        timeIntegration = new TimeIntegration(kernel1, mExcitationManager);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
         simulation.setListener(SimulationActivity.this);
         simulation.start();

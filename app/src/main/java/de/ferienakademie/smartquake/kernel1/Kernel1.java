@@ -29,11 +29,9 @@ public class Kernel1 {
     private Material material;
 
     Structure structure;
-    AccelerationProvider accelerationProvider;
 
-    public Kernel1(Structure structure, AccelerationProvider accelerationProvider) {
+    public Kernel1(Structure structure) {
         this.structure = structure;
-        this.accelerationProvider = accelerationProvider;
         //initialize displacement with zeros
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
@@ -160,14 +158,6 @@ public class Kernel1 {
         this.structure = structure;
     }
 
-    public AccelerationProvider getAccelerationProvider() {
-        return accelerationProvider;
-    }
-
-    public void setAccelerationProvider(AccelerationProvider accelerationProvider) {
-        this.accelerationProvider = accelerationProvider;
-    }
-
     /**
      * Update {@link Structure} that is displayed using values computed by {@link de.ferienakademie.smartquake.kernel2.TimeIntegration}
      * @param displacementVector a (3 * number of nodes) x 1 matrix. Three consequent values contain displacements in x, y, z direction.
@@ -188,10 +178,6 @@ public class Kernel1 {
         LoadVector = loadVector;
     }
 
-    public void updateLoadVector() {
-        double[] acceleration = accelerationProvider.getAcceleration();
-        updateLoadVector(acceleration);
-    }
 
     /**
      * Update the vector with forces using the acceleration values received from the {@link AccelerationProvider}

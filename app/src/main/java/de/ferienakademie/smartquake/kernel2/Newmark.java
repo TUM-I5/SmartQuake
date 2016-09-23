@@ -5,6 +5,7 @@ import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -18,8 +19,8 @@ public class Newmark extends ImplicitSolver {
      * @param xDot
      * @param delta_t is necessary to precalculate left and right hand side
      */
-    public Newmark(Kernel1 k1, DenseMatrix64F xDot, double delta_t) {
-        super(k1, xDot);
+    public Newmark(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot, double delta_t) {
+        super(k1, accelerationProvider, xDot);
         initialise(delta_t);
     }
 
