@@ -11,35 +11,33 @@ package de.ferienakademie.smartquake.excitation;
 public class SinCosExcitation implements AccelerationProvider {
     double amplitude;
     double frequency;
+    long counter;
 
     public SinCosExcitation(double amplitude, double frequency) {
         this.amplitude = amplitude;
         this.frequency = frequency;
+        this.counter = 0;
     }
 
     public SinCosExcitation() {
         this.amplitude = 5;
-        this.frequency = 16e-10 * 2 * Math.PI;
+        this.frequency = 8;
     }
 
     @Override
     public double[] getAcceleration() {
-        return new double[]{amplitude * Math.sin(Math.random() * frequency), 0};
+        counter++;
+        return new double[]{amplitude * Math.sin(counter * Math.PI / 16), 0};
     }
 
     @Override
     public AccelData getAccelerationMeasurement() {
-        return new AccelData(Math.sin(Math.random() * frequency), 0, 0);
+        counter++;
+        return new AccelData(amplitude * Math.sin(counter * Math.PI / 16), 0, 0);
     }
 
     @Override
-    public AccelData getAccelerationMeasurement(long timestamp) {
-        return new AccelData(amplitude * Math.sin(timestamp * frequency), 0, timestamp);
-    }
+    public void initTime(long timeStamp, double timeStep) {
 
-    @Override
-    public double[] getAcceleration(long timestamp) {
-        AccelData temp = getAccelerationMeasurement(timestamp);
-        return new double[]{temp.xAcceleration, temp.yAcceleration};
     }
 }

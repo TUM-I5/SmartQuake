@@ -19,16 +19,9 @@ public interface AccelerationProvider {
     AccelData getAccelerationMeasurement();
 
     /**
-     * has to inform the listener
-     * @param timestamp closest time myoment w.r.t. start of the simulation when accelearation measured
-     * @return first element acceleration in X axis, second element acceleration in Y axis
+     *
+     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
+     * @param timeStep timeStep of the simulation in nanoseconds
      */
-    AccelData getAccelerationMeasurement(long timestamp);
-
-    /**
-     * has to inform the listener
-     * @param timestamp closest time moment w.r.t. start of the simulation when accelearation measured
-     * @return first element acceleration in X axis, second element acceleration in Y axis
-     */
-    double[] getAcceleration(long timestamp);
+    void initTime(long timeStamp, double timeStep);
 }

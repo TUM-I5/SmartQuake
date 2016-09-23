@@ -14,21 +14,11 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
-import de.ferienakademie.smartquake.excitation.Recorder;
-import de.ferienakademie.smartquake.excitation.SensorExcitation;
+import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
-
-import de.ferienakademie.smartquake.model.Beam;
-import de.ferienakademie.smartquake.model.Material;
-import de.ferienakademie.smartquake.model.Node;
-
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -38,8 +28,7 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
-    SensorExcitation mExcitationManager; // custom accelerometer listener
-    Recorder recorder;
+    ExcitationManager mExcitationManager; //
 
     Button startButton, stopButton;
     CanvasView canvasView;
@@ -90,17 +79,18 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mExcitationManager = new SensorExcitation();
-        recorder = new Recorder();
-        mExcitationManager.registerLstnr(recorder);
+        mExcitationManager = new ExcitationManager();
 
         startButton = (Button) findViewById(R.id.start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startButton.setEnabled(false);
-                recorder.initRecord();
+                mExcitationManager.initSensors();
                 startSimulation();
+                mSensorManager.registerListener(mExcitationManager, mAccelerometer,
+                        SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
+                mExcitationManager.initTime(System.currentTimeMillis() * 1000, 1000);
                 Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
              }
         });
@@ -110,6 +100,7 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
             @Override
             public void onClick(View v) {
                 simulation.stop();
+                mSensorManager.unregisterListener(mExcitationManager); //unsubscribe for sensor events
                 Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
             }
         });

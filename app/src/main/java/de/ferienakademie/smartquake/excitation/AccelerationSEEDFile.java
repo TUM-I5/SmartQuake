@@ -1,22 +1,9 @@
 package de.ferienakademie.smartquake.excitation;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import edu.iris.dmc.seedcodec.CodecException;
-import edu.iris.dmc.seedcodec.DecompressedData;
-import edu.sc.seis.seisFile.mseed.DataRecord;
-import edu.sc.seis.seisFile.mseed.SeedFormatException;
-import edu.sc.seis.seisFile.mseed.SeedRecord;
-
 /**
  * Created by David Schneller on 21.09.2016.
  */
-public class AccelerationSEEDFile implements AccelerationProvider
-{
+public class AccelerationSEEDFile {/*
     private DataInput stream;
     private double[] cachedData;
     private int cachedDataPosition;
@@ -103,4 +90,5 @@ public class AccelerationSEEDFile implements AccelerationProvider
         //TODO: Scale!
         return new double[] { getNextValue(), 0 };
     }
+    */
 }
