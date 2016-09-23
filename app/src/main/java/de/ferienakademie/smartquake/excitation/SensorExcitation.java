@@ -9,11 +9,15 @@ import java.util.ArrayList;
 /**
  * Created by Yehor on 21.09.2016.
  */
-public class SensorExcitation extends AccelerationProvider implements SensorEventListener  {
 
+/**
+ * Basic class which gets Excitation data from the sensor
+ */
+public class SensorExcitation implements SensorEventListener, AccelerationProvider {
+
+    ExcitationListener lstnr = EmptyExcitationListener.getInstance();
     private AccelData currAcceleration;
     private ArrayList<AccelData> recentMeasurements;
-
     private int queue_pos = 0;
 
 
@@ -21,6 +25,15 @@ public class SensorExcitation extends AccelerationProvider implements SensorEven
         currAcceleration = new AccelData();
         recentMeasurements = new ArrayList<>();
     }
+
+    public void registerLstnr(ExcitationListener newLstnr) {
+        lstnr = newLstnr;
+    }
+
+    public void deregisterLstnr() {
+        lstnr = EmptyExcitationListener.getInstance();
+    }
+
     /**
      * @param event: change of accelerometer measurements
      */
@@ -29,7 +42,7 @@ public class SensorExcitation extends AccelerationProvider implements SensorEven
         currAcceleration = new AccelData(event.values[0], event.values[1], event.timestamp);
         // put new element to the queue of sensor measurements
         recentMeasurements.add(currAcceleration);
-        super.lstnr.excited(currAcceleration);
+        lstnr.excited(currAcceleration);
     }
 
     public void reset() {

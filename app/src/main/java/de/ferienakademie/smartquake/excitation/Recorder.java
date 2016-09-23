@@ -5,7 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by simon on 22.09.16.
  */
-public class Recorder extends AccelerationProvider implements ExcitationListener{
+
+/**
+ * Records and replays stored acceleration data by Listening to the SensorExcitation-Object
+ */
+public class Recorder implements ExcitationListener, AccelerationProvider {
     ArrayList<AccelData> readings;
     int currPos;
 
@@ -16,10 +20,16 @@ public class Recorder extends AccelerationProvider implements ExcitationListener
         currPos = 0;
     }
 
+    /**
+     * has to be called before the replay is started
+     */
     public void initReplay(){
         currPos = 0;
     }
 
+    /**
+     * has to be called before recording is started
+     */
     public void initRecord(){
         readings = new ArrayList<>();
         readings.add(new AccelData());

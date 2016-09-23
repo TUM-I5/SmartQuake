@@ -7,14 +7,14 @@ package de.ferienakademie.smartquake.excitation;
 /**
  * THis class is used as a dummy to avoid NullPointer checks
  */
-public class EmptyExcitationListener implements  ExcitationListener{
+public class EmptyExcitationListener implements ExcitationListener {
     private static EmptyExcitationListener ourInstance = new EmptyExcitationListener();
+
+    private EmptyExcitationListener() {
+    }
 
     public static EmptyExcitationListener getInstance() {
         return ourInstance;
-    }
-
-    private EmptyExcitationListener() {
     }
 
     @Override
