@@ -47,11 +47,11 @@ public class StructureFactory {
         DOFnode5.add(13);
         DOFnode5.add(14);
 
-        Node n1 = new Node(0, height);
-        Node n2 = new Node(width, height);
-        Node n3 = new Node(width, height - half);
-        Node n4 = new Node(0, height - half);
-        Node n5 = new Node(half, height - 2 * half);
+        Node n1 = new Node(0, height, DOFnode1);
+        Node n2 = new Node(width, height, DOFnode2);
+        Node n3 = new Node(width, height - half, DOFnode3);
+        Node n4 = new Node(0, height - half, DOFnode4);
+        Node n5 = new Node(half, height - 2 * half, DOFnode5);
 
         Beam b1 = new Beam(n1, n2, testMaterial,true);
         Beam b2 = new Beam(n2, n3, testMaterial,true);
