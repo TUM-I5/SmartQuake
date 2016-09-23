@@ -68,7 +68,7 @@ public class Kernel1 {
         StiffnessMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
         MassMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
         DampingMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
-
+        LoadVector = new DenseMatrix64F(getNumDOF(), 1);
 
         StiffnessMatrix.zero();
         MassMatrix.zero();
@@ -91,7 +91,7 @@ public class Kernel1 {
         }
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < structure.getDOF().size(); k++) {
+            for (int k = 0; k < getNumDOF(); k++) {
                 StiffnessMatrix.set(j,k,0.0);
                 StiffnessMatrix.set(k,j,0.0);
             }
@@ -111,7 +111,7 @@ public class Kernel1 {
         }
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < structure.getDOF().size(); k++) {
+            for (int k = 0; k < getNumDOF(); k++) {
                 MassMatrix.set(j,k,0.0);
                 MassMatrix.set(k,j,0.0);
             }
@@ -128,7 +128,7 @@ public class Kernel1 {
         CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < structure.getDOF().size(); k++) {
+            for (int k = 0; k < getNumDOF(); k++) {
                 DampingMatrix.set(j,k,0.0);
                 DampingMatrix.set(k,j,0.0);
             }
