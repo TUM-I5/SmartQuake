@@ -5,6 +5,7 @@ import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 import android.util.Log;
@@ -24,8 +25,8 @@ public class ExplicitSolver extends Solver {
      * @param k1
      * @param xDot
      */
-    public ExplicitSolver(Kernel1 k1, DenseMatrix64F xDot) {
-        super(k1, xDot);
+    public ExplicitSolver(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
+        super(k1, accelerationProvider, xDot);
 
         //sets up fast linear solver
         linearSolverM = LinearSolverFactory.chol(k1.getNumDOF());
@@ -43,7 +44,7 @@ public class ExplicitSolver extends Solver {
      */
     public void getAcceleration() {
         //just temporarlily bypass kernel1
-        acceleration = k1.getAccelerationProvider().getAcceleration();
+        acceleration = getAccelerationProvider().getAcceleration();
         tempVector = k1.getLoadVector().copy();
 
         C.zero();

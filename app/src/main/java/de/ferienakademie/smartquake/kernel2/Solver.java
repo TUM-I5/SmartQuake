@@ -2,12 +2,15 @@ package de.ferienakademie.smartquake.kernel2;
 
 import org.ejml.data.DenseMatrix64F;
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
  * Created by Felix Wechsler on 23/09/16.
  */
 public class Solver implements TimeIntegrationSolver {
+
+    AccelerationProvider accelerationProvider;
 
     //vector of acceleration=xDotDot
     DenseMatrix64F xDotDot;
@@ -34,8 +37,9 @@ public class Solver implements TimeIntegrationSolver {
      * @param xDot
      *          Stores the velocity
      */
-    public Solver(Kernel1 k1, DenseMatrix64F xDot) {
+    public Solver(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
         this.k1 = k1;
+        this.accelerationProvider = accelerationProvider;
 
         this.M = k1.getMassMatrix();
         this.K = k1.getStiffnessMatrix();
@@ -59,5 +63,10 @@ public class Solver implements TimeIntegrationSolver {
      */
     public void nextStep(double t, double deltaT) {
         //will be overwritten in the subclasses
+    }
+
+    public AccelerationProvider getAccelerationProvider() {
+        return accelerationProvider;
+
     }
 }

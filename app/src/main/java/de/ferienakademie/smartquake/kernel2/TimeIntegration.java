@@ -7,6 +7,7 @@ import org.ejml.data.DenseMatrix64F;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -15,6 +16,7 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
 public class TimeIntegration {
 
     Kernel1 kernel1;
+    AccelerationProvider accelerationProvider;
 
     //total computed time between every time step. This variable prevents computing more than GUI
     double t;
@@ -35,8 +37,9 @@ public class TimeIntegration {
     *          object to obtain all matrices, displacements, external forces
     *
     **/
-    public TimeIntegration(Kernel1 kernel1) {
+    public TimeIntegration(Kernel1 kernel1, AccelerationProvider accelerationProvider) {
         this.kernel1 = kernel1;
+        this.accelerationProvider = accelerationProvider;
     }
 
 
@@ -51,7 +54,7 @@ public class TimeIntegration {
 
         //stores the numerical scheme
         //solver = new Newmark(kernel1, xDot,delta_t);
-        solver = new Euler(kernel1, xDot);
+        solver = new Euler(kernel1, accelerationProvider, xDot);
 
         //only for fixed stepsize
         delta_t = 0.005;
