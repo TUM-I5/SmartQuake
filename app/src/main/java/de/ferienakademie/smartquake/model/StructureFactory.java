@@ -14,7 +14,7 @@ public class StructureFactory {
         unode1.add(0.0);
 
         Structure structure = new Structure();
-        Material testMaterial = new Material("testmat");
+        Material testMaterial = new Material();
 
         Node n1 = new Node(quarter, height);
         Node n2 = new Node(width - quarter, height);

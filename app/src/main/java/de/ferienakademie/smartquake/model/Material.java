@@ -14,12 +14,12 @@ public class Material {
     protected double h = 0;   //height of beam (input)
     protected double b = 0;   //width of beam (input)
 
-    protected double rho = 0;
+    protected double rho = 0;     //density of material
     protected double alpha = 0;   //alpha for mass matrix
     //may have to change zeroes
 
     //constructor
-    public Material(double b, double h ,double E, double rho, double alpha){
+    public Material(double b, double h, double E, double rho, double alpha){
         this.b=b;
         this.h=h;
         this.E=E;
@@ -33,28 +33,7 @@ public class Material {
     }
 
     public Material(){
-        this(0.1, 0.1, 210e9, 7860, 0.005); //SI-Units - use this (steel) for creating standard beam.
-    }
-
-
-    public Material(String test){
-        if (test.contentEquals("testmat")) {
-            this.A = 10;
-            this.E = 10e7;
-            this.I = 10;
-            this.rho = 7860;
-        }
-    }
-    public double getA() {
-        return A;
-    }
-
-    public double getb(){
-        return b;
-    }
-
-    public double geth(){
-        return h;
+        this(0.1, 0.1, 210e9, 7860, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     }
 
     public void setNewProperties(double b, double h){ //necessary, if b and h are changed - changes all relevant properties
@@ -66,25 +45,37 @@ public class Material {
         EI = E*I; //update
     }
 
-    public void setA(double a) {  A = a; }
+    public void setE(double e){
+        E = e;
+        EA = E*A; //update
+        EI = E*I; //update
+    }
 
-    public void setI(double i) {  I = i; }
+    public void setRho(double rho){
+        this.rho = rho;
+    }
 
-    public void setEA(double EA) {  this.EA = EA; }
+    public void setAlpha(double alpha){this.alpha = alpha;
+    }
 
-    public void setEI(double EI) {  this.EI = EI;  }
-
-    public void setE(double e) {  E = e;  }
-
-    public void setRho(double rho)  { this.rho = rho;}
-
-    public void setAlpha(double alpha)  {this.alpha = alpha;}
+    public double getb(){return b;}
+    public double geth(){return h;}
+    public double getA(){return A;}
+    public double getI(){return I;}
+    public double getEA(){return EA;}
+    public double getEI(){return EI;}
+    public double getRho(){return rho;}
+    public double getAlpha(){return alpha;}
 
     /*
-    public double getI() { return I;   }
-    public double getEA() { return EA; }
-    public double getEI() {  return EI;  }
-    public double getRho() { return rho; }
-    public double getAlpha() { return alpha;}
-    */
+    public Material(String test){
+        if (test.contentEquals("testmat")) {
+            this.A = 10;
+            this.E = 10e7;
+            this.I = 10;
+            this.rho = 7860;
+        }
+    }
+    */  // Not necessary
+
 }
