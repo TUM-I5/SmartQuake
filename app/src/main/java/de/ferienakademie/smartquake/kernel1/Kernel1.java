@@ -26,7 +26,6 @@ public class Kernel1 {
     private DenseMatrix64F DisplacementVector;  //project manager advic
 
     private int numDOF;
-    private Material material;
 
     Structure structure;
     AccelerationProvider accelerationProvider;
@@ -145,13 +144,6 @@ public class Kernel1 {
         return structure.getNodes().size() * 3;
     }
 
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
     public Structure getStructure() {
         return structure;
     }
