@@ -117,23 +117,23 @@ public class Recorder implements ExcitationListener, AccelerationProvider {
      * @param filename
      */
     public void loadFile(String filename){
-        AccelData curReading;
-        String readingString = new String;
+        AccelData curReading = new AccelData();
+        String readingString;
         String[] readStringSplit;
         int res = 0;
         BufferedReader inputStream;
         try{
             inputStream = new BufferedReader(new FileReader(filename));
-            while( readingString != null ){
+            do {
                 readingString = inputStream.readLine();
                 readStringSplit = readingString.split(" ");
 
                 curReading.timestamp = Long.parseLong(readStringSplit[0]);
                 curReading.xAcceleration = Double.parseDouble(readStringSplit[1]);
-                curReading.yAcceleration = Double.parseDouble(readStringSplit[2])
+                curReading.yAcceleration = Double.parseDouble(readStringSplit[2]);
 
                 readings.add(new AccelData(curReading));
-            }
+            }while( readingString != null );
         }catch (Exception e){
             e.printStackTrace();
         }
