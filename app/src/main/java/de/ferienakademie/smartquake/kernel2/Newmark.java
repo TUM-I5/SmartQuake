@@ -31,24 +31,27 @@ public class Newmark extends ImplicitSolver {
     //Fixed time step
     double delta_t;
 
+
     @Override
     public void nextStep(double t, double delta_t) {
-        //store old (n-1) velocity
-        DenseMatrix64F oldxDot = xDot.copy();
+
+        DenseMatrix64F xDotDot_old = xDotDot;
 
         if(this.delta_t != delta_t){
             //TODO Throw exception
         }
 
-        //velocity at n
-        CommonOps.addEquals(xDot, delta_t, xDotDot);
+        //Get acceleration
+        xDotDot = getAcceleration(t);
 
-        //create average matrix of velocities at step n and n+1
-        DenseMatrix64F averageXDot = xDot.copy();
-        CommonOps.addEquals(averageXDot, 1, oldxDot);
+        //Calculate velocity
+        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
+        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot_old);
 
-        //displacement at step n+1
-        CommonOps.addEquals(x, 1 / 2.0 * delta_t, oldxDot);
+        //Calculate displacement
+        CommonOps.addEquals(x,delta_t,xDot);
+        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot);
+        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old);
 
     }
 
