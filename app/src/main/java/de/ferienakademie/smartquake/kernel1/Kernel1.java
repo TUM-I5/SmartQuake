@@ -183,7 +183,7 @@ public class Kernel1 {
      * Update the vector with forces using the acceleration values received from the {@link AccelerationProvider}
      * @param acceleration - view {@link AccelerationProvider} for details
      */
-    void updateLoadVector(double[] acceleration) {
+    public void updateLoadVector(double[] acceleration) {
         LoadVector.zero();
 
         for (int i = 0; i < structure.getNodes().size(); i++) {
