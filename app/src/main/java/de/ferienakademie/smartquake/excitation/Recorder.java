@@ -2,6 +2,7 @@ package de.ferienakademie.smartquake.excitation;
 
 import android.content.Context;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
@@ -103,6 +104,25 @@ public class Recorder implements ExcitationListener, AccelerationProvider {
             }
             outputStream.close();
         } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @param filename
+     */
+    public void loadFile(String filename){
+        AccelData curReading;
+        String readingString;
+        int res = 0;
+        //FileInputStream inputStream;
+        try{
+            FileInputStream inputStream = new FileInputStream(filename);
+            while( res != -1 ){
+                //TODO: transform sequence of bytes into a string
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
