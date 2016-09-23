@@ -86,4 +86,6 @@ public class Material {
     }
     */  // Not necessary
 
+    //TODO Also include beams with non-quadratic cross sections.
+
 }
