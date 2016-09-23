@@ -45,9 +45,6 @@ public class Beam {
     }
 
     void computeStiffnessMatrix() {
-
-
-        double A=this.material.getA();
         double EA=this.material.getEA();
         double EI=this.material.getEI();
 
