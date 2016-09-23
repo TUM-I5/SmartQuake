@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.ferienakademie.smartquake.kernel1.Testing;
+
 public class StructureFactory {
     public static Structure getSimpleHouse() {
         double width = 8;
@@ -24,51 +26,34 @@ public class StructureFactory {
         //TODO Paul: setConstraint(true) for fixed nodes
         List<Integer> DOFnode1 = new LinkedList<>();
         List<Integer> DOFnode2 = new LinkedList<>();
-        List<Integer> DOFnode3 = new LinkedList<>();
-        List<Integer> DOFnode4 = new LinkedList<>();
-        List<Integer> DOFnode5 = new LinkedList<>();
+
 
         DOFnode1.add(0); //constraint
         DOFnode1.add(1);//constraint
         DOFnode1.add(2);//constraint
 
-        DOFnode2.add(3);//constraint
-        DOFnode2.add(4);//constraint
-        DOFnode2.add(5);//constraint
+        DOFnode2.add(3);
+        DOFnode2.add(4);
+        DOFnode2.add(5);
 
-        DOFnode3.add(6);
-        DOFnode3.add(7);
-        DOFnode3.add(8);
 
-        DOFnode4.add(9);
-        DOFnode4.add(10);
-        DOFnode4.add(11);
-        DOFnode5.add(12);
-        DOFnode5.add(13);
-        DOFnode5.add(14);
 
         Node n1 = new Node(0, height, DOFnode1);
-        Node n2 = new Node(width, height, DOFnode2);
-        Node n3 = new Node(width, height - half, DOFnode3);
-        Node n4 = new Node(0, height - half, DOFnode4);
-        Node n5 = new Node(half, height - 2 * half, DOFnode5);
+        Node n2 = new Node(0, height - half, DOFnode2);
+
 
         Beam b1 = new Beam(n1, n2, testMaterial,true);
-        Beam b2 = new Beam(n2, n3, testMaterial,true);
-        Beam b3 = new Beam(n3, n4, testMaterial,true);
-        Beam b4 = new Beam(n4, n1, testMaterial,true);
-        Beam b5 = new Beam(n4, n5, testMaterial,true);
-        Beam b6 = new Beam(n5, n3, testMaterial,true);
-
-        structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4, b5, b6);
+        structure.addNodes(n1, n2);
+        structure.addBeams(b1);
 
         List<Integer> condof= new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 3; i++) {
             condof.add(i);
         }
 
         structure.setConDOF(condof);
+
+        Testing.cantiLeverStaticTest(structure);
 
         return structure;
     }

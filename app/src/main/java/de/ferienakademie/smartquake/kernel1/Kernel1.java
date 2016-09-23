@@ -23,7 +23,10 @@ public class Kernel1 {
     private DenseMatrix64F MassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces
-    private DenseMatrix64F DisplacementVector;  //project manager advic
+    private DenseMatrix64F InfluenceVectorx;
+    private DenseMatrix64F InfluenceVectory;
+    private DenseMatrix64F DisplacementVector;  //project manager advice
+
 
     private int numDOF;
 
@@ -35,6 +38,7 @@ public class Kernel1 {
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
         initMatrices();
+        calcInfluenceVector();
     }
 
     /**
@@ -170,6 +174,21 @@ public class Kernel1 {
         LoadVector = loadVector;
     }
 
+    public void calcInfluenceVector(){
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+            List<Integer> DOF = node.getDOF();
+            int DOFx = DOF.get(0);
+            int DOFy = DOF.get(1);
+            InfluenceVectorx = new DenseMatrix64F(getNumDOF(), 1);
+            InfluenceVectory = new DenseMatrix64F(getNumDOF(), 1);
+            InfluenceVectorx.zero();
+            InfluenceVectory.zero();
+            InfluenceVectorx.add(DOFx,0,-1); //add influence vector in x-dir
+            InfluenceVectory.add(DOFy,0,-1); //add influence vector in y-dir
+        }
+    }
+
 
     /**
      * Update the vector with forces using the acceleration values received from the {@link AccelerationProvider}
@@ -178,16 +197,11 @@ public class Kernel1 {
     public void updateLoadVector(double[] acceleration) {
         LoadVector.zero();
 
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-            Node node = structure.getNodes().get(i);
-            List<Integer> DOF = node.getDOF();
-            int DOFx = DOF.get(0);
-            int DOFy = DOF.get(1);
-            LoadVector.add(DOFx,0,-acceleration[0]); //add influence vector in x-dir
-            LoadVector.add(DOFy,0,-acceleration[1]); //add influence vector in y-dir
-        }
+        CommonOps.scale(acceleration[0],InfluenceVectorx);
+        CommonOps.scale(acceleration[1],InfluenceVectory);
+        CommonOps.addEquals(InfluenceVectorx,InfluenceVectory);
 
-        CommonOps.mult(MassMatrix, LoadVector, LoadVector);
+        CommonOps.mult(MassMatrix, InfluenceVectorx, LoadVector);
 
 
     }
