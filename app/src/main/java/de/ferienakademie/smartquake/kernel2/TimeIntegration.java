@@ -7,6 +7,7 @@ import org.ejml.data.DenseMatrix64F;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -15,6 +16,7 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
 public class TimeIntegration {
 
     Kernel1 kernel1;
+    AccelerationProvider accelerationProvider;
 
     //total computed time between every time step. This variable prevents computing more than GUI
     double t;
@@ -35,8 +37,9 @@ public class TimeIntegration {
     *          object to obtain all matrices, displacements, external forces
     *
     **/
-    public TimeIntegration(Kernel1 kernel1) {
+    public TimeIntegration(Kernel1 kernel1, AccelerationProvider accelerationProvider) {
         this.kernel1 = kernel1;
+        this.accelerationProvider = accelerationProvider;
     }
 
 
@@ -50,7 +53,8 @@ public class TimeIntegration {
         xDot.zero();
 
         //stores the numerical scheme
-        solver = new Euler(kernel1, xDot);
+        //solver = new Newmark(kernel1, xDot,delta_t);
+        solver = new Euler(kernel1, accelerationProvider, xDot);
 
         //only for fixed stepsize
         delta_t = 0.001;
@@ -78,16 +82,17 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    //long firstTime = System.nanoTime();
+                    long firstTime = System.nanoTime();
 
                     //calculates time step
-                    while(t < 0.021 && isRunning) {
+                    while(t < 0.02+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         t += delta_t;
+
                     }
-                    //long secondTime = System.nanoTime();
-                    //Log.e("Timestamp",""+(secondTime-firstTime));
+                    long secondTime = System.nanoTime();
+                    Log.e("Timestamp",""+(secondTime-firstTime));
                     //update the displacement in the node variables
                     kernel1.updateStructure(kernel1.getDisplacementVector());
 

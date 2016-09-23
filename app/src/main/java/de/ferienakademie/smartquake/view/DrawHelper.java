@@ -7,16 +7,29 @@ import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 
-/**
- * Created by yuriy on 22/09/16.
- */
 public class DrawHelper {
 
-    public static List<Node> snapNodes = new ArrayList<>();
-    public static List<Beam> snapBeams = new ArrayList<>();
+    public static List<Node> getSnapNodes() {
+        return snapNodes;
+    }
+
+    public static List<Beam> getSnapBeams() {
+        return snapBeams;
+    }
+
+    public static double[] getBoundingBox() {
+        return boundingBox;
+    }
+
+    // TODO: change accessibility modifiers?
+    private static List<Node> snapNodes = new ArrayList<>();
+    private static List<Beam> snapBeams = new ArrayList<>();
+    private static double[] boundingBox = new double[2];
 
     public static void drawStructure(Structure structure, CanvasView view) {
-        snapShot(structure.getNodes(), structure.getBeams());
+        snapNodes = structure.getNodes();
+        snapBeams = structure.getBeams();
+        boundingBox = structure.getModelSize();
         view.isBeingDrawn = true;
         view.postInvalidate();
     }
@@ -24,15 +37,7 @@ public class DrawHelper {
     public static void clearCanvas(CanvasView view) {
         snapBeams.clear();
         snapNodes.clear();
-        view.isBeingDrawn = true;
         view.postInvalidate();
-    }
-
-    private static void snapShot(List<Node> nodes, List<Beam> beams) {
-        snapBeams.clear();
-        snapNodes.clear();
-        snapBeams.addAll(beams);
-        snapNodes.addAll(nodes);
     }
 
 }
