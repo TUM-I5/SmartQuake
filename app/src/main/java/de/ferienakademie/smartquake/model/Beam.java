@@ -87,6 +87,39 @@ public class Beam {
         eleMassMatrix.set(3,3,0.5*rho*A*l);
         eleMassMatrix.set(4,4,0.5*rho*A*l);
         eleMassMatrix.set(5,5,alpha*rho*A*l*l*l);
+
+         //consistent element mass matrix
+        /*
+        eleMassMatrix = new DenseMatrix64F(6,6);
+        eleMassMatrix.zero();
+        //row 1
+        eleMassMatrix.set(0,0,140*rho*A*l*l/420);
+        eleMassMatrix.set(0,3,70*rho*A*l*l/420);
+        //row 2
+        eleMassMatrix.set(1,1,156*rho*A*l*l/420);
+        eleMassMatrix.set(1,2,-22*l*rho*A*l*l/420);
+        eleMassMatrix.set(1,4,54*rho*A*l*l/420);
+        eleMassMatrix.set(1,5,13*l*rho*A*l*l/420);
+        //row 3
+        eleMassMatrix.set(2,1,-22*l*rho*A*l*l/420);
+        eleMassMatrix.set(2,2,4*l*l*rho*A*l*l/420);
+        eleMassMatrix.set(2,4,-13*l*rho*A*l*l/420);
+        eleMassMatrix.set(2,5,-3*l*l*rho*A*l*l/420);
+        //row 4
+        eleMassMatrix.set(3,0,70*rho*A*l*l/420);
+        eleMassMatrix.set(3,3,140*rho*A*l*l/420);
+        //row 5
+        eleMassMatrix.set(4,1,54*rho*A*l*l/420);
+        eleMassMatrix.set(4,2,-13*l*rho*A*l*l/420);
+        eleMassMatrix.set(4,4,156*rho*A*l*l/420);
+        eleMassMatrix.set(4,5,22*l*rho*A*l*l/420);
+        //row 6
+        eleMassMatrix.set(5,1,13*l*rho*A*l*l/420);
+        eleMassMatrix.set(5,2,-3*l*l*rho*A*l*l/420);
+        eleMassMatrix.set(5,4,22*l*rho*A*l*l/420);
+        eleMassMatrix.set(5,5,4*l*l*rho*A*l*l/420);
+        */
+
     }
 
     public Beam(Node startNode, Node endNode) {
