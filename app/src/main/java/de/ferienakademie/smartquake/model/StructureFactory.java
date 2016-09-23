@@ -50,17 +50,21 @@ public class StructureFactory {
         Node n4 = new Node(quarter, height - quarter, DOFnode4);
         Node n5 = new Node(2 * quarter, height - 2 * quarter, DOFnode5);
 
-        Beam b1 = new Beam(n1, n2, testMaterial);
-        Beam b2 = new Beam(n2, n3, testMaterial);
-        Beam b3 = new Beam(n3, n4, testMaterial);
-        Beam b4 = new Beam(n4, n1, testMaterial);
-        Beam b5 = new Beam(n4, n5, testMaterial);
-        Beam b6 = new Beam(n5, n3, testMaterial);
+        Beam b1 = new Beam(n1, n2, testMaterial,true);
+        Beam b2 = new Beam(n2, n3, testMaterial,true);
+        Beam b3 = new Beam(n3, n4, testMaterial,true);
+        Beam b4 = new Beam(n4, n1, testMaterial,true);
+        Beam b5 = new Beam(n4, n5, testMaterial,true);
+        Beam b6 = new Beam(n5, n3, testMaterial,true);
 
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
 
-        List<Integer> condof= new ArrayList<>( );
+        List<Integer> condof= new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            condof.add(i);
+        }
+
         structure.setConDOF(condof);
 
         return structure;
