@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.model;
 
+import java.util.List;
+
 /**
  * Created by alex on 21.09.16.
  */
@@ -17,7 +19,7 @@ public class Material {
     //may have to change zeroes
 
     //constructor
-    public Material(double b, double h ,double E){
+    public Material(double b, double h ,double E, double rho, double alpha){
         this.b=b;
         this.h=h;
         this.E=E;
@@ -31,8 +33,9 @@ public class Material {
     }
 
     public Material(){
-        this(0.1, 0.1, 210e9); //SI-Units
+        this(0.1, 0.1, 210e9, 7860, 0.005); //SI-Units - use this (steel) for creating standard beam.
     }
+
 
     public Material(String test){
         if (test.contentEquals("testmat")) {
