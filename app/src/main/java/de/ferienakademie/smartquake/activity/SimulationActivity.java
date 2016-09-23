@@ -66,10 +66,7 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
     }
 
     private void createStructure() {
-        double width = canvasView.getWidth();
-        double height = canvasView.getHeight();
-
-        structure = StructureFactory.getSimpleHouse(width, height);
+        structure = StructureFactory.getSimpleHouse();
     }
 
     @Override

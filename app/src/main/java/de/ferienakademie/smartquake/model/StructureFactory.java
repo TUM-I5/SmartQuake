@@ -1,16 +1,19 @@
 package de.ferienakademie.smartquake.model;
 
 public class StructureFactory {
-    public static Structure getSimpleHouse(double width, double height) {
-        double quarter = width * 0.25;
+    public static Structure getSimpleHouse() {
+        double width = 8;
+        double height = 8;
+
+        double half = width * 0.5;
 
         Structure structure = new Structure();
 
-        Node n1 = new Node(quarter, height);
-        Node n2 = new Node(width - quarter, height);
-        Node n3 = new Node(width - quarter, height - quarter);
-        Node n4 = new Node(quarter, height - quarter);
-        Node n5 = new Node(2 * quarter, height - 2 * quarter);
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width, height);
+        Node n3 = new Node(width, height - half);
+        Node n4 = new Node(0, height - half);
+        Node n5 = new Node(half, height - 2 * half);
 
         Beam b1 = new Beam(n1, n2);
         Beam b2 = new Beam(n2, n3);
@@ -24,7 +27,10 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getSimpleEiffelTower(double width, double height) {
+    public static Structure getSimpleEiffelTower() {
+        double width = 8;
+        double height = 16;
+
         double half = width * 0.5;
         double quarter = width * 0.25;
         double eighth = width * 0.125;
