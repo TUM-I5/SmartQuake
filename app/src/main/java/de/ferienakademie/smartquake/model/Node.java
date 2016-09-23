@@ -15,8 +15,6 @@ public class Node {
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private List<Double> u; //Displacement
-
     private double radius = 15;
 
     /**
@@ -33,11 +31,10 @@ public class Node {
     }
 
 
-    public Node(double x, double y, List<Integer> DOF, List<Double> u) {
+    public Node(double x, double y, List<Integer> DOF) {
         this.initX=x;
         this.initY=y;
         this.DOF = DOF;
-        this.u = u;
     }
 
 
@@ -55,14 +52,6 @@ public class Node {
 
     public void setInitY(double initY) {
         this.initY = initY;
-    }
-
-    public List<Double> getU() {
-        return u;
-    }
-
-    public void setU(List<Double> u) {
-        this.u = u;
     }
 
     public List<Integer> getDOF() {
@@ -88,7 +77,6 @@ public class Node {
     public void setCurrY(double currY) {
         this.currY = currY;
     }
-
 
 
     public double getRadius() {

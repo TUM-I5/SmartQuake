@@ -14,22 +14,8 @@ public class Beam {
     private Node endNode;
     private Material material;
     private float thickness;
-    private double l;
-    private double E;
-    private double A;
-    private double I;
-    private double rho;
-    private double alpha;
-    private double x1;
-    private double x2;
-    private double y1;
-
-
-
-    private double y2;
-    private List<Integer> Dofs;
-    private double EA;
-    private double EI;
+    // array of degress of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
+    private int[] Dofs;
 
     private DenseMatrix64F eleStiffnessMatrix;
     private DenseMatrix64F eleMassMatrix;
@@ -44,57 +30,63 @@ public class Beam {
     public Beam(Node startNode, Node endNode, Material material) {
         this.startNode = startNode;
         this.endNode = endNode;
-        this.Dofs.addAll(startNode.getDOF());
-        this.Dofs.addAll(endNode.getDOF());
+        this.Dofs = new int[]{
+                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
+                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
+        };
         this.material = material;
         this.thickness = 15;
-        l=Math.sqrt((x1-x2)*(x1-x2))+(y1-y2)*(y1-y2);
-        A=this.material.getA();
-        EA=this.material.getEA();
-        EI=this.material.getEI();
-        rho = this.material.getRho();
-        alpha=this.material.getAlpha();
+        computeMatrices();
+    }
+
+    void computeMatrices() {
+        double x1 = startNode.getInitX(), y1 = startNode.getInitY();
+        double x2 = endNode.getInitX(), y2 = endNode.getInitY();
+        double l=Math.sqrt((x1-x2)*(x1-x2))+(y1-y2)*(y1-y2);
+        double A=this.material.getA();
+        double EA=this.material.getEA();
+        double EI=this.material.getEI();
+        double rho = this.material.getRho();
+        double alpha=this.material.getAlpha();
 
         eleStiffnessMatrix = new DenseMatrix64F(6, 6);
         eleStiffnessMatrix.zero();
 
-        eleStiffnessMatrix.set(1,1,EA/l);
-        eleStiffnessMatrix.set(1,4,-EA/l);
+        eleStiffnessMatrix.set(0,0,EA/l);
+        eleStiffnessMatrix.set(0,3,-EA/l);
 
-        eleStiffnessMatrix.set(2,2,12*EI/(l*l*l));
-        eleStiffnessMatrix.set(2,3,-6*EI/(l*l));
-        eleStiffnessMatrix.set(2,5,-12*EI/(l*l*l));
-        eleStiffnessMatrix.set(2,6,-6*EI/(l*l));
+        eleStiffnessMatrix.set(1,1,12*EI/(l*l*l));
+        eleStiffnessMatrix.set(1,2,-6*EI/(l*l));
+        eleStiffnessMatrix.set(1,4,-12*EI/(l*l*l));
+        eleStiffnessMatrix.set(1,5,-6*EI/(l*l));
 
-        eleStiffnessMatrix.set(3,2,-6*EI/(l*l));
-        eleStiffnessMatrix.set(3,3,4*EI/l);
-        eleStiffnessMatrix.set(3,5,6*EI/(l*l));
-        eleStiffnessMatrix.set(3,6,2*EI/l);
+        eleStiffnessMatrix.set(2,1,-6*EI/(l*l));
+        eleStiffnessMatrix.set(2,2,4*EI/l);
+        eleStiffnessMatrix.set(2,4,6*EI/(l*l));
+        eleStiffnessMatrix.set(2,5,2*EI/l);
 
-        eleStiffnessMatrix.set(4,1,-EA/l);
-        eleStiffnessMatrix.set(4,4,EA/l);
+        eleStiffnessMatrix.set(3,0,-EA/l);
+        eleStiffnessMatrix.set(3,3,EA/l);
 
-        eleStiffnessMatrix.set(5,2,-12*EI/(l*l*l));
-        eleStiffnessMatrix.set(5,3,6*EI/(l*l));
-        eleStiffnessMatrix.set(5,5,12*EI/(l*l*l));
-        eleStiffnessMatrix.set(5,6,6*EI/(l*l));
+        eleStiffnessMatrix.set(4,1,-12*EI/(l*l*l));
+        eleStiffnessMatrix.set(4,2,6*EI/(l*l));
+        eleStiffnessMatrix.set(4,4,12*EI/(l*l*l));
+        eleStiffnessMatrix.set(4,5,6*EI/(l*l));
 
-        eleStiffnessMatrix.set(6,2,-6*EI/(l*l));
-        eleStiffnessMatrix.set(6,3,2*EI/l);
-        eleStiffnessMatrix.set(6,5,6*EI/(l*l));
-        eleStiffnessMatrix.set(6,6,6*EI/(l*l));
-
+        eleStiffnessMatrix.set(5,1,-6*EI/(l*l));
+        eleStiffnessMatrix.set(5,2,2*EI/l);
+        eleStiffnessMatrix.set(5,4,6*EI/(l*l));
+        eleStiffnessMatrix.set(5,5,6*EI/(l*l));
 
         eleMassMatrix = new DenseMatrix64F(6, 6);
         eleMassMatrix.zero();
 
+        eleMassMatrix.set(0,0,0.5*rho*A*l);
         eleMassMatrix.set(1,1,0.5*rho*A*l);
-        eleMassMatrix.set(2,2,0.5*rho*A*l);
-        eleMassMatrix.set(3,3,alpha*rho*A*l*l*l);
+        eleMassMatrix.set(2,2,alpha*rho*A*l*l*l);
+        eleMassMatrix.set(3,3,0.5*rho*A*l);
         eleMassMatrix.set(4,4,0.5*rho*A*l);
-        eleMassMatrix.set(5,5,0.5*rho*A*l);
-        eleMassMatrix.set(6,6,alpha*rho*A*l*l*l);
-
+        eleMassMatrix.set(5,5,alpha*rho*A*l*l*l);
     }
 
     public Beam(Node startNode, Node endNode) {
@@ -105,11 +97,11 @@ public class Beam {
         this(new Node(startX, startY), new Node(endX, endY));
     }
 
-    public List<Integer> getDofs() {
+    public int[] getDofs() {
         return Dofs;
     }
 
-    public void setDofs(List<Integer> dofs) {
+    public void setDofs(int[] dofs) {
         Dofs = dofs;
     }
 

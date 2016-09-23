@@ -78,9 +78,6 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     private void createStructure() {
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();
-
-
-
         structure = StructureFactory.getSimpleHouse(width, height);
 
     }
@@ -120,7 +117,6 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
                 @Override
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                     createStructure();
 
                     DrawHelper.drawStructure(structure, canvasView);

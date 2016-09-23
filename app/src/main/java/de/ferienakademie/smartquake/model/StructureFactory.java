@@ -16,23 +16,6 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = new Material("testmat");
 
-        Node n1 = new Node(quarter, height);
-        Node n2 = new Node(width - quarter, height);
-        Node n3 = new Node(width - quarter, height - quarter);
-        Node n4 = new Node(quarter, height - quarter);
-        Node n5 = new Node(2 * quarter, height - 2 * quarter);
-
-        Beam b1 = new Beam(n1, n2, testMaterial);
-        Beam b2 = new Beam(n2, n3, testMaterial);
-        Beam b3 = new Beam(n3, n4, testMaterial);
-        Beam b4 = new Beam(n4, n1, testMaterial);
-        Beam b5 = new Beam(n4, n5, testMaterial);
-        Beam b6 = new Beam(n5, n3, testMaterial);
-
-        structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4, b5, b6);
-
-
         //Kernel1 stuff
         //TODO Alex: redesign with ID Matrix
         List<Integer> DOFnode1 = new LinkedList<>();
@@ -40,8 +23,6 @@ public class StructureFactory {
         List<Integer> DOFnode3 = new LinkedList<>();
         List<Integer> DOFnode4 = new LinkedList<>();
         List<Integer> DOFnode5 = new LinkedList<>();
-
-
 
         DOFnode1.add(0); //constraint
         DOFnode1.add(1);//constraint
@@ -63,13 +44,23 @@ public class StructureFactory {
         DOFnode5.add(13);
         DOFnode5.add(14);
 
+        Node n1 = new Node(quarter, height, DOFnode1);
+        Node n2 = new Node(width - quarter, height, DOFnode2);
+        Node n3 = new Node(width - quarter, height - quarter, DOFnode3);
+        Node n4 = new Node(quarter, height - quarter, DOFnode4);
+        Node n5 = new Node(2 * quarter, height - 2 * quarter, DOFnode5);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5);
+        structure.addBeams(b1, b2, b3, b4, b5, b6);
 
         List<Integer> condof= new ArrayList<>( );
-        List<Integer> dof= new ArrayList<>();
-
-        condof.addAll(n1.getDOF()); //ground connected Nodes
-        condof.addAll(n2.getDOF());
-
         structure.setConDOF(condof);
 
         return structure;

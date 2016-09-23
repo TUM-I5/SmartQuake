@@ -54,7 +54,7 @@ public class Material {
         return h;
     }
 
-    public void setNewProperties(double b, double h){ //necessary, if b and h are changed - changes all relevant properties
+    public void setNewProperties(double b, double h) { //necessary, if b and h are changed - changes all relevant properties
         this.b = b;
         this.h = h;
         A = b*h;
