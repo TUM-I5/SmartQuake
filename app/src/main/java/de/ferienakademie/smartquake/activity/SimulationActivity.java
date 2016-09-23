@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,18 +14,27 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.Recorder;
 import de.ferienakademie.smartquake.excitation.SensorExcitation;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+
+import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Material;
+import de.ferienakademie.smartquake.model.Node;
+
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class MainActivity extends Activity implements Simulation.SimulationProgressListener{
+public class SimulationActivity extends Activity implements Simulation.SimulationProgressListener{
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
@@ -43,7 +51,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
-        i.inflate(R.menu.main_activity_actions, menu);
+        i.inflate(R.menu.simulation_activity_actions, menu);
         menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.findItem(R.id.load_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.findItem(R.id.save_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -63,6 +71,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
         if (id == R.id.create_button) {
             if (simulation != null) simulation.stop();
             startActivity(new Intent(this, CreateActivity.class));
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -71,14 +80,13 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
     private void createStructure() {
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();
-
         structure = StructureFactory.getSimpleHouse(width, height);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_simulation);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
@@ -93,7 +101,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
                 startButton.setEnabled(false);
                 recorder.initRecord();
                 startSimulation();
-                Toast.makeText(MainActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
              }
         });
 
@@ -102,7 +110,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
             @Override
             public void onClick(View v) {
                 simulation.stop();
-                Toast.makeText(MainActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -114,9 +122,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
                 @Override
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                     createStructure();
-
                     DrawHelper.drawStructure(structure, canvasView);
                 }
             });
@@ -140,7 +146,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
         kernel1 = new Kernel1(structure, mExcitationManager);
         timeIntegration = new TimeIntegration(kernel1);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
-        simulation.setListener(MainActivity.this);
+        simulation.setListener(SimulationActivity.this);
         simulation.start();
     }
 
@@ -150,7 +156,7 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
             @Override
             public void run() {
                 startButton.setEnabled(true);
-                Toast.makeText(MainActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
             }
         });
     }

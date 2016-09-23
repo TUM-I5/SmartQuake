@@ -11,18 +11,22 @@ public class Structure {
 
     private List<Node> nodes;
     private List<Beam> beams;
-    // TODO: somebody plz initialize this array conDOF
-    private int[] conDOF ; //constraint dofs TODO: But how's the data structure?
 
-    public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
+    // TODO: somebody plz initialize this array conDOF
+    private List<Integer> DOF ;
+    private List<Integer> conDOF ; //constraint dofs
+
+
+
+    public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF ) {
         this.nodes = nodes;
         this.beams = beams;
-        this.conDOF = conDOF;
     }
 
     public Structure() {
-        this(new ArrayList<Node>(), new ArrayList<Beam>(), new int[] {});
+        this(new ArrayList<Node>(), new ArrayList<Beam>(),new int[] {});
     }
+
 
     public List<Node> getNodes() {
         return nodes;
@@ -41,14 +45,6 @@ public class Structure {
     }
 
 
-    public int[] getConDOF() {
-        return conDOF;
-    }
-
-    public void setConDOF(int[] conDOF) {
-        this.conDOF = conDOF;
-    }
-
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
     }
@@ -60,7 +56,28 @@ public class Structure {
     public void addBeam(Beam beam) {
         this.beams.add(beam);
     }
-    
+
+    public List<Integer> getDOF() {
+        return DOF;
+    }
+
+    public void setDOF(List<Integer> DOF) {
+        this.DOF = DOF;
+    }
+
+    public void addDof(List<Integer> DOF) {
+        this.DOF.addAll(DOF);
+    }
+
+    public List<Integer> getConDOF() {
+        return conDOF;
+    }
+
+    public void setConDOF(List<Integer> conDOF) {
+        this.conDOF = conDOF;
+    }
+
+
     public List<Beam> getBeams() {
         return beams;
     }
@@ -69,4 +86,6 @@ public class Structure {
         nodes.clear();
         beams.clear();
     }
+
+
 }
