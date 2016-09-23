@@ -9,8 +9,14 @@ import org.ejml.data.DenseMatrix64F;
  * Created by Yehor on 22.09.2016.
  */
 public class StoermerVerlet implements TimeIntegrationSolver {
+
     @Override
-    public void nextStep(DenseMatrix64F x, DenseMatrix64F xDot , DenseMatrix64F xDotDot, double t, double delta_t) {
+    public void nextStep(double t, double dt){
+
+    }
+  /*
+    @Override
+  //  public void nextStep(DenseMatrix64F x, DenseMatrix64F xDot , DenseMatrix64F xDotDot, double t, double delta_t) {
 
         //velocity at n+1/2
         DenseMatrix64F midpointXdot = xDot.copy();
@@ -27,4 +33,5 @@ public class StoermerVerlet implements TimeIntegrationSolver {
         CommonOps.addEquals(midpointXdot, 0.5 * delta_t, xDotDot);
 
     }
+    */
 }

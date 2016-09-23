@@ -16,23 +16,18 @@ public class TimeIntegration {
 
     Kernel1 kernel1;
 
-    //total computed time
+    //total computed time between every time step. This variable prevents computing more than GUI
     double t;
     //time_step
     double delta_t;
 
-    //JUST FOR TESTING DIRECTLY SENSORS INPUT
-    double[] acceleration;
-
     //matrices of velocity
     DenseMatrix64F xDot;
-    //matrices of acceleration
-    DenseMatrix64F xDotDot;
 
     //this solver provides the numerical algorithm  for calculating the displacement
     TimeIntegrationSolver solver;
 
-
+    //this manages the multi threading
     ExecutorService executorService;
 
     /**
@@ -45,32 +40,17 @@ public class TimeIntegration {
     }
 
 
+    /**
+     * This method is called from the Simulation class to prepare everything for simulation
+     */
     public void prepareSimulation(){
-        //stores the global simulation time
-        t = 0;
-
-        solver = new Euler();
-
-        //initial condition for the velocity
+        //initial condition for the velocity.
         xDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
+        //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
-        for(int j=0; j<kernel1.getNumDOF(); j+=3){
-            xDot.add(j,0, 10);
-        }
-        //xDot.add(3,0,20);
-        //xDot.add(1,0,40);
-        //xDot.add(6,0,-20);
-        //xDot.add(10,0,-10);
-        //xDot.add(4,0,-10);
-        //xDot.add(7,0,-80);
-        //xDot.add(12,0,150);
-        //xDot.add(13,0,100);
-        xDot.zero();
-        //xDotDot must be calculated by the external load forces and the differnetial equation
 
-        //THIS IS JUST A WORKAROUND/MINIMAL EXAMPLE
-        xDotDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
-        xDotDot.zero();
+        //stores the numerical scheme
+        solver = new Euler(kernel1, xDot);
 
         //only for fixed stepsize
         delta_t = 0.001;
@@ -96,21 +76,20 @@ public class TimeIntegration {
                 @Override
                 public void run() {
                     t = 0;
-                    //long firstTime = System.nanoTime();
+
+                    long firstTime = System.nanoTime();
+
+                    //calculates time step
                     while(t < 0.021 && isRunning) {
-                        //calculate new position
-                        solver.nextStep(kernel1.getDisplacementVector(), xDot, xDotDot,t, delta_t);
-                        acceleration=kernel1.getAccelerationProvider().getAcceleration();
-                        for(int j=6; j<kernel1.getNumDOF(); j+=3){
-                            xDotDot.set(j,0, 2000*acceleration[0]-5*xDot.get(j,0)-100*kernel1.getDisplacementVector().get(j, 0));
-                            xDotDot.set(j+1,0, 2000*acceleration[1]-5*xDot.get(j+1,0)-100*kernel1.getDisplacementVector().get(j+1, 0));
-                        }
-                        //temporarily fix the ground
-                        kernel1.updateStructure(kernel1.getDisplacementVector());
+                        //calculate new displacement
+                        solver.nextStep(t, delta_t);
                         t += delta_t;
                     }
-                    //long secondTime = System.nanoTime();
-                    //Log.e("TImestamp",""+(secondTime-firstTime));
+                    long secondTime = System.nanoTime();
+                    Log.e("Timestamp",""+(secondTime-firstTime));
+                    //update the displacement in the node variables
+                    kernel1.updateStructure(kernel1.getDisplacementVector());
+
                     isRunning = false;
                 }
             });
