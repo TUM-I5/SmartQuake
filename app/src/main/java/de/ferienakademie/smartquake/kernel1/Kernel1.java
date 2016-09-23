@@ -85,7 +85,7 @@ public class Kernel1 {
             int[] dofs = beam.getDofs();
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < 6; j++) {
-                    StiffnessMatrix.add(dofs[i], dofs[j], beam.getEleStiffnessMatrix().get(i, j));
+                    StiffnessMatrix.add(dofs[i], dofs[j], beam.getEleStiffnessMatrix_globalized().get(i, j));
                 }
             }
         }
@@ -105,7 +105,7 @@ public class Kernel1 {
             int[] dofs = beam.getDofs();
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < 6; j++) {
-                    MassMatrix.add(dofs[i], dofs[j], beam.getEleMassMatrix().get(i, j));
+                    MassMatrix.add(dofs[i], dofs[j], beam.getEleMassMatrix_globalized().get(i, j));
                 }
             }
         }

@@ -1,6 +1,7 @@
 package de.ferienakademie.smartquake.model;
 
 import org.ejml.data.DenseMatrix64F;
+import org.junit.runner.Describable;
 
 import java.util.List;
 
@@ -20,8 +21,9 @@ public class Beam {
     private int[] Dofs;
 
     private DenseMatrix64F eleStiffnessMatrix;
-    private DenseMatrix64F elelumpedMassMatrix;
-    private DenseMatrix64F eleconsistentMassMatrix;
+    private DenseMatrix64F eleMassMatrix;
+    /*private DenseMatrix64F elelumpedMassMatrix;
+    private DenseMatrix64F eleconsistentMassMatrix;*/
 
     private DenseMatrix64F eleStiffnessMatrix_globalized;
     private DenseMatrix64F eleMassMatrix_globalized;
@@ -51,13 +53,11 @@ public class Beam {
 
         if (lumped){
             computelumpedMassMatrix();
-            eleMassMatrix_globalized = elelumpedMassMatrix;
+            eleMassMatrix_globalized = eleMassMatrix;
         }else {
             computeconsistentMassMatrix();
-            eleMassMatrix_globalized = GlobalizeElementMatrix(eleconsistentMassMatrix);
+            eleMassMatrix_globalized = GlobalizeElementMatrix(eleMassMatrix);
         }
-
-
 
     }
 
@@ -96,10 +96,9 @@ public class Beam {
     }
 
      void computelumpedMassMatrix() {
-         elelumpedMassMatrix = new DenseMatrix64F(6, 6);
+         /*elelumpedMassMatrix = new DenseMatrix64F(6, 6);
          elelumpedMassMatrix.zero();
 
-         double rho = this.material.getRho();
          double alpha = this.material.getAlpha();
          double m = material.getM();
 
@@ -108,10 +107,24 @@ public class Beam {
          elelumpedMassMatrix.set(2, 2, alpha * m * l * l * l);
          elelumpedMassMatrix.set(3, 3, 0.5 * m * l);
          elelumpedMassMatrix.set(4, 4, 0.5 * m * l);
-         elelumpedMassMatrix.set(5, 5, alpha * m * l * l * l);
+         elelumpedMassMatrix.set(5, 5, alpha * m * l * l * l);*/
+
+         eleMassMatrix = new DenseMatrix64F(6, 6);
+         eleMassMatrix.zero();
+
+         double alpha = this.material.getAlpha();
+         double m = material.getM();
+
+         eleMassMatrix.set(0, 0, 0.5 * m * l);
+         eleMassMatrix.set(1, 1, 0.5 * m * l);
+         eleMassMatrix.set(2, 2, alpha * m * l * l * l);
+         eleMassMatrix.set(3, 3, 0.5 * m * l);
+         eleMassMatrix.set(4, 4, 0.5 * m * l);
+         eleMassMatrix.set(5, 5, alpha * m * l * l * l);
 
      }
     void computeconsistentMassMatrix() {
+       /*
         eleconsistentMassMatrix = new DenseMatrix64F(6, 6);
         eleconsistentMassMatrix.zero();
 
@@ -147,9 +160,43 @@ public class Beam {
         eleconsistentMassMatrix.set(5,2,-3*l*l*m*l*l/420);
         eleconsistentMassMatrix.set(5,4,22*l*m*l*l/420);
         eleconsistentMassMatrix.set(5,5,4*l*l*m*l*l/420);
+        */
 
+        eleMassMatrix = new DenseMatrix64F(6, 6);
+        eleMassMatrix.zero();
 
+        double m= material.getM();
 
+        //consistent element mass matrix
+
+        eleMassMatrix = new DenseMatrix64F(6,6);
+        eleMassMatrix.zero();
+        //row 1
+        eleMassMatrix.set(0,0,140*m*l*l/420);
+        eleMassMatrix.set(0,3,70*m*l*l/420);
+        //row 2
+        eleMassMatrix.set(1,1,156*m*l*l/420);
+        eleMassMatrix.set(1,2,-22*l*m*l*l/420);
+        eleMassMatrix.set(1,4,54*m*l*l/420);
+        eleMassMatrix.set(1,5,13*l*m*l*l/420);
+        //row 3
+        eleMassMatrix.set(2,1,-22*l*m*l*l/420);
+        eleMassMatrix.set(2,2,4*l*l*m*l*l/420);
+        eleMassMatrix.set(2,4,-13*l*m*l*l/420);
+        eleMassMatrix.set(2,5,-3*l*l*m*l*l/420);
+        //row 4
+        eleMassMatrix.set(3,0,70*m*l*l/420);
+        eleMassMatrix.set(3,3,140*m*l*l/420);
+        //row 5
+        eleMassMatrix.set(4,1,54*m*l*l/420);
+        eleMassMatrix.set(4,2,-13*l*m*l*l/420);
+        eleMassMatrix.set(4,4,156*m*l*l/420);
+        eleMassMatrix.set(4,5,22*l*m*l*l/420);
+        //row 6
+        eleMassMatrix.set(5,1,13*l*m*l*l/420);
+        eleMassMatrix.set(5,2,-3*l*l*m*l*l/420);
+        eleMassMatrix.set(5,4,22*l*m*l*l/420);
+        eleMassMatrix.set(5,5,4*l*l*m*l*l/420);
     }
 
     public DenseMatrix64F GlobalizeElementMatrix(DenseMatrix64F elementMatrix) {
@@ -250,7 +297,14 @@ public class Beam {
     }
 
     public DenseMatrix64F getEleMassMatrix() {
-        return elelumpedMassMatrix;
+        return eleMassMatrix;
     }
 
+    public DenseMatrix64F getEleStiffnessMatrix_globalized(){
+        return eleStiffnessMatrix_globalized;
+    }
+
+    public DenseMatrix64F getEleMassMatrix_globalized(){
+        return eleMassMatrix_globalized;
+    }
 }
