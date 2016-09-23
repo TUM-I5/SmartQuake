@@ -82,7 +82,7 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    //long firstTime = System.nanoTime();
+                    long firstTime = System.nanoTime();
 
                     //calculates time step
                     while(t < 0.02+0.000001 && isRunning) {
@@ -91,8 +91,8 @@ public class TimeIntegration {
                         t += delta_t;
 
                     }
-                    //long secondTime = System.nanoTime();
-                    //Log.e("Timestamp",""+(secondTime-firstTime));
+                    long secondTime = System.nanoTime();
+                    Log.e("Timestamp",""+(secondTime-firstTime));
                     //update the displacement in the node variables
                     kernel1.updateStructure(kernel1.getDisplacementVector());
 

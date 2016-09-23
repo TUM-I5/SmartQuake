@@ -31,11 +31,21 @@ public class ExplicitSolver extends Solver {
         //sets up fast linear solver
         linearSolverM = LinearSolverFactory.chol(k1.getNumDOF());
         for(int i=0; i<k1.getNumDOF(); i++){
-            M.set(i,i,1000);
+            M.set(i,i,0.0001);
         }
         linearSolverM.setA(M);
 
         tempVector = new DenseMatrix64F(k1.getNumDOF(),1);
+
+        //JUST FOR TESTING
+        C.zero();
+        K.zero();
+        for (int j = 6; j < k1.getNumDOF(); j += 3) {
+            C.set(j,j,5);
+            C.set(j+1,j+1,5);
+            K.set(j,j,100);
+            K.set(j+1,j+1,100);
+        }
     }
 
 
@@ -45,20 +55,14 @@ public class ExplicitSolver extends Solver {
     public void getAcceleration() {
         //just temporarlily bypass kernel1
         acceleration = getAccelerationProvider().getAcceleration();
+        //k1.
         tempVector = k1.getLoadVector().copy();
 
-        //C.zero();
-        //K.zero();
+
         for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            //C.set(j,j,0.50);
-            //C.set(j+1,j+1,50);
-            //K.set(j,j,100);
-            //K.set(j+1,j+1,100);
             tempVector.set(j, 0, 2000 * acceleration[0] );
             tempVector.set(j + 1, 0, 2000 * acceleration[1] );
         }
-
-
 
 
         // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*xD
@@ -69,16 +73,10 @@ public class ExplicitSolver extends Solver {
         CommonOps.multAdd(-1, K,x,tempVector);
 
 
-        linearSolverM.solve(tempVector, xDotDot);
+        xDotDot = tempVector.copy();
+        //linearSolverM.solve(tempVector, xDotDot);
 
 
         //Log.e("messagen for felix", xDotDot.toString());
-        //OLDSTUFF JUST LEAVE IT HERE
-       /* acceleration = k1.getAccelerationProvider().getAcceleration();
-        for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            xDotDot.set(j, 0, 2000 * acceleration[0] - 5 * xDot.get(j, 0) - 100 * k1.getDisplacementVector().get(j, 0));
-            xDotDot.set(j + 1, 0, 2000 * acceleration[1] - 5 * xDot.get(j + 1, 0) - 100 * k1.getDisplacementVector().get(j + 1, 0));
-        }
-        */
     }
 }
