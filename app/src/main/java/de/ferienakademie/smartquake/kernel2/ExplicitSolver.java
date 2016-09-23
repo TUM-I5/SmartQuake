@@ -56,7 +56,9 @@ public class ExplicitSolver extends Solver {
         //just temporarlily bypass kernel1
         acceleration = getAccelerationProvider().getAcceleration();
         k1.updateLoadVector(acceleration);
-        tempVector = k1.getLoadVector().copy();
+
+        tempVector = k1.getLoadVector();
+        //tempVector = k1.getLoadVector().copy();
 
 
         for (int j = 6; j < k1.getNumDOF(); j += 3) {
@@ -73,7 +75,8 @@ public class ExplicitSolver extends Solver {
         CommonOps.multAdd(-1, K,x,tempVector);
 
 
-        xDotDot = tempVector.copy();
+        xDotDot = tempVector;
+        //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);
 
 
