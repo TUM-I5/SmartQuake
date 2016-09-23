@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.kernel1;
 import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Kernel1 {
     private DenseMatrix64F DampingMatrix;
     private DenseMatrix64F MassMatrix;
 
-    private DenseMatrix64F LoadVector; // vector with the forces.
+    private DenseMatrix64F LoadVector; // vector with the forces
     private DenseMatrix64F DisplacementVector;  //project manager advic
 
     private int numDOF;
@@ -67,14 +68,14 @@ public class Kernel1 {
         StiffnessMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
         MassMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
         DampingMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
-
+        LoadVector = new DenseMatrix64F(getNumDOF(), 1);
 
         StiffnessMatrix.zero();
         MassMatrix.zero();
         DampingMatrix.zero();
 
         calcDampingMatrix();
-        calcMassMatrix();
+        calclumpedMassMatrix();
         calcStiffnessMatrix();
     }
 
@@ -84,16 +85,55 @@ public class Kernel1 {
             int[] dofs = beam.getDofs();
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < 6; j++) {
-                    StiffnessMatrix.set(dofs[i], dofs[j], beam.getEleStiffnessMatrix().get(i, j));
+                    StiffnessMatrix.add(dofs[i], dofs[j], beam.getEleStiffnessMatrix_globalized().get(i, j));
                 }
             }
         }
+        for (int i = 0; i <structure.getConDOF().size(); i++) {
+            int j = structure.getConDOF().get(i);
+            for (int k = 0; k < getNumDOF(); k++) {
+                StiffnessMatrix.set(j,k,0.0);
+                StiffnessMatrix.set(k,j,0.0);
+            }
+            StiffnessMatrix.set(j,j,1.0);
+        }
     }
 
-    public void calcMassMatrix() {
+    public void calclumpedMassMatrix() {
+        for (int e = 0; e < structure.getBeams().size(); e++) {
+            Beam beam = structure.getBeams().get(e);
+            int[] dofs = beam.getDofs();
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                    MassMatrix.add(dofs[i], dofs[j], beam.getEleMassMatrix_globalized().get(i, j));
+                }
+            }
+        }
+        for (int i = 0; i <structure.getConDOF().size(); i++) {
+            int j = structure.getConDOF().get(i);
+            for (int k = 0; k < getNumDOF(); k++) {
+                MassMatrix.set(j,k,0.0);
+                MassMatrix.set(k,j,0.0);
+            }
+            MassMatrix.set(j,j,1.0);
+        }
     }
+
 
     public void calcDampingMatrix() {
+        // CommonOps.scale(material.getC()/material.getM(),MassMatrix,DampingMatrix);
+        //CommonOps.scale(10,MassMatrix,DampingMatrix);
+        double a0 = 4.788640506;
+        double a1 =0.0001746899608;
+        CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
+        for (int i = 0; i <structure.getConDOF().size(); i++) {
+            int j = structure.getConDOF().get(i);
+            for (int k = 0; k < getNumDOF(); k++) {
+                DampingMatrix.set(j,k,0.0);
+                DampingMatrix.set(k,j,0.0);
+            }
+            DampingMatrix.set(j,j,1.0);
+        }
     }
 
     public DenseMatrix64F getDisplacementVector() {
@@ -108,7 +148,6 @@ public class Kernel1 {
     public Material getMaterial() {
         return material;
     }
-
 
     public void setMaterial(Material material) {
         this.material = material;
@@ -141,7 +180,6 @@ public class Kernel1 {
         }
     }
 
-
     public DenseMatrix64F getLoadVector() {
         return LoadVector;
     }
@@ -160,6 +198,19 @@ public class Kernel1 {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     void updateLoadVector(double[] acceleration) {
-        //TODO: update load vector using acceleration values.
+        LoadVector.zero();
+
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+            List<Integer> DOF = node.getDOF();
+            int DOFx = DOF.get(0);
+            int DOFy = DOF.get(1);
+            LoadVector.add(DOFx,1,-acceleration[0]); //add influence vector in x-dir
+            LoadVector.add(DOFy,1,-acceleration[1]); //add influence vector in y-dir
+        }
+
+        CommonOps.mult(MassMatrix, LoadVector, LoadVector);
+
+
     }
 }

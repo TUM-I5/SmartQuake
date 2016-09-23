@@ -91,9 +91,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void createStructure() {
-        double width = canvasView.getWidth();
-        double height = canvasView.getHeight();
-        structure = StructureFactory.getSimpleHouse(width, height);
+        structure = StructureFactory.getSimpleHouse();
     }
 
     @Override
