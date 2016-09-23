@@ -94,6 +94,10 @@ public class Node {
         IsConstraint = constraint;
     }
 
+    public void clearBeams() {
+        beams.clear();
+    }
+
     public List<Beam> getBeams() {
         return beams;
     }
