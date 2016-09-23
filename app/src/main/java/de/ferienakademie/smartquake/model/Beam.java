@@ -22,8 +22,6 @@ public class Beam {
 
     private DenseMatrix64F eleStiffnessMatrix;
     private DenseMatrix64F eleMassMatrix;
-    /*private DenseMatrix64F elelumpedMassMatrix;
-    private DenseMatrix64F eleconsistentMassMatrix;*/
 
     private DenseMatrix64F eleStiffnessMatrix_globalized;
     private DenseMatrix64F eleMassMatrix_globalized;
@@ -96,18 +94,6 @@ public class Beam {
     }
 
      void computelumpedMassMatrix() {
-         /*elelumpedMassMatrix = new DenseMatrix64F(6, 6);
-         elelumpedMassMatrix.zero();
-
-         double alpha = this.material.getAlpha();
-         double m = material.getM();
-
-         elelumpedMassMatrix.set(0, 0, 0.5 * m * l);
-         elelumpedMassMatrix.set(1, 1, 0.5 * m * l);
-         elelumpedMassMatrix.set(2, 2, alpha * m * l * l * l);
-         elelumpedMassMatrix.set(3, 3, 0.5 * m * l);
-         elelumpedMassMatrix.set(4, 4, 0.5 * m * l);
-         elelumpedMassMatrix.set(5, 5, alpha * m * l * l * l);*/
 
          eleMassMatrix = new DenseMatrix64F(6, 6);
          eleMassMatrix.zero();
@@ -124,43 +110,6 @@ public class Beam {
 
      }
     void computeconsistentMassMatrix() {
-       /*
-        eleconsistentMassMatrix = new DenseMatrix64F(6, 6);
-        eleconsistentMassMatrix.zero();
-
-        double m= material.getM();
-
-        //consistent element mass matrix
-
-        eleconsistentMassMatrix = new DenseMatrix64F(6,6);
-        eleconsistentMassMatrix.zero();
-        //row 1
-        eleconsistentMassMatrix.set(0,0,140*m*l*l/420);
-        eleconsistentMassMatrix.set(0,3,70*m*l*l/420);
-        //row 2
-        eleconsistentMassMatrix.set(1,1,156*m*l*l/420);
-        eleconsistentMassMatrix.set(1,2,-22*l*m*l*l/420);
-        eleconsistentMassMatrix.set(1,4,54*m*l*l/420);
-        eleconsistentMassMatrix.set(1,5,13*l*m*l*l/420);
-        //row 3
-        eleconsistentMassMatrix.set(2,1,-22*l*m*l*l/420);
-        eleconsistentMassMatrix.set(2,2,4*l*l*m*l*l/420);
-        eleconsistentMassMatrix.set(2,4,-13*l*m*l*l/420);
-        eleconsistentMassMatrix.set(2,5,-3*l*l*m*l*l/420);
-        //row 4
-        eleconsistentMassMatrix.set(3,0,70*m*l*l/420);
-        eleconsistentMassMatrix.set(3,3,140*m*l*l/420);
-        //row 5
-        eleconsistentMassMatrix.set(4,1,54*m*l*l/420);
-        eleconsistentMassMatrix.set(4,2,-13*l*m*l*l/420);
-        eleconsistentMassMatrix.set(4,4,156*m*l*l/420);
-        eleconsistentMassMatrix.set(4,5,22*l*m*l*l/420);
-        //row 6
-        eleconsistentMassMatrix.set(5,1,13*l*m*l*l/420);
-        eleconsistentMassMatrix.set(5,2,-3*l*l*m*l*l/420);
-        eleconsistentMassMatrix.set(5,4,22*l*m*l*l/420);
-        eleconsistentMassMatrix.set(5,5,4*l*l*m*l*l/420);
-        */
 
         eleMassMatrix = new DenseMatrix64F(6, 6);
         eleMassMatrix.zero();
