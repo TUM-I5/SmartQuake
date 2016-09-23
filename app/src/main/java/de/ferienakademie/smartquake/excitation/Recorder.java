@@ -2,8 +2,12 @@ package de.ferienakademie.smartquake.excitation;
 
 import android.content.Context;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import java.io.FileOutputStream;
@@ -94,13 +98,13 @@ public class Recorder implements ExcitationListener, AccelerationProvider {
      */
     public void saveFile(String filename, Context activityContext){
         String readingString;
-        FileOutputStream outputStream;
+        BufferedWriter outputStream;
         try {
-            outputStream = activityContext.openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream = new BufferedWriter(new FileWriter(filename));
             for (int i = 0; i < readings.size(); i++) {
                 readingString = String.format("%d %f %f",readings.get(i).timestamp,
                         readings.get(i).xAcceleration,readings.get(i).yAcceleration);
-                outputStream.write(readingString.getBytes());
+                outputStream.write(readingString);
             }
             outputStream.close();
         } catch(Exception e){
@@ -114,13 +118,21 @@ public class Recorder implements ExcitationListener, AccelerationProvider {
      */
     public void loadFile(String filename){
         AccelData curReading;
-        String readingString;
+        String readingString = new String;
+        String[] readStringSplit;
         int res = 0;
-        //FileInputStream inputStream;
+        BufferedReader inputStream;
         try{
-            FileInputStream inputStream = new FileInputStream(filename);
-            while( res != -1 ){
-                //TODO: transform sequence of bytes into a string
+            inputStream = new BufferedReader(new FileReader(filename));
+            while( readingString != null ){
+                readingString = inputStream.readLine();
+                readStringSplit = readingString.split(" ");
+
+                curReading.timestamp = Long.parseLong(readStringSplit[0]);
+                curReading.xAcceleration = Double.parseDouble(readStringSplit[1]);
+                curReading.yAcceleration = Double.parseDouble(readStringSplit[2])
+
+                readings.add(new AccelData(curReading));
             }
         }catch (Exception e){
             e.printStackTrace();
