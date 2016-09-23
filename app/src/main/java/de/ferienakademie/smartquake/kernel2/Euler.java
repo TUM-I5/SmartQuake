@@ -4,6 +4,7 @@ import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -16,8 +17,8 @@ public class Euler extends ExplicitSolver {
      * @param k1
      * @param xDot
      */
-    public Euler(Kernel1 k1, DenseMatrix64F xDot) {
-        super(k1, xDot);
+    public Euler(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
+        super(k1, accelerationProvider, xDot);
     }
 
     @Override

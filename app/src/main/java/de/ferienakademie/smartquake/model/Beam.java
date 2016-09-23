@@ -47,12 +47,12 @@ public class Beam {
                 endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
         };
         this.material = material;
-        this.thickness = 15;
+        this.thickness = 0.1f;
         double x1 = startNode.getInitX(), y1 = startNode.getInitY();
         double x2 = endNode.getInitX(), y2 = endNode.getInitY();
         l = Math.sqrt((x1 - x2) * (x1 - x2)) + (y1 - y2) * (y1 - y2);
 
-        theta = Math.atan((y2 - y1) / (x2 - x1));
+        theta = -Math.atan((y2 - y1) / (x2 - x1));
         c = Math.cos(theta); //rotation of displacement
         s = Math.sin(theta);
         computeStiffnessMatrix();
@@ -161,7 +161,6 @@ public class Beam {
 
 
 
-
         DenseMatrix64F elementMatrix_globalized;
         elementMatrix_globalized = new DenseMatrix64F(6, 6);
         elementMatrix_globalized.zero();
@@ -208,7 +207,7 @@ public class Beam {
 
 
     public Beam(Node startNode, Node endNode) {
-        this(startNode, endNode, 10);
+        this(startNode, endNode, 0.1f);
     }
 
     public Beam(double startX, double startY, double endX, double endY) {

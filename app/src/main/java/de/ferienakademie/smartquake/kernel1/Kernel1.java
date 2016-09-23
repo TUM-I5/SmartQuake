@@ -26,14 +26,11 @@ public class Kernel1 {
     private DenseMatrix64F DisplacementVector;  //project manager advic
 
     private int numDOF;
-    private Material material;
 
     Structure structure;
-    AccelerationProvider accelerationProvider;
 
-    public Kernel1(Structure structure, AccelerationProvider accelerationProvider) {
+    public Kernel1(Structure structure) {
         this.structure = structure;
-        this.accelerationProvider = accelerationProvider;
         //initialize displacement with zeros
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
@@ -145,27 +142,12 @@ public class Kernel1 {
         return structure.getNodes().size() * 3;
     }
 
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
     public Structure getStructure() {
         return structure;
     }
 
     public void setStructure(Structure structure) {
         this.structure = structure;
-    }
-
-    public AccelerationProvider getAccelerationProvider() {
-        return accelerationProvider;
-    }
-
-    public void setAccelerationProvider(AccelerationProvider accelerationProvider) {
-        this.accelerationProvider = accelerationProvider;
     }
 
     /**
@@ -188,16 +170,12 @@ public class Kernel1 {
         LoadVector = loadVector;
     }
 
-    public void updateLoadVector() {
-        double[] acceleration = accelerationProvider.getAcceleration();
-        updateLoadVector(acceleration);
-    }
 
     /**
      * Update the vector with forces using the acceleration values received from the {@link AccelerationProvider}
      * @param acceleration - view {@link AccelerationProvider} for details
      */
-    void updateLoadVector(double[] acceleration) {
+    public void updateLoadVector(double[] acceleration) {
         LoadVector.zero();
 
         for (int i = 0; i < structure.getNodes().size(); i++) {
@@ -205,8 +183,8 @@ public class Kernel1 {
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-            LoadVector.add(DOFx,1,-acceleration[0]); //add influence vector in x-dir
-            LoadVector.add(DOFy,1,-acceleration[1]); //add influence vector in y-dir
+            LoadVector.add(DOFx,0,-acceleration[0]); //add influence vector in x-dir
+            LoadVector.add(DOFy,0,-acceleration[1]); //add influence vector in y-dir
         }
 
         CommonOps.mult(MassMatrix, LoadVector, LoadVector);
