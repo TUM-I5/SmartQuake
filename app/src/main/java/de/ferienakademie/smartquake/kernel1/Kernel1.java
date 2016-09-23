@@ -1,8 +1,14 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 
+import java.util.List;
+
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 
@@ -16,11 +22,10 @@ public class Kernel1 {
     private DenseMatrix64F MassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces.
-    private DenseMatrix64F DisplacementVector;  //project manager advice
+    private DenseMatrix64F DisplacementVector;  //project manager advic
 
-    //TODO: ask why we have three degrees of freedom while modelling in 2D
     private int numDOF;
-    private int[] conDOF;
+    private Material material;
 
     Structure structure;
     AccelerationProvider accelerationProvider;
@@ -28,16 +33,10 @@ public class Kernel1 {
     public Kernel1(Structure structure, AccelerationProvider accelerationProvider) {
         this.structure = structure;
         this.accelerationProvider = accelerationProvider;
-
-        this.numDOF = 3 * structure.getNodes().size();
-        this.conDOF = structure.getConDOF();
-
         //initialize displacement with zeros
-        DisplacementVector = new DenseMatrix64F(numDOF, 1);
+        DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
-
         initMatrices();
-
     }
 
     /**
@@ -65,9 +64,9 @@ public class Kernel1 {
      * Calculate the stiffness, mass and damping matrices.
      */
     public void initMatrices() {
-        StiffnessMatrix = new DenseMatrix64F(numDOF, numDOF);
-        MassMatrix = new DenseMatrix64F(numDOF, numDOF);
-        DampingMatrix = new DenseMatrix64F(numDOF, numDOF);
+        StiffnessMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
+        MassMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
+        DampingMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
 
 
         StiffnessMatrix.zero();
@@ -80,21 +79,21 @@ public class Kernel1 {
     }
 
     public void calcStiffnessMatrix() {
-        for (int i = 0; i < numDOF - conDOF.length; i++) {
-            StiffnessMatrix.add(i, i, 1);
+        for (int e = 0; e < structure.getBeams().size(); e++) {
+            Beam beam = structure.getBeams().get(e);
+            int[] dofs = beam.getDofs();
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                    StiffnessMatrix.set(dofs[i], dofs[j], beam.getEleStiffnessMatrix().get(i, j));
+                }
+            }
         }
     }
 
     public void calcMassMatrix() {
-        for (int i = 0; i < numDOF - conDOF.length; i++) {
-            MassMatrix.add(i, i, 1);
-        }
     }
 
     public void calcDampingMatrix() {
-        for (int i = 0; i < numDOF - conDOF.length; i++) {
-            DampingMatrix.add(i, i, 1);
-        }
     }
 
     public DenseMatrix64F getDisplacementVector() {
@@ -102,9 +101,18 @@ public class Kernel1 {
     }
 
     public int getNumDOF() {
-        return numDOF;
+        //TODO: temporary solution. Changes if we add hinges.
+        return structure.getNodes().size() * 3;
     }
 
+    public Material getMaterial() {
+        return material;
+    }
+
+
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
     public Structure getStructure() {
         return structure;
     }

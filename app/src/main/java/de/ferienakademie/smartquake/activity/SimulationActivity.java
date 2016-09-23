@@ -14,12 +14,21 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.Recorder;
 import de.ferienakademie.smartquake.excitation.SensorExcitation;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+
+import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Material;
+import de.ferienakademie.smartquake.model.Node;
+
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -62,6 +71,7 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
         if (id == R.id.create_button) {
             if (simulation != null) simulation.stop();
             startActivity(new Intent(this, CreateActivity.class));
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -70,7 +80,6 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
     private void createStructure() {
         double width = canvasView.getWidth();
         double height = canvasView.getHeight();
-
         structure = StructureFactory.getSimpleHouse(width, height);
     }
 
@@ -113,9 +122,7 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
                 @Override
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
                     createStructure();
-
                     DrawHelper.drawStructure(structure, canvasView);
                 }
             });
