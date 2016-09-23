@@ -191,8 +191,8 @@ public class Kernel1 {
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-            LoadVector.add(DOFx,1,-acceleration[0]); //add influence vector in x-dir
-            LoadVector.add(DOFy,1,-acceleration[1]); //add influence vector in y-dir
+            LoadVector.add(DOFx,0,-acceleration[0]); //add influence vector in x-dir
+            LoadVector.add(DOFy,0,-acceleration[1]); //add influence vector in y-dir
         }
 
         CommonOps.mult(MassMatrix, LoadVector, LoadVector);
