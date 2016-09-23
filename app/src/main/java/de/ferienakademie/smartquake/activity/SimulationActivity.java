@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +40,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Structure structure;
     private Kernel1 kernel1;
     private Simulation simulation;
+
+    private CoordinatorLayout layout;
 
     private Recorder recorder;
 
@@ -104,6 +109,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
 
+        layout = (CoordinatorLayout) findViewById(R.id.simLayout);
+
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
@@ -155,7 +162,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         kernel1 = new Kernel1(structure, mExcitationManager);
         timeIntegration = new TimeIntegration(kernel1);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
-        simulation.setListener(SimulationActivity.this);
+        simulation.setListener(this);
         simulation.start();
     }
 
@@ -170,5 +177,24 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onSimulationSpeedChanged(Simulation.SpeedState newSpeedState) {
+
+        String msg = "";
+
+        switch (newSpeedState) {
+            case SLOW:
+                msg = "Simulation speed slow";
+                break;
+            case NORMAL:
+                msg = "Simulation speed normal";
+                break;
+        }
+
+        Log.d("Speed", msg);
+
+        Snackbar.make(layout, msg, Snackbar.LENGTH_SHORT).show();
     }
 }
