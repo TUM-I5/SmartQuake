@@ -1,6 +1,8 @@
 package de.ferienakademie.smartquake.model;
 
+
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,22 +10,20 @@ import java.util.List;
  */
 public class Node {
     //Current node position
-    private double currX;
-    private double currY;
+
     //Initial node position
     private double initX;
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private List<Double> u; //Displacement
+    private List<Double> u; //Displacement (current)
 
     private double radius = 15;
 
 
 
+
     public Node(double x, double y) {
-        this.currX = x;
-        this.currY = y;
         this.initX = x;
         this.initY = y;
     }
@@ -69,23 +69,6 @@ public class Node {
         this.DOF = DOF;
     }
 
-    public double getCurrX() {
-        return currX;
-    }
-
-    public void setCurrX(double currX) {
-        this.currX = currX;
-    }
-
-    public double getCurrY() {
-        return currY;
-    }
-
-    public void setCurrY(double currY) {
-        this.currY = currY;
-    }
-
-
 
     public double getRadius() {
         return radius;
@@ -93,5 +76,6 @@ public class Node {
 
     public void setRadius(double radius) {
         this.radius = radius;
+
     }
 }
