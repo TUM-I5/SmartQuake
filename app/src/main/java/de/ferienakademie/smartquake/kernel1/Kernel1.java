@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.kernel1;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -9,7 +7,6 @@ import java.util.List;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Beam;
-import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 
@@ -23,7 +20,10 @@ public class Kernel1 {
     private DenseMatrix64F MassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces
-    private DenseMatrix64F DisplacementVector;  //project manager advic
+    private DenseMatrix64F influenceVectorx;
+    private DenseMatrix64F influenceVectory;
+    private DenseMatrix64F DisplacementVector;  //project manager advice
+
 
     private int numDOF;
 
@@ -35,6 +35,7 @@ public class Kernel1 {
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
         initMatrices();
+        calcInfluenceVector();
     }
 
     /**
@@ -170,6 +171,21 @@ public class Kernel1 {
         LoadVector = loadVector;
     }
 
+    public void calcInfluenceVector(){
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+            List<Integer> DOF = node.getDOF();
+            int DOFx = DOF.get(0);
+            int DOFy = DOF.get(1);
+            influenceVectorx = new DenseMatrix64F(getNumDOF(), 1);
+            influenceVectory = new DenseMatrix64F(getNumDOF(), 1);
+            influenceVectorx.zero();
+            influenceVectory.zero();
+            influenceVectorx.add(DOFx,0,-1); //add influence vector in x-dir
+            influenceVectory.add(DOFy,0,-1); //add influence vector in y-dir
+        }
+    }
+
 
     /**
      * Update the vector with forces using the acceleration values received from the {@link AccelerationProvider}
@@ -177,18 +193,9 @@ public class Kernel1 {
      */
     public void updateLoadVector(double[] acceleration) {
         LoadVector.zero();
-
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-            Node node = structure.getNodes().get(i);
-            List<Integer> DOF = node.getDOF();
-            int DOFx = DOF.get(0);
-            int DOFy = DOF.get(1);
-            LoadVector.add(DOFx,0,-acceleration[0]); //add influence vector in x-dir
-            LoadVector.add(DOFy,0,-acceleration[1]); //add influence vector in y-dir
-        }
-
-        CommonOps.mult(MassMatrix, LoadVector, LoadVector);
-
-
+        CommonOps.scale(acceleration[0], influenceVectorx);
+        CommonOps.scale(acceleration[1], influenceVectory);
+        CommonOps.addEquals(influenceVectorx, influenceVectory);
+        CommonOps.mult(MassMatrix, influenceVectorx, LoadVector);
     }
 }
