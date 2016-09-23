@@ -15,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
@@ -42,6 +41,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
 
     private CoordinatorLayout layout;
+    private Snackbar slowSnackbar;
 
     private Recorder recorder;
 
@@ -148,22 +148,22 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private void onStopButtonClicked() {
         simulation.stop();
-        Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         simFab.setOnClickListener(startSimulationListener);
     }
 
     void startSimulation() {
-        Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
+        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
         recorder.initRecord();
 
         kernel1 = new Kernel1(structure, mExcitationManager);
         timeIntegration = new TimeIntegration(kernel1);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
-        simulation.setListener(this);
         simulation.start();
+        simulation.setListener(this);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simFab.setOnClickListener(startSimulationListener);
                 simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
 
-                Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+                Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -187,14 +187,16 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         switch (newSpeedState) {
             case SLOW:
                 msg = "Simulation speed slow";
+                slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
+                slowSnackbar.show();
                 break;
             case NORMAL:
                 msg = "Simulation speed normal";
+                if (slowSnackbar != null) slowSnackbar.dismiss();
                 break;
         }
 
-        Log.d("Speed", msg);
+        Log.d("SimSpeed", msg);
 
-        Snackbar.make(layout, msg, Snackbar.LENGTH_SHORT).show();
     }
 }
