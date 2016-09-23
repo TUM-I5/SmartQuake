@@ -5,8 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class StructureFactory {
-    public static Structure getSimpleHouse(double width, double height) {
-        double quarter = width * 0.25;
+    public static Structure getSimpleHouse() {
+        double width = 8;
+        double height = 8;
+
+        double half = width * 0.5;
 
         List<Double> unode1 = new LinkedList<>();
         unode1.add(0.0);
@@ -40,16 +43,15 @@ public class StructureFactory {
         DOFnode4.add(9);
         DOFnode4.add(10);
         DOFnode4.add(11);
-
         DOFnode5.add(12);
         DOFnode5.add(13);
         DOFnode5.add(14);
 
-        Node n1 = new Node(quarter, height, DOFnode1);
-        Node n2 = new Node(width - quarter, height, DOFnode2);
-        Node n3 = new Node(width - quarter, height - quarter, DOFnode3);
-        Node n4 = new Node(quarter, height - quarter, DOFnode4);
-        Node n5 = new Node(2 * quarter, height - 2 * quarter, DOFnode5);
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width, height);
+        Node n3 = new Node(width, height - half);
+        Node n4 = new Node(0, height - half);
+        Node n5 = new Node(half, height - 2 * half);
 
         Beam b1 = new Beam(n1, n2, testMaterial,true);
         Beam b2 = new Beam(n2, n3, testMaterial,true);
@@ -71,7 +73,10 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getSimpleEiffelTower(double width, double height) {
+    public static Structure getSimpleEiffelTower() {
+        double width = 8;
+        double height = 16;
+
         double half = width * 0.5;
         double quarter = width * 0.25;
         double eighth = width * 0.125;
