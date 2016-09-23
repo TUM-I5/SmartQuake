@@ -8,8 +8,8 @@ import java.util.List;
 public class Material {
 
     public static Material STEEL = new Material();
-    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005);
-    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005);
+    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005); // Source: Holzbau, wikipedia
+    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005); // Source: Betonbau, wikipedia
     public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005);
     public static Material SOMETHING = new Material(); //TODO Add values and more materials!
 
