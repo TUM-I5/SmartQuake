@@ -126,7 +126,7 @@ public class CreateActivity extends Activity {
             float y = event.getY(0) - 220;
 
             double mindist = DELTA;
-
+/*
             if (event.getDownTime() >= 500) {
                 chosenNode = null;
                 // find the beam with the minimum distance to it
@@ -151,7 +151,7 @@ public class CreateActivity extends Activity {
                 }
 
             }
-
+*/
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 for (Node node : nodes) {
                     if (distNodes(node, new Node(x, y)) <= mindist) {
