@@ -17,11 +17,6 @@ public class Node {
 
     private double radius = 15;
 
-    /**
-     * List of ALL adjacent beams
-     */
-    //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
-    //TODO: Maybe delete this
     private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
@@ -54,6 +49,9 @@ public class Node {
         this.initY = initY;
     }
 
+    public void addBeam(Beam beam) {
+        beams.add(beam);
+    }
     public List<Integer> getDOF() {
         return DOF;
     }
@@ -87,14 +85,12 @@ public class Node {
         this.radius = radius;
     }
 
-    //Probably obsolete, look above.
-    public void addBeam(Beam beam) {
-        beams.add(beam);
-    }
-
-    //Probably obsolete, look above.
     public void clearBeams() {
         beams.clear();
+    }
+
+    public List<Beam> getBeams() {
+        return beams;
     }
 
     @Override

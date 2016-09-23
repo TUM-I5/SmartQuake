@@ -8,9 +8,11 @@ import java.util.List;
 public class Material {
 
     public static Material STEEL = new Material();
-    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005);
-    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005);
+    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005); // Source: Holzbau, wikipedia
+    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005); // Source: Betonbau, wikipedia
     public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005);
+    public static Material SOMETHING = new Material(); //TODO Add values and more materials!
+
 
     protected double E = 0;   //Young's modulus
     protected double A = 0;   //cross section
@@ -19,6 +21,8 @@ public class Material {
     protected double EI = 0;  //rigidity
     protected double h = 0;   //height of beam (input)
     protected double b = 0;   //width of beam (input)
+    protected double m= 0;
+    protected double c= 0;
 
     protected double rho = 0;     //density of material
     protected double alpha = 0;   //alpha for mass matrix
@@ -35,6 +39,8 @@ public class Material {
         this.EI=E*I;
         this.rho = rho;
         this.alpha = alpha;
+        this.m=rho*A;
+        this.c=10;
 
     }
 
@@ -67,6 +73,8 @@ public class Material {
     public double getb(){return b;}
     public double geth(){return h;}
     public double getA(){return A;}
+    public double getC() {return c;}
+    public double getM(){return m;}
     public double getI(){return I;}
     public double getEA(){return EA;}
     public double getEI(){return EI;}
@@ -83,5 +91,7 @@ public class Material {
         }
     }
     */  // Not necessary
+
+    //TODO Also include beams with non-quadratic cross sections.
 
 }

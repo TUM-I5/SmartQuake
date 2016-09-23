@@ -6,7 +6,7 @@
         android:title="@string/replay_button"
         smartquake:showAsAction="ifRoom"/>
     <item android:id="@+id/load_replay_button"
-        android:icon="@drawable/ic_autorenew_white_24dp"
+        android:icon="@drawable/ic_replay_white_24dp"
         android:title="@string/replay_button"
         smartquake:showAsAction="ifRoom"/>
     <item android:id="@+id/save_replay_button"
