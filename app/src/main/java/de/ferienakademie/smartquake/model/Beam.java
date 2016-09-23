@@ -18,6 +18,8 @@ public class Beam {
     private double E;
     private double A;
     private double I;
+    private double rho;
+    private double alpha;
     private double x1;
     private double x2;
     private double y1;
@@ -47,11 +49,15 @@ public class Beam {
         this.thickness = thickness;
         this.material = material;
         l=Math.sqrt((x1-x2)*(x1-x2))+(y1-y2)*(y1-y2);
+        A=this.material.getA();
         EA=this.material.getEA();
         EI=this.material.getEI();
-
+        rho = this.material.getRho();
+        alpha=this.material.getAlpha();
 
         eleStiffnessMatrix = new DenseMatrix64F(6, 6);
+        eleStiffnessMatrix.zero();
+
         eleStiffnessMatrix.set(1,1,EA/l);
         eleStiffnessMatrix.set(1,4,-EA/l);
 
@@ -79,7 +85,15 @@ public class Beam {
         eleStiffnessMatrix.set(6,6,6*EI/(l*l));
 
 
+        eleMassMatrix = new DenseMatrix64F(6, 6);
+        eleMassMatrix.zero();
 
+        eleMassMatrix.set(1,1,0.5*rho*A*l);
+        eleMassMatrix.set(2,2,0.5*rho*A*l);
+        eleMassMatrix.set(3,3,alpha*rho*A*l*l*l);
+        eleMassMatrix.set(4,4,0.5*rho*A*l);
+        eleMassMatrix.set(5,5,0.5*rho*A*l);
+        eleMassMatrix.set(6,6,alpha*rho*A*l*l*l);
 
     }
 
