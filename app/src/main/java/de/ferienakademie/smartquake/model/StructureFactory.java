@@ -18,6 +18,7 @@ public class StructureFactory {
 
         //Kernel1 stuff
         //TODO Alex: redesign with ID Matrix
+        //TODO Paul: setConstraint(true) for fixed nodes
         List<Integer> DOFnode1 = new LinkedList<>();
         List<Integer> DOFnode2 = new LinkedList<>();
         List<Integer> DOFnode3 = new LinkedList<>();
@@ -66,6 +67,8 @@ public class StructureFactory {
         }
 
         structure.setConDOF(condof);
+        n1.setConstraint(true);
+        n1.setConstraint(true);
 
         return structure;
     }
