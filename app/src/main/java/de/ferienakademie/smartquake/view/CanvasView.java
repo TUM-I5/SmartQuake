@@ -45,12 +45,7 @@ public class CanvasView extends View {
 
     private void drawBeam(Beam beam, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
         Node startNode = beam.getStartNode();
-        canvas.drawCircle((float) (startNode.getCurrX() * displayScaling + xOffset), (float) (startNode.getCurrY()* displayScaling + yOffset),
-                (float) (startNode.getRadius() * displayScaling), PAINT);
         Node endNode = beam.getEndNode();
-        canvas.drawCircle((float) (endNode.getCurrX() * displayScaling + xOffset), (float) (endNode.getCurrY() * displayScaling+ yOffset),
-                (float) (endNode.getRadius() * displayScaling), PAINT);
-
         Path p = new Path();
         p.moveTo((float) (startNode.getCurrX() * displayScaling + xOffset), (float) (startNode.getCurrY() * displayScaling + yOffset));
         p.lineTo((float) (endNode.getCurrX() * displayScaling + xOffset), (float) (endNode.getCurrY() * displayScaling + yOffset));
