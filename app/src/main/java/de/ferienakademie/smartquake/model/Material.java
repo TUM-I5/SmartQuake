@@ -6,6 +6,12 @@ import java.util.List;
  * Created by alex on 21.09.16.
  */
 public class Material {
+
+    public static Material STEEL = new Material();
+    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005);
+    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005);
+    public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005);
+
     protected double E = 0;   //Young's modulus
     protected double A = 0;   //cross section
     protected double I = 0;   //moment of inertia
