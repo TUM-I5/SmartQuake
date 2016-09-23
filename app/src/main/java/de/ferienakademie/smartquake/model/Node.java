@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.model;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,20 +8,26 @@ import java.util.List;
  */
 public class Node {
     //Current node position
-
+    private double currX;
+    private double currY;
     //Initial node position
     private double initX;
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private List<Double> u; //Displacement (current)
+    private List<Double> u; //Displacement
 
     private double radius = 15;
 
-
-
+    /**
+     * List of ALL adjacent beams
+     */
+    //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
+    private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
+        this.currX = x;
+        this.currY = y;
         this.initX = x;
         this.initY = y;
     }
@@ -69,6 +73,23 @@ public class Node {
         this.DOF = DOF;
     }
 
+    public double getCurrX() {
+        return currX;
+    }
+
+    public void setCurrX(double currX) {
+        this.currX = currX;
+    }
+
+    public double getCurrY() {
+        return currY;
+    }
+
+    public void setCurrY(double currY) {
+        this.currY = currY;
+    }
+
+
 
     public double getRadius() {
         return radius;
@@ -76,6 +97,25 @@ public class Node {
 
     public void setRadius(double radius) {
         this.radius = radius;
+    }
 
+    //Probably obsolete, look above.
+    public void addBeam(Beam beam) {
+        beams.add(beam);
+    }
+
+    //Probably obsolete, look above.
+    public void clearBeams() {
+        beams.clear();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof Node)) return false;
+
+        Node node = (Node) obj;
+
+        return node.currX == currX && node.currY == currY;
     }
 }
