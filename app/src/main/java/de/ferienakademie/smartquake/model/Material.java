@@ -15,10 +15,12 @@ public class Material {
 
 
     //constructor
-    public Material(double A,double E,double I){
-        this.A=A;
+    public Material(double b, double h ,double E){
+        this.b=b;
+        this.h=h;
+        this.A=b*h;
         this.E=E;
-        this.I=I;
+        this.I=b*h*h*h/12.;
         this.EA=E*A;
         this.EI=E*I;
 
@@ -33,6 +35,13 @@ public class Material {
     }
     public double getA() {
         return A;
+    }
+
+    public void setNewAandI(double b, double h){ //necessary, if b and h are changed - changes all relevant properties
+        A = b*h;
+        I = b*h*h*h/12.;
+        EA = E*A;
+        EI = E*I;
     }
 
     public void setA(double a) {
