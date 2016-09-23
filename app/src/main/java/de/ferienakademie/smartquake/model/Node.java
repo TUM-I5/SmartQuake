@@ -96,6 +96,10 @@ public class Node {
         beams.clear();
     }
 
+    public List<Beam> getBeams() {
+        return beams;
+    }
+
     @Override
     public boolean equals(Object obj) {
 
