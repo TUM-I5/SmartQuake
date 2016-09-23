@@ -94,6 +94,10 @@ public class Node {
         IsConstraint = constraint;
     }
 
+    public List<Beam> getBeams() {
+        return beams;
+    }
+
     @Override
     public boolean equals(Object obj) {
 

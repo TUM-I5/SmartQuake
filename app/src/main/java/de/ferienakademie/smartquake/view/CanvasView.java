@@ -14,6 +14,12 @@ public class CanvasView extends View {
 
     public static final Paint PAINT = new Paint();
 
+    static {
+        PAINT.setColor(Color.RED);
+        PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+        PAINT.setAntiAlias(true);
+    }
+
     public boolean isBeingDrawn = false;
 
     public CanvasView(Context context) {
@@ -38,22 +44,23 @@ public class CanvasView extends View {
         isBeingDrawn = true;
         super.onDraw(canvas);
 
-        PAINT.setColor(Color.RED);
-        PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
-        PAINT.setAntiAlias(true);
-
         for (Beam beam : DrawHelper.snapBeams) {
             drawBeam(beam, canvas, PAINT);
+        }
+        for (Node node : DrawHelper.snapNodes) {
+            drawNode(node, canvas, PAINT);
         }
         isBeingDrawn = false;
     }
 
     public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
         Node startNode = beam.getStartNode();
-        canvas.drawCircle((float) startNode.getCurrX(), (float) startNode.getCurrY(), (float) startNode.getRadius(), paint);
         Node endNode = beam.getEndNode();
-        canvas.drawCircle((float) endNode.getCurrX(), (float) endNode.getCurrY(), (float) endNode.getRadius(), paint);
         paint.setStrokeWidth(beam.getThickness());
         canvas.drawLine((float) startNode.getCurrX(), (float) startNode.getCurrY(), (float) endNode.getCurrX(), (float) endNode.getCurrY(), paint);
+    }
+
+    public static void drawNode(Node node, Canvas canvas, Paint paint) {
+        canvas.drawCircle((float) node.getCurrX(), (float) node.getCurrY(), (float) node.getRadius(), paint);
     }
 }
