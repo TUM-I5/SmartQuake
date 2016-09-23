@@ -14,11 +14,13 @@ public class Beam {
     private Node endNode;
     private Material material;
     private float thickness;
+    private double l;
     // array of degress of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
     private int[] Dofs;
 
     private DenseMatrix64F eleStiffnessMatrix;
-    private DenseMatrix64F eleMassMatrix;
+    private DenseMatrix64F elelumpedMassMatrix;
+    private DenseMatrix64F eleconsistentMassMatrix;
 
     public Beam(Node startNode, Node endNode, float thickness) {
         this.startNode = startNode;
@@ -27,7 +29,7 @@ public class Beam {
     }
 
     //Kernel1 constructor
-    public Beam(Node startNode, Node endNode, Material material) {
+    public Beam(Node startNode, Node endNode, Material material,boolean lumped) {
         this.startNode = startNode;
         this.endNode = endNode;
         this.Dofs = new int[]{
@@ -35,19 +37,23 @@ public class Beam {
                 endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
         };
         this.material = material;
-        this.thickness = 15;
-        computeMatrices();
-    }
-
-    void computeMatrices() {
         double x1 = startNode.getInitX(), y1 = startNode.getInitY();
         double x2 = endNode.getInitX(), y2 = endNode.getInitY();
-        double l=Math.sqrt((x1-x2)*(x1-x2))+(y1-y2)*(y1-y2);
-        double A=this.material.getA();
+        this.l=Math.sqrt((x1-x2)*(x1-x2))+(y1-y2)*(y1-y2);
+        this.thickness = 15;
+        computeStiffnessMatrix();
+        if (lumped){
+            computelumpedMassMatrix();
+        }else {
+            computeconsistentMassMatrix();
+        }
+
+    }
+
+    void computeStiffnessMatrix() {
         double EA=this.material.getEA();
         double EI=this.material.getEI();
-        double rho = this.material.getRho();
-        double alpha=this.material.getAlpha();
+
 
         eleStiffnessMatrix = new DenseMatrix64F(6, 6);
         eleStiffnessMatrix.zero();
@@ -78,15 +84,64 @@ public class Beam {
         eleStiffnessMatrix.set(5,4,6*EI/(l*l));
         eleStiffnessMatrix.set(5,5,6*EI/(l*l));
 
-        eleMassMatrix = new DenseMatrix64F(6, 6);
-        eleMassMatrix.zero();
 
-        eleMassMatrix.set(0,0,0.5*rho*A*l);
-        eleMassMatrix.set(1,1,0.5*rho*A*l);
-        eleMassMatrix.set(2,2,alpha*rho*A*l*l*l);
-        eleMassMatrix.set(3,3,0.5*rho*A*l);
-        eleMassMatrix.set(4,4,0.5*rho*A*l);
-        eleMassMatrix.set(5,5,alpha*rho*A*l*l*l);
+    }
+
+    void computelumpedMassMatrix() {
+        elelumpedMassMatrix = new DenseMatrix64F(6, 6);
+        elelumpedMassMatrix.zero();
+
+        double rho = this.material.getRho();
+        double alpha = this.material.getAlpha();
+        double m = material.getM();
+
+        elelumpedMassMatrix.set(0, 0, 0.5 * m * l);
+        elelumpedMassMatrix.set(1, 1, 0.5 * m * l);
+        elelumpedMassMatrix.set(2, 2, alpha * m * l * l * l);
+        elelumpedMassMatrix.set(3, 3, 0.5 * m * l);
+        elelumpedMassMatrix.set(4, 4, 0.5 * m * l);
+        elelumpedMassMatrix.set(5, 5, alpha * m * l * l * l);
+    }
+
+    void computeconsistentMassMatrix() {
+        eleconsistentMassMatrix = new DenseMatrix64F(6, 6);
+        eleconsistentMassMatrix.zero();
+
+        double m= material.getM();
+
+         //consistent element mass matrix
+        /*
+        eleMassMatrix = new DenseMatrix64F(6,6);
+        eleMassMatrix.zero();
+        //row 1
+        eleMassMatrix.set(0,0,140*m*l*l/420);
+        eleMassMatrix.set(0,3,70*m*l*l/420);
+        //row 2
+        eleMassMatrix.set(1,1,156*m*l*l/420);
+        eleMassMatrix.set(1,2,-22*l*m*l*l/420);
+        eleMassMatrix.set(1,4,54*m*l*l/420);
+        eleMassMatrix.set(1,5,13*l*m*l*l/420);
+        //row 3
+        eleMassMatrix.set(2,1,-22*l*m*l*l/420);
+        eleMassMatrix.set(2,2,4*l*l*m*l*l/420);
+        eleMassMatrix.set(2,4,-13*l*m*l*l/420);
+        eleMassMatrix.set(2,5,-3*l*l*m*l*l/420);
+        //row 4
+        eleMassMatrix.set(3,0,70*m*l*l/420);
+        eleMassMatrix.set(3,3,140*m*l*l/420);
+        //row 5
+        eleMassMatrix.set(4,1,54*m*l*l/420);
+        eleMassMatrix.set(4,2,-13*l*m*l*l/420);
+        eleMassMatrix.set(4,4,156*m*l*l/420);
+        eleMassMatrix.set(4,5,22*l*m*l*l/420);
+        //row 6
+        eleMassMatrix.set(5,1,13*l*m*l*l/420);
+        eleMassMatrix.set(5,2,-3*l*l*m*l*l/420);
+        eleMassMatrix.set(5,4,22*l*m*l*l/420);
+        eleMassMatrix.set(5,5,4*l*l*m*l*l/420);
+        */
+
+
     }
 
     public Beam(Node startNode, Node endNode) {
@@ -134,6 +189,6 @@ public class Beam {
     }
 
     public DenseMatrix64F getEleMassMatrix() {
-        return eleMassMatrix;
+        return elelumpedMassMatrix;
     }
 }
