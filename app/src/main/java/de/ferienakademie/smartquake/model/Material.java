@@ -42,11 +42,21 @@ public class Material {
         return A;
     }
 
-    public void setNewAandI(double b, double h){ //necessary, if b and h are changed - changes all relevant properties
+    public double getb(){
+        return b;
+    }
+
+    public double geth(){
+        return h;
+    }
+
+    public void setNewProperties(double b, double h){ //necessary, if b and h are changed - changes all relevant properties
+        this.b = b;
+        this.h = h;
         A = b*h;
         I = b*h*h*h/12.;
-        EA = E*A;
-        EI = E*I;
+        EA = E*A; //update
+        EI = E*I; //update
     }
 
     public void setA(double a) {
