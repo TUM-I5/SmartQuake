@@ -55,13 +55,13 @@ public class ExplicitSolver extends Solver {
     public void getAcceleration() {
         //just temporarlily bypass kernel1
         acceleration = getAccelerationProvider().getAcceleration();
-        //k1.
+        k1.updateLoadVector(acceleration);
         tempVector = k1.getLoadVector().copy();
 
 
         for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            tempVector.set(j, 0, 2000 * acceleration[0] );
-            tempVector.set(j + 1, 0, 2000 * acceleration[1] );
+            tempVector.set(j, 0, 20 * acceleration[0] );
+            tempVector.set(j + 1, 0, 20 * acceleration[1] );
         }
 
 
