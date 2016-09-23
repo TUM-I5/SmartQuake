@@ -10,11 +10,19 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
 public class ExplicitSolver extends Solver {
 
 
+    /**
+     *
+     * @param k1
+     * @param xDot
+     */
     public ExplicitSolver(Kernel1 k1, DenseMatrix64F xDot) {
         super(k1, xDot);
     }
 
 
+    /**
+     * This method provides for all explicit solver the acceleration of all nodes
+     */
     public void getAcceleration() {
         double[] acceleration = k1.getAccelerationProvider().getAcceleration();
         for (int j = 6; j < k1.getNumDOF(); j += 3) {

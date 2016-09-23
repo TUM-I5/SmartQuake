@@ -11,7 +11,11 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
  */
 public class Euler extends ExplicitSolver {
 
-
+    /**
+     *
+     * @param k1
+     * @param xDot
+     */
     public Euler(Kernel1 k1, DenseMatrix64F xDot) {
         super(k1, xDot);
     }
@@ -31,6 +35,7 @@ public class Euler extends ExplicitSolver {
 
         //displacement at step n+1
         CommonOps.addEquals(x, 1 / 2.0 * delta_t, oldxDot);
+
     }
 
 
