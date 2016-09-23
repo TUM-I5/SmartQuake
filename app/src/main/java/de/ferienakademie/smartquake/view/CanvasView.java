@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 
 import de.ferienakademie.smartquake.model.Beam;
@@ -54,21 +55,18 @@ public class CanvasView extends View {
         canvas.drawCircle((float) startNode.getCurrX(), (float) startNode.getCurrY(), (float) startNode.getRadius(), paint);
         Node endNode = beam.getEndNode();
         canvas.drawCircle((float) endNode.getCurrX(), (float) endNode.getCurrY(), (float) endNode.getRadius(), paint);
-        paint.setStrokeWidth(beam.getThickness());
 
-        double startX = startNode.getCurrX();
-        double startY = startNode.getCurrY();
-        double endX = endNode.getCurrX();
-        double endY = endNode.getCurrY();
 
-        float cp1x = (float)((2 * startX + endX) / 3);
-        float cp1y = (float)((2 * startY + endY) / 3);
-        float cp2x = (float)((startX + 2 * endX) / 3);
-        float cp2y = (float)((startY + 2 * endY) / 3);
+        Pair<Float, Float> oneThirdPoint = beam.getOneThirdPoint();
+        Pair<Float, Float> twoThirdPoint = beam.getTwoThirdPoint();
 
         Path p = new Path();
         p.moveTo((float) startNode.getCurrX(), (float) startNode.getCurrY());
-        p.cubicTo(cp1x, cp1y, cp2x, cp2y, (float) endNode.getCurrX(), (float) endNode.getCurrY());
+        p.cubicTo(oneThirdPoint.first, oneThirdPoint.second, twoThirdPoint.first, twoThirdPoint.second, (float) endNode.getCurrX(), (float) endNode.getCurrY());
+
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(beam.getThickness());
         canvas.drawPath(p, paint);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 }
