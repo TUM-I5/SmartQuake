@@ -50,9 +50,9 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot_old);
 
         //Calculate displacement
-        CommonOps.addEquals(x,delta_t,xDot);
-        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot);
-        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old);
+        CommonOps.addEquals(x,delta_t,xDot); //x = x + delta_t*xDot
+        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4
+        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old); // x = x + delta_t**2*xDotDot_old/4
 
     }
 
@@ -65,9 +65,9 @@ public class Newmark extends ImplicitSolver {
 
         this.delta_t = delta_t;
 
-        CommonOps.addEquals(A,1,M);
-        CommonOps.addEquals(A,delta_t/2.0,C);
-        CommonOps.addEquals(A,delta_t*delta_t/4.0,K);
+        CommonOps.addEquals(A,1,M); //A = A + M
+        CommonOps.addEquals(A,delta_t/2.0,C); //A = A + delta_t/2*C
+        CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
 
         //LU solver
         solver = LinearSolverFactory.lu(k1.getNumDOF());
@@ -105,10 +105,10 @@ public class Newmark extends ImplicitSolver {
         RHS.zero();
 
         //Calculate RHS
-        CommonOps.multAdd(-1,K,x,RHS);
-        CommonOps.multAdd(-1,V,xDot,RHS);
-        CommonOps.multAdd(-1,B,xDotDot,RHS);
-        CommonOps.addEquals(RHS,1,f_load);
+        CommonOps.multAdd(-1,K,x,RHS); //RHS = RHS - K*x
+        CommonOps.multAdd(-1,V,xDot,RHS); //RHS = RHS - V*xDot
+        CommonOps.multAdd(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
+        CommonOps.addEquals(RHS,1,f_load); //RHS = RHS + f_load
 
         //Solve
         solver.solve(RHS,acc);
