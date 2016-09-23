@@ -31,7 +31,7 @@ public class Simulation {
             public void run() {
                 kernel2.prepareSimulation();
                 TimeIntegration.SimulationStep currentStep;
-                for (int i = 0; i < 400; i++) {
+                while(true) {
                     if (!isRunning) {
                         break;
                     }

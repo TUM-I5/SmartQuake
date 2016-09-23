@@ -118,4 +118,14 @@ public class Node {
     public void clearBeams() {
         beams.clear();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof Node)) return false;
+
+        Node node = (Node) obj;
+
+        return node.currX == currX && node.currY == currY;
+    }
 }
