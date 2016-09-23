@@ -81,6 +81,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
+        if (id == R.id.settings_button) {
+            if (simulation != null) simulation.stop();
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
