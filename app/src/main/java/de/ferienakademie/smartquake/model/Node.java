@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.model;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
 /**
@@ -12,18 +13,12 @@ public class Node {
     //Initial node position
     private double initX;
     private double initY;
+    private List<Integer> DOF; //Degrees of freedom
 
-    private List<Integer>[] DOF; //Degrees of freedom
-
-    private List<Double>[] u; //Displacement
+    private List<Double> u; //Displacement
 
     private double radius = 15;
 
-    /**
-     * List of ALL adjacent beams
-     */
-    //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
-    private List<Beam> beams;
 
 
     public Node(double x, double y) {
@@ -34,16 +29,11 @@ public class Node {
     }
 
 
-    public Node(double x, double y, List<Beam> beams) {
-        this(x,y);
-        this.beams = beams;
-    }
-
-    public Node(double x, double y, List<Integer>[] DOF, List<Double>[] u, List<Beam> beams) {
-        this(x, y, beams);
+    public Node(double x, double y, List<Integer> DOF, List<Double> u) {
+        this.initX=x;
+        this.initY=y;
         this.DOF = DOF;
         this.u = u;
-        this.beams = beams;
     }
 
 
@@ -63,19 +53,19 @@ public class Node {
         this.initY = initY;
     }
 
-    public List<Double>[] getU() {
+    public List<Double> getU() {
         return u;
     }
 
-    public void setU(List<Double>[] u) {
+    public void setU(List<Double> u) {
         this.u = u;
     }
 
-    public List<Integer>[] getDOF() {
+    public List<Integer> getDOF() {
         return DOF;
     }
 
-    public void setDOF(List<Integer>[] DOF) {
+    public void setDOF(List<Integer> DOF) {
         this.DOF = DOF;
     }
 
@@ -95,10 +85,7 @@ public class Node {
         this.currY = currY;
     }
 
-    //Probably obsolete, look above.
-    public List<Beam> getBeams() {
-        return beams;
-    }
+
 
     public double getRadius() {
         return radius;
@@ -106,15 +93,5 @@ public class Node {
 
     public void setRadius(double radius) {
         this.radius = radius;
-    }
-
-    //Probably obsolete, look above.
-    public void addBeam(Beam beam) {
-        beams.add(beam);
-    }
-
-    //Probably obsolete, look above.
-    public void clearBeams() {
-        beams.clear();
     }
 }

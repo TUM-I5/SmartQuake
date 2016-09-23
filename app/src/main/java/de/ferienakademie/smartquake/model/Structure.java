@@ -11,18 +11,18 @@ public class Structure {
 
     private List<Node> nodes;
     private List<Beam> beams;
-    // TODO: somebody plz initialize this array conDOF
-    private int[] conDOF ; //constraint dofs
 
-    public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
+
+
+    public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF ) {
         this.nodes = nodes;
         this.beams = beams;
-        this.conDOF = conDOF;
     }
 
     public Structure() {
-        this(new ArrayList<Node>(), new ArrayList<Beam>(), new int[] {});
+        this(new ArrayList<Node>(), new ArrayList<Beam>(),new int[] {});
     }
+
 
     public List<Node> getNodes() {
         return nodes;
@@ -41,14 +41,6 @@ public class Structure {
     }
 
 
-    public int[] getConDOF() {
-        return conDOF;
-    }
-
-    public void setConDOF(int[] conDOF) {
-        this.conDOF = conDOF;
-    }
-
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
     }
@@ -60,7 +52,7 @@ public class Structure {
     public void addBeam(Beam beam) {
         this.beams.add(beam);
     }
-    
+
     public List<Beam> getBeams() {
         return beams;
     }
@@ -69,4 +61,6 @@ public class Structure {
         nodes.clear();
         beams.clear();
     }
+
+
 }

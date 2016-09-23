@@ -14,12 +14,17 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -72,22 +77,75 @@ public class MainActivity extends Activity implements Simulation.SimulationProgr
         double middle = canvasView.getWidth() * 0.25f;
 
         structure = new Structure();
+        //TODO Alex: redesign with ID Matrix
+        List<Integer> DOFnode1 = new LinkedList<>();
+        List<Integer> DOFnode2 = new LinkedList<>();
+        List<Integer> DOFnode3 = new LinkedList<>();
+        List<Integer> DOFnode4 = new LinkedList<>();
+        List<Integer> DOFnode5 = new LinkedList<>();
 
-        Node n1 = new Node(middle, height);
-        Node n2 = new Node(width - middle, height);
-        Node n3 = new Node(width - middle, height - middle);
-        Node n4 = new Node(middle, height - middle);
-        Node n5 = new Node(2 * middle, height - 2 * middle);
+        List<Double> unode1 = new LinkedList<>();
 
-        Beam b1 = new Beam(n1, n2);
-        Beam b2 = new Beam(n2, n3);
-        Beam b3 = new Beam(n3, n4);
-        Beam b4 = new Beam(n4, n1);
-        Beam b5 = new Beam(n4, n5);
-        Beam b6 = new Beam(n5, n3);
+        DOFnode1.add(0); //constraint
+        DOFnode1.add(1);//constraint
+        DOFnode1.add(2);//constraint
+
+        DOFnode2.add(3);//constraint
+        DOFnode2.add(4);//constraint
+        DOFnode2.add(5);//constraint
+
+        DOFnode3.add(6);
+        DOFnode3.add(7);
+        DOFnode3.add(8);
+
+        DOFnode4.add(9);
+        DOFnode4.add(10);
+        DOFnode4.add(11);
+
+        DOFnode5.add(12);
+        DOFnode5.add(13);
+        DOFnode5.add(14);
+
+
+
+        unode1.add(0.0);
+        unode1.add(0.0);
+        unode1.add(0.0);
+
+        Node n1 = new Node(middle, height,DOFnode1,unode1);
+        Node n2 = new Node(width - middle, height,DOFnode2,unode1);
+        Node n3 = new Node(width - middle, height - middle,DOFnode3,unode1);
+        Node n4 = new Node(middle, height - middle,DOFnode4,unode1);
+        Node n5 = new Node(2 * middle, height - 2 * middle,DOFnode5,unode1);
+
+        Beam b1 = new Beam(n2, n3);
+        Beam b2 = new Beam(n3, n4);
+        Beam b3 = new Beam(n4, n1);
+        Beam b4 = new Beam(n4, n5);
+        Beam b5 = new Beam(n5, n3);
+
+
+        List<Integer> condof= new ArrayList<>( );
+        List<Integer> dof= new ArrayList<>( );
+        List<Integer[]> IDMatrix = new ArrayList<Integer[]>();
+
+        IDMatrix.add(b1.getDofs()); //get right notation
+
+        condof.addAll(n1.getDOF()); //ground connected Nodes
+        condof.addAll(n2.getDOF());
+
+
+
+        Material test = new Material("testmat");
+        kernel1.setMaterial(test);
+        kernel1.setConDOF(condof);
 
         structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4, b5, b6);
+
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            kernel1.addDof(structure.getNodes().get(i).getDOF());
+        }
+        structure.addBeams(b1, b2, b3, b4, b5);
     }
 
     @Override

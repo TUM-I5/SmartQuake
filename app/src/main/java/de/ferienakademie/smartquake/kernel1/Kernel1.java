@@ -1,8 +1,13 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 
+import java.util.List;
+
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 
@@ -16,11 +21,15 @@ public class Kernel1 {
     private DenseMatrix64F MassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces.
-    private DenseMatrix64F DisplacementVector;  //project manager advice
+    private DenseMatrix64F DisplacementVector;  //project manager advic
+    private List<Integer> conDOF ; //constraint dofs
 
-    //TODO: ask why we have three degrees of freedom while modelling in 2D
+
+
+    private List<Integer> DOF ;
+
     private int numDOF;
-    private int[] conDOF;
+    private Material material;
 
     Structure structure;
     AccelerationProvider accelerationProvider;
@@ -29,8 +38,7 @@ public class Kernel1 {
         this.structure = structure;
         this.accelerationProvider = accelerationProvider;
 
-        this.numDOF = 3 * structure.getNodes().size();
-        this.conDOF = structure.getConDOF();
+
 
         //initialize displacement with zeros
         DisplacementVector = new DenseMatrix64F(numDOF, 1);
@@ -59,19 +67,29 @@ public class Kernel1 {
     }
 
     public void calcStiffnessMatrix() {
-        for (int i = 0; i < numDOF - conDOF.length; i++) {
+        for (int i = 0; i < numDOF - conDOF.size(); i++) {
             StiffnessMatrix.add(i, i, 1);
+
+        }
+        for (int e = 0; e < structure.getBeams().size(); e++) {
+
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                //Todo assemble with Id matrix
+                  StiffnessMatrix.print();
+                }
+            }
         }
     }
 
     public void calcMassMatrix() {
-        for (int i = 0; i < numDOF - conDOF.length; i++) {
+        for (int i = 0; i < numDOF - conDOF.size(); i++) {
             MassMatrix.add(i, i, 1);
         }
     }
 
     public void calcDampingMatrix() {
-        for (int i = 0; i < numDOF - conDOF.length; i++) {
+        for (int i = 0; i < numDOF - conDOF.size(); i++) {
             DampingMatrix.add(i, i, 1);
         }
     }
@@ -84,6 +102,33 @@ public class Kernel1 {
         return numDOF;
     }
 
+    public List<Integer> getConDOF() {
+        return conDOF;
+    }
+
+    public void setConDOF(List<Integer> conDOF) {
+        this.conDOF = conDOF;
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public List<Integer> getDOF() {
+        return DOF;
+    }
+
+    public void setDOF(List<Integer> DOF) {
+        this.DOF = DOF;
+    }
+
+    public void addDof(List<Integer> DOF) {
+        this.DOF.addAll(DOF);
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
     public Structure getStructure() {
         return structure;
     }
