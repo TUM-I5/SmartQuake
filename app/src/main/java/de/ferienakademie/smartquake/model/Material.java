@@ -4,20 +4,25 @@ package de.ferienakademie.smartquake.model;
  * Created by alex on 21.09.16.
  */
 public class Material {
-    private double E = 0;
-    private double A = 0;
-    private double I = 0;
-    private double EA = 0;
-    private double EI = 0;
+    private double E = 0;   //Young's modulus
+    private double A = 0;   //cross section
+    private double I = 0;   //moment of inertia
+    private double EA = 0;  //
+    private double EI = 0;  //rigidity
+    private double h = 0;   //height of beam (input)
+    private double b = 0;   //width of beam (input)
+
     private double rho = 0;
     private double alpha = 0;   //alpha for mass matrix
     //may have to change zeroes
 
     //constructor
-    public Material(double A,double E,double I,double rho,double alpha){
-        this.A=A;
+    public Material(double b, double h ,double E){
+        this.b=b;
+        this.h=h;
+        this.A=b*h;
         this.E=E;
-        this.I=I;
+        this.I=b*h*h*h/12.;
         this.EA=E*A;
         this.EI=E*I;
         this.rho = rho;
@@ -35,6 +40,13 @@ public class Material {
     }
     public double getA() {
         return A;
+    }
+
+    public void setNewAandI(double b, double h){ //necessary, if b and h are changed - changes all relevant properties
+        A = b*h;
+        I = b*h*h*h/12.;
+        EA = E*A;
+        EI = E*I;
     }
 
     public void setA(double a) {
