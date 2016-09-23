@@ -18,7 +18,7 @@ public class Node {
 
     private List<Double>[] u; //Displacement
 
-    private double radius = 15;
+    private double radius = 0.1;
 
     /**
      * List of ALL adjacent beams
