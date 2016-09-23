@@ -18,9 +18,7 @@ public class CanvasView extends View {
     // get dpi with context.getResources().getDisplayMetrics().xdpi
 
     private final Paint paint = new Paint();
-    private Canvas canvas;
 
-    //TODO: this really shouldn't be public
     public boolean isBeingDrawn = false;
 
     public CanvasView(Context context) {
@@ -52,12 +50,15 @@ public class CanvasView extends View {
 
         double xOffset = 0.5 * (canvas.getWidth() - modelSize[0] * displayScaling);
         double yOffset = canvas.getHeight() - modelSize[1] * displayScaling;
-        for (Beam b: beams) {
-            drawBeam(b, xOffset, yOffset, displayScaling);
+        for (Beam beam : DrawHelper.snapBeams) {
+            drawBeam(beam, canvas);
+        }
+        for (Node node : DrawHelper.snapNodes) {
+            drawNode(node, canvas);
         }
     }
 
-    private void drawBeam(Beam beam, double xOffset, double yOffset, double displayScaling) {
+    private void drawBeam(Beam beam, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
         Node startNode = beam.getStartNode();
         canvas.drawCircle((float) (startNode.getCurrX() * displayScaling + xOffset), (float) (startNode.getCurrY()* displayScaling + yOffset),
                 (float) (startNode.getRadius() * displayScaling), paint);
@@ -76,13 +77,29 @@ public class CanvasView extends View {
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
+    public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
+        canvas.drawCircle((float) (node.getCurrX() * displayScaling + xOffset), (float) (node.getCurrY()* displayScaling + yOffset),
+                (float) (node.getRadius() * displayScaling), paint);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         isBeingDrawn = true;
         super.onDraw(canvas);
-        this.canvas = canvas;
 
-        drawAll(DrawHelper.getSnapBeams(), DrawHelper.getBoundingBox());
+        double[] modelSize = DrawHelper.boundingBox;
+
+        double displayScaling = Math.min(0.75 * canvas.getWidth() / modelSize[0], 0.75 * canvas.getWidth() / modelSize[1]);
+
+        double xOffset = 0.5 * (canvas.getWidth() - modelSize[0] * displayScaling);
+        double yOffset = canvas.getHeight() - modelSize[1] * displayScaling;
+        for (Beam beam : DrawHelper.snapBeams) {
+            drawBeam(beam, canvas, xOffset, yOffset, displayScaling);
+        }
+        for (Node node : DrawHelper.snapNodes) {
+            drawNode(node, canvas, xOffset, yOffset, displayScaling);
+        }
+
         isBeingDrawn = false;
     }
 }
