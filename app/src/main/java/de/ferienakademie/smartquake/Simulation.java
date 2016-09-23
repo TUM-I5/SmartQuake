@@ -56,7 +56,7 @@ public class Simulation {
                     DrawHelper.drawStructure(kernel1.getStructure(), view);
                 }
                 if (listener != null) {
-                    listener.onFinish();
+                    listener.onSimulationFinished();
                 }
             }
 
@@ -79,7 +79,7 @@ public class Simulation {
         /**
          * Is called after simulation finishes. Is called from background thread.
          */
-        void onFinish();
+        void onSimulationFinished();
     }
 
 }

@@ -1,13 +1,11 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
-import android.app.usage.UsageEvents;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
@@ -17,10 +15,7 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-/**
- * Created by yuriy on 22/09/16.
- */
-public class CreateActivity extends Activity {
+public class CreateActivity extends AppCompatActivity {
 
     private static final int DELTA = 80;
     private static boolean adding = false;
@@ -35,7 +30,7 @@ public class CreateActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-        canvasView = (CanvasView) findViewById(R.id.shape);
+        canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
     }
@@ -125,9 +120,33 @@ public class CreateActivity extends Activity {
             float y = event.getY(0) - 220;
 
             double mindist = DELTA;
+/*
+            if (event.getDownTime() >= 500) {
+                chosenNode = null;
+                // find the beam with the minimum distance to it
+                List<Beam> beams = structure.getBeams();
 
+                List<Beam> possibleDeleteBeams = new ArrayList<>();
+
+                for (Beam beam : beams) {
+
+                    Node node1 = beam.getStartNode();
+                    Node node2 = beam.getEndNode();
+
+                    double x1 = node1.getCurrX();
+                    double x2 = node2.getCurrX();
+                    double y1 = node1.getCurrX();
+                    double y2 = node2.getCurrY();
+
+                    double cosAlfa = (x1*x2+y1*y2)/Math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1));
+
+                    //double dist = cosAlfa *
+
+                }
+
+            }
+*/
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                int i = 0;
                 for (Node node : nodes) {
                     if (distNodes(node, new Node(x, y)) <= mindist) {
                         mindist = distNodes(node, new Node(x, y));
@@ -150,6 +169,8 @@ public class CreateActivity extends Activity {
 
                 Node changeToThisNode = null;
 
+                boolean removed = false;
+
                 for (Node node : nodes) {
                     if (node.equals(chosenNode) && node != chosenNode) {
                         changeToThisNode = node;
@@ -159,25 +180,33 @@ public class CreateActivity extends Activity {
 
                 if (changeToThisNode != null) {
                     for (Beam beam : beamList) {
-                        if (beam.getStartNode().equals(changeToThisNode)) {
+                        if (beam.getStartNode().equals(changeToThisNode) && changeToThisNode != beam.getStartNode()) {
                             Node startNode = beam.getStartNode();
-                            for (int i = 0; i < nodes.size(); i++) {
-                                if (startNode == nodes.get(i)) {
-                                    nodes.remove(i);
-                                    break;
+                            if (!removed) {
+                                for (int i = 0; i < nodes.size(); i++) {
+                                    if (startNode == nodes.get(i)) {
+                                        nodes.remove(i);
+                                        removed = true;
+                                        break;
+                                    }
                                 }
                             }
                             beam.setStartNode(changeToThisNode);
+                            changeToThisNode.addBeam(beam);
                         }
-                        if (beam.getEndNode().equals(changeToThisNode)) {
+                        if (beam.getEndNode().equals(changeToThisNode) && changeToThisNode != beam.getEndNode()) {
                             Node endNode = beam.getEndNode();
-                            for (int i = 0; i < nodes.size(); i++) {
-                                if (endNode == nodes.get(i)) {
-                                    nodes.remove(i);
-                                    break;
+                            if (!removed) {
+                                for (int i = 0; i < nodes.size(); i++) {
+                                    if (endNode == nodes.get(i)) {
+                                        nodes.remove(i);
+                                        removed = true;
+                                        break;
+                                    }
                                 }
                             }
                             beam.setEndNode(changeToThisNode);
+                            changeToThisNode.addBeam(beam);
                         }
                     }
                 }

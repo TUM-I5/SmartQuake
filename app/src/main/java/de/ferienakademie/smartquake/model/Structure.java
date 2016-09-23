@@ -13,7 +13,6 @@ public class Structure {
     private List<Beam> beams;
 
     // TODO: somebody plz initialize this array conDOF
-    private List<Integer> DOF ;
     private List<Integer> conDOF ; //constraint dofs
 
 
@@ -55,18 +54,6 @@ public class Structure {
 
     public void addBeam(Beam beam) {
         this.beams.add(beam);
-    }
-
-    public List<Integer> getDOF() {
-        return DOF;
-    }
-
-    public void setDOF(List<Integer> DOF) {
-        this.DOF = DOF;
-    }
-
-    public void addDof(List<Integer> DOF) {
-        this.DOF.addAll(DOF);
     }
 
     public List<Integer> getConDOF() {
