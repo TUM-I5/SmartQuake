@@ -152,7 +152,7 @@ public class Beam {
 
         double x1 = startNode.getInitX(), y1 = startNode.getInitY();
         double x2 = endNode.getInitX(), y2 = endNode.getInitY();
-        double theta = Math.atan((y2 - y1) / (x2 - x1));
+        double theta = -Math.atan((y2 - y1) / (x2 - x1));
         double c = Math.cos(theta);
         double s = Math.sin(theta);
 
