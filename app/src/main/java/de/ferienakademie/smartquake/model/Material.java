@@ -9,16 +9,19 @@ public class Material {
     private double I = 0;
     private double EA = 0;
     private double EI = 0;
-
-
+    private double rho = 0;
+    private double alpha = 0;   //alpha for mass matrix
+    //may have to change zeroes
 
     //constructor
-    public Material(double A,double E,double I){
+    public Material(double A,double E,double I,double rho,double alpha){
         this.A=A;
         this.E=E;
         this.I=I;
         this.EA=E*A;
         this.EI=E*I;
+        this.rho = rho;
+        this.alpha = alpha;
 
     }
 
@@ -27,6 +30,7 @@ public class Material {
             this.A = 10;
             this.E = 10e7;
             this.I = 10;
+            this.rho = 7860;
         }
     }
     public double getA() {
@@ -65,7 +69,13 @@ public class Material {
         return E;
     }
 
-    public void setE(double e) {
-        E = e;
-    }
+    public void setE(double e) {  E = e;  }
+
+    public double getRho() { return rho; }
+
+    public void setRho(double rho)  { this.rho = rho;}
+
+    public double getAlpha() { return alpha;}
+
+    public void setAlpha()  {this.alpha = alpha;}
 }
