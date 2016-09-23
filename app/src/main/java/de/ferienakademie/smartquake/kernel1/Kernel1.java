@@ -68,7 +68,7 @@ public class Kernel1 {
         StiffnessMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
         MassMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
         DampingMatrix = new DenseMatrix64F(getNumDOF(), getNumDOF());
-
+        LoadVector = new DenseMatrix64F(getNumDOF(), 1);
 
         StiffnessMatrix.zero();
         MassMatrix.zero();
@@ -91,7 +91,7 @@ public class Kernel1 {
         }
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < structure.getDOF().size(); k++) {
+            for (int k = 0; k < getNumDOF(); k++) {
                 StiffnessMatrix.set(j,k,0.0);
                 StiffnessMatrix.set(k,j,0.0);
             }
@@ -111,7 +111,7 @@ public class Kernel1 {
         }
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < structure.getDOF().size(); k++) {
+            for (int k = 0; k < getNumDOF(); k++) {
                 MassMatrix.set(j,k,0.0);
                 MassMatrix.set(k,j,0.0);
             }
@@ -126,6 +126,14 @@ public class Kernel1 {
         double a0 = 4.788640506;
         double a1 =0.0001746899608;
         CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
+        for (int i = 0; i <structure.getConDOF().size(); i++) {
+            int j = structure.getConDOF().get(i);
+            for (int k = 0; k < getNumDOF(); k++) {
+                DampingMatrix.set(j,k,0.0);
+                DampingMatrix.set(k,j,0.0);
+            }
+            DampingMatrix.set(j,j,1.0);
+        }
     }
 
     public DenseMatrix64F getDisplacementVector() {
@@ -193,13 +201,11 @@ public class Kernel1 {
         LoadVector.zero();
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            if (node.isConstraint()) {
                 List<Integer> DOF = node.getDOF();
-                int DOFx = DOF.get(1);
-                int DOFy = DOF.get(2);
-                LoadVector.set(DOFx, 1, acceleration[1]);
-                LoadVector.set(DOFy, 1, acceleration[2]);
-            }
+                int DOFx = DOF.get(0);
+                int DOFy = DOF.get(1);
+                LoadVector.set(DOFx, 1, acceleration[0]);
+                LoadVector.set(DOFy, 1, acceleration[1]);
         }
         CommonOps.mult(MassMatrix, LoadVector, LoadVector);
     }
