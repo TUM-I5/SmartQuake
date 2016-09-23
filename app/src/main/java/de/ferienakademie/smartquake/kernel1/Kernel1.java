@@ -126,6 +126,14 @@ public class Kernel1 {
         double a0 = 4.788640506;
         double a1 =0.0001746899608;
         CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
+        for (int i = 0; i <structure.getConDOF().size(); i++) {
+            int j = structure.getConDOF().get(i);
+            for (int k = 0; k < structure.getDOF().size(); k++) {
+                DampingMatrix.set(j,k,0.0);
+                DampingMatrix.set(k,j,0.0);
+            }
+            DampingMatrix.set(j,j,1.0);
+        }
     }
 
     public DenseMatrix64F getDisplacementVector() {
@@ -192,6 +200,7 @@ public class Kernel1 {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     void updateLoadVector(double[] acceleration) {
+        DenseMatrix64F Loadvector
         //TODO: update load vector using acceleration values.
     }
 }
