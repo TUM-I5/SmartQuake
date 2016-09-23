@@ -16,7 +16,8 @@ import android.widget.Toast;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
-import de.ferienakademie.smartquake.excitation.ExcitationManager;
+import de.ferienakademie.smartquake.excitation.Recorder;
+import de.ferienakademie.smartquake.excitation.SensorExcitation;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Structure;
@@ -28,7 +29,8 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
 
     Sensor mAccelerometer; //sensor object
     SensorManager mSensorManager; // manager to subscribe for sensor events
-    ExcitationManager mExcitationManager; // custom accelerometer listener
+    SensorExcitation mExcitationManager; // custom accelerometer listener
+    Recorder recorder;
 
     Button startButton, stopButton;
     CanvasView canvasView;
@@ -79,12 +81,16 @@ public class SimulationActivity extends Activity implements Simulation.Simulatio
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mExcitationManager = new ExcitationManager();
+        mExcitationManager = new SensorExcitation();
+        recorder = new Recorder();
+        mExcitationManager.registerLstnr(recorder);
+
         startButton = (Button) findViewById(R.id.start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startButton.setEnabled(false);
+                recorder.initRecord();
                 startSimulation();
                 Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
              }
