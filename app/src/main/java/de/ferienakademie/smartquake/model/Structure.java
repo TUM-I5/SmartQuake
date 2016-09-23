@@ -11,38 +11,60 @@ public class Structure {
 
     private List<Node> nodes;
     private List<Beam> beams;
-
     // TODO: somebody plz initialize this array conDOF
-    private List<Integer> conDOF ; //constraint dofs
+    private List<Integer> conDOF ; //constraint dofs TODO: But how's the data structure?
 
+    public double[] getModelSize() {
+        return modelSize;
+    }
 
+    // X, Y
+    private double[] modelSize = {0, 0};
 
-    public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF ) {
+    public Structure(List<Node> nodes,List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;
         this.beams = beams;
+        this.conDOF = conDOF;
     }
 
     public Structure() {
-        this(new ArrayList<Node>(), new ArrayList<Beam>(),new int[] {});
+        this(new ArrayList<Node>(), new ArrayList<Beam>(), new ArrayList<Integer>());
     }
-
 
     public List<Node> getNodes() {
         return nodes;
     }
 
     public void addNodes(List<Node> nodes) {
-        this.nodes.addAll(nodes);
+        for (Node n: nodes) {
+            this.addNode(n);
+        }
     }
 
     public void addNodes(Node... nodes) {
-        Collections.addAll(this.nodes, nodes);
+        for (Node n: nodes) {
+            this.addNode(n);
+        }
     }
 
     public void addNode(Node node) {
         this.nodes.add(node);
+        if (node.getInitX() > modelSize[0]) {
+            modelSize[0] = node.getInitX();
+        }
+        if (node.getInitY() > modelSize[1]) {
+            modelSize[1] = node.getInitY();
+        }
     }
 
+
+    public List<Integer> getConDOF() {
+        return conDOF;
+    }
+
+    public void setConDOF(List<Integer> conDOF) {
+        this.conDOF = conDOF;
+    }
 
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
@@ -55,16 +77,7 @@ public class Structure {
     public void addBeam(Beam beam) {
         this.beams.add(beam);
     }
-
-    public List<Integer> getConDOF() {
-        return conDOF;
-    }
-
-    public void setConDOF(List<Integer> conDOF) {
-        this.conDOF = conDOF;
-    }
-
-
+    
     public List<Beam> getBeams() {
         return beams;
     }
@@ -73,6 +86,4 @@ public class Structure {
         nodes.clear();
         beams.clear();
     }
-
-
 }

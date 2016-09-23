@@ -28,11 +28,9 @@ public class Kernel1 {
     private int numDOF;
 
     Structure structure;
-    AccelerationProvider accelerationProvider;
 
-    public Kernel1(Structure structure, AccelerationProvider accelerationProvider) {
+    public Kernel1(Structure structure) {
         this.structure = structure;
-        this.accelerationProvider = accelerationProvider;
         //initialize displacement with zeros
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
@@ -152,14 +150,6 @@ public class Kernel1 {
         this.structure = structure;
     }
 
-    public AccelerationProvider getAccelerationProvider() {
-        return accelerationProvider;
-    }
-
-    public void setAccelerationProvider(AccelerationProvider accelerationProvider) {
-        this.accelerationProvider = accelerationProvider;
-    }
-
     /**
      * Update {@link Structure} that is displayed using values computed by {@link de.ferienakademie.smartquake.kernel2.TimeIntegration}
      * @param displacementVector a (3 * number of nodes) x 1 matrix. Three consequent values contain displacements in x, y, z direction.
@@ -180,16 +170,12 @@ public class Kernel1 {
         LoadVector = loadVector;
     }
 
-    public void updateLoadVector() {
-        double[] acceleration = accelerationProvider.getAcceleration();
-        updateLoadVector(acceleration);
-    }
 
     /**
      * Update the vector with forces using the acceleration values received from the {@link AccelerationProvider}
      * @param acceleration - view {@link AccelerationProvider} for details
      */
-    void updateLoadVector(double[] acceleration) {
+    public void updateLoadVector(double[] acceleration) {
         LoadVector.zero();
 
         for (int i = 0; i < structure.getNodes().size(); i++) {
@@ -197,8 +183,8 @@ public class Kernel1 {
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-            LoadVector.add(DOFx,1,-acceleration[0]); //add influence vector in x-dir
-            LoadVector.add(DOFy,1,-acceleration[1]); //add influence vector in y-dir
+            LoadVector.add(DOFx,0,-acceleration[0]); //add influence vector in x-dir
+            LoadVector.add(DOFy,0,-acceleration[1]); //add influence vector in y-dir
         }
 
         CommonOps.mult(MassMatrix, LoadVector, LoadVector);
