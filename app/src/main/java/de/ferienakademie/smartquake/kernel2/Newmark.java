@@ -111,7 +111,7 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(RHS,1,f_load); //RHS = RHS + f_load
 
         //Solve
-        solver.solve(RHS,acc);
+        solver.solve(RHS,acc); //solver.A*acc = RHS
 
         return acc;
     }
