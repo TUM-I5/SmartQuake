@@ -7,6 +7,8 @@ import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
+import android.util.Log;
+
 /**
  * Created by Felix Wechsler on 23/09/16.
  */
@@ -27,6 +29,9 @@ public class ExplicitSolver extends Solver {
 
         //sets up fast linear solver
         linearSolverM = LinearSolverFactory.chol(k1.getNumDOF());
+        for(int i=0; i<k1.getNumDOF(); i++){
+            M.set(i,i,1);
+        }
         linearSolverM.setA(M);
 
         tempVector = new DenseMatrix64F(k1.getNumDOF(),1);
@@ -37,14 +42,15 @@ public class ExplicitSolver extends Solver {
      * This method provides for all explicit solver the acceleration of all nodes
      */
     public void getAcceleration() {
-
+        //just temporarlily bypass kernel1
+        acceleration = k1.getAccelerationProvider().getAcceleration();
         tempVector = k1.getLoadVector().copy();
 
         C.zero();
         K.zero();
         for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            C.set(j,j,5);
-            C.set(j+1,j+1,5);
+            C.set(j,j,0.50);
+            C.set(j+1,j+1,50);
             K.set(j,j,100);
             K.set(j+1,j+1,100);
             tempVector.set(j, 0, 2000 * acceleration[0] );
@@ -64,6 +70,8 @@ public class ExplicitSolver extends Solver {
 
         linearSolverM.solve(tempVector, xDotDot);
 
+
+        //Log.e("messagen for felix", xDotDot.toString());
         //OLDSTUFF JUST LEAVE IT HERE
        /* acceleration = k1.getAccelerationProvider().getAcceleration();
         for (int j = 6; j < k1.getNumDOF(); j += 3) {

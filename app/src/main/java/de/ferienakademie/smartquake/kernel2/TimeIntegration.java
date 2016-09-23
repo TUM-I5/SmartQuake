@@ -54,7 +54,7 @@ public class TimeIntegration {
         solver = new Euler(kernel1, xDot);
 
         //only for fixed stepsize
-        delta_t = 0.001;
+        delta_t = 0.005;
 
         executorService = Executors.newSingleThreadExecutor();
     }
