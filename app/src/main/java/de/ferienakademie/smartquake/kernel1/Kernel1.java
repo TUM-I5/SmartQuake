@@ -204,7 +204,6 @@ public class Kernel1 {
                 List<Integer> DOF = node.getDOF();
                 int DOFx = DOF.get(0);
                 int DOFy = DOF.get(1);
-
                 LoadVector.set(DOFx, 1, acceleration[0]);
                 LoadVector.set(DOFy, 1, acceleration[1]);
         }

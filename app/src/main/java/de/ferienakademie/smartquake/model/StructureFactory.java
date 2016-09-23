@@ -67,8 +67,6 @@ public class StructureFactory {
         }
 
         structure.setConDOF(condof);
-        n1.setConstraint(true);
-        n1.setConstraint(true);
 
         return structure;
     }
