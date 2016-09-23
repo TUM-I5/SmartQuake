@@ -13,6 +13,8 @@ public class Material {
     protected double EI = 0;  //rigidity
     protected double h = 0;   //height of beam (input)
     protected double b = 0;   //width of beam (input)
+    protected double m= 0;
+    protected double c= 0;
 
     protected double rho = 0;     //density of material
     protected double alpha = 0;   //alpha for mass matrix
@@ -29,6 +31,8 @@ public class Material {
         this.EI=E*I;
         this.rho = rho;
         this.alpha = alpha;
+        this.m=rho*A;
+        this.c=10;
 
     }
 
@@ -61,6 +65,12 @@ public class Material {
     public double getb(){return b;}
     public double geth(){return h;}
     public double getA(){return A;}
+
+    public double getC() {
+        return c;
+    }
+
+    public double getM(){return m;}
     public double getI(){return I;}
     public double getEA(){return EA;}
     public double getEI(){return EI;}

@@ -60,7 +60,11 @@ public class StructureFactory {
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
 
-        List<Integer> condof= new ArrayList<>( );
+        List<Integer> condof= new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            condof.add(i);
+        }
+
         structure.setConDOF(condof);
 
         return structure;
