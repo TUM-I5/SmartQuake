@@ -14,6 +14,13 @@ public class Structure {
     // TODO: somebody plz initialize this array conDOF
     private int[] conDOF ; //constraint dofs TODO: But how's the data structure?
 
+    public double[] getModelSize() {
+        return modelSize;
+    }
+
+    // X, Y
+    private double[] modelSize = {0, 0};
+
     public Structure(List<Node> nodes,List<Beam> beams, int[] conDOF) {
         this.nodes = nodes;
         this.beams = beams;
@@ -29,15 +36,25 @@ public class Structure {
     }
 
     public void addNodes(List<Node> nodes) {
-        this.nodes.addAll(nodes);
+        for (Node n: nodes) {
+            this.addNode(n);
+        }
     }
 
     public void addNodes(Node... nodes) {
-        Collections.addAll(this.nodes, nodes);
+        for (Node n: nodes) {
+            this.addNode(n);
+        }
     }
 
     public void addNode(Node node) {
         this.nodes.add(node);
+        if (node.getInitX() > modelSize[0]) {
+            modelSize[0] = node.getInitX();
+        }
+        if (node.getInitY() > modelSize[1]) {
+            modelSize[1] = node.getInitY();
+        }
     }
 
 
