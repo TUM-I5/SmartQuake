@@ -9,34 +9,39 @@ import java.util.ArrayList;
 /**
  * Created by Yehor on 21.09.2016.
  */
-public class SensorExcitation implements SensorEventListener, AccelerationProvider {
+public class SensorExcitation extends AccelerationProvider implements SensorEventListener  {
 
     private AccelData currAcceleration;
-    private ArrayList<AccelData> recentMeasurements = new ArrayList<>();
+    private ArrayList<AccelData> recentMeasurements;
 
     private int queue_pos = 0;
 
+
+    public SensorExcitation(){
+        currAcceleration = new AccelData();
+        recentMeasurements = new ArrayList<>();
+    }
     /**
      * @param event: change of accelerometer measurements
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        currAcceleration.xAcceleration = event.values[0];
-        currAcceleration.yAcceleration = event.values[1];
+        currAcceleration = new AccelData(event.values[0], event.values[1], event.timestamp);
         // put new element to the queue of sensor measurements
-        recentMeasurements.add(new AccelData(currAcceleration));
+        recentMeasurements.add(currAcceleration);
+        super.lstnr.excited(currAcceleration);
     }
 
     public void reset() {
         currAcceleration = new AccelData();
         queue_pos = 0;
-        //TODO write queue
         recentMeasurements.clear();
         recentMeasurements.add(currAcceleration);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //not used
     }
 
     /**
@@ -49,12 +54,21 @@ public class SensorExcitation implements SensorEventListener, AccelerationProvid
 
     @Override
     public AccelData getAccelerationMeasurement() {
-        return null;
+        return currAcceleration;
     }
 
     @Override
     public AccelData getAccelerationMeasurement(long timestamp) {
-        return null;
+        while (recentMeasurements.size() > queue_pos
+                && recentMeasurements.get(queue_pos).timestamp < timestamp) {
+            ++queue_pos;
+        }
+
+        if(queue_pos == 0 || queue_pos == recentMeasurements.size()){
+            return currAcceleration;
+        } else {
+            return recentMeasurements.get(queue_pos);
+        }
     }
 
     /**
@@ -65,32 +79,21 @@ public class SensorExcitation implements SensorEventListener, AccelerationProvid
     @Override
     public double[] getAcceleration(long timestamp) {
         // poll entries of the queue until the first reading with timestep greater larger than wanted timestep found
-        while (recentMeasurements.size() > queue_pos
-                && recentMeasurements.get(queue_pos).timestamp < timestamp) {
-            ++queue_pos;
-        }
-
-        if(queue_pos == 0 || queue_pos == recentMeasurements.size()){
-            return new double[]{currAcceleration.xAcceleration, currAcceleration.yAcceleration};
-        } else {
-            return new double[]{recentMeasurements.get(queue_pos).xAcceleration,
-                    recentMeasurements.get(queue_pos).yAcceleration};
-        }
-        // calculated as y(x) = y1+(y2-y1)*(x-x1)/(x2-x1)
-        /*
-        return new double[] {prevReading.xAcceleration +
-
-                (nextReading.xAcceleration - prevReading.yAcceleration) *
-                (nextReading.timestamp - prevReading.timestamp) / (timestamp - prevReading.timestamp),
-                prevReading.yAcceleration + (nextReading.yAcceleration - prevReading.yAcceleration) *
-                        (nextReading.yAcceleration - prevReading.yAcceleration) / (timestamp - prevReading.timestamp)};
-        */
+        AccelData temp = getAccelerationMeasurement(timestamp);
+        return new double[]{temp.xAcceleration, temp.yAcceleration};
     }
 
+    /**
+     * If the given timestamp lies between to timesteps in the list this method uses linear
+     * interpolation between the two values to calculate the return value
+     * @param queue_pos
+     * @param timestamp
+     * @return
+     */
     private double[] interpolate(int queue_pos, long timestamp) {
         AccelData curr = recentMeasurements.get(queue_pos);
         AccelData prev = recentMeasurements.get(queue_pos - 1);
-        long factor = (curr.timestamp - prev.timestamp) / (timestamp - prev.timestamp);
+        long factor = (timestamp - prev.timestamp)/(curr.timestamp - prev.timestamp);
         return new double[] {prev.xAcceleration +
         (curr.xAcceleration - prev.yAcceleration) * factor,
                 prev.yAcceleration + (curr.yAcceleration - prev.yAcceleration) * factor};
