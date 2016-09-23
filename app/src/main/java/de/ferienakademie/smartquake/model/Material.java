@@ -11,6 +11,7 @@ public class Material {
     protected double EI = 0;  //rigidity
     protected double h = 0;   //height of beam (input)
     protected double b = 0;   //width of beam (input)
+    protected double c = 0;
 
     protected double rho = 0;
     protected double alpha = 0;   //alpha for mass matrix
