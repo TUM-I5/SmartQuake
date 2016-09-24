@@ -1,27 +1,17 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
-import android.app.usage.UsageEvents;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawCanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
@@ -30,7 +20,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  */
 public class CreateActivity extends AppCompatActivity {
 
-    private static double DELTA = 80;
+    private static double DELTA = 90;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -86,10 +76,6 @@ public class CreateActivity extends AppCompatActivity {
                 node1 = new Node(event.getX(0), (event.getY(0) - 220));
                 node2 = new Node(event.getX(1), (event.getY(1) - 220));
 
-//                in meters
-//                transformToMeters(node1);
-//                transformToMeters(node2);
-
                 structure.addNode(node1);
                 structure.addNode(node2);
                 Beam beam = new Beam(node1, node2);
@@ -110,15 +96,10 @@ public class CreateActivity extends AppCompatActivity {
                 node1.setCurrX(event.getX(0));
                 node1.setCurrY((event.getY(0) - 220));
 
-                // in meters
-//                transformToMeters(node1);
 
                 // in pixels
                 node2.setCurrX(event.getX(1));
                 node2.setCurrY((event.getY(1) - 220));
-
-                // in meters
-//                transformToMeters(node2);
 
 
                 Beam beam = new Beam(node1, node2);
@@ -175,7 +156,6 @@ public class CreateActivity extends AppCompatActivity {
             double y = event.getY(0) - 220;
 
             Node tempNode = new Node(x, y);
-//            transformToMeters(tempNode);
 
             x = tempNode.getCurrX();
             y = tempNode.getCurrY();
@@ -195,6 +175,8 @@ public class CreateActivity extends AppCompatActivity {
                 if (chosenNode != null) {
                     chosenNode.setCurrX(x);
                     chosenNode.setCurrY(y);
+                    node1 = chosenNode;
+                    node2 = null;
                 }
                 magneticConnect();
             }
@@ -269,13 +251,13 @@ public class CreateActivity extends AppCompatActivity {
 
             Node node = nodes.get(i);
 
-            if (node != node1 && distNodes(node1, node) <= minDist1) {
+            if (node1 != null && node != node1 && distNodes(node1, node) <= minDist1) {
                 minDist1 = distNodes(node1, node);
                 attach1 = true;
                 node1Attach = node;
             }
 
-            if (node != node2 && distNodes(node2, node) <= minDist2) {
+            if (node2 != null && node != node2 && distNodes(node2, node) <= minDist2) {
                 minDist2 = distNodes(node2, node);
                 attach2 = true;
                 node2Attach = node;
@@ -292,6 +274,7 @@ public class CreateActivity extends AppCompatActivity {
             node2.setCurrX(node2Attach.getCurrX());
             node2.setCurrY(node2Attach.getCurrY());
         }
+
     }
 
     private static double distNodes(Node node1, Node node2) {
@@ -374,10 +357,8 @@ public class CreateActivity extends AppCompatActivity {
         @Override
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
-            Log.w("LONG PRESS", "TRUE");
 
             Node n = new Node(e.getX(), e.getY() - 220);
-//            transformToMeters(n);
 
             deleteBeam(n.getCurrX(), n.getCurrY());
         }

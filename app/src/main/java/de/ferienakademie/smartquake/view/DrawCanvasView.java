@@ -17,6 +17,8 @@ import de.ferienakademie.smartquake.model.Node;
 public class DrawCanvasView extends View {
     public static final Paint PAINT = new Paint();
 
+    public static final double NODE_RADIUS_PIXEL = 15;
+
     static {
         PAINT.setColor(Color.RED);
         PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -64,6 +66,6 @@ public class DrawCanvasView extends View {
     }
 
     public static void drawNode(Node node, Canvas canvas, Paint paint) {
-        canvas.drawCircle((float) node.getCurrX(), (float) node.getCurrY(), (float) node.getRadius(), paint);
+        canvas.drawCircle((float) node.getCurrX(), (float) node.getCurrY(), (float) NODE_RADIUS_PIXEL, paint);
     }
 }
