@@ -42,7 +42,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-    private SimulationState state;
+    private SimulationState state = SimulationState.STOPPED;
 
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
@@ -73,6 +73,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         int id = item.getItemId();
 
         if (id == R.id.reset_button) {
+            onStopButtonClicked();
             createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
