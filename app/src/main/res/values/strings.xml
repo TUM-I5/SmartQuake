@@ -10,4 +10,6 @@
     <string name="action_settings">Settings</string>
     <string name="pref_gravity_title">Use gravity</string>
     <string name="pref_gravity_summary">Depending on your device you might have to include gravity</string>
+    <string name="clear_canvas">Clear canvas</string>
+    <string name="save_canvas">Save canvas</string>
 </resources>
