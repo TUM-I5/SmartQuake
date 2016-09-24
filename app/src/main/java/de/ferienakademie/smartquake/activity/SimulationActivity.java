@@ -213,6 +213,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation() {
+        mExcitationManager.initTime(System.nanoTime(),0.001);
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();

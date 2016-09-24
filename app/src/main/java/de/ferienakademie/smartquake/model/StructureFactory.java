@@ -8,12 +8,40 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.excitation.StructureIO;
 
 public class StructureFactory {
+    public static Structure cantileverBeam() {
+        List<Integer> dofNode1 = new LinkedList<>();
+        List<Integer> dofNode2 = new LinkedList<>();
+
+        dofNode1.add(0); //constraint
+        dofNode1.add(1);//constraint
+        dofNode1.add(2);//constraint
+
+        dofNode2.add(3);//constraint
+        dofNode2.add(4);//constraint
+        dofNode2.add(5);//constraint
+
+        Node bottom = new Node(4, 8, dofNode1);
+        Node up = new Node(4, 0, dofNode2);
+
+        List<Integer> condof = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            condof.add(i);
+        }
+
+        Material testMaterial = new Material();
+
+        Beam b = new Beam(bottom, up, testMaterial, true);
+
+        return new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+    }
+
     public static Structure getSimpleHouse() {
         double width = 8;
         double height = 8;
