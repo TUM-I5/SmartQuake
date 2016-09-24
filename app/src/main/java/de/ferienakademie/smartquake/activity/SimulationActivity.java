@@ -125,8 +125,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simulation);
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        //mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
@@ -188,19 +189,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation() {
-        mExcitationManager.initTime(System.nanoTime(),0.001);
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
-        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
-        mExcitationManager.initSensors();
+        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
 
-
+        mExcitationManager.initTime(0.001);
         simulation.start();
         simulation.setListener(this);
 

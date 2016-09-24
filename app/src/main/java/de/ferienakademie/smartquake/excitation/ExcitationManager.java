@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.excitation;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.os.SystemClock;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,18 +44,6 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         currAccel = readings.get(0);
     }
 
-
-    /**
-     * This has to be called before the Simulation starts and
-     * before the Listener is registered
-     */
-    public void initSensors() {
-        readings = new ArrayList<>();
-        currAccel = new AccelData();
-        currPos = 0;
-        readings.add(currAccel);
-    }
-
     /**
      * Records the sensor data
      *
@@ -62,7 +51,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        currAccel = new AccelData(event.values[0], event.values[1], event.timestamp - baseTime);
+        currAccel = new AccelData(event.values[0], event.values[1], event.timestamp);
         // put new element to the queue of sensor measurements
         readings.add(currAccel);
     }
@@ -92,13 +81,16 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     }
 
     /**
-     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
      * @param timeStep  timeStep of the simulation in nanoseconds
      */
     @Override
-    public void initTime(long timeStamp, double timeStep) {
-        this.baseTime = timeStamp;
+    public void initTime(double timeStep) {
+        this.baseTime = SystemClock.elapsedRealtimeNanos();;
         this.timestep = timeStep;
+        readings = new ArrayList<>();
+        currAccel = new AccelData();
+        currPos = 0;
+        readings.add(currAccel);
     }
 
     /**
