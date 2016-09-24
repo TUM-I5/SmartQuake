@@ -34,10 +34,10 @@ public class Euler extends ExplicitSolver {
         CommonOps.addEquals(xDot, delta_t, xDotDot);
 
         //create average matrix of velocities at step n and n+1
-        CommonOps.addEquals(averageXDot, 1, oldxDot);
+        //CommonOps.addEquals(averageXDot, 1, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, 0.5*delta_t, averageXDot);
+        CommonOps.addEquals(x, 1*delta_t, xDot);
 
     }
 
