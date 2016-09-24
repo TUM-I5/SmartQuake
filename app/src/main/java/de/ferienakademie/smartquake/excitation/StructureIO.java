@@ -57,12 +57,6 @@ public class StructureIO {
         writer.name("x").value(node.getInitX());
         writer.name("y").value(node.getInitY());
 
-        writer.name("currRot").beginArray();
-        for (Double d : node.getCurrROT()) {
-            writer.value(d);
-        }
-        writer.endArray();
-
         writer.name("DOF").beginArray();
         for (Integer i : node.getDOF()) {
             writer.value(i);
@@ -75,7 +69,6 @@ public class StructureIO {
     private static Node parseNode(JsonReader reader) throws IOException {
         double x = Double.NaN, y = Double.NaN;
         LinkedList<Integer> DOF = new LinkedList<>();
-        LinkedList<Double> currRot = new LinkedList<>();
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT)
         {
@@ -87,13 +80,6 @@ public class StructureIO {
                     break;
                 case "y":
                     y = reader.nextDouble();
-                    break;
-                case "currRot":
-                    reader.beginArray();
-                    while(reader.peek() != JsonToken.END_ARRAY){
-                        currRot.add(reader.nextDouble());
-                    }
-                    reader.endArray();
                     break;
                 case "DOF":
                     reader.beginArray();
@@ -111,7 +97,7 @@ public class StructureIO {
             throw new IOException("Malformed file format.");
         }
 
-        return new Node(x, y, DOF, currRot);
+        return new Node(x, y, DOF);
     }
 
     private static List<Node> parseNodes(JsonReader reader) throws IOException {
