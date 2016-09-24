@@ -43,6 +43,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
 
+    private enum SimulationState {
+        RUNNING,
+        STOPPED,
+        REPLAY_RUNNING,
+        REPLAY_STOPPED
+    }
+
+    private SimulationState state;
+
     private boolean replay = false;
     private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
         @Override

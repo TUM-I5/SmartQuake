@@ -1,20 +1,35 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.jar.Manifest;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.excitation.StructureIO;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
@@ -103,11 +118,58 @@ public class CreateActivity extends AppCompatActivity {
                 structure.clearAll();
                 DrawHelper.drawStructure(structure, canvasView);
                 return true;
+            case R.id.save_canvas:
+                serialize();
+                return true;
         }
 
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void serialize() {
+        List<Node> nodes = structure.getNodes();
+
+        for (int i = 0; i < nodes.size(); i++) {
+            if (nodes.get(i).getBeams().size() == 0) nodes.remove(i);
+        }
+
+        for (Node node : nodes) {
+            transformToMeters(node);
+        }
+
+        List<Integer> condof = new ArrayList<>();
+
+        int j = 0;
+        for (int i = 0; i < nodes.size(); i++) {
+            List<Integer> tempList = new ArrayList<>();
+            tempList.add(j++);
+            tempList.add(j++);
+            tempList.add(j++);
+
+            nodes.get(i).setDOF(tempList);
+
+            if (nodes.get(i).getCurrentY() == height) {
+                for (Integer freedom : tempList) {
+                    condof.add(freedom);
+                }
+            }
+        }
+
+        structure.setConDOF(condof);
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = openFileOutput("structure.json", Context.MODE_PRIVATE);
+            StructureIO.writeStructure(fileOutputStream, structure);
+            fileOutputStream.close();
+            Toast.makeText(this, "File saved", Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            Log.e("CreateActivity.class", "File not found");
+        } catch (IOException e) {
+            Log.e("CreateActivity.class", "IOException");
+        }
     }
 
     public void transformToMeters(Node node) {
