@@ -59,11 +59,11 @@ public class Structure {
 
     public void addNode(Node node) {
         this.nodes.add(node);
-        if (node.getInitX() > modelSize[0]) {
-            modelSize[0] = node.getInitX();
+        if (node.getInitialX() > modelSize[0]) {
+            modelSize[0] = node.getInitialX();
         }
-        if (node.getInitY() > modelSize[1]) {
-            modelSize[1] = node.getInitY();
+        if (node.getInitialY() > modelSize[1]) {
+            modelSize[1] = node.getInitialY();
         }
     }
 

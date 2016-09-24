@@ -2,7 +2,7 @@ package de.ferienakademie.smartquake;
 
 import android.util.Log;
 
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
@@ -12,14 +12,14 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  */
 public class Simulation {
 
-    Kernel1 kernel1;
+    SpatialDiscretization spatialDiscretization;
     TimeIntegration kernel2;
     CanvasView view;
     SimulationProgressListener listener;
     boolean isRunning;
 
-    public Simulation(Kernel1 kernel1, TimeIntegration kernel2, CanvasView view) {
-        this.kernel1 = kernel1;
+    public Simulation(SpatialDiscretization spatialDiscretization, TimeIntegration kernel2, CanvasView view) {
+        this.spatialDiscretization = spatialDiscretization;
         this.kernel2 = kernel2;
         this.view = view;
     }
@@ -53,7 +53,7 @@ public class Simulation {
                         Log.e("Simulation", "Kernel2 can not catch up the gui");
                         currentStep.stop();
                     }
-                    DrawHelper.drawStructure(kernel1.getStructure(), view);
+                    DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
                 }
                 if (listener != null) {
                     listener.onSimulationFinished();

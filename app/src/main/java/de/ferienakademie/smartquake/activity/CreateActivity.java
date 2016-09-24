@@ -1,19 +1,12 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
-import android.app.usage.UsageEvents;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
@@ -78,11 +71,11 @@ public class CreateActivity extends AppCompatActivity {
 
                 node1 = nodes.get(nodes.size() - 2);
                 node2 = nodes.get(nodes.size() - 1);
-                node1.setCurrX(event.getX(0));
-                node1.setCurrY(event.getY(0) - 220);
+                node1.setCurrentX(event.getX(0));
+                node1.setCurrentY(event.getY(0) - 220);
 
-                node2.setCurrX(event.getX(1));
-                node2.setCurrY(event.getY(1) - 220);
+                node2.setCurrentX(event.getX(1));
+                node2.setCurrentY(event.getY(1) - 220);
 
                 Beam beam = new Beam(node1, node2);
                 node1.clearBeams();
@@ -150,8 +143,8 @@ public class CreateActivity extends AppCompatActivity {
 
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 if (chosenNode != null) {
-                    chosenNode.setCurrX(x);
-                    chosenNode.setCurrY(y);
+                    chosenNode.setCurrentX(x);
+                    chosenNode.setCurrentY(y);
                 }
                 magneticConnect();
             }
@@ -241,18 +234,18 @@ public class CreateActivity extends AppCompatActivity {
         }
 
         if (attach1) {
-            node1.setCurrX(node1Attach.getCurrX());
-            node1.setCurrY(node1Attach.getCurrY());
+            node1.setCurrentX(node1Attach.getCurrentX());
+            node1.setCurrentY(node1Attach.getCurrentY());
         }
 
         if (attach2) {
-            node2.setCurrX(node2Attach.getCurrX());
-            node2.setCurrY(node2Attach.getCurrY());
+            node2.setCurrentX(node2Attach.getCurrentX());
+            node2.setCurrentY(node2Attach.getCurrentY());
         }
     }
 
     private static double distNodes(Node node1, Node node2) {
-        return Math.abs(node1.getCurrX() - node2.getCurrX()) + Math.abs(node1.getCurrY() - node2.getCurrY());
+        return Math.abs(node1.getCurrentX() - node2.getCurrentX()) + Math.abs(node1.getCurrentY() - node2.getCurrentY());
     }
 
 
@@ -269,10 +262,10 @@ public class CreateActivity extends AppCompatActivity {
             Node node1 = beam.getStartNode();
             Node node2 = beam.getEndNode();
 
-            double x1 = node1.getCurrX();
-            double x2 = node2.getCurrX();
-            double y1 = node1.getCurrY();
-            double y2 = node2.getCurrY();
+            double x1 = node1.getCurrentX();
+            double x2 = node2.getCurrentX();
+            double y1 = node1.getCurrentY();
+            double y2 = node2.getCurrentY();
 
             x2 = x2 - x1;
             x1 = x - x1;
@@ -324,7 +317,7 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
-        return cosAlfa*node.getCurrX() + sinAlfa*node.getCurrY();
+        return cosAlfa*node.getCurrentX() + sinAlfa*node.getCurrentY();
     }
 
     public class LongPressListener extends GestureDetector.SimpleOnGestureListener {

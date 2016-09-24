@@ -8,14 +8,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 /**
  * Created by Felix Wechsler on 21/09/16.
  */
 public class TimeIntegration {
 
-    Kernel1 kernel1;
+    SpatialDiscretization spatialDiscretization;
     AccelerationProvider accelerationProvider;
 
     //total computed time between every time step. This variable prevents computing more than GUI
@@ -33,12 +33,12 @@ public class TimeIntegration {
     ExecutorService executorService;
 
     /**
-    * @param kernel1
+    * @param spatialDiscretization
     *          object to obtain all matrices, displacements, external forces
     *
     **/
-    public TimeIntegration(Kernel1 kernel1, AccelerationProvider accelerationProvider) {
-        this.kernel1 = kernel1;
+    public TimeIntegration(SpatialDiscretization spatialDiscretization, AccelerationProvider accelerationProvider) {
+        this.spatialDiscretization = spatialDiscretization;
         this.accelerationProvider = accelerationProvider;
     }
 
@@ -48,13 +48,13 @@ public class TimeIntegration {
      */
     public void prepareSimulation(){
         //initial condition for the velocity.
-        xDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
+        xDot = new DenseMatrix64F(spatialDiscretization.getNumberofDOF(),1);
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
         //stores the numerical scheme
         //solver = new Newmark(kernel1, xDot,delta_t);
-        solver = new Euler(kernel1, accelerationProvider, xDot);
+        solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         //only for fixed stepsize
         delta_t = 0.001;
@@ -94,7 +94,7 @@ public class TimeIntegration {
                     long secondTime = System.nanoTime();
                     Log.e("Timestamp",""+(secondTime-firstTime));
                     //update the displacement in the node variables
-                    kernel1.updateStructure(kernel1.getDisplacementVector());
+                    spatialDiscretization.updateStructure(spatialDiscretization.getDisplacementVector());
 
                     isRunning = false;
                 }

@@ -18,7 +18,7 @@ import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.Recorder;
 import de.ferienakademie.smartquake.excitation.SensorExcitation;
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
@@ -35,7 +35,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private CanvasView canvasView;
     private TimeIntegration timeIntegration;
     private Structure structure;
-    private Kernel1 kernel1;
+    private SpatialDiscretization spatialDiscretization;
     private Simulation simulation;
 
     private Recorder recorder;
@@ -150,9 +150,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         recorder.initRecord();
 
-        kernel1 = new Kernel1(structure);
-        timeIntegration = new TimeIntegration(kernel1, mExcitationManager);
-        simulation = new Simulation(kernel1, timeIntegration, canvasView);
+        spatialDiscretization = new SpatialDiscretization(structure);
+        timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
+        simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
         simulation.setListener(SimulationActivity.this);
         simulation.start();
     }

@@ -8,8 +8,6 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.List;
-
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 
@@ -47,8 +45,8 @@ public class CanvasView extends View {
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
         Path p = new Path();
-        p.moveTo((float) (startNode.getCurrX() * displayScaling + xOffset), (float) (startNode.getCurrY() * displayScaling + yOffset));
-        p.lineTo((float) (endNode.getCurrX() * displayScaling + xOffset), (float) (endNode.getCurrY() * displayScaling + yOffset));
+        p.moveTo((float) (startNode.getCurrentX() * displayScaling + xOffset), (float) (startNode.getCurrentY() * displayScaling + yOffset));
+        p.lineTo((float) (endNode.getCurrentX() * displayScaling + xOffset), (float) (endNode.getCurrentY() * displayScaling + yOffset));
 
 
         PAINT.setStyle(Paint.Style.STROKE);
@@ -58,7 +56,7 @@ public class CanvasView extends View {
     }
 
     public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
-        canvas.drawCircle((float) (node.getCurrX() * displayScaling + xOffset), (float) (node.getCurrY()* displayScaling + yOffset),
+        canvas.drawCircle((float) (node.getCurrentX() * displayScaling + xOffset), (float) (node.getCurrentY()* displayScaling + yOffset),
                 (float) (node.getRadius() * displayScaling), PAINT);
     }
 
