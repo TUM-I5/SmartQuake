@@ -92,14 +92,18 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         return readings.get(currPos);
     }
 
+    /**
+     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
+     * @param timeStep  timeStep of the simulation in nanoseconds
+     */
     @Override
     public void initTime(long timeStamp, double timeStep) {
         this.baseTime = timeStamp;
         this.timestep = timeStep;
-
     }
 
     /**
+     * Store the data to a file
      * @param filename        nam eof the file where the readings of excitation to be saved
      * @param activityContext link to the context of the program
      */
@@ -120,6 +124,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     }
 
     /**
+     * Load acceleration data from a file
      * @param filename
      */
     public void loadFile(String filename) {
