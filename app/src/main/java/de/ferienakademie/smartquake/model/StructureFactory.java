@@ -1,8 +1,17 @@
 package de.ferienakademie.smartquake.model;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import de.ferienakademie.smartquake.excitation.StructureIO;
 
 public class StructureFactory {
     public static Structure getSimpleHouse() {
@@ -102,4 +111,24 @@ public class StructureFactory {
         structure.addNodes(tri00, tri01, tri11, tri12, tri02, tri22);
         return structure;
     }
+
+
+    public static Structure getStructure(Context context, String structureName) {
+
+        FileInputStream fileInputStream = null;
+
+        try {
+            fileInputStream = context.openFileInput(structureName);
+
+            return StructureIO.readStructure(fileInputStream);
+
+        } catch (FileNotFoundException e) {
+            Log.e(StructureFactory.class.toString(), "FileNotFound");
+        } catch (IOException e) {
+            Log.e(StructureFactory.class.toString(), "IOException");
+        }
+
+        return new Structure();
+    }
+
 }

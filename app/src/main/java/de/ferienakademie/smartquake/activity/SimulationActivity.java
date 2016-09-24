@@ -42,19 +42,19 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
+    private SimulationState state = SimulationState.STOPPED;
 
-    private boolean replay = false;
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
-        }
-    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             onStartButtonClicked();
+        }
+    };
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
         }
     };
 
@@ -73,6 +73,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         int id = item.getItemId();
 
         if (id == R.id.reset_button) {
+            // reset implicitly ends replaying
+            if (state == SimulationState.REPLAY_RUNNING) {
+                state = SimulationState.RUNNING;
+            }
+
+            if (state == SimulationState.RUNNING) {
+                onStopButtonClicked();
+            }
             createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
@@ -90,7 +98,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.replay_button) {
+        if (id == R.id.replay_button && state == SimulationState.STOPPED) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             mSensorManager.unregisterListener(mExcitationManager);
 
@@ -99,6 +107,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+            state = SimulationState.REPLAY_RUNNING;
             mExcitationManager.initReplay();
 
 
@@ -120,6 +129,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private void createStructure() {
         structure = StructureFactory.getSimpleHouse();
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,32 +159,47 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        /*
-        mSensorManager.registerListener(mExcitationManager, mAccelerometer,
-
-                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
-         */
+        if (state != SimulationState.REPLAY_RUNNING && state != SimulationState.REPLAY_STOPPED) {
+            mSensorManager.registerListener(mExcitationManager, mAccelerometer,
+                    SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+
+        if (state != SimulationState.REPLAY_RUNNING && state != SimulationState.REPLAY_STOPPED) {
+            mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+        }
     }
 
     private void onStartButtonClicked() {
         startSimulation();
-
+        if (state == SimulationState.REPLAY_STOPPED) {
+            state = SimulationState.REPLAY_RUNNING;
+        } else if (state == SimulationState.STOPPED) {
+            state = SimulationState.RUNNING;
+        } else {
+            throw new IllegalStateException("Simulation already running (" + state.name() + ") before Start button press");
+        }
         simFab.setOnClickListener(stopSimulationListener);
         simFab.setImageResource(R.drawable.ic_pause_white_24dp);
     }
 
     private void onStopButtonClicked() {
         simulation.stop();
-        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
+        if (state == SimulationState.RUNNING) {
+            state = SimulationState.STOPPED;
+        } else if (state == SimulationState.REPLAY_RUNNING) {
+            state = SimulationState.REPLAY_STOPPED;
+        } else {
+            throw new IllegalStateException("Simulation already stopped (" + state.name() + ") before Stop button press");
+        }
 
+        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         try {
             mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
@@ -199,7 +224,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
-
 
         simulation.start();
         simulation.setListener(this);
@@ -238,5 +262,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         Log.d("SimSpeed", msg);
 
+    }
+
+    // TODO: shouldn't this be part of Simulation?
+    private enum SimulationState {
+        RUNNING,
+        STOPPED,
+        REPLAY_RUNNING,
+        REPLAY_STOPPED
     }
 }
