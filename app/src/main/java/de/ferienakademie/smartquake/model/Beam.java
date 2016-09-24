@@ -220,7 +220,7 @@ public class Beam {
         this(new Node(startX, startY), new Node(endX, endY));
     }
 
-    public void dofsGlobalToLocal(){
+    public List<Double> getdofsGlobalToLocal(){
         double[] u= new double[6];
         u[0]= startNode.getCurrX(); //x-displacement of startnode
         u[1]=startNode.getCurrY(); //y-displacement of startnode
@@ -239,9 +239,10 @@ public class Beam {
         localdisplacements.add((startNode.getCurrROT().get(0)));
         localdisplacements.add((endNode.getCurrROT().get(0)));
 
+        return localdisplacements;
     }
 
-    public void dofsLocalToGlobal(){
+    public List<Double> getdofsLocalToGlobal(){
         double[] u= new double[6];
         u[0]= startNode.getCurrX(); //x-displacement of startnode
         u[1]=startNode.getCurrY(); //y-displacement of startnode
@@ -257,6 +258,7 @@ public class Beam {
         localdisplacements.add((startNode.getCurrROT().get(0)));
         localdisplacements.add((endNode.getCurrROT().get(0)));
 
+        return localdisplacements;
     }
 
     public int[] getDofs() {
