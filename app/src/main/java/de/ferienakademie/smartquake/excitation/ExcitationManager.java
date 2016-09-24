@@ -5,10 +5,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
@@ -105,20 +111,21 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
 
     /**
      * Store the data to a file
-     * @param filename        nam eof the file where the readings of excitation to be saved
-     * @param activityContext link to the context of the program
+     * @param outputStream reference to a stream passing readings to internal storage
      */
-    public void saveFile(String filename, Context activityContext) {
+    public void saveFile(OutputStream outputStream) {
         String readingString;
-        BufferedWriter outputStream;
+        OutputStreamWriter outputStreamReader;
+        BufferedWriter bufferedWriter;
         try {
-            outputStream = new BufferedWriter(new FileWriter(filename));
+            outputStreamReader = new OutputStreamWriter(outputStream);
+            bufferedWriter = new BufferedWriter(outputStreamReader);
             for (int i = 0; i < readings.size(); i++) {
                 readingString = String.format("%d %f %f\n", readings.get(i).timestamp,
                         readings.get(i).xAcceleration, readings.get(i).yAcceleration);
-                outputStream.write(readingString);
+                bufferedWriter.write(readingString);
             }
-            outputStream.close();
+            //outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,17 +133,19 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
 
     /**
      * Load acceleration data from a file
-     * @param filename
+     * @param inputStream stream that passes readings from a file to excitation manager
      */
-    public void loadFile(String filename) {
+    public void loadFile(InputStream inputStream) {
         AccelData curReading = new AccelData();
         String readingString;
         String[] readStringSplit;
         int res = 0;
-        BufferedReader inputStream;
+        InputStreamReader inputStreamReader;
+        BufferedReader bufferedReader;
         try {
-            inputStream = new BufferedReader(new FileReader(filename));
-            readingString = inputStream.readLine();
+            inputStreamReader = new InputStreamReader(inputStream);
+            bufferedReader = new BufferedReader(inputStreamReader);
+            readingString = bufferedReader.readLine();
             while (readingString != null) {
                 readStringSplit = readingString.split(" ");
 
@@ -145,9 +154,8 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
                 curReading.yAcceleration = Double.parseDouble(readStringSplit[2]);
 
                 readings.add(new AccelData(curReading));
-                readingString = inputStream.readLine();
+                readingString = bufferedReader.readLine();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
