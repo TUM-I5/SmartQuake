@@ -57,7 +57,7 @@ public class ExplicitSolver extends Solver {
         acceleration = getAccelerationProvider().getAcceleration();
         k1.updateLoadVector(acceleration);
 
-        tempVector = k1.getLoadVector();
+        //tempVector = k1.getLoadVector();
         //tempVector = k1.getLoadVector().copy();
 
 
@@ -67,7 +67,7 @@ public class ExplicitSolver extends Solver {
         }
 
 
-        // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*xD
+        // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*x
         // 1.: tempVector = tempVector - C*xDot
         CommonOps.multAdd(-1, C,xDot,tempVector);
 
@@ -75,7 +75,7 @@ public class ExplicitSolver extends Solver {
         CommonOps.multAdd(-1, K,x,tempVector);
 
 
-        xDotDot = tempVector;
+        xDotDot = tempVector.copy();
         //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);
 

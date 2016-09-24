@@ -10,6 +10,7 @@ import de.ferienakademie.smartquake.kernel1.Kernel1;
  */
 public class Solver implements TimeIntegrationSolver {
 
+
     AccelerationProvider accelerationProvider;
 
     //vector of acceleration=xDotDot
@@ -28,7 +29,6 @@ public class Solver implements TimeIntegrationSolver {
 
     //connection to kernel1
     Kernel1 k1;
-
 
     /**
      *
