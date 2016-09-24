@@ -23,20 +23,13 @@ public class StructureIO {
     public static void writeStructure(Writer stream, Structure structure) throws IOException {
         JsonWriter writer = new JsonWriter(stream);
         writer.beginObject();
-        writer.name("nodes");
-        writer.beginArray();
+        writer.name("nodes").beginArray();
         for (Node node : structure.getNodes())
         {
-            writer.beginObject();
-            writer.name("x");
-            writer.value(node.getInitX());
-            writer.name("y");
-            writer.value(node.getInitY());
-            writer.endObject();
+            writeNode(writer, node);
         }
         writer.endArray();
-        writer.name("beams");
-        writer.beginArray();
+        writer.name("beams").beginArray();
         for (Beam beam : structure.getBeams())
         {
             writer.beginObject();
@@ -49,14 +42,40 @@ public class StructureIO {
             writer.endObject();
         }
         writer.endArray();
+        writer.name("conDOF").beginArray();
+        for (Integer i : structure.getConDOF()) {
+            writer.value(i);
+        }
+        writer.endArray();
         writer.endObject();
         writer.flush();
         stream.close();
     }
 
+    private static void writeNode(JsonWriter writer, Node node) throws IOException {
+        writer.beginObject();
+        writer.name("x").value(node.getInitX());
+        writer.name("y").value(node.getInitY());
+
+        writer.name("currRot").beginArray();
+        for (Double d : node.getCurrROT()) {
+            writer.value(d);
+        }
+        writer.endArray();
+
+        writer.name("DOF").beginArray();
+        for (Integer i : node.getDOF()) {
+            writer.value(i);
+        }
+        writer.endArray();
+
+        writer.endObject();
+    }
+
     private static Node parseNode(JsonReader reader) throws IOException {
         double x = Double.NaN, y = Double.NaN;
-
+        LinkedList<Integer> DOF = new LinkedList<>();
+        LinkedList<Double> currRot = new LinkedList<>();
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT)
         {
@@ -69,6 +88,20 @@ public class StructureIO {
                 case "y":
                     y = reader.nextDouble();
                     break;
+                case "currRot":
+                    reader.beginArray();
+                    while(reader.peek() != JsonToken.END_ARRAY){
+                        currRot.add(reader.nextDouble());
+                    }
+                    reader.endArray();
+                    break;
+                case "DOF":
+                    reader.beginArray();
+                    while(reader.peek() != JsonToken.END_ARRAY){
+                        DOF.add(reader.nextInt());
+                    }
+                    reader.endArray();
+                    break;
             }
         }
         reader.endObject();
@@ -78,7 +111,7 @@ public class StructureIO {
             throw new IOException("Malformed file format.");
         }
 
-        return new Node(x, y);
+        return new Node(x, y, DOF, currRot);
     }
 
     private static List<Node> parseNodes(JsonReader reader) throws IOException {
