@@ -46,7 +46,7 @@ public class Newmark extends ImplicitSolver {
         }
 
         //Get acceleration
-        xDotDot = getAcceleration(t);
+        getAcceleration();
 
         //Calculate velocity
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
@@ -94,16 +94,10 @@ public class Newmark extends ImplicitSolver {
 
     /**
      *
-     * @param t time
+     *
      * @return ddotx_n+1
      */
-    private DenseMatrix64F getAcceleration(double t){
-
-        DenseMatrix64F acc = new DenseMatrix64F(k1.getNumberofDOF(),1);
-        acc.zero();
-
-        //Get external forces
-        DenseMatrix64F f_load = k1.getLoadVector();
+    private void getAcceleration(){
 
         //initialize right hand side
         DenseMatrix64F RHS = new DenseMatrix64F(k1.getNumberofDOF(),1);
@@ -116,9 +110,8 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
         //Solve
-        solver.solve(RHS,acc); //solver.A*acc = RHS
+        solver.solve(RHS,xDotDot); //solver.A*acc = RHS
 
-        return acc;
     }
 }
 
