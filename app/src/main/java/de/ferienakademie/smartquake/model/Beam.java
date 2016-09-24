@@ -99,7 +99,7 @@ public class Beam {
         eleStiffnessMatrix.set(5, 1, -6 * EI / (l * l));
         eleStiffnessMatrix.set(5, 2, 2 * EI / l);
         eleStiffnessMatrix.set(5, 4, 6 * EI / (l * l));
-        eleStiffnessMatrix.set(5, 5, 6 * EI / (l * l));
+        eleStiffnessMatrix.set(5, 5, 4 * EI / (l * l));
     }
 
     void computelumpedMassMatrix() {
@@ -258,8 +258,17 @@ public class Beam {
         localdisplacements.add((endNode.getCurrROT().get(0)));
 
     }
+
     public int[] getDofs() {
         return Dofs;
+    }
+
+    public double getL() {
+        return l;
+    }
+
+    public Material getMaterial() {
+        return material;
     }
 
     public void setDofs(int[] dofs) {
