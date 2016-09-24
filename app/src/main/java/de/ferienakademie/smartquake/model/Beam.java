@@ -290,6 +290,17 @@ public class Beam {
         this.thickness = thickness;
     }
 
+    @Override
+    public boolean equals(Object b) {
+        if (b instanceof Beam) {
+            Beam temp = (Beam) b;
+            return (temp.startNode.equals(startNode) && temp.endNode.equals(endNode))
+                    || (temp.endNode.equals(startNode) && temp.startNode.equals(endNode));
+        } else {
+            return false;
+        }
+    }
+
     public DenseMatrix64F getEleStiffnessMatrix() {
         return eleStiffnessMatrix;
     }

@@ -18,8 +18,7 @@ import android.view.ViewTreeObserver;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
-import de.ferienakademie.smartquake.excitation.Recorder;
-import de.ferienakademie.smartquake.excitation.SensorExcitation;
+import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Structure;
@@ -31,7 +30,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
-    private SensorExcitation mExcitationManager; // custom accelerometer listener
+    private ExcitationManager mExcitationManager; // custom accelerometer listener
 
     private FloatingActionButton simFab;
     private CanvasView canvasView;
@@ -39,11 +38,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Structure structure;
     private Kernel1 kernel1;
     private Simulation simulation;
-
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-
-    private Recorder recorder;
 
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
@@ -106,13 +102,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mExcitationManager = new SensorExcitation();
-        recorder = new Recorder();
-        mExcitationManager.registerLstnr(recorder);
+        mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
-
         layout = (CoordinatorLayout) findViewById(R.id.simLayout);
 
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
@@ -159,10 +152,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation() {
+
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-
-        recorder.initRecord();
-
+        mExcitationManager.initSensors();
         kernel1 = new Kernel1(structure);
         timeIntegration = new TimeIntegration(kernel1, mExcitationManager);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
