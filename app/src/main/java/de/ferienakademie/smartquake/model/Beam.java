@@ -130,31 +130,31 @@ public class Beam {
         eleMassMatrix = new DenseMatrix64F(6,6);
         eleMassMatrix.zero();
         //row 1
-        eleMassMatrix.set(0,0,140*m*l*l/420);
-        eleMassMatrix.set(0,3,70*m*l*l/420);
+        eleMassMatrix.set(0,0,140*m*l/420);
+        eleMassMatrix.set(0,3,70*m*l/420);
         //row 2
-        eleMassMatrix.set(1,1,156*m*l*l/420);
-        eleMassMatrix.set(1,2,-22*l*m*l*l/420);
-        eleMassMatrix.set(1,4,54*m*l*l/420);
-        eleMassMatrix.set(1,5,13*l*m*l*l/420);
+        eleMassMatrix.set(1,1,156*m*l/420);
+        eleMassMatrix.set(1,2,-22*l*m*l/420);
+        eleMassMatrix.set(1,4,54*m*l/420);
+        eleMassMatrix.set(1,5,13*l*m*l/420);
         //row 3
-        eleMassMatrix.set(2,1,-22*l*m*l*l/420);
-        eleMassMatrix.set(2,2,4*l*l*m*l*l/420);
-        eleMassMatrix.set(2,4,-13*l*m*l*l/420);
-        eleMassMatrix.set(2,5,-3*l*l*m*l*l/420);
+        eleMassMatrix.set(2,1,-22*l*m*l/420);
+        eleMassMatrix.set(2,2,4*l*l*m*l/420);
+        eleMassMatrix.set(2,4,-13*l*m*l/420);
+        eleMassMatrix.set(2,5,-3*l*l*m*l/420);
         //row 4
-        eleMassMatrix.set(3,0,70*m*l*l/420);
-        eleMassMatrix.set(3,3,140*m*l*l/420);
+        eleMassMatrix.set(3,0,70*m*l/420);
+        eleMassMatrix.set(3,3,140*m*l/420);
         //row 5
-        eleMassMatrix.set(4,1,54*m*l*l/420);
-        eleMassMatrix.set(4,2,-13*l*m*l*l/420);
-        eleMassMatrix.set(4,4,156*m*l*l/420);
-        eleMassMatrix.set(4,5,22*l*m*l*l/420);
+        eleMassMatrix.set(4,1,54*m*l/420);
+        eleMassMatrix.set(4,2,-13*l*m*l/420);
+        eleMassMatrix.set(4,4,156*m*l/420);
+        eleMassMatrix.set(4,5,22*l*m*l/420);
         //row 6
-        eleMassMatrix.set(5,1,13*l*m*l*l/420);
-        eleMassMatrix.set(5,2,-3*l*l*m*l*l/420);
-        eleMassMatrix.set(5,4,22*l*m*l*l/420);
-        eleMassMatrix.set(5,5,4*l*l*m*l*l/420);
+        eleMassMatrix.set(5,1,13*l*m*l/420);
+        eleMassMatrix.set(5,2,-3*l*l*m*l/420);
+        eleMassMatrix.set(5,4,22*l*m*l/420);
+        eleMassMatrix.set(5,5,4*l*l*m*l/420);
     }
 
     public DenseMatrix64F GlobalizeElementMatrix(DenseMatrix64F elementMatrix) {
