@@ -23,6 +23,8 @@ public class TimeIntegration {
     // time step
     double delta_t;
 
+    double globalTime;
+
     // matrices of velocity
     DenseMatrix64F xDot;
 
@@ -82,16 +84,23 @@ public class TimeIntegration {
                 public void run() {
                     //reset time
                     t = 0;
-
                     long firstTime = System.nanoTime();
 
                     //calculates time step
-                    while(t < 0.02+0.000001 && isRunning) {
+
+                    //get the loadVector for the whole calculation
+                    solver.setFLoad(kernel1.getLoadVector());
+
+                    while(t < 0.03+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         t += delta_t;
 
                     }
+                    //for the sensor team
+                    globalTime *= 0.03;
+
+                    //for recording
                     long secondTime = System.nanoTime();
                     Log.e("Timestamp",""+(secondTime-firstTime));
                     //update the displacement in the node variables

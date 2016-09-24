@@ -25,7 +25,7 @@ public class Euler extends ExplicitSolver {
     public void nextStep(double t, double delta_t) {
         //pure euler at the moment
         //store old (n-1) velocity
-        getAcceleration();
+        //getAcceleration();
         //DenseMatrix64F oldxDot = xDot.copy();
 
         //velocity at n
@@ -39,6 +39,7 @@ public class Euler extends ExplicitSolver {
         CommonOps.addEquals(x, delta_t, xDot);
 
     }
+
 
 
 }
