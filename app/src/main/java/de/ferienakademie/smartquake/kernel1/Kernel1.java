@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -9,6 +11,7 @@ import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.model.StructureFactory;
 
 /**
  * Created by alex on 22.09.16.
@@ -18,6 +21,7 @@ public class Kernel1 {
     private DenseMatrix64F StiffnessMatrix;
     private DenseMatrix64F DampingMatrix;
     private DenseMatrix64F MassMatrix;
+    private DenseMatrix64F InverseMassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces
     private DenseMatrix64F influenceVectorx;
@@ -32,8 +36,10 @@ public class Kernel1 {
     public Kernel1(Structure structure) {
         this.structure = structure;
         //initialize displacement with zeros
+        numDOF = structure.getNodes().size()*3;
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
+           //TODO Alex: temporary solution. Changes if we add hinges.
         initMatrices();
         calcInfluenceVector();
     }
@@ -117,6 +123,21 @@ public class Kernel1 {
         }
     }
 
+    public void calcinverseMassMatrix(){
+        if (!structure.isLumped()) {
+            throw new RuntimeException("No diagonal mass matrix!");
+        }
+        InverseMassMatrix = new DenseMatrix64F(getNumDOF(),getNumDOF());
+        InverseMassMatrix.zero();
+        for (int e = 0; e < getNumDOF(); e++) {
+            InverseMassMatrix.add(e,e, 1./MassMatrix.get(e,e));
+        }
+    }
+
+    public DenseMatrix64F getInverseMassMatrix(){ // Only call for lumped cases.
+        calcinverseMassMatrix();
+        return InverseMassMatrix;
+    }
 
     public void calcDampingMatrix() {
         // CommonOps.scale(material.getC()/material.getM(),MassMatrix,DampingMatrix);
@@ -139,8 +160,7 @@ public class Kernel1 {
     }
 
     public int getNumDOF() {
-        //TODO: temporary solution. Changes if we add hinges.
-        return structure.getNodes().size() * 3;
+        return numDOF;
     }
 
     public Structure getStructure() {
@@ -163,6 +183,15 @@ public class Kernel1 {
         }
     }
 
+    public void updateStructureKernel1(DenseMatrix64F displacementVector) {
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+            node.setCurrX(node.getInitX() + displacementVector.get(3*i, 0));
+            node.setCurrY(node.getInitY() + displacementVector.get(3*i+1, 0));
+            node.setSingleRotation(0,displacementVector.get(3*i+2,0)); //TODO change with introducting of hinges
+        }
+    }
+
     public DenseMatrix64F getLoadVector() {
         return LoadVector;
     }
@@ -172,15 +201,16 @@ public class Kernel1 {
     }
 
     public void calcInfluenceVector(){
+        influenceVectorx = new DenseMatrix64F(getNumDOF(), 1);
+        influenceVectory = new DenseMatrix64F(getNumDOF(), 1);
+        influenceVectorx.zero();
+        influenceVectory.zero();
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-            influenceVectorx = new DenseMatrix64F(getNumDOF(), 1);
-            influenceVectory = new DenseMatrix64F(getNumDOF(), 1);
-            influenceVectorx.zero();
-            influenceVectory.zero();
+
             influenceVectorx.add(DOFx,0,-1); //add influence vector in x-dir
             influenceVectory.add(DOFy,0,-1); //add influence vector in y-dir
         }

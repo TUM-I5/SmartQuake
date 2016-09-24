@@ -85,6 +85,7 @@ public class ExplicitSolver extends Solver {
         for( int i =0; i<k1.getNumDOF(); i++){
             xDotDot.set(i,0, 1/628.0*xDotDot.get(i,0));
         }
+
         //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);
 
