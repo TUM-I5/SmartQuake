@@ -29,9 +29,9 @@ public class StructureIO {
         {
             writer.beginObject();
             writer.name("x");
-            writer.value(node.getInitX());
+            writer.value(node.getInitialX());
             writer.name("y");
-            writer.value(node.getInitY());
+            writer.value(node.getInitialY());
             writer.endObject();
         }
         writer.endArray();

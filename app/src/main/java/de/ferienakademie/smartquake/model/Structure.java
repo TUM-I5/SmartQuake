@@ -21,7 +21,17 @@ public class Structure {
     // X, Y
     private double[] modelSize = {8, 8};
 
-    public Structure(List<Node> nodes,List<Beam> beams, List<Integer> conDOF) {
+    private boolean lumped = true;  // default value!
+
+    public boolean isLumped() {
+        return lumped;
+    }
+
+    public void setLumped(boolean lumped) {
+        this.lumped = lumped;
+    }
+
+    public Structure(List<Node> nodes, List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;
         this.beams = beams;
         this.conDOF = conDOF;

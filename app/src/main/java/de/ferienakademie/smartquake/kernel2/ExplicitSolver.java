@@ -6,9 +6,7 @@ import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
-import de.ferienakademie.smartquake.kernel1.Kernel1;
-
-import android.util.Log;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 /**
  * Created by Felix Wechsler on 23/09/16.
@@ -25,22 +23,22 @@ public class ExplicitSolver extends Solver {
      * @param k1
      * @param xDot
      */
-    public ExplicitSolver(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
+    public ExplicitSolver(SpatialDiscretization k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
         super(k1, accelerationProvider, xDot);
 
         //sets up fast linear solver
-        linearSolverM = LinearSolverFactory.chol(k1.getNumDOF());
-        for(int i=0; i<k1.getNumDOF(); i++){
+        linearSolverM = LinearSolverFactory.chol(k1.getNumberofDOF());
+        for(int i = 0; i<k1.getNumberofDOF(); i++){
             M.set(i,i,0.0001);
         }
         linearSolverM.setA(M);
 
-        tempVector = new DenseMatrix64F(k1.getNumDOF(),1);
+        tempVector = new DenseMatrix64F(k1.getNumberofDOF(),1);
 
         //JUST FOR TESTING
         C.zero();
         K.zero();
-        for (int j = 6; j < k1.getNumDOF(); j += 3) {
+        for (int j = 6; j < k1.getNumberofDOF(); j += 3) {
             C.set(j,j,5);
             C.set(j+1,j+1,5);
             K.set(j,j,100);
@@ -61,7 +59,7 @@ public class ExplicitSolver extends Solver {
         //tempVector = k1.getLoadVector().copy();
 
 
-        for (int j = 6; j < k1.getNumDOF(); j += 3) {
+        for (int j = 6; j < k1.getNumberofDOF(); j += 3) {
             tempVector.set(j, 0, 20 * acceleration[0] );
             tempVector.set(j + 1, 0, 20 * acceleration[1] );
         }
