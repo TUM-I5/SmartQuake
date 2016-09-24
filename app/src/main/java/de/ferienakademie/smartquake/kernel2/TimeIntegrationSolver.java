@@ -6,6 +6,8 @@ import org.ejml.data.DenseMatrix64F;
  * Created by Felix Wechsler on 21/09/16.
  */
 public interface TimeIntegrationSolver {
+
+
     /**
      * This is a interface for the time integration solver.
      *
