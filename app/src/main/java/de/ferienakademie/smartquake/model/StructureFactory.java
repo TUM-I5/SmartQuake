@@ -30,10 +30,13 @@ public class StructureFactory {
         DOFnode1.add(0); //constraint
         DOFnode1.add(1);//constraint
         DOFnode1.add(2);//constraint
+
+
+
         DOFnode2.add(3);
 
-
         DOFnode2.add(4);
+
         DOFnode2.add(5);
 
         Node n1 = new Node(0, height, DOFnode1);
@@ -42,7 +45,7 @@ public class StructureFactory {
         //rotated cantilever node
        // Node n3 = new Node(1,height - half, DOFnode2);
 
-        Beam b1 = new Beam(n1, n2, testMaterial,true);
+        Beam b1 = new Beam(n1, n2, testMaterial,false);
         //Beam b2 = new Beam(n1, n3, testMaterial,true);
 
 
@@ -54,9 +57,11 @@ public class StructureFactory {
       //  rotcantilever.addBeam(b2);
 
         List<Integer> condof= new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             condof.add(i);
         }
+        condof.add(4);
+        //condof.add(5);
 
         cantilever.setConDOF(condof);
        // rotcantilever.setConDOF(condof);

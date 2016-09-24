@@ -31,7 +31,8 @@ public class Testing {
 
 
         //Solving eigenvalue problem test
-        GenEig eigen = new GenEig(kern1.getStiffnessMatrix().getData(),kern1.getMassMatrix().getData());
+        GenEig eigen = new GenEig(kern1.getStiffnessMatrix(),kern1.getMassMatrix());
+        double[] frequences = eigen.getLambda();
 
 
 

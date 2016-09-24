@@ -1,6 +1,8 @@
 package de.ferienakademie.smartquake.eigenvalueProblems;
 
 import java.util.ArrayList; // Variable size array to handle arbitrary dimension of input matrices
+
+import org.ejml.data.DenseMatrix64F;
 import org.netlib.util.intW;
 import org.netlib.lapack.Dggev;
 
@@ -34,31 +36,17 @@ public class GenEig {
 
     /* Constructor */
     public GenEig(double[][] a, double[][] b) {
-		/* Initialize local variables */
-        n = a.length;
-        double[] aV = GenEig.matToVec(a);
-        double[] bV = GenEig.matToVec(b);
-        double[] alphaReD = new double[n];
-        double[] alphaImD = new double[n];
-        double[] betaD = new double[n];
-        double[] vR = new double[n * n];
-        double[] vL = new double[n * n];
-        double[] work = new double[8 * n];
-        intW info = new intW(0);
-
-		/* Solve generalized eigenvalue problem */
-        Dggev.dggev("N", "V", n, aV, 0, n, bV, 0, n, alphaReD, 0, alphaImD, 0, betaD, 0, vL, 0, n, vR, 0, n, work, 0, 8 * n, info);
-
-		/* Assign results to attributes */
-        alphaRe = GenEig.vecToArrayList(alphaReD);
-        alphaIm = GenEig.vecToArrayList(alphaImD);
-        beta = GenEig.vecToArrayList(betaD);
-        v = GenEig.vecToArrayList(vR);
+        this(matToVec(a),matToVec(b),a.length);
     }
 
-    public GenEig(double[] aV, double[] bV) {
+
+    public GenEig(DenseMatrix64F a, DenseMatrix64F b) {
+        this(a.getData(),b.getData(),a.getNumRows());
+    }
+
+    public GenEig(double[] aV, double[] bV,int n) {
 		/* Initialize local variables */
-        n = aV.length;
+        this.n=n;
         double[] alphaReD = new double[n];
         double[] alphaImD = new double[n];
         double[] betaD = new double[n];
