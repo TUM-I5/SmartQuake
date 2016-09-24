@@ -36,7 +36,7 @@ public class StructureFactory {
         DOFnode2.add(5);
 
         Node n1 = new Node(0, height, DOFnode1);
-        Node n2 = new Node(0, height - half, DOFnode2);
+        Node n2 = new Node(2, height, DOFnode2);
 
         //rotated cantilever node
         Node n3 = new Node(1,height - half, DOFnode2);

@@ -27,7 +27,7 @@ public class Testing {
         LoadVector.add(3,0,1);
         LoadVector.add(4,0,0);
         LoadVector.add(5,0,0);
-        Log.d("Cantilever Disp.test", "doener");
+
         LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(6);
         solver.setA(kern1.getStiffnessMatrix());
         solver.solve(LoadVector,Displacement);
@@ -37,7 +37,7 @@ public class Testing {
         if ( Math.abs(Displacement.get(4,0)-structure.getBeams().get(0).getL()/structure.getBeams().get(0).getMaterial().getEA())>eps){
             throw new RuntimeException("Cantilever test failed");
         }else{
-            Log.d("Cantilever Test failed","Cantilever Test failed");
+            Log.d("Testing: ", "Cantilever test passed");
         }
     }
     public static void rotatedcantiLeverStaticTest(Structure structure){

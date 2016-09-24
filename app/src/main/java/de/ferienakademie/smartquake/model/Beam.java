@@ -55,7 +55,7 @@ public class Beam {
         double x2 = endNode.getInitX(), y2 = endNode.getInitY();
         l = Math.sqrt((x1 - x2) * (x1 - x2)) + (y1 - y2) * (y1 - y2);
 
-        theta = -Math.atan((y2 - y1) / (x2 - x1));
+        theta = Math.atan((y2 - y1) / (x2 - x1));
         c = Math.cos(theta); //rotation of displacement
         s = Math.sin(theta);
         computeStiffnessMatrix();
