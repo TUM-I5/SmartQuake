@@ -61,6 +61,7 @@ public class StructureFactory {
         rotcantilever.setConDOF(condof);
 
         Testing.cantiLeverStaticTest(cantilever);
+
         Testing.rotatedcantiLeverStaticTest(rotcantilever);
 
         return structure;

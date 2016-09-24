@@ -23,19 +23,20 @@ public class Euler extends ExplicitSolver {
 
     @Override
     public void nextStep(double t, double delta_t) {
+        //pure euler at the moment
         //store old (n-1) velocity
         getAcceleration();
-        DenseMatrix64F oldxDot = xDot.copy();
+        //DenseMatrix64F oldxDot = xDot.copy();
 
         //velocity at n
         CommonOps.addEquals(xDot, delta_t, xDotDot);
 
         //create average matrix of velocities at step n and n+1
-        DenseMatrix64F averageXDot = xDot.copy();
-        CommonOps.addEquals(averageXDot, 1, oldxDot);
+        //DenseMatrix64F averageXDot = xDot.copy();
+        //CommonOps.addEquals(averageXDot, 1, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, 1 / 2.0 * delta_t, oldxDot);
+        CommonOps.addEquals(x, delta_t, xDot);
 
     }
 

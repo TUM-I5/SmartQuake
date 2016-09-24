@@ -31,8 +31,14 @@ public class Testing {
         LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(6);
         solver.setA(kern1.getStiffnessMatrix());
         solver.solve(LoadVector,Displacement);
-        Log.d("Cantilever Disp.test", Displacement.toString());
 
+        double eps = 10e-8;
+
+        if ( Math.abs(Displacement.get(4,0)-structure.getBeams().get(0).getL()/structure.getBeams().get(0).getMaterial().getEA())>eps){
+            throw new RuntimeException("Cantilever test failed");
+        }else{
+            Log.d("Cantilever Test failed","Cantilever Test failed");
+        }
     }
     public static void rotatedcantiLeverStaticTest(Structure structure){
         Kernel1 kern1 = new Kernel1(structure);

@@ -16,6 +16,9 @@ public class Beam {
     private Node endNode;
     private Material material;
     private float thickness;
+
+
+
     private double l;
     private double s;
     private double c;
@@ -260,6 +263,14 @@ public class Beam {
     }
     public int[] getDofs() {
         return Dofs;
+    }
+
+    public double getL() {
+        return l;
+    }
+
+    public Material getMaterial() {
+        return material;
     }
 
     public void setDofs(int[] dofs) {
