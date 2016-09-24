@@ -53,7 +53,7 @@ public class Beam {
         this.thickness = 0.1f;
         double x1 = startNode.getInitX(), y1 = startNode.getInitY();
         double x2 = endNode.getInitX(), y2 = endNode.getInitY();
-        l = Math.sqrt((x1 - x2) * (x1 - x2)) + (y1 - y2) * (y1 - y2);
+        l = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
         theta = Math.atan((y2 - y1) / (x2 - x1));
         c = Math.cos(theta); //rotation of displacement
@@ -83,8 +83,12 @@ public class Beam {
 
         eleStiffnessMatrix.set(1, 1, 12 * EI / (l * l * l));
         eleStiffnessMatrix.set(1, 2, -6 * EI / (l * l));
+
         eleStiffnessMatrix.set(1, 4, -12 * EI / (l * l * l));
         eleStiffnessMatrix.set(1, 5, -6 * EI / (l * l));
+
+
+
 
         eleStiffnessMatrix.set(2, 1, -6 * EI / (l * l));
         eleStiffnessMatrix.set(2, 2, 4 * EI / l);
@@ -102,7 +106,7 @@ public class Beam {
         eleStiffnessMatrix.set(5, 1, -6 * EI / (l * l));
         eleStiffnessMatrix.set(5, 2, 2 * EI / l);
         eleStiffnessMatrix.set(5, 4, 6 * EI / (l * l));
-        eleStiffnessMatrix.set(5, 5, 6 * EI / (l * l));
+        eleStiffnessMatrix.set(5, 5, 4 * EI / (l));
     }
 
      void computelumpedMassMatrix() {

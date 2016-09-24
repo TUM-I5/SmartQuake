@@ -7,6 +7,7 @@ import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
+import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
 import de.ferienakademie.smartquake.model.Structure;
 
 /**
@@ -27,6 +28,12 @@ public class Testing {
         LoadVector.add(3,0,1);
         LoadVector.add(4,0,0);
         LoadVector.add(5,0,0);
+
+
+        //Solving eigenvalue problem test
+        GenEig eigen = new GenEig(kern1.getStiffnessMatrix().getData(),kern1.getMassMatrix().getData());
+
+
 
         LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(6);
         solver.setA(kern1.getStiffnessMatrix());

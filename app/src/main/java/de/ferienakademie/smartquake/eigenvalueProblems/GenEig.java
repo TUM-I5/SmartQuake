@@ -56,6 +56,27 @@ public class GenEig {
         v = GenEig.vecToArrayList(vR);
     }
 
+    public GenEig(double[] aV, double[] bV) {
+		/* Initialize local variables */
+        n = aV.length;
+        double[] alphaReD = new double[n];
+        double[] alphaImD = new double[n];
+        double[] betaD = new double[n];
+        double[] vR = new double[n * n];
+        double[] vL = new double[n * n];
+        double[] work = new double[8 * n];
+        intW info = new intW(0);
+
+		/* Solve generalized eigenvalue problem */
+        Dggev.dggev("N", "V", n, aV, 0, n, bV, 0, n, alphaReD, 0, alphaImD, 0, betaD, 0, vL, 0, n, vR, 0, n, work, 0, 8 * n, info);
+
+		/* Assign results to attributes */
+        alphaRe = GenEig.vecToArrayList(alphaReD);
+        alphaIm = GenEig.vecToArrayList(alphaImD);
+        beta = GenEig.vecToArrayList(betaD);
+        v = GenEig.vecToArrayList(vR);
+    }
+
     /* Getter methods */
     public double[] getAlphaRe() {
         /** Returns real part of alpha */

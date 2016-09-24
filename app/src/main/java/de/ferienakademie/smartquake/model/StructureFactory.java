@@ -30,39 +30,40 @@ public class StructureFactory {
         DOFnode1.add(0); //constraint
         DOFnode1.add(1);//constraint
         DOFnode1.add(2);//constraint
-
         DOFnode2.add(3);
+
+
         DOFnode2.add(4);
         DOFnode2.add(5);
 
         Node n1 = new Node(0, height, DOFnode1);
-        Node n2 = new Node(2, height, DOFnode2);
+        Node n2 = new Node(0, height-2, DOFnode2);
 
         //rotated cantilever node
-        Node n3 = new Node(1,height - half, DOFnode2);
+       // Node n3 = new Node(1,height - half, DOFnode2);
 
         Beam b1 = new Beam(n1, n2, testMaterial,true);
-        Beam b2 = new Beam(n1, n3, testMaterial,true);
+        //Beam b2 = new Beam(n1, n3, testMaterial,true);
 
 
 
         cantilever.addNodes(n1, n2);
         cantilever.addBeams(b1);
 
-        rotcantilever.addNodes(n1,n3);
-        rotcantilever.addBeam(b2);
+       // rotcantilever.addNodes(n1,n3);
+      //  rotcantilever.addBeam(b2);
 
         List<Integer> condof= new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             condof.add(i);
         }
 
         cantilever.setConDOF(condof);
-        rotcantilever.setConDOF(condof);
+       // rotcantilever.setConDOF(condof);
 
         Testing.cantiLeverStaticTest(cantilever);
 
-        Testing.rotatedcantiLeverStaticTest(rotcantilever);
+        //Testing.rotatedcantiLeverStaticTest(rotcantilever);
 
         return structure;
     }
