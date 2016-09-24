@@ -94,7 +94,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private void createStructure() {
         structure = StructureFactory.getSimpleHouse();
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
