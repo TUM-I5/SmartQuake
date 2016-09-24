@@ -21,13 +21,15 @@ public class Newmark extends ImplicitSolver {
      */
     public Newmark(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot, double delta_t) {
         super(k1, accelerationProvider, xDot);
-        initialise(delta_t);
+        initialize(delta_t);
     }
 
     //Right and left hand side matrix
-    DenseMatrix64F B;
-    DenseMatrix64F A;
-    DenseMatrix64F V;
+    DenseMatrix64F B; //right
+    DenseMatrix64F A; //left
+
+    //old load vector
+    DenseMatrix64F fLoad_old;
 
     //Fixed time step
     double delta_t;
@@ -54,10 +56,13 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4
         CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old); // x = x + delta_t**2*xDotDot_old/4
 
+        //update fLoad_old
+        fLoad_old = fLoad;
+
     }
 
 
-    private void initialise(double delta_t) {
+    private void initialize(double delta_t) {
         //set gamma to 1/2, beta to 1/4
         //initialise left side matrix
         A = new DenseMatrix64F(k1.getNumDOF(),k1.getNumDOF());
@@ -73,18 +78,17 @@ public class Newmark extends ImplicitSolver {
         solver = LinearSolverFactory.lu(k1.getNumDOF());
         solver.setA(A);
 
-        //initialise right side matrices: F_ext - V*dotx - K*x - B*ddotx
+        //initialise right side matrices: F_ext - K*dotx - B*ddotx
         B = new DenseMatrix64F(k1.getNumDOF(),k1.getNumDOF());
         B.zero();
 
         CommonOps.addEquals(B,delta_t/2.0,C);
         CommonOps.addEquals(B,delta_t*delta_t/4.0,K);
+        CommonOps.addEquals(B,-1,M);
 
-        V = new DenseMatrix64F(k1.getNumDOF(),k1.getNumDOF());
-        V.zero();
-
-        CommonOps.addEquals(V,1,C);
-        CommonOps.addEquals(V,delta_t,K);
+        //initialize fLoad_old
+        fLoad_old = new DenseMatrix64F(k1.getNumDOF(), 1);
+        fLoad_old.zero();
     }
 
     /**
@@ -105,10 +109,10 @@ public class Newmark extends ImplicitSolver {
         RHS.zero();
 
         //Calculate RHS
-        CommonOps.multAdd(-1,K,x,RHS); //RHS = RHS - K*x
-        CommonOps.multAdd(-1,V,xDot,RHS); //RHS = RHS - V*xDot
+        CommonOps.multAdd(-1,K,xDot,RHS); //RHS = RHS - K*x
         CommonOps.multAdd(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
-        CommonOps.addEquals(RHS,1,f_load); //RHS = RHS + f_load
+        CommonOps.addEquals(RHS,1,fLoad); //RHS = RHS + fLoad
+        CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
         //Solve
         solver.solve(RHS,acc); //solver.A*acc = RHS
