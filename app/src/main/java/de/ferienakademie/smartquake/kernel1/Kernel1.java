@@ -182,15 +182,16 @@ public class Kernel1 {
     }
 
     public void calcInfluenceVector(){
+        influenceVectorx = new DenseMatrix64F(getNumDOF(), 1);
+        influenceVectory = new DenseMatrix64F(getNumDOF(), 1);
+        influenceVectorx.zero();
+        influenceVectory.zero();
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-            influenceVectorx = new DenseMatrix64F(getNumDOF(), 1);
-            influenceVectory = new DenseMatrix64F(getNumDOF(), 1);
-            influenceVectorx.zero();
-            influenceVectory.zero();
+
             influenceVectorx.add(DOFx,0,-1); //add influence vector in x-dir
             influenceVectory.add(DOFy,0,-1); //add influence vector in y-dir
         }
