@@ -13,11 +13,13 @@ public class Solver implements TimeIntegrationSolver {
 
     AccelerationProvider accelerationProvider;
 
-    //vector of acceleration=xDotDot
+    // Acceleration
     DenseMatrix64F xDotDot;
-    //vector of velocity=xDot
+
+    // Velocity
     DenseMatrix64F xDot;
-    //vector of displacement=x
+
+    // Displacement
     DenseMatrix64F x;
 
     //vector for fLoad
@@ -25,8 +27,10 @@ public class Solver implements TimeIntegrationSolver {
 
     //Stiffness Matrix
     DenseMatrix64F K;
+
     //Damping Matrix
     DenseMatrix64F C;
+
     //Mass Matrix
     DenseMatrix64F M;
 

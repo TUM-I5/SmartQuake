@@ -9,7 +9,7 @@ import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
- * Created by Claudius, Lukas und John on 23/09/16.
+ * Created by Claudius, Lukas and John on 23/09/16.
  */
 public class Newmark extends ImplicitSolver {
 
