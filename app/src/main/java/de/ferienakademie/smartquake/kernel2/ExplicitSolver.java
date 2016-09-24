@@ -74,17 +74,26 @@ public class ExplicitSolver extends Solver {
 
         // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*x
         // 1.: tempVector = tempVector - C*xDot
-        CommonOps.multAdd(-0.0000001, C,xDot,tempVector);
+        //CommonOps.multAdd(-1, C,xDot,tempVector);
+
+        multMatrices(C,xDot, tempVector); //tempVector = tempVector + C*xDot
+
+        subMatrices(tempVector, fLoad); //fLoad = fLoad - tempVector
+
+        multMatrices(K, x, tempVector); //tempVector = tempVector + K*x
+
+        subMatrices(tempVector, fLoad); //fLoad = fLoad - tempVector
 
         //2.: tempVector = tempVector - K*x
-        CommonOps.multAdd(-0.00001, K,x,tempVector);
+        //CommonOps.multAdd(-1, K,x,tempVector);
 
         //Log.d("Acceleretation", tempVector.toString());
 
+
         xDotDot = tempVector;
-        for( int i =0; i<k1.getNumDOF(); i++){
-            xDotDot.set(i,0, 1/628.0*xDotDot.get(i,0));
-        }
+        //for( int i =0; i<k1.getNumDOF(); i++){
+        //    xDotDot.set(i,0, 1/628.0*xDotDot.get(i,0));
+        //}
 
         //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);
@@ -94,4 +103,19 @@ public class ExplicitSolver extends Solver {
     }
 
 
+    //JUST FOR TESTING
+    //DONT USE
+    public void multMatrices(DenseMatrix64F matrix, DenseMatrix64F vector,  DenseMatrix64F resultVector){
+        for(int i=0; i<15; i++){
+            for(int j=0; j<15; j++){
+                resultVector.add(i,0, matrix.get(i,j)*vector.get(j,0));
+            }
+        }
+    }
+
+    public void subMatrices(DenseMatrix64F vector1, DenseMatrix64F resultVector){
+        for(int i=0; i<15; i++){
+            resultVector.set(i,0,resultVector.get(i,0)-vector1.get(i,0));
+        }
+    }
 }
