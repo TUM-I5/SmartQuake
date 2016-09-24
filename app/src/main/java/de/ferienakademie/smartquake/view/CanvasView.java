@@ -59,7 +59,7 @@ public class CanvasView extends View {
 
     private void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
         canvas.drawCircle((float) (node.getCurrX() * displayScaling + xOffset), (float) (node.getCurrY()* displayScaling + yOffset),
-                (float) (node.getRadius() * displayScaling), PAINT);
+                (float) (node.getRadius()), PAINT);
     }
 
     @Override

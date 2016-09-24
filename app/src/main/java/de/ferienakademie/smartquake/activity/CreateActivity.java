@@ -22,6 +22,7 @@ import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
+import de.ferienakademie.smartquake.view.DrawCanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
 /**
@@ -29,7 +30,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  */
 public class CreateActivity extends AppCompatActivity {
 
-    private static double DELTA = 0.1;
+    private static double DELTA = 80;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -38,7 +39,7 @@ public class CreateActivity extends AppCompatActivity {
     private GestureDetectorCompat mGestureDetector;
     private LongPressListener longPressListener;
 
-    private CanvasView canvasView;
+    private DrawCanvasView canvasView;
     private Structure structure;
 
     private double width, height;
@@ -47,26 +48,11 @@ public class CreateActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-        canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
+        canvasView = (DrawCanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
         longPressListener = new LongPressListener();
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
-
-        ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
-
-        if (viewTreeObserver.isAlive()) {
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    width = canvasView.getWidth();
-                    height = canvasView.getHeight();
-
-                    DELTA = width / 20;
-                }
-            });
-        }
-
     }
 
     public void transformToMeters(Node node) {
@@ -189,7 +175,7 @@ public class CreateActivity extends AppCompatActivity {
             double y = event.getY(0) - 220;
 
             Node tempNode = new Node(x, y);
-            transformToMeters(tempNode);
+//            transformToMeters(tempNode);
 
             x = tempNode.getCurrX();
             y = tempNode.getCurrY();
