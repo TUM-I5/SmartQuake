@@ -9,8 +9,11 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 
 /**
  * Class that wires everything together.
+ * TODO on first run an event is thrown for slow simulation.
  */
 public class Simulation {
+
+    public enum SpeedState { SLOW, NORMAL }
 
     Kernel1 kernel1;
     TimeIntegration kernel2;
@@ -18,10 +21,13 @@ public class Simulation {
     SimulationProgressListener listener;
     boolean isRunning;
 
+    private SpeedState lastSpeedState;
+
     public Simulation(Kernel1 kernel1, TimeIntegration kernel2, CanvasView view) {
         this.kernel1 = kernel1;
         this.kernel2 = kernel2;
         this.view = view;
+        lastSpeedState = SpeedState.NORMAL;
     }
 
     public void start() {
@@ -51,7 +57,18 @@ public class Simulation {
                     }
                     if (currentStep.isRunning()) {
                         Log.e("Simulation", "Kernel2 can not catch up the gui");
+
+                        // If the last speed state was normal and now we're slow, notify the listener
+                        if (listener != null && lastSpeedState == SpeedState.NORMAL) {
+                            lastSpeedState = SpeedState.SLOW;
+                            listener.onSimulationSpeedChanged(SpeedState.SLOW);
+                        }
                         currentStep.stop();
+                    } else {
+                        if (listener != null && lastSpeedState == SpeedState.SLOW) {
+                            lastSpeedState = SpeedState.NORMAL;
+                            listener.onSimulationSpeedChanged(SpeedState.NORMAL);
+                        }
                     }
                     DrawHelper.drawStructure(kernel1.getStructure(), view);
                 }
@@ -80,6 +97,11 @@ public class Simulation {
          * Is called after simulation finishes. Is called from background thread.
          */
         void onSimulationFinished();
+
+        /**
+         * Is called when the simulation speed has changed
+         */
+        void onSimulationSpeedChanged(SpeedState newSpeedState);
     }
 
 }

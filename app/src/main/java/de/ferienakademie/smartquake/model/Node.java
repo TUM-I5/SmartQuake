@@ -58,6 +58,10 @@ public class Node {
         this.currROT = currROT;
     }
 
+    public void setSingleRotation(int i, double rotation) {
+        this.currROT.set(i,rotation );
+    }
+
     public void setInitY(double initY) {
         this.initY = initY;
     }
@@ -116,3 +120,4 @@ public class Node {
         return node.currX == currX && node.currY == currY;
     }
 }
+

@@ -1,50 +1,51 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.view.CanvasView;
+import de.ferienakademie.smartquake.view.DrawCanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class CreateActivity extends AppCompatActivity{
-
-    private static final int DELTA = 80;
+/**
+ * Created by yuriy on 22/09/16.
+ */
+public class CreateActivity extends AppCompatActivity {
+    private static double DELTA = 90;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
     private Node chosenNode = null;
 
-    private CanvasView canvasView;
+    private GestureDetectorCompat mGestureDetector;
+    private LongPressListener longPressListener;
+
+    private DrawCanvasView canvasView;
     private Structure structure;
+
+    private double width, height;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-        canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
+        canvasView = (DrawCanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
-
+        longPressListener = new LongPressListener();
+        mGestureDetector = new GestureDetectorCompat(this, longPressListener);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,15 +84,36 @@ public class CreateActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
+    public void transformToMeters(Node node) {
+        double x = node.getCurrX();
+        double y = node.getCurrY();
+
+        double[] modelSize = DrawHelper.boundingBox;
+
+        double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
+
+        double xOffset = 0.5 * (width - modelSize[0] * displayScaling);
+        double yOffset = height - modelSize[1] * displayScaling;
+
+        x = (x - xOffset) / (displayScaling);
+        y = (y - yOffset) / (displayScaling);
+
+        node.setCurrX(x);
+        node.setCurrY(y);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        mGestureDetector.onTouchEvent(event);
 
         if (event.getPointerCount() == 2) {
             if (event.getAction() == 261) {
                 adding = true;
 
-                node1 = new Node(event.getX(0), event.getY(0) - 220);
-                node2 = new Node(event.getX(1), event.getY(1) - 220);
+                // in pixels
+                node1 = new Node(event.getX(0), (event.getY(0) - 220));
+                node2 = new Node(event.getX(1), (event.getY(1) - 220));
 
                 structure.addNode(node1);
                 structure.addNode(node2);
@@ -108,11 +130,16 @@ public class CreateActivity extends AppCompatActivity{
 
                 node1 = nodes.get(nodes.size() - 2);
                 node2 = nodes.get(nodes.size() - 1);
-                node1.setCurrX(event.getX(0));
-                node1.setCurrY(event.getY(0) - 220);
 
+                // in pixels
+                node1.setCurrX(event.getX(0));
+                node1.setCurrY((event.getY(0) - 220));
+
+
+                // in pixels
                 node2.setCurrX(event.getX(1));
-                node2.setCurrY(event.getY(1) - 220);
+                node2.setCurrY((event.getY(1) - 220));
+
 
                 Beam beam = new Beam(node1, node2);
                 node1.clearBeams();
@@ -164,36 +191,16 @@ public class CreateActivity extends AppCompatActivity{
 
             List<Node> nodes = structure.getNodes();
 
-            float x = event.getX(0);
-            float y = event.getY(0) - 220;
+            double x = event.getX(0);
+            double y = event.getY(0) - 220;
+
+            Node tempNode = new Node(x, y);
+
+            x = tempNode.getCurrX();
+            y = tempNode.getCurrY();
 
             double mindist = DELTA;
-/*
-            if (event.getDownTime() >= 500) {
-                chosenNode = null;
-                // find the beam with the minimum distance to it
-                List<Beam> beams = structure.getBeams();
 
-                List<Beam> possibleDeleteBeams = new ArrayList<>();
-
-                for (Beam beam : beams) {
-
-                    Node node1 = beam.getStartNode();
-                    Node node2 = beam.getEndNode();
-
-                    double x1 = node1.getCurrX();
-                    double x2 = node2.getCurrX();
-                    double y1 = node1.getCurrX();
-                    double y2 = node2.getCurrY();
-
-                    double cosAlfa = (x1*x2+y1*y2)/Math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1));
-
-                    //double dist = cosAlfa *
-
-                }
-
-            }
-*/
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 for (Node node : nodes) {
                     if (distNodes(node, new Node(x, y)) <= mindist) {
@@ -207,6 +214,8 @@ public class CreateActivity extends AppCompatActivity{
                 if (chosenNode != null) {
                     chosenNode.setCurrX(x);
                     chosenNode.setCurrY(y);
+                    node1 = chosenNode;
+                    node2 = null;
                 }
                 magneticConnect();
             }
@@ -281,13 +290,13 @@ public class CreateActivity extends AppCompatActivity{
 
             Node node = nodes.get(i);
 
-            if (node != node1 && distNodes(node1, node) <= minDist1) {
+            if (node1 != null && node != node1 && distNodes(node1, node) <= minDist1) {
                 minDist1 = distNodes(node1, node);
                 attach1 = true;
                 node1Attach = node;
             }
 
-            if (node != node2 && distNodes(node2, node) <= minDist2) {
+            if (node2 != null && node != node2 && distNodes(node2, node) <= minDist2) {
                 minDist2 = distNodes(node2, node);
                 attach2 = true;
                 node2Attach = node;
@@ -304,9 +313,100 @@ public class CreateActivity extends AppCompatActivity{
             node2.setCurrX(node2Attach.getCurrX());
             node2.setCurrY(node2Attach.getCurrY());
         }
+
     }
 
     private static double distNodes(Node node1, Node node2) {
         return Math.abs(node1.getCurrX() - node2.getCurrX()) + Math.abs(node1.getCurrY() - node2.getCurrY());
     }
+
+
+    public void deleteBeam(double x, double y) {
+
+        List<Beam> beams = structure.getBeams();
+
+        Beam deleteBeam = null;
+
+        double minDist = DELTA;
+
+        for (Beam beam : beams) {
+
+            Node node1 = beam.getStartNode();
+            Node node2 = beam.getEndNode();
+
+            double x1 = node1.getCurrX();
+            double x2 = node2.getCurrX();
+            double y1 = node1.getCurrY();
+            double y2 = node2.getCurrY();
+
+            x2 = x2 - x1;
+            x1 = x - x1;
+            y2 = y2 - y1;
+            y1 = y - y1;
+
+            double cosAlfa = (x1*x2+y1*y2)/(Math.sqrt(y1*y1+x1*x1)*Math.sqrt(y2*y2+x2*x2));
+            double sinAlfa = Math.sqrt(1 - cosAlfa*cosAlfa);
+
+            double dist = sinAlfa * Math.sqrt(y1*y1+x1*x1);
+
+            if (dist <= minDist) {
+
+                sinAlfa = y2/(Math.sqrt(y2*y2+x2*x2));
+                cosAlfa = Math.sqrt(1 - sinAlfa*sinAlfa);
+
+                x1 = rotateX(node1, cosAlfa, sinAlfa);
+                x2 = rotateX(node2, cosAlfa, sinAlfa);
+
+                x = rotateX(new Node(x, y), cosAlfa, sinAlfa);
+
+                if (x >= Math.min(x1, x2) && x <= Math.max(x1, x2)) {
+                    minDist = dist;
+                    deleteBeam = beam;
+                }
+            }
+        }
+
+        for (int i = 0; i < beams.size(); i++) {
+            if (beams.get(i) == deleteBeam) {
+                beams.remove(i);
+                Node startNode = deleteBeam.getStartNode();
+                Node endNode = deleteBeam.getEndNode();
+                // delete reference of the deleted beam on start and end nodes
+
+                startNode.getBeams().remove(deleteBeam);
+                endNode.getBeams().remove(deleteBeam);
+
+                if (startNode.getBeams().isEmpty())
+                    structure.getNodes().remove(startNode);
+
+                if (endNode.getBeams().isEmpty())
+                    structure.getNodes().remove(endNode);
+
+                break;
+            }
+        }
+
+    }
+
+    private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
+        return cosAlfa*node.getCurrX() + sinAlfa*node.getCurrY();
+    }
+
+    public class LongPressListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+
+            Node n = new Node(e.getX(), e.getY() - 220);
+
+            deleteBeam(n.getCurrX(), n.getCurrY());
+        }
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            return true;
+        }
+
+    }
+
 }
