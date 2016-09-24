@@ -21,7 +21,7 @@ public class AccelData {
         yAcceleration = pivotObject.yAcceleration;
     }
 
-    public AccelData(float xAccel, float yAccel, long timestamp) {
+    public AccelData(double xAccel, double yAccel, long timestamp) {
         this.xAcceleration = xAccel;
         this.yAcceleration = yAccel;
         this.timestamp = timestamp;

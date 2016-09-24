@@ -75,6 +75,7 @@ public class ExplicitSolver extends Solver {
         CommonOps.multAdd(-1, K,x,tempVector);
 
 
+
         xDotDot = tempVector.copy();
         //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);

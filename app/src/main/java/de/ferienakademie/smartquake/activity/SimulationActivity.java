@@ -5,19 +5,20 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
-import de.ferienakademie.smartquake.excitation.Recorder;
-import de.ferienakademie.smartquake.excitation.SensorExcitation;
+import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Structure;
@@ -29,7 +30,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
-    private SensorExcitation mExcitationManager; // custom accelerometer listener
+    private ExcitationManager mExcitationManager; // custom accelerometer listener
 
     private FloatingActionButton simFab;
     private CanvasView canvasView;
@@ -37,8 +38,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Structure structure;
     private Kernel1 kernel1;
     private Simulation simulation;
-
-    private Recorder recorder;
+    private CoordinatorLayout layout;
+    private Snackbar slowSnackbar;
 
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
@@ -81,13 +82,18 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
+        if (id == R.id.settings_button) {
+            if (simulation != null) simulation.stop();
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     private void createStructure() {
         structure = StructureFactory.getSimpleHouse();
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,12 +101,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mExcitationManager = new SensorExcitation();
-        recorder = new Recorder();
-        mExcitationManager.registerLstnr(recorder);
+        mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
+        layout = (CoordinatorLayout) findViewById(R.id.simLayout);
 
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
@@ -139,22 +144,21 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private void onStopButtonClicked() {
         simulation.stop();
-        Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         simFab.setOnClickListener(startSimulationListener);
     }
 
     void startSimulation() {
-        Toast.makeText(SimulationActivity.this, "Simulation started", Toast.LENGTH_SHORT).show();
 
-        recorder.initRecord();
-
+        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+        mExcitationManager.initSensors();
         kernel1 = new Kernel1(structure);
         timeIntegration = new TimeIntegration(kernel1, mExcitationManager);
         simulation = new Simulation(kernel1, timeIntegration, canvasView);
-        simulation.setListener(SimulationActivity.this);
         simulation.start();
+        simulation.setListener(this);
     }
 
     @Override
@@ -165,8 +169,29 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simFab.setOnClickListener(startSimulationListener);
                 simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
 
-                Toast.makeText(SimulationActivity.this, "Simulation stopped", Toast.LENGTH_SHORT).show();
+                Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onSimulationSpeedChanged(Simulation.SpeedState newSpeedState) {
+
+        String msg = "";
+
+        switch (newSpeedState) {
+            case SLOW:
+                msg = "Simulation speed slow";
+                slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
+                slowSnackbar.show();
+                break;
+            case NORMAL:
+                msg = "Simulation speed normal";
+                if (slowSnackbar != null) slowSnackbar.dismiss();
+                break;
+        }
+
+        Log.d("SimSpeed", msg);
+
     }
 }
