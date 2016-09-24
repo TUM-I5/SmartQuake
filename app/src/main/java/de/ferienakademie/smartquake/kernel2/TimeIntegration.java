@@ -18,18 +18,18 @@ public class TimeIntegration {
     Kernel1 kernel1;
     AccelerationProvider accelerationProvider;
 
-    //total computed time between every time step. This variable prevents computing more than GUI
+    // total computed time between every time step. This variable prevents computing more than GUI
     double t;
-    //time_step
+    // time step
     double delta_t;
 
-    //matrices of velocity
+    // matrices of velocity
     DenseMatrix64F xDot;
 
-    //this solver provides the numerical algorithm  for calculating the displacement
+    // provides the numerical algorithm for calculating the displacement
     TimeIntegrationSolver solver;
 
-    //this manages the multi threading
+    // manages the multi threading
     ExecutorService executorService;
 
     /**
@@ -47,16 +47,17 @@ public class TimeIntegration {
      * This method is called from the Simulation class to prepare everything for simulation
      */
     public void prepareSimulation(){
-        //initial condition for the velocity.
+        // initial condition for the velocity.
         xDot = new DenseMatrix64F(kernel1.getNumDOF(),1);
-        //This is just temporarily. In future this should choosen in the right way
+
+        // TODO: This is just temporarily. Should be chosen correctly
         xDot.zero();
 
-        //stores the numerical scheme
-        //solver = new Newmark(kernel1, xDot,delta_t);
-        solver = new Euler(kernel1, accelerationProvider, xDot);
+        // stores the numerical scheme
+        solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
+        //solver = new Euler(kernel1, accelerationProvider, xDot);
 
-        //only for fixed stepsize
+        // fixed step size for implicit schemes
         delta_t = 0.001;
 
         executorService = Executors.newSingleThreadExecutor();
@@ -67,7 +68,7 @@ public class TimeIntegration {
     }
 
     /**
-     * Class that represent single simulation step of {@link TimeIntegration}.
+     * Class that represents single simulation step of {@link TimeIntegration}.
      * If simulation step can not be performed during a single frame, it will be stopped.
      */
     public class SimulationStep {
