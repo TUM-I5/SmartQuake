@@ -58,8 +58,8 @@ public class TimeIntegration {
         xDot.zero();
 
         // stores the numerical scheme
-        solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
-        //solver = new Euler(kernel1, accelerationProvider, xDot);
+        //solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
+        solver = new Euler(kernel1, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
         delta_t = 0.001;
