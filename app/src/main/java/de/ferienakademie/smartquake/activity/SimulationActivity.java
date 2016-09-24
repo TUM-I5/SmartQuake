@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import java.io.FileNotFoundException;
+
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
@@ -41,6 +43,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
 
+    private boolean replay = false;
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
@@ -49,20 +58,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     };
 
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
-        }
-    };
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.simulation_activity_actions, menu);
         menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.load_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.save_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.findItem(R.id.reset_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.findItem(R.id.replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -70,7 +72,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.load_replay_button) {
+        if (id == R.id.reset_button) {
             createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
@@ -87,6 +89,30 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
+
+        if (id == R.id.replay_button) {
+            Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+            mSensorManager.unregisterListener(mExcitationManager);
+
+            try {
+                mExcitationManager.loadFile(openFileInput("saveAcc.txt"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            mExcitationManager.initReplay();
+
+
+            spatialDiscretization = new SpatialDiscretization(structure);
+            timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
+            simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
+
+
+            simulation.start();
+            simulation.setListener(this);
+            simFab.setOnClickListener(stopSimulationListener);
+            simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -146,19 +172,34 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
+
+        try {
+            mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
         simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         simFab.setOnClickListener(startSimulationListener);
     }
 
     void startSimulation() {
-
+        mSensorManager.registerListener(mExcitationManager, mAccelerometer,
+                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+
         mExcitationManager.initSensors();
+
+
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
+
+
         simulation.start();
         simulation.setListener(this);
+
     }
 
     @Override

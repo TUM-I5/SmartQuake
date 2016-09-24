@@ -12,4 +12,5 @@
     <string name="pref_gravity_summary">Depending on your device you might have to include gravity</string>
     <string name="clear_canvas">Clear canvas</string>
     <string name="save_canvas">Save canvas</string>
+    <string name="create_button">create</string>
 </resources>
