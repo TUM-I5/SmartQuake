@@ -34,6 +34,8 @@ public class TimeIntegration {
     //this manages the multi threading
     ExecutorService executorService;
 
+
+
     /**
     * @param kernel1
     *          object to obtain all matrices, displacements, external forces
@@ -83,13 +85,15 @@ public class TimeIntegration {
                 public void run() {
                     //reset time
                     t = 0;
-                    long firstTime = System.nanoTime();
 
                     //calculates time step
 
+                    //update loadVector
+                    kernel1.updateLoadVector(accelerationProvider.getAcceleration());
                     //get the loadVector for the whole calculation
                     solver.setFLoad(kernel1.getLoadVector());
 
+                    long firstTime = System.nanoTime();
                     while(t < 0.03+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
@@ -97,7 +101,7 @@ public class TimeIntegration {
 
                     }
                     //for the sensor team
-                    globalTime *= 0.03;
+                    globalTime += 0.03;
 
                     //for recording
                     long secondTime = System.nanoTime();

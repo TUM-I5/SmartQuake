@@ -38,14 +38,18 @@ public class ExplicitSolver extends Solver {
         tempVector = new DenseMatrix64F(k1.getNumDOF(),1);
 
         //JUST FOR TESTING
-        C.zero();
+       /* C.zero();
         K.zero();
         for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            C.set(j,j,5);
-            C.set(j+1,j+1,5);
-            K.set(j,j,100);
-            K.set(j+1,j+1,100);
+            C.set(j,j,0);
+            C.set(j+1,j+1,0);
+            K.set(j,j,0.001);
+            K.set(j+1,j+1,0.001);
         }
+
+
+        C = k1.getDampingMatrix();
+        K = k1.getStiffnessMatrix();*/
     }
 
 
@@ -70,13 +74,17 @@ public class ExplicitSolver extends Solver {
 
         // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*x
         // 1.: tempVector = tempVector - C*xDot
-        CommonOps.multAdd(-0, C,xDot,tempVector);
+        CommonOps.multAdd(-1, C,xDot,tempVector);
 
         //2.: tempVector = tempVector - K*x
-        CommonOps.multAdd(-0.000000001, K,x,tempVector);
+        CommonOps.multAdd(-1, K,x,tempVector);
 
+        //Log.d("Acceleretation", tempVector.toString());
 
-        xDotDot = tempVector.copy();
+        xDotDot = tempVector;
+        for( int i =0; i<k1.getNumDOF(); i++){
+            xDotDot.set(i,i, 0.00001*xDotDot.get(i,i));
+        }
         //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);
 
