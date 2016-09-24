@@ -30,6 +30,9 @@ public class SpatialDiscretization {
     private int numberofDOF;
 
     Structure structure;
+    // temporary vectors that will be scaled by acceleration
+    private DenseMatrix64F influenceVectorX_temp;
+    private DenseMatrix64F influenceVectorY_temp;
 
     public SpatialDiscretization(Structure structure) {
         this.structure = structure;
@@ -80,9 +83,9 @@ public class SpatialDiscretization {
         MassMatrix.zero();
         DampingMatrix.zero();
 
-        calculateDampingMatrix();
         calculateMassMatrix();
         calculateStiffnessMatrix();
+        calculateDampingMatrix();
     }
 
     public void calculateStiffnessMatrix() {
@@ -214,6 +217,10 @@ public class SpatialDiscretization {
             influenceVectorX.add(DOFx,0,-1); //add influence vector in x-dir
             influenceVectorY.add(DOFy,0,-1); //add influence vector in y-dir
         }
+
+        influenceVectorX_temp = new DenseMatrix64F(influenceVectorX.getNumRows(),1);
+        influenceVectorY_temp = new DenseMatrix64F(influenceVectorY.getNumRows(),1);
+
     }
 
 
@@ -222,10 +229,10 @@ public class SpatialDiscretization {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     public void updateLoadVector(double[] acceleration) {
-        CommonOps.scale(acceleration[0], influenceVectorX);
-        CommonOps.scale(acceleration[1], influenceVectorY);
-        CommonOps.addEquals(influenceVectorX, influenceVectorY);
-        CommonOps.mult(MassMatrix, influenceVectorX, LoadVector);
+        CommonOps.scale(acceleration[0], influenceVectorX, influenceVectorX_temp);
+        CommonOps.scale(acceleration[1], influenceVectorY, influenceVectorY_temp);
+        CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
+        CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
     }
 
     public void performModalAnalysis(){
