@@ -37,7 +37,11 @@ public class SpatialDiscretization {
         numberofDOF = structure.getNodes().size()*3;
         DisplacementVector = new DenseMatrix64F(getNumberofDOF(), 1);
         DisplacementVector.zero();
-       numberofDOF = structure.getNodes().size()*3;      //TODO Alex: temporary solution. Changes if we add hinges.
+        numberofDOF = structure.getNodes().size()*3;      //TODO Alex: temporary solution. Changes if we add hinges.
+
+        influenceVectorX = new DenseMatrix64F(getNumberofDOF(), 1);
+        influenceVectorY = new DenseMatrix64F(getNumberofDOF(), 1);
+
         initializeMatrices();
         calculateInfluenceVector();
    }
@@ -199,8 +203,7 @@ public class SpatialDiscretization {
     }
 
     public void calculateInfluenceVector(){
-        influenceVectorX = new DenseMatrix64F(getNumberofDOF(), 1);
-        influenceVectorY = new DenseMatrix64F(getNumberofDOF(), 1);
+
         influenceVectorX.zero();
         influenceVectorY.zero();
         for (int i = 0; i < structure.getNodes().size(); i++) {
