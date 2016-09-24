@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="pref_use_gravity"
+        android:title="@string/pref_gravity_title"
+        android:summary="@string/pref_gravity_summary"
+        android:defaultValue="false"
+        />
+</PreferenceScreen>

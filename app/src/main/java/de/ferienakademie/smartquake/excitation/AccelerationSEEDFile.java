@@ -1,25 +1,16 @@
 package de.ferienakademie.smartquake.excitation;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.DataInputStream;
-import java.io.DataInput;
-
-import edu.iris.dmc.seedcodec.CodecException;
-import edu.iris.dmc.seedcodec.DecompressedData;
-import edu.sc.seis.seisFile.mseed.SeedFormatException;
-import edu.sc.seis.seisFile.mseed.SeedRecord;
-import edu.sc.seis.seisFile.mseed.DataRecord;
-
 /**
  * Created by David Schneller on 21.09.2016.
  */
-public class AccelerationSEEDFile extends AccelerationProvider
-{
+public class AccelerationSEEDFile {/*
     private DataInput stream;
     private double[] cachedData;
     private int cachedDataPosition;
+
+    public AccelerationSEEDFile(InputStream stream) {
+        this.stream = new DataInputStream(stream);
+    }
 
     private void reloadData() throws IOException, SeedFormatException, CodecException {
         while (true) //will this hang forever in some cases?
@@ -74,11 +65,6 @@ public class AccelerationSEEDFile extends AccelerationProvider
         return out;
     }
 
-    public AccelerationSEEDFile(InputStream stream)
-    {
-        this.stream = new DataInputStream(stream);
-    }
-
     @Override
     public double[] getAcceleration()
     {
@@ -104,4 +90,5 @@ public class AccelerationSEEDFile extends AccelerationProvider
         //TODO: Scale!
         return new double[] { getNextValue(), 0 };
     }
+    */
 }
