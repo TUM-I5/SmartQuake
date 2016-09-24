@@ -51,7 +51,6 @@ public class StructureFactory {
         }
 
         structure.setConDOF(condof);
-
         Testing.cantiLeverStaticTest(structure);
 
         return structure;
