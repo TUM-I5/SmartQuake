@@ -19,7 +19,7 @@ public class Structure {
     }
 
     // X, Y
-    private double[] modelSize = {0, 0};
+    private double[] modelSize = {8, 8};
 
     private boolean lumped = true;  // default value!
 
@@ -59,12 +59,12 @@ public class Structure {
 
     public void addNode(Node node) {
         this.nodes.add(node);
-        if (node.getInitialX() > modelSize[0]) {
-            modelSize[0] = node.getInitialX();
-        }
-        if (node.getInitialY() > modelSize[1]) {
-            modelSize[1] = node.getInitialY();
-        }
+//        if (node.getInitX() > modelSize[0]) {
+//            modelSize[0] = node.getInitX();
+//        }
+//        if (node.getInitY() > modelSize[1]) {
+//            modelSize[1] = node.getInitY();
+//        }
     }
 
 

@@ -1,10 +1,13 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 
 import java.util.List;
@@ -13,35 +16,95 @@ import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.view.CanvasView;
+import de.ferienakademie.smartquake.view.DrawCanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
 /**
  * Created by yuriy on 22/09/16.
  */
 public class CreateActivity extends AppCompatActivity {
-
-    private static final int DELTA = 80;
+    private static double DELTA = 90;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
     private Node chosenNode = null;
+    private MotionEvent latestEvent = null;
 
     private GestureDetectorCompat mGestureDetector;
     private LongPressListener longPressListener;
 
-    private CanvasView canvasView;
+    private DrawCanvasView canvasView;
     private Structure structure;
+
+    private int yOffset = 0;
+
+    private double width, height;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-        canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
+        canvasView = (DrawCanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
         longPressListener = new LongPressListener();
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        yOffset = getSupportActionBar().getHeight() + 40;
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.start, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch(id){
+            case R.id.action_settings: //TODO setteings activity
+                /***
+                 *Add here code for setting activity
+                 * startActivity(new Intent(this, SettingsActivity.class));
+                 return true;
+                 */
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void transformToMeters(Node node) {
+        double x = node.getCurrentX();
+        double y = node.getCurrentY();
+
+        double[] modelSize = DrawHelper.boundingBox;
+
+        double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
+
+        double xOffset = 0.5 * (width - modelSize[0] * displayScaling);
+        double yOffset = height - modelSize[1] * displayScaling;
+
+        x = (x - xOffset) / (displayScaling);
+        y = (y - yOffset) / (displayScaling);
+
+        node.setCurrentX(x);
+        node.setCurrentY(y);
     }
 
     @Override
@@ -53,11 +116,13 @@ public class CreateActivity extends AppCompatActivity {
             if (event.getAction() == 261) {
                 adding = true;
 
-                node1 = new Node(event.getX(0), event.getY(0) - 220);
-                node2 = new Node(event.getX(1), event.getY(1) - 220);
+                // in pixels
+                node1 = new Node(event.getX(0), (event.getY(0) - yOffset));
+                node2 = new Node(event.getX(1), (event.getY(1) - yOffset));
 
                 structure.addNode(node1);
                 structure.addNode(node2);
+
                 Beam beam = new Beam(node1, node2);
                 structure.addBeam(beam);
 
@@ -72,10 +137,10 @@ public class CreateActivity extends AppCompatActivity {
                 node1 = nodes.get(nodes.size() - 2);
                 node2 = nodes.get(nodes.size() - 1);
                 node1.setCurrentX(event.getX(0));
-                node1.setCurrentY(event.getY(0) - 220);
+                node1.setCurrentY(event.getY(0) - yOffset);
 
                 node2.setCurrentX(event.getX(1));
-                node2.setCurrentY(event.getY(1) - 220);
+                node2.setCurrentY(event.getY(1) - yOffset);
 
                 Beam beam = new Beam(node1, node2);
                 node1.clearBeams();
@@ -128,7 +193,12 @@ public class CreateActivity extends AppCompatActivity {
             List<Node> nodes = structure.getNodes();
 
             double x = event.getX(0);
-            double y = event.getY(0) - 220;
+            double y = event.getY(0) - yOffset;
+
+            Node tempNode = new Node(x, y);
+
+            x = tempNode.getCurrentX();
+            y = tempNode.getCurrentY();
 
             double mindist = DELTA;
 
@@ -145,6 +215,8 @@ public class CreateActivity extends AppCompatActivity {
                 if (chosenNode != null) {
                     chosenNode.setCurrentX(x);
                     chosenNode.setCurrentY(y);
+                    node1 = chosenNode;
+                    node2 = null;
                 }
                 magneticConnect();
             }
@@ -205,6 +277,8 @@ public class CreateActivity extends AppCompatActivity {
         DrawHelper.clearCanvas(canvasView);
         DrawHelper.drawStructure(structure, canvasView);
 
+        latestEvent = event;
+
         return super.onTouchEvent(event);
     }
 
@@ -219,13 +293,13 @@ public class CreateActivity extends AppCompatActivity {
 
             Node node = nodes.get(i);
 
-            if (node != node1 && distNodes(node1, node) <= minDist1) {
+            if (node1 != null && node != node1 && distNodes(node1, node) <= minDist1) {
                 minDist1 = distNodes(node1, node);
                 attach1 = true;
                 node1Attach = node;
             }
 
-            if (node != node2 && distNodes(node2, node) <= minDist2) {
+            if (node2 != null && node != node2 && distNodes(node2, node) <= minDist2) {
                 minDist2 = distNodes(node2, node);
                 attach2 = true;
                 node2Attach = node;
@@ -242,6 +316,7 @@ public class CreateActivity extends AppCompatActivity {
             node2.setCurrentX(node2Attach.getCurrentX());
             node2.setCurrentY(node2Attach.getCurrentY());
         }
+
     }
 
     private static double distNodes(Node node1, Node node2) {
@@ -324,8 +399,10 @@ public class CreateActivity extends AppCompatActivity {
         @Override
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
-            Log.w("LONG PRESS", "TRUE");
-            deleteBeam(e.getX(), e.getY() - 220);
+
+            Node n = new Node(e.getX(), e.getY() - yOffset);
+
+            deleteBeam(n.getCurrentX(), n.getCurrentY());
         }
 
         @Override
