@@ -3,12 +3,14 @@ package de.ferienakademie.smartquake.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.EventLog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +23,7 @@ import java.io.FileNotFoundException;
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
+import de.ferienakademie.smartquake.excitation.SinCosExcitation;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Structure;
@@ -33,6 +36,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private ExcitationManager mExcitationManager; // custom accelerometer listener
+
+    SinCosExcitation mSinCosExcitation;
 
     private FloatingActionButton simFab;
     private CanvasView canvasView;
@@ -188,16 +193,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation() {
-        mExcitationManager.initTime(System.nanoTime(),0.001);
-        mSensorManager.registerListener(mExcitationManager, mAccelerometer,
-                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
+        //mExcitationManager.initTime(System.nanoTime(),0.001);
+        mSinCosExcitation = new SinCosExcitation();
+        /*mSensorManager.registerListener(mExcitationManager, mAccelerometer,
+                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events*/
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
         mExcitationManager.initSensors();
 
 
         spatialDiscretization = new SpatialDiscretization(structure);
-        timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
+        timeIntegration = new TimeIntegration(spatialDiscretization, mSinCosExcitation);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
 
 

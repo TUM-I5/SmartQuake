@@ -30,13 +30,13 @@ public class SinCosExcitation implements AccelerationProvider {
     @Override
     public double[] getAcceleration() {
         counter++;
-        return new double[]{amplitude * Math.sin(2* Math.PI *frequency * counter * timestep), 0};
+        return new double[]{amplitude * Math.sin(2* Math.PI *frequency * counter * timestep), 0.0};
     }
 
     @Override
     public AccelData getAccelerationMeasurement() {
         counter++;
-        return new AccelData(Math.sin(2* Math.PI *frequency * counter * timestep), 0,
+        return new AccelData(Math.sin(2* Math.PI *frequency * counter * timestep), 0.0,
                 (long) (counter * timestep * 1000) );
     }
 
