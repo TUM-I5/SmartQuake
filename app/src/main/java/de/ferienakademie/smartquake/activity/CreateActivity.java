@@ -164,7 +164,7 @@ public class CreateActivity extends AppCompatActivity {
             fileOutputStream = openFileOutput("structure.json", Context.MODE_PRIVATE);
             StructureIO.writeStructure(fileOutputStream, structure);
             fileOutputStream.close();
-            Toast.makeText(this, "File saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Structure saved", Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
             Log.e("CreateActivity.class", "File not found");
         } catch (IOException e) {
