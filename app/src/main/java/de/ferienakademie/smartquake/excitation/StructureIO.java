@@ -28,15 +28,19 @@ import de.ferienakademie.smartquake.model.Structure;
 public class StructureIO {
 
     public static void writeStructure(OutputStream stream, Structure structure) throws IOException {
+        //NOTE: For now, I have removed some calls like writer.a().b().c() and so on, b/c it looked a bit inconsistent to have it and not to have it in some other place. But that's simply a personal preference. But I think the code is easier to read like that.
+
         JsonWriter writer = new JsonWriter(new OutputStreamWriter((new BufferedOutputStream(stream))));
         writer.beginObject();
-        writer.name("nodes").beginArray();
+        writer.name("nodes");
+        writer.beginArray();
         for (Node node : structure.getNodes())
         {
             writeNode(writer, node);
         }
         writer.endArray();
-        writer.name("beams").beginArray();
+        writer.name("beams");
+        writer.beginArray();
         for (Beam beam : structure.getBeams())
         {
             writer.beginObject();
@@ -49,22 +53,26 @@ public class StructureIO {
             writer.endObject();
         }
         writer.endArray();
-        writer.name("conDOF").beginArray();
+        writer.name("degreesOfFreedom");
+        writer.beginArray();
         for (Integer i : structure.getConDOF()) {
             writer.value(i);
         }
         writer.endArray();
         writer.endObject();
         writer.flush();
-        stream.close();
+        //NO stream.close() here, please. There is the hypothetical case that someone else wants to write in it. (imagine f.ex. a TCP connection)
     }
 
     private static void writeNode(JsonWriter writer, Node node) throws IOException {
         writer.beginObject();
-        writer.name("x").value(node.getInitialX());
-        writer.name("y").value(node.getInitialY());
+        writer.name("x");
+        writer.value(node.getInitialX());
+        writer.name("y");
+        writer.value(node.getInitialY());
 
-        writer.name("DOF").beginArray();
+        writer.name("degreesOfFreedom");
+        writer.beginArray();
         for (Integer i : node.getDOF()) {
             writer.value(i);
         }
@@ -75,7 +83,7 @@ public class StructureIO {
 
     private static Node parseNode(JsonReader reader) throws IOException {
         double x = Double.NaN, y = Double.NaN;
-        LinkedList<Integer> DOF = new LinkedList<>();
+        LinkedList<Integer> DOF = null;
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT)
         {
@@ -88,9 +96,11 @@ public class StructureIO {
                 case "y":
                     y = reader.nextDouble();
                     break;
-                case "DOF":
+                case "degreesOfFreedom":
                     reader.beginArray();
-                    while(reader.peek() != JsonToken.END_ARRAY){
+                    DOF = new LinkedList<>();
+                    while(reader.peek() != JsonToken.END_ARRAY)
+                    {
                         DOF.add(reader.nextInt());
                     }
                     reader.endArray();
@@ -99,7 +109,7 @@ public class StructureIO {
         }
         reader.endObject();
 
-        if (Double.isNaN(x) || Double.isNaN(y))
+        if (Double.isNaN(x) || Double.isNaN(y) || DOF == null)
         {
             throw new IOException("Malformed file format.");
         }
@@ -153,12 +163,24 @@ public class StructureIO {
         return beams;
     }
 
+    private static List<Integer> parseDegreesOfFreedom(JsonReader reader) throws IOException {
+        List<Integer> degreesOfFreedom = new ArrayList<Integer>();
+        reader.beginArray();
+        while (reader.peek() != JsonToken.END_ARRAY)
+        {
+            degreesOfFreedom.add(reader.nextInt());
+        }
+        reader.endArray();
+        return degreesOfFreedom;
+    }
+
     public static Structure readStructure(InputStream stream) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(stream));
         reader.beginObject();
 
         List<TemporaryBeam> tempBeams = null;
         List<Node> nodes = null;
+        List<Integer> degreesOfFreedom = null;
         while (reader.peek() != JsonToken.END_OBJECT) {
             String name = reader.nextName();
             switch (name) {
@@ -168,10 +190,13 @@ public class StructureIO {
                 case "beams":
                     tempBeams = parseBeams(reader);
                     break;
+                case "degreesOfFreedom":
+                    degreesOfFreedom = parseDegreesOfFreedom(reader);
+                    break;
             }
         }
 
-        if (tempBeams == null || nodes == null) {
+        if (tempBeams == null || nodes == null || degreesOfFreedom == null) {
             throw new IOException("Malformed file format.");
         }
 
@@ -180,9 +205,10 @@ public class StructureIO {
             Beam b = new Beam(nodes.get(tbeam.start), nodes.get(tbeam.end));
             beams.add(b);
         }
-        stream.close();
-        //TODO store conDofs!!
-        return new Structure(nodes, beams, new LinkedList<Integer>()); //? whatever...
+
+        //Again, no stream.close() here, please.
+
+        return new Structure(nodes, beams, degreesOfFreedom); //? whatever...
     }
 
     private static class TemporaryBeam {
