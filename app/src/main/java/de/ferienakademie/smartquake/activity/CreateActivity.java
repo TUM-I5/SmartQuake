@@ -22,6 +22,9 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -136,17 +139,36 @@ public class CreateActivity extends AppCompatActivity {
             transformToMeters(node);
         }
 
-//        File file = new File(getFilesDir(), "structure.json");
+        List<Integer> condof = new ArrayList<>();
+
+        int j = 0;
+        for (int i = 0; i < nodes.size(); i++) {
+            List<Integer> tempList = new ArrayList<>();
+            tempList.add(j++);
+            tempList.add(j++);
+            tempList.add(j++);
+
+            nodes.get(i).setDOF(tempList);
+
+            if (nodes.get(i).getCurrentY() == height) {
+                for (Integer freedom : tempList) {
+                    condof.add(freedom);
+                }
+            }
+        }
+
+        structure.setConDOF(condof);
 
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = openFileOutput("structure.json", Context.MODE_PRIVATE);
-            Log.w("FILE", fileOutputStream.toString());
             StructureIO.writeStructure(fileOutputStream, structure);
             fileOutputStream.close();
             Toast.makeText(this, "File saved", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             Log.e("CreateActivity.class", "File not found");
+        } catch (IOException e) {
+            Log.e("CreateActivity.class", "IOException");
         }
     }
 
