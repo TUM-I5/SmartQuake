@@ -224,4 +224,8 @@ public class SpatialDiscretization {
         CommonOps.addEquals(influenceVectorX, influenceVectorY);
         CommonOps.mult(MassMatrix, influenceVectorX, LoadVector);
     }
+
+    public void performModalAnalysis(){
+
+    }
 }
