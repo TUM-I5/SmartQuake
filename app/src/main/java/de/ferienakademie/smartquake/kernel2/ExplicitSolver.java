@@ -28,22 +28,22 @@ public class ExplicitSolver extends Solver {
 
         //sets up fast linear solver
         linearSolverM = LinearSolverFactory.chol(k1.getNumberofDOF());
-        for(int i = 0; i<k1.getNumberofDOF(); i++){
-            M.set(i,i,0.0001);
-        }
+//        for(int i = 0; i<k1.getNumberofDOF(); i++){
+//            M.set(i,i,0.0001);
+//        }
         linearSolverM.setA(M);
 
         tempVector = new DenseMatrix64F(k1.getNumberofDOF(),1);
 
         //JUST FOR TESTING
-        C.zero();
-        K.zero();
-        for (int j = 6; j < k1.getNumberofDOF(); j += 3) {
-            C.set(j,j,5);
-            C.set(j+1,j+1,5);
-            K.set(j,j,100);
-            K.set(j+1,j+1,100);
-        }
+//        C.zero();
+//        K.zero();
+//        for (int j = 6; j < k1.getNumberofDOF(); j += 3) {
+//            C.set(j,j,5);
+//            C.set(j+1,j+1,5);
+//            K.set(j,j,100);
+//            K.set(j+1,j+1,100);
+//        }
     }
 
 
