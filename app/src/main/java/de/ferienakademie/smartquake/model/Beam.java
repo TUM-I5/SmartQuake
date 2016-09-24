@@ -77,7 +77,6 @@ public class Beam {
 
         elementStiffnessMatrix.set(0, 0, EA / length);
         elementStiffnessMatrix.set(0, 3, -EA / length);
-
         elementStiffnessMatrix.set(1, 1, 12 * EI / (length * length * length));
         elementStiffnessMatrix.set(1, 2, -6 * EI / (length * length));
         elementStiffnessMatrix.set(1, 4, -12 * EI / (length * length * length));
@@ -164,7 +163,6 @@ public class Beam {
         DenseMatrix64F elementMatrix_globalized;
         elementMatrix_globalized = new DenseMatrix64F(6, 6);
         elementMatrix_globalized.zero();
-
         elementMatrix_globalized.set(0, 0, elementMatrix.get(0, 0) * cos_theta * cos_theta + elementMatrix.get(1, 1) * sin_theta * sin_theta);
         elementMatrix_globalized.set(0, 1, elementMatrix.get(0, 0) * cos_theta * sin_theta - elementMatrix.get(1, 1) * cos_theta * sin_theta);
         elementMatrix_globalized.set(0, 2, elementMatrix.get(1, 2) * -sin_theta);
@@ -219,6 +217,7 @@ public class Beam {
     public Beam(double startX, double startY, double endX, double endY) {
         this(new Node(startX, startY), new Node(endX, endY));
     }
+
 
     public List<Double> getdofsGlobalToLocal(){
         double[] u= new double[6];

@@ -55,7 +55,9 @@ public class ExplicitSolver extends Solver {
         acceleration = getAccelerationProvider().getAcceleration();
         k1.updateLoadVector(acceleration);
 
-        //tempVector = k1.getLoadVector();
+
+        tempVector = k1.getLoadVector();
+
         //tempVector = k1.getLoadVector().copy();
 
 
