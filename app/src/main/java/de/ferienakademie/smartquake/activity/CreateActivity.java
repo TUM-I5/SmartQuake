@@ -1,8 +1,19 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -15,7 +26,7 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class CreateActivity extends AppCompatActivity {
+public class CreateActivity extends AppCompatActivity{
 
     private static final int DELTA = 80;
     private static boolean adding = false;
@@ -33,6 +44,43 @@ public class CreateActivity extends AppCompatActivity {
         canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.start, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch(id){
+            case R.id.action_settings: //TODO setteings activity
+                /***
+                 *Add here code for setting activity
+                 * startActivity(new Intent(this, SettingsActivity.class));
+                 return true;
+                 */
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+
+
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -5,4 +5,7 @@
     <string name="reset_button">Reset</string>
     <string name="save_button">Save</string>
     <string name="load_data_button">Load earthquake data</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
 </resources>
