@@ -53,7 +53,7 @@ public class CreateActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        yOffset = getSupportActionBar().getHeight();
+        yOffset = getSupportActionBar().getHeight() + 40;
 
     }
 
@@ -120,10 +120,9 @@ public class CreateActivity extends AppCompatActivity {
                 node1 = new Node(event.getX(0), (event.getY(0) - yOffset));
                 node2 = new Node(event.getX(1), (event.getY(1) - yOffset));
 
-                if (chosenNode == null || distNodes(chosenNode, node1) > DELTA)
-                    structure.addNode(node1);
-                if (chosenNode == null || distNodes(chosenNode, node2) > DELTA)
-                    structure.addNode(node2);
+                structure.addNode(node1);
+                structure.addNode(node2);
+
                 Beam beam = new Beam(node1, node2);
                 structure.addBeam(beam);
 
