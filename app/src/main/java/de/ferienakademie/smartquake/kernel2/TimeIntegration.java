@@ -62,7 +62,7 @@ public class TimeIntegration {
         solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
-        delta_t = 0.001;
+        delta_t = 0.003;
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -92,7 +92,7 @@ public class TimeIntegration {
                     //update loadVector
                     spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
 
-                    Log.d("load vector", ""+spatialDiscretization.getLoadVector().toString());
+                   // Log.d("load vector", ""+spatialDiscretization.getLoadVector().toString());
 
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());

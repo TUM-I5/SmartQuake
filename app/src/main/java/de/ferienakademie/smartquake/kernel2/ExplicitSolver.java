@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
@@ -16,6 +18,8 @@ public class ExplicitSolver extends Solver {
     double[] acceleration;
 
     DenseMatrix64F tempVector;
+    DenseMatrix64F tempVector2;
+
     //to solve M * xDotDot = f(x, xDot, t)
     LinearSolver<DenseMatrix64F> linearSolverM;
     /**
@@ -34,6 +38,7 @@ public class ExplicitSolver extends Solver {
         linearSolverM.setA(M);
 
         tempVector = new DenseMatrix64F(k1.getNumberofDOF(),1);
+        tempVector2 = new DenseMatrix64F(k1.getNumberofDOF(),1);
 
         //JUST FOR TESTING
        /* C.zero();
@@ -60,41 +65,30 @@ public class ExplicitSolver extends Solver {
         //acceleration = getAccelerationProvider().getAcceleration();
         //k1.updateLoadVector(acceleration);
 
-        //tempVector = k1.getLoadVector();
-        //tempVector = k1.getLoadVector().copy();
+        for(int i=0; i<15; i++){
+            fLoad.set(i,0,0.0001);
+        }
 
+        // next steps calculating this: tempVecotr= tempVector - C*xDot - K*x
 
+        tempVector2 = fLoad.copy();
 
+        multMatrices(K,x,tempVector);
+        subMatrices(tempVector,tempVector2);
+        tempVector.zero();
+        multMatrices(C, xDot, tempVector);
 
-        tempVector = fLoad;
+        subMatrices(tempVector, tempVector2);
 
-        // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*x
         // 1.: tempVector = tempVector - C*xDot
         //CommonOps.multAdd(-1, C,xDot,tempVector);
-
-        multMatrices(C,xDot, tempVector); //tempVector = tempVector + C*xDot
-
-        subMatrices(tempVector, fLoad); //fLoad = fLoad - tempVector
-
-        multMatrices(K, x, tempVector); //tempVector = tempVector + K*x
-
-        subMatrices(tempVector, fLoad); //fLoad = fLoad - tempVector
-
         //2.: tempVector = tempVector - K*x
         //CommonOps.multAdd(-1, K,x,tempVector);
 
-        //Log.d("Acceleretation", tempVector.toString());
-
-
-        xDotDot = tempVector;
+        xDotDot = tempVector2 ;
         for( int i =0; i<k1.getNumberofDOF(); i++){
-            xDotDot.set(i,0, 100000*1/628.0*xDotDot.get(i,0));
-            //xDotDot.set(i,0, -10);
+            xDotDot.set(i,0, xDotDot.get(i,0));
         }
-
-        //xDotDot = tempVector.copy();
-        //linearSolverM.solve(tempVector, xDotDot);
-
 
         //Log.e("messagen for felix", xDotDot.toString());
     }
@@ -105,7 +99,7 @@ public class ExplicitSolver extends Solver {
     public void multMatrices(DenseMatrix64F matrix, DenseMatrix64F vector,  DenseMatrix64F resultVector){
         for(int i=0; i<15; i++){
             for(int j=0; j<15; j++){
-                resultVector.add(i,0, matrix.get(i,j)*vector.get(j,0));
+                resultVector.add(i,0, -1* matrix.get(i,j)*vector.get(j,0));
             }
         }
     }
