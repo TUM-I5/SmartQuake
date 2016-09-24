@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -9,6 +11,7 @@ import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.model.StructureFactory;
 
 /**
  * Created by alex on 22.09.16.
@@ -18,6 +21,7 @@ public class Kernel1 {
     private DenseMatrix64F StiffnessMatrix;
     private DenseMatrix64F DampingMatrix;
     private DenseMatrix64F MassMatrix;
+    private DenseMatrix64F InverseMassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces
     private DenseMatrix64F influenceVectorx;
@@ -117,6 +121,21 @@ public class Kernel1 {
         }
     }
 
+    public void calcinverseMassMatrix(){
+        if (!structure.isLumped()) {
+            throw new RuntimeException("No diagonal mass matrix!");
+        }
+        InverseMassMatrix = new DenseMatrix64F(getNumDOF(),getNumDOF());
+        InverseMassMatrix.zero();
+        for (int e = 0; e < getNumDOF(); e++) {
+            InverseMassMatrix.add(e,e, 1./MassMatrix.get(e,e));
+        }
+    }
+
+    public DenseMatrix64F getInverseMassMatrix(){ // Only call for lumped cases.
+        calcinverseMassMatrix();
+        return InverseMassMatrix;
+    }
 
     public void calcDampingMatrix() {
         // CommonOps.scale(material.getC()/material.getM(),MassMatrix,DampingMatrix);
