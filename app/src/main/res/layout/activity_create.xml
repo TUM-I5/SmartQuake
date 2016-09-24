@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <de.ferienakademie.smartquake.view.CanvasView
+    <de.ferienakademie.smartquake.view.DrawCanvasView
         android:id="@+id/crtCanvasView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

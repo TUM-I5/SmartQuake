@@ -213,7 +213,7 @@ public class Beam {
 
 
     public Beam(Node startNode, Node endNode) {
-        this(startNode, endNode, 0.1f);
+        this(startNode, endNode, 10f);
     }
 
     public Beam(double startX, double startY, double endX, double endY) {
