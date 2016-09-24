@@ -36,6 +36,8 @@ public class CreateActivity extends AppCompatActivity {
     private DrawCanvasView canvasView;
     private Structure structure;
 
+    private int yOffset = 0;
+
     private double width, height;
 
     @Override
@@ -50,6 +52,8 @@ public class CreateActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        yOffset = getSupportActionBar().getHeight();
 
     }
 
@@ -113,8 +117,8 @@ public class CreateActivity extends AppCompatActivity {
                 adding = true;
 
                 // in pixels
-                node1 = new Node(event.getX(0), (event.getY(0) - 220));
-                node2 = new Node(event.getX(1), (event.getY(1) - 220));
+                node1 = new Node(event.getX(0), (event.getY(0) - yOffset));
+                node2 = new Node(event.getX(1), (event.getY(1) - yOffset));
 
                 if (chosenNode == null || distNodes(chosenNode, node1) > DELTA)
                     structure.addNode(node1);
@@ -136,12 +140,12 @@ public class CreateActivity extends AppCompatActivity {
 
                 // in pixels
                 node1.setCurrX(event.getX(0));
-                node1.setCurrY((event.getY(0) - 220));
+                node1.setCurrY((event.getY(0) - yOffset));
 
 
                 // in pixels
                 node2.setCurrX(event.getX(1));
-                node2.setCurrY((event.getY(1) - 220));
+                node2.setCurrY((event.getY(1) - yOffset));
 
 
                 Beam beam = new Beam(node1, node2);
@@ -195,7 +199,7 @@ public class CreateActivity extends AppCompatActivity {
             List<Node> nodes = structure.getNodes();
 
             double x = event.getX(0);
-            double y = event.getY(0) - 220;
+            double y = event.getY(0) - yOffset;
 
             Node tempNode = new Node(x, y);
 
@@ -402,7 +406,7 @@ public class CreateActivity extends AppCompatActivity {
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
 
-            Node n = new Node(e.getX(), e.getY() - 220);
+            Node n = new Node(e.getX(), e.getY() - yOffset);
 
             deleteBeam(n.getCurrX(), n.getCurrY());
         }
