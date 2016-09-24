@@ -1,16 +1,11 @@
 package de.ferienakademie.smartquake.excitation;
 
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -66,7 +61,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     /**
      * Records the sensor data
      *
-     * @param event
+     * @param event change of the accelerometer indicators
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -139,7 +134,6 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         AccelData curReading = new AccelData();
         String readingString;
         String[] readStringSplit;
-        int res = 0;
         InputStreamReader inputStreamReader;
         BufferedReader bufferedReader;
         try {
@@ -166,9 +160,9 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      * If the given timestamp lies between to timesteps in the list this method uses linear
      * interpolation between the two values to calculate the return value
      *
-     * @param queue_pos
-     * @param timestamp
-     * @return
+     * @param queue_pos the position from which accelerometer readings will be read
+     * @param timestamp time point for which interpolation of measurements are prefromed
+     * @return weighted average of the two accelerometer measurements around time point of interest
      */
     private double[] interpolate(int queue_pos, long timestamp) {
         AccelData curr = readings.get(queue_pos);
