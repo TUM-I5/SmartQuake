@@ -11,6 +11,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  */
 public class CreateActivity extends AppCompatActivity {
 
-    private static final int DELTA = 80;
+    private static double DELTA = 0.1;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -40,6 +41,8 @@ public class CreateActivity extends AppCompatActivity {
     private CanvasView canvasView;
     private Structure structure;
 
+    private double width, height;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,39 @@ public class CreateActivity extends AppCompatActivity {
         structure = new Structure();
         longPressListener = new LongPressListener();
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
+
+        ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
+
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    width = canvasView.getWidth();
+                    height = canvasView.getHeight();
+
+                    DELTA = width / 20;
+                }
+            });
+        }
+
+    }
+
+    public void transformToMeters(Node node) {
+        double x = node.getCurrX();
+        double y = node.getCurrY();
+
+        double[] modelSize = DrawHelper.boundingBox;
+
+        double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
+
+        double xOffset = 0.5 * (width - modelSize[0] * displayScaling);
+        double yOffset = height - modelSize[1] * displayScaling;
+
+        x = (x - xOffset) / (displayScaling);
+        y = (y - yOffset) / (displayScaling);
+
+        node.setCurrX(x);
+        node.setCurrY(y);
     }
 
     @Override
@@ -60,8 +96,13 @@ public class CreateActivity extends AppCompatActivity {
             if (event.getAction() == 261) {
                 adding = true;
 
-                node1 = new Node(event.getX(0), event.getY(0) - 220);
-                node2 = new Node(event.getX(1), event.getY(1) - 220);
+                // in pixels
+                node1 = new Node(event.getX(0), (event.getY(0) - 220));
+                node2 = new Node(event.getX(1), (event.getY(1) - 220));
+
+//                in meters
+//                transformToMeters(node1);
+//                transformToMeters(node2);
 
                 structure.addNode(node1);
                 structure.addNode(node2);
@@ -78,11 +119,21 @@ public class CreateActivity extends AppCompatActivity {
 
                 node1 = nodes.get(nodes.size() - 2);
                 node2 = nodes.get(nodes.size() - 1);
-                node1.setCurrX(event.getX(0));
-                node1.setCurrY(event.getY(0) - 220);
 
+                // in pixels
+                node1.setCurrX(event.getX(0));
+                node1.setCurrY((event.getY(0) - 220));
+
+                // in meters
+//                transformToMeters(node1);
+
+                // in pixels
                 node2.setCurrX(event.getX(1));
-                node2.setCurrY(event.getY(1) - 220);
+                node2.setCurrY((event.getY(1) - 220));
+
+                // in meters
+//                transformToMeters(node2);
+
 
                 Beam beam = new Beam(node1, node2);
                 node1.clearBeams();
@@ -136,6 +187,12 @@ public class CreateActivity extends AppCompatActivity {
 
             double x = event.getX(0);
             double y = event.getY(0) - 220;
+
+            Node tempNode = new Node(x, y);
+            transformToMeters(tempNode);
+
+            x = tempNode.getCurrX();
+            y = tempNode.getCurrY();
 
             double mindist = DELTA;
 
@@ -332,7 +389,11 @@ public class CreateActivity extends AppCompatActivity {
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
             Log.w("LONG PRESS", "TRUE");
-            deleteBeam(e.getX(), e.getY() - 220);
+
+            Node n = new Node(e.getX(), e.getY() - 220);
+//            transformToMeters(n);
+
+            deleteBeam(n.getCurrX(), n.getCurrY());
         }
 
         @Override

@@ -18,7 +18,7 @@ public class Node {
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private double radius = 0.1;
+    private double radius = 0.175;
 
     private List<Beam> beams = new ArrayList<>();
 

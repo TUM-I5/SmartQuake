@@ -8,15 +8,13 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.List;
-
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 
-public class CanvasView extends View {
-    // for future reference: 1 dpi = 100 / 2.54 pixels per meter
-    // get dpi with context.getResources().getDisplayMetrics().xdpi
-
+/**
+ * Created by yuriy on 24/09/16.
+ */
+public class DrawCanvasView extends View {
     public static final Paint PAINT = new Paint();
 
     static {
@@ -27,19 +25,19 @@ public class CanvasView extends View {
 
     public boolean isBeingDrawn = false;
 
-    public CanvasView(Context context) {
+    public DrawCanvasView(Context context) {
         super(context);
     }
 
-    public CanvasView(Context context, AttributeSet attrs) {
+    public DrawCanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public CanvasView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DrawCanvasView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public CanvasView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public DrawCanvasView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

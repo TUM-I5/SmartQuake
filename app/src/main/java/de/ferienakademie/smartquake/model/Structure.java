@@ -19,7 +19,7 @@ public class Structure {
     }
 
     // X, Y
-    private double[] modelSize = {0, 0};
+    private double[] modelSize = {8, 8};
 
     public Structure(List<Node> nodes,List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;
@@ -49,12 +49,12 @@ public class Structure {
 
     public void addNode(Node node) {
         this.nodes.add(node);
-        if (node.getInitX() > modelSize[0]) {
-            modelSize[0] = node.getInitX();
-        }
-        if (node.getInitY() > modelSize[1]) {
-            modelSize[1] = node.getInitY();
-        }
+//        if (node.getInitX() > modelSize[0]) {
+//            modelSize[0] = node.getInitX();
+//        }
+//        if (node.getInitY() > modelSize[1]) {
+//            modelSize[1] = node.getInitY();
+//        }
     }
 
 
