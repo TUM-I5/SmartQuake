@@ -1,9 +1,13 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 
 import java.util.List;
@@ -19,7 +23,6 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  * Created by yuriy on 22/09/16.
  */
 public class CreateActivity extends AppCompatActivity {
-
     private static double DELTA = 90;
     private static boolean adding = false;
     private Node node1 = null;
@@ -44,6 +47,42 @@ public class CreateActivity extends AppCompatActivity {
         structure = new Structure();
         longPressListener = new LongPressListener();
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.start, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch(id){
+            case R.id.action_settings: //TODO setteings activity
+                /***
+                 *Add here code for setting activity
+                 * startActivity(new Intent(this, SettingsActivity.class));
+                 return true;
+                 */
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+
+
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void transformToMeters(Node node) {

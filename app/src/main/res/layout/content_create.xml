@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <de.ferienakademie.smartquake.view.DrawCanvasView
+        android:id="@+id/crtCanvasView"
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_weight="1"/>
+
+    <View
+        android:id="@+id/crtGround"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="11"
+        android:background="@color/groundColor" />
+
+</LinearLayout>
