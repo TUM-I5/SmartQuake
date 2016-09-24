@@ -4,7 +4,13 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -18,10 +24,14 @@ import de.ferienakademie.smartquake.model.Structure;
 /**
  * Created by David Schneller on 23.09.2016.
  */
+
+/**
+ * used for reading and Writing structures
+ */
 public class StructureIO {
 
-    public static void writeStructure(Writer stream, Structure structure) throws IOException {
-        JsonWriter writer = new JsonWriter(stream);
+    public static void writeStructure(OutputStream stream, Structure structure) throws IOException {
+        JsonWriter writer = new JsonWriter(new OutputStreamWriter((new BufferedOutputStream(stream))));
         writer.beginObject();
         writer.name("nodes").beginArray();
         for (Node node : structure.getNodes())
@@ -146,8 +156,8 @@ public class StructureIO {
         return beams;
     }
 
-    public static Structure readStructure(Reader stream) throws IOException {
-        JsonReader reader = new JsonReader(stream);
+    public static Structure readStructure(InputStream stream) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(stream));
         reader.beginObject();
 
         List<TemporaryBeam> tempBeams = null;
