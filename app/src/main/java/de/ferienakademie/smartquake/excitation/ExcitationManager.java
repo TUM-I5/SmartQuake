@@ -31,7 +31,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         currAccel = new AccelData();
         readings.add(currAccel);
         currPos = 0;
-        baseTime = 0;
+        baseTime = Long.MAX_VALUE;
         timestep = 1000;
         tick = 0;
     }
@@ -53,6 +53,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     public void initSensors() {
         readings = new ArrayList<>();
         currAccel = new AccelData();
+        currPos = 0;
         readings.add(currAccel);
     }
 

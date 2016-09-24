@@ -34,6 +34,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
 
+    compile files('libs/fab-1.6.4-sources.jar')
     compile files('libs/EJML-core-0.29.jar')
     compile files('libs/EJML-dense64-0.29.jar')
     compile files('libs/blas.jar')

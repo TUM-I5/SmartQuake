@@ -5,4 +5,6 @@
     <string name="reset_button">Reset</string>
     <string name="save_button">Save</string>
     <string name="load_data_button">Load earthquake data</string>
+    <string name="pref_gravity_title">Use gravity</string>
+    <string name="pref_gravity_summary">Depending on your device you might have to include gravity</string>
 </resources>
