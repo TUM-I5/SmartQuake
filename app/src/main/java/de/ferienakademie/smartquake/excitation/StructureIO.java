@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.model.Beam;
@@ -154,7 +155,8 @@ public class StructureIO {
             beams.add(b);
         }
         stream.close();
-        return new Structure(nodes, beams, new int[0]); //? whatever...
+        //TODO store conDofs!!
+        return new Structure(nodes, beams, new LinkedList<Integer>()); //? whatever...
     }
 
     private static class TemporaryBeam {
