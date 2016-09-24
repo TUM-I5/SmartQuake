@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.model;
 
-import java.util.List;
-
 /**
  * Created by alex on 21.09.16.
  */
@@ -14,33 +12,33 @@ public class Material {
     public static Material SOMETHING = new Material(); //TODO Add values and more materials!
 
 
-    protected double E = 0;   //Young's modulus
-    protected double A = 0;   //cross section
-    protected double I = 0;   //moment of inertia
-    protected double EA = 0;  //
-    protected double EI = 0;  //rigidity
-    protected double h = 0;   //height of beam (input)
-    protected double b = 0;   //width of beam (input)
-    protected double m= 0;
-    protected double c= 0;
+    protected double YoungsModulus = 0;   //Young's modulus
+    protected double AreaOfCrossSection = 0;   //cross section
+    protected double MomentOfInertia = 0;   //moment of inertia
+    protected double AxialStiffnessOfBar = 0;  //
+    protected double BendingStiffnessOfBeam = 0;  //rigidity
+    protected double HeightOfBeam = 0;   //height of beam (input)
+    protected double BreadthOfBeam = 0;   //width of beam (input)
+    protected double MassPerLength = 0;
+    protected double DampingCoefficient = 0;
 
-    protected double rho = 0;     //density of material
+    protected double Density = 0;     //density of material
     protected double alpha = 0;   //alpha for mass matrix
     //may have to change zeroes
 
     //constructor
-    public Material(double b, double h, double E, double rho, double alpha){
-        this.b=b;
-        this.h=h;
-        this.E=E;
-        this.A=b*h;
-        this.I=b*h*h*h/12.;
-        this.EA=E*A;
-        this.EI=E*I;
-        this.rho = rho;
+    public Material(double BreadthOfBeam, double HeightOfBeam, double YoungsModulus, double Density, double alpha){
+        this.BreadthOfBeam = BreadthOfBeam;
+        this.HeightOfBeam = HeightOfBeam;
+        this.YoungsModulus = YoungsModulus;
+        this.AreaOfCrossSection = BreadthOfBeam * HeightOfBeam;
+        this.MomentOfInertia = BreadthOfBeam * HeightOfBeam * HeightOfBeam * HeightOfBeam /12.;
+        this.AxialStiffnessOfBar = YoungsModulus * AreaOfCrossSection;
+        this.BendingStiffnessOfBeam = YoungsModulus * MomentOfInertia;
+        this.Density = Density;
         this.alpha = alpha;
-        this.m=rho*A;
-        this.c=10;
+        this.MassPerLength = Density * AreaOfCrossSection;
+        this.DampingCoefficient =10;
 
     }
 
@@ -48,46 +46,46 @@ public class Material {
         this(0.1, 0.1, 210e9, 7860, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     }
 
-    public void setNewProperties(double b, double h) { //necessary, if b and h are changed - changes all relevant properties
-        this.b = b;
-        this.h = h;
-        A = b*h;
-        I = b*h*h*h/12.;
-        EA = E*A; //update
-        EI = E*I; //update
+    public void setNewProperties(double b, double h) { //necessary, if BreadthOfBeam and HeightOfBeam are changed - changes all relevant properties
+        this.BreadthOfBeam = b;
+        this.HeightOfBeam = h;
+        AreaOfCrossSection = b*h;
+        MomentOfInertia = b*h*h*h/12.;
+        AxialStiffnessOfBar = YoungsModulus * AreaOfCrossSection; //update
+        BendingStiffnessOfBeam = YoungsModulus * MomentOfInertia; //update
     }
 
-    public void setE(double e){
-        E = e;
-        EA = E*A; //update
-        EI = E*I; //update
+    public void setYoungsModulus(double youngsModulus){
+        YoungsModulus = youngsModulus;
+        AxialStiffnessOfBar = YoungsModulus * AreaOfCrossSection; //update
+        BendingStiffnessOfBeam = YoungsModulus * MomentOfInertia; //update
     }
 
-    public void setRho(double rho){
-        this.rho = rho;
+    public void setDensity(double density){
+        this.Density = density;
     }
 
     public void setAlpha(double alpha){this.alpha = alpha;
     }
 
-    public double getb(){return b;}
-    public double geth(){return h;}
-    public double getA(){return A;}
-    public double getC() {return c;}
-    public double getM(){return m;}
-    public double getI(){return I;}
-    public double getEA(){return EA;}
-    public double getEI(){return EI;}
-    public double getRho(){return rho;}
+    public double getBreadthOfBeam(){return BreadthOfBeam;}
+    public double getHeightOfBeam(){return HeightOfBeam;}
+    public double getAreaOfCrossSection(){return AreaOfCrossSection;}
+    public double getDampingCoefficient() {return DampingCoefficient;}
+    public double getMassPerLength(){return MassPerLength;}
+    public double getMomentOfInertia(){return MomentOfInertia;}
+    public double getAxialStiffnessOfBar(){return AxialStiffnessOfBar;}
+    public double getBendingStiffnessOfBeam(){return BendingStiffnessOfBeam;}
+    public double getDensity(){return Density;}
     public double getAlpha(){return alpha;}
 
     /*
     public Material(String test){
         if (test.contentEquals("testmat")) {
-            this.A = 10;
-            this.E = 10e7;
-            this.I = 10;
-            this.rho = 7860;
+            this.AreaOfCrossSection = 10;
+            this.YoungsModulus = 10e7;
+            this.MomentOfInertia = 10;
+            this.Density = 7860;
         }
     }
     */  // Not necessary

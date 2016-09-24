@@ -2,7 +2,7 @@ package de.ferienakademie.smartquake;
 
 import android.util.Log;
 
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
@@ -15,7 +15,7 @@ public class Simulation {
 
     public enum SpeedState { SLOW, NORMAL }
 
-    Kernel1 kernel1;
+    SpatialDiscretization spatialDiscretization;
     TimeIntegration kernel2;
     CanvasView view;
     SimulationProgressListener listener;
@@ -23,8 +23,8 @@ public class Simulation {
 
     private SpeedState lastSpeedState;
 
-    public Simulation(Kernel1 kernel1, TimeIntegration kernel2, CanvasView view) {
-        this.kernel1 = kernel1;
+    public Simulation(SpatialDiscretization spatialDiscretization, TimeIntegration kernel2, CanvasView view) {
+        this.spatialDiscretization = spatialDiscretization;
         this.kernel2 = kernel2;
         this.view = view;
         lastSpeedState = SpeedState.NORMAL;
@@ -70,7 +70,7 @@ public class Simulation {
                             listener.onSimulationSpeedChanged(SpeedState.NORMAL);
                         }
                     }
-                    DrawHelper.drawStructure(kernel1.getStructure(), view);
+                    DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
                 }
                 if (listener != null) {
                     listener.onSimulationFinished();

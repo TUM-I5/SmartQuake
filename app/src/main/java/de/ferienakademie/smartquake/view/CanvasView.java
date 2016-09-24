@@ -50,7 +50,7 @@ public class CanvasView extends View {
     }
 
     public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double modelScaling, double beamUnitSize) {
-        canvas.drawCircle((float) (node.getCurrX() * modelScaling + xOffset), (float) (node.getCurrY() * modelScaling + yOffset),
+        canvas.drawCircle((float) (node.getCurrentX() * modelScaling + xOffset), (float) (node.getCurrentY() * modelScaling + yOffset),
                 (float) (node.getRadius() * beamUnitSize), BEAM_PAINT);
     }
 
@@ -58,8 +58,9 @@ public class CanvasView extends View {
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
         Path p = new Path();
-        p.moveTo((float) (startNode.getCurrX() * modelScaling + xOffset), (float) (startNode.getCurrY() * modelScaling + yOffset));
-        p.lineTo((float) (endNode.getCurrX() * modelScaling + xOffset), (float) (endNode.getCurrY() * modelScaling + yOffset));
+        p.moveTo((float) (startNode.getCurrentX() * modelScaling + xOffset), (float) (startNode.getCurrentY() * modelScaling + yOffset));
+        p.lineTo((float) (endNode.getCurrentX() * modelScaling + xOffset), (float) (endNode.getCurrentY() * modelScaling + yOffset));
+
 
         BEAM_PAINT.setStrokeWidth((float) (beam.getThickness() * beamUnitSize));
         canvas.drawPath(p, BEAM_PAINT);

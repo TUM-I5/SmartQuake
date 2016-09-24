@@ -3,7 +3,7 @@ package de.ferienakademie.smartquake.kernel2;
 import org.ejml.data.DenseMatrix64F;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 /**
  * Created by Felix Wechsler on 23/09/16.
@@ -35,7 +35,7 @@ public class Solver implements TimeIntegrationSolver {
     DenseMatrix64F M;
 
     //connection to kernel1
-    Kernel1 k1;
+    SpatialDiscretization k1;
 
     /**
      *
@@ -44,7 +44,7 @@ public class Solver implements TimeIntegrationSolver {
      * @param xDot
      *          Stores the velocity
      */
-    public Solver(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
+    public Solver(SpatialDiscretization k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
         this.k1 = k1;
         this.accelerationProvider = accelerationProvider;
 
@@ -56,11 +56,11 @@ public class Solver implements TimeIntegrationSolver {
         this.xDot = xDot;
 
         //fill xDotDot with zeros
-        xDotDot = new DenseMatrix64F(k1.getNumDOF(), 1);
+        xDotDot = new DenseMatrix64F(k1.getNumberofDOF(), 1);
         xDotDot.zero();
 
         //create and fill fLoad vector with zeros
-        fLoad = new DenseMatrix64F(k1.getNumDOF(),1);
+        fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);
     }
 
     /**

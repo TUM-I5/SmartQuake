@@ -7,7 +7,7 @@ import org.netlib.util.intW;
 
 public class Eig {
     /**
-     * Solution of eigenvalue problem (A * v = lambda * v)
+     * Solution of eigenvalue problem (AreaOfCrossSection * v = lambda * v)
      * using LAPACK function dgeev
      *
      * Author: Vincent Stimper
@@ -71,7 +71,7 @@ public class Eig {
 
     /* Functions */
     private static double[] matToVec(double[][] m) {
-		/* Returns matrix m as vector of columns */
+		/* Returns matrix MassPerLength as vector of columns */
         int d = m.length;
         double[] mV = new double[d * d];
         for (int i = 0; i < d; i++) {

@@ -62,10 +62,11 @@ public class DrawCanvasView extends View {
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
         paint.setStrokeWidth(beam.getThickness());
-        canvas.drawLine((float) startNode.getCurrX(), (float) startNode.getCurrY(), (float) endNode.getCurrX(), (float) endNode.getCurrY(), paint);
+        canvas.drawLine((float) startNode.getCurrentX(), (float) startNode.getCurrentY(),
+                (float) endNode.getCurrentX(), (float) endNode.getCurrentY(), paint);
     }
 
     public static void drawNode(Node node, Canvas canvas, Paint paint) {
-        canvas.drawCircle((float) node.getCurrX(), (float) node.getCurrY(), (float) NODE_RADIUS_PIXEL, paint);
+        canvas.drawCircle((float) node.getCurrentX(), (float) node.getCurrentY(), (float) NODE_RADIUS_PIXEL, paint);
     }
 }

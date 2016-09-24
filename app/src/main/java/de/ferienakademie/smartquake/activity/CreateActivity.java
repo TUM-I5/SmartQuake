@@ -28,12 +28,15 @@ public class CreateActivity extends AppCompatActivity {
     private Node node1 = null;
     private Node node2 = null;
     private Node chosenNode = null;
+    private MotionEvent latestEvent = null;
 
     private GestureDetectorCompat mGestureDetector;
     private LongPressListener longPressListener;
 
     private DrawCanvasView canvasView;
     private Structure structure;
+
+    private int yOffset = 0;
 
     private double width, height;
 
@@ -49,6 +52,8 @@ public class CreateActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        yOffset = getSupportActionBar().getHeight() + 40;
 
     }
 
@@ -85,8 +90,8 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     public void transformToMeters(Node node) {
-        double x = node.getCurrX();
-        double y = node.getCurrY();
+        double x = node.getCurrentX();
+        double y = node.getCurrentY();
 
         double[] modelSize = DrawHelper.boundingBox;
 
@@ -98,8 +103,8 @@ public class CreateActivity extends AppCompatActivity {
         x = (x - xOffset) / (displayScaling);
         y = (y - yOffset) / (displayScaling);
 
-        node.setCurrX(x);
-        node.setCurrY(y);
+        node.setCurrentX(x);
+        node.setCurrentY(y);
     }
 
     @Override
@@ -112,11 +117,12 @@ public class CreateActivity extends AppCompatActivity {
                 adding = true;
 
                 // in pixels
-                node1 = new Node(event.getX(0), (event.getY(0) - 220));
-                node2 = new Node(event.getX(1), (event.getY(1) - 220));
+                node1 = new Node(event.getX(0), (event.getY(0) - yOffset));
+                node2 = new Node(event.getX(1), (event.getY(1) - yOffset));
 
                 structure.addNode(node1);
                 structure.addNode(node2);
+
                 Beam beam = new Beam(node1, node2);
                 structure.addBeam(beam);
 
@@ -130,16 +136,11 @@ public class CreateActivity extends AppCompatActivity {
 
                 node1 = nodes.get(nodes.size() - 2);
                 node2 = nodes.get(nodes.size() - 1);
+                node1.setCurrentX(event.getX(0));
+                node1.setCurrentY(event.getY(0) - yOffset);
 
-                // in pixels
-                node1.setCurrX(event.getX(0));
-                node1.setCurrY((event.getY(0) - 220));
-
-
-                // in pixels
-                node2.setCurrX(event.getX(1));
-                node2.setCurrY((event.getY(1) - 220));
-
+                node2.setCurrentX(event.getX(1));
+                node2.setCurrentY(event.getY(1) - yOffset);
 
                 Beam beam = new Beam(node1, node2);
                 node1.clearBeams();
@@ -192,12 +193,12 @@ public class CreateActivity extends AppCompatActivity {
             List<Node> nodes = structure.getNodes();
 
             double x = event.getX(0);
-            double y = event.getY(0) - 220;
+            double y = event.getY(0) - yOffset;
 
             Node tempNode = new Node(x, y);
 
-            x = tempNode.getCurrX();
-            y = tempNode.getCurrY();
+            x = tempNode.getCurrentX();
+            y = tempNode.getCurrentY();
 
             double mindist = DELTA;
 
@@ -212,8 +213,8 @@ public class CreateActivity extends AppCompatActivity {
 
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 if (chosenNode != null) {
-                    chosenNode.setCurrX(x);
-                    chosenNode.setCurrY(y);
+                    chosenNode.setCurrentX(x);
+                    chosenNode.setCurrentY(y);
                     node1 = chosenNode;
                     node2 = null;
                 }
@@ -276,6 +277,8 @@ public class CreateActivity extends AppCompatActivity {
         DrawHelper.clearCanvas(canvasView);
         DrawHelper.drawStructure(structure, canvasView);
 
+        latestEvent = event;
+
         return super.onTouchEvent(event);
     }
 
@@ -305,19 +308,19 @@ public class CreateActivity extends AppCompatActivity {
         }
 
         if (attach1) {
-            node1.setCurrX(node1Attach.getCurrX());
-            node1.setCurrY(node1Attach.getCurrY());
+            node1.setCurrentX(node1Attach.getCurrentX());
+            node1.setCurrentY(node1Attach.getCurrentY());
         }
 
         if (attach2) {
-            node2.setCurrX(node2Attach.getCurrX());
-            node2.setCurrY(node2Attach.getCurrY());
+            node2.setCurrentX(node2Attach.getCurrentX());
+            node2.setCurrentY(node2Attach.getCurrentY());
         }
 
     }
 
     private static double distNodes(Node node1, Node node2) {
-        return Math.abs(node1.getCurrX() - node2.getCurrX()) + Math.abs(node1.getCurrY() - node2.getCurrY());
+        return Math.abs(node1.getCurrentX() - node2.getCurrentX()) + Math.abs(node1.getCurrentY() - node2.getCurrentY());
     }
 
 
@@ -334,10 +337,10 @@ public class CreateActivity extends AppCompatActivity {
             Node node1 = beam.getStartNode();
             Node node2 = beam.getEndNode();
 
-            double x1 = node1.getCurrX();
-            double x2 = node2.getCurrX();
-            double y1 = node1.getCurrY();
-            double y2 = node2.getCurrY();
+            double x1 = node1.getCurrentX();
+            double x2 = node2.getCurrentX();
+            double y1 = node1.getCurrentY();
+            double y2 = node2.getCurrentY();
 
             x2 = x2 - x1;
             x1 = x - x1;
@@ -389,7 +392,7 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
-        return cosAlfa*node.getCurrX() + sinAlfa*node.getCurrY();
+        return cosAlfa*node.getCurrentX() + sinAlfa*node.getCurrentY();
     }
 
     public class LongPressListener extends GestureDetector.SimpleOnGestureListener {
@@ -397,9 +400,9 @@ public class CreateActivity extends AppCompatActivity {
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
 
-            Node n = new Node(e.getX(), e.getY() - 220);
+            Node n = new Node(e.getX(), e.getY() - yOffset);
 
-            deleteBeam(n.getCurrX(), n.getCurrY());
+            deleteBeam(n.getCurrentX(), n.getCurrentY());
         }
 
         @Override
