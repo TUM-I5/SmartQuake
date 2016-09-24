@@ -34,6 +34,7 @@ public class Kernel1 {
         //initialize displacement with zeros
         DisplacementVector = new DenseMatrix64F(getNumDOF(), 1);
         DisplacementVector.zero();
+        numDOF = structure.getNodes().size()*3;      //TODO Alex: temporary solution. Changes if we add hinges.
         initMatrices();
         calcInfluenceVector();
     }
@@ -139,8 +140,7 @@ public class Kernel1 {
     }
 
     public int getNumDOF() {
-        //TODO: temporary solution. Changes if we add hinges.
-        return structure.getNodes().size() * 3;
+        return numDOF;
     }
 
     public Structure getStructure() {
