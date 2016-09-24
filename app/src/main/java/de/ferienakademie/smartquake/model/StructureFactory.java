@@ -19,9 +19,11 @@ public class StructureFactory {
         unode1.add(0.0);
 
         Structure structure = new Structure();
+        structure.setLumped(lumped);
         Material testMaterial = new Material();
 
         //Kernel1 stuff
+
         List<Integer> DOFnode1 = new LinkedList<>();
         List<Integer> DOFnode2 = new LinkedList<>();
         List<Integer> DOFnode3 = new LinkedList<>();

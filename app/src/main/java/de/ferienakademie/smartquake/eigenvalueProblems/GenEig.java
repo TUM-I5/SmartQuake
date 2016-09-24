@@ -9,7 +9,7 @@ import org.netlib.lapack.Dggev;
 public class GenEig {
 	/**
      *
-     * Solution of generalized eigenvalue problem (A * v = lambda * B * v)
+     * Solution of generalized eigenvalue problem (AreaOfCrossSection * v = lambda * B * v)
      * using LAPACK function dggev
      *
      * Author: Vincent Stimper
@@ -18,10 +18,10 @@ public class GenEig {
      *
      *
 	 * Arguments
-	 * 		a, b						input matrices
+	 * 		a, BreadthOfBeam						input matrices
 	 *
 	 * Attributes
-	 * 		alphaRe, alphaIm, beta		generalized eigenvalues, beta * a * v = alpha * b * v
+	 * 		alphaRe, alphaIm, beta		generalized eigenvalues, beta * a * v = alpha * BreadthOfBeam * v
 	 * 		v							matrix with right generalized eigenvectors as columns,
 	 * 									in the same order as their eigenvalues
 	 * 		n							number of dimensions
@@ -113,7 +113,7 @@ public class GenEig {
 
     /* Functions */
     private static double[] matToVec(double[][] m) {
-		/* Returns matrix m as vector of columns */
+		/* Returns matrix MassPerLength as vector of columns */
         int d = m.length;
         double[] mV = new double[d * d];
         for (int i = 0; i < d; i++) {

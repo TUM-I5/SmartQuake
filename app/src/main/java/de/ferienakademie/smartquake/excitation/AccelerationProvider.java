@@ -4,41 +4,24 @@ package de.ferienakademie.smartquake.excitation;
  * Created by user on 21.09.2016.
  */
 
-public abstract class AccelerationProvider {
-    ExcitationListener lstnr = EmptyExcitationListener.getInstance();
-
-
-    public void registerLstnr(ExcitationListener newLstnr){
-        lstnr = newLstnr;
-    }
-
-    public void deregisterLstnr(){
-        lstnr = EmptyExcitationListener.getInstance();
-    }
+public interface AccelerationProvider {
 
     /**
      * has to inform the listener
      * @return first element acceleration in X axis, second element acceleration in Y axis
      */
-    public abstract double[] getAcceleration();
+    double[] getAcceleration();
 
     /**
      * has to inform the listener
      * @return datastructure with timestamp, X axis acceleration, Y axis acceleration
      */
-    public abstract AccelData getAccelerationMeasurement();
+    AccelData getAccelerationMeasurement();
 
     /**
-     * has to inform the listener
-     * @param timestamp closest time myoment w.r.t. start of the simulation when accelearation measured
-     * @return first element acceleration in X axis, second element acceleration in Y axis
+     *
+     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
+     * @param timeStep timeStep of the simulation in nanoseconds
      */
-    public abstract AccelData getAccelerationMeasurement(long timestamp);
-
-    /**
-     * has to inform the listener
-     * @param timestamp closest time moment w.r.t. start of the simulation when accelearation measured
-     * @return first element acceleration in X axis, second element acceleration in Y axis
-     */
-    public abstract double[] getAcceleration(long timestamp);
+    void initTime(long timeStamp, double timeStep);
 }

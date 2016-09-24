@@ -8,14 +8,14 @@ import java.util.List;
  */
 public class Node {
     //Current node position
-    private double currX;
-    private double currY;
+    private double currentX;
+    private double currentY;
 
-    private List<Double> currROT; //List of all rotations at the node
+    private List<Double> currentRotations; //List of all rotations at the node
 
     //Initial node position
-    private double initX;
-    private double initY;
+    private double initialX;
+    private double initialY;
     private List<Integer> DOF; //Degrees of freedom
 
     private double radius = 0.1;
@@ -23,12 +23,12 @@ public class Node {
     private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
-        this.currX = x;
-        this.currY = y;
-        this.initX = x;
-        this.initY = y;
-        currROT = new ArrayList<>();
-        currROT.add(0.0);
+        this.currentX = x;
+        this.currentY = y;
+        this.initialX = x;
+        this.initialY = y;
+        currentRotations = new ArrayList<>();
+        currentRotations.add(0.0);
     }
 
 
@@ -38,32 +38,32 @@ public class Node {
     }
 
 
-    public double getInitX() {
-        return initX;
+    public double getInitialX() {
+        return initialX;
     }
 
-    public void setInitX(double initX) {
-        this.initX = initX;
+    public void setInitialX(double initialX) {
+        this.initialX = initialX;
     }
 
-    public double getInitY() {
-        return initY;
+    public double getInitialY() {
+        return initialY;
     }
 
-    public List<Double> getCurrROT() {
-        return currROT;
+    public List<Double> getCurrentRotations() {
+        return currentRotations;
     }
 
-    public void setCurrROT(List<Double> currROT) {
-        this.currROT = currROT;
+    public void setCurrentRotations(List<Double> currentRotations) {
+        this.currentRotations = currentRotations;
     }
 
-    public void setSingleRotation(int i,double rotation) {
-        this.currROT.set(i,rotation);
+    public void setSingleRotation(int i, double rotation) {
+        this.currentRotations.set(i,rotation );
     }
 
-    public void setInitY(double initY) {
-        this.initY = initY;
+    public void setInitialY(double initialY) {
+        this.initialY = initialY;
     }
 
     public void addBeam(Beam beam) {
@@ -77,20 +77,20 @@ public class Node {
         this.DOF = DOF;
     }
 
-    public double getCurrX() {
-        return currX;
+    public double getCurrentX() {
+        return currentX;
     }
 
-    public void setCurrX(double currX) {
-        this.currX = currX;
+    public void setCurrentX(double currentX) {
+        this.currentX = currentX;
     }
 
-    public double getCurrY() {
-        return currY;
+    public double getCurrentY() {
+        return currentY;
     }
 
-    public void setCurrY(double currY) {
-        this.currY = currY;
+    public void setCurrentY(double currentY) {
+        this.currentY = currentY;
     }
 
 
@@ -117,6 +117,7 @@ public class Node {
 
         Node node = (Node) obj;
 
-        return node.currX == currX && node.currY == currY;
+        return node.currentX == currentX && node.currentY == currentY;
     }
 }
+
