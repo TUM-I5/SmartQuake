@@ -73,7 +73,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         int id = item.getItemId();
 
         if (id == R.id.reset_button) {
-            onStopButtonClicked();
+            // reset implicitly ends replaying
+            if (state == SimulationState.REPLAY_RUNNING) {
+                state = SimulationState.RUNNING;
+            }
+
+            if (state == SimulationState.RUNNING) {
+                onStopButtonClicked();
+            }
             createStructure();
             DrawHelper.drawStructure(structure, canvasView);
             return true;
