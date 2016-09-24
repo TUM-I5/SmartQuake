@@ -5,6 +5,7 @@ import org.ejml.ops.CommonOps;
 
 import java.util.List;
 
+import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
@@ -25,6 +26,11 @@ public class SpatialDiscretization {
     private DenseMatrix64F influenceVectorX;
     private DenseMatrix64F influenceVectorY;
     private DenseMatrix64F DisplacementVector;  //project manager advice
+
+    //Modal Analysis part
+    private DenseMatrix64F eigenvectorsmatrix;
+    private DenseMatrix64F[] eigenvectors;
+    private double[] eigenvalues;
 
 
     private int numberofDOF;
@@ -235,7 +241,47 @@ public class SpatialDiscretization {
         CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
     }
 
+    public void calculateEigenvaluesAndVectors(){
+        GenEig eigen = new GenEig(StiffnessMatrix,MassMatrix); //solve GEN eigenvalues problem
+        eigenvalues = eigen.getLambda();
+        double[][] ev = eigen.getV();
+         eigenvectorsmatrix = new DenseMatrix64F(ev);
+        CommonOps.transpose(eigenvectorsmatrix,eigenvectorsmatrix); //transpose due to constructor of DenseMatrix64F in which rows and column are switched
+    }
+
+
+    //Normalise eigenvectors
+    public void normaliseEigenvectors() {
+        for (int i = 0; i < getNumberofDOF(); i++) {
+            CommonOps.scale(1 / Math.sqrt(MassMatrix.get(i, i)), eigenvectors[i]);
+        }
+    }
     public void performModalAnalysis(){
 
+
+        calculateEigenvaluesAndVectors();
+
+        DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());
+        CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
+
+        CommonOps.columnsToVector(eigenvectorsmatrix,eigenvectors);
+
+        DenseMatrix64F temp = new DenseMatrix64F(getNumberofDOF());
+        CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,temp);
+        CommonOps.mult(temp,eigenvectorsmatrix,MassMatrix); //massmatrix converted into Eigenvectorspace
+
+        normaliseEigenvectors();
+
+
     }
+    public void getModalAnalysisMatrices(){
+        performModalAnalysis();
+        StiffnessMatrix.zero();
+        MassMatrix.zero();
+        for (int i = 0; i < numberofDOF; i++) {
+            StiffnessMatrix.set(i,i,eigenvalues[i]);
+            MassMatrix.set(i,i,1.0);
+        }
+    }
+
 }
