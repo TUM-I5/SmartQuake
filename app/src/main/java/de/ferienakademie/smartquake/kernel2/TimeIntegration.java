@@ -94,8 +94,8 @@ public class TimeIntegration {
 
 
                     //Log.d("load vector", ""+spatialDiscretization.getLoadVector().toString());
-
-                    Log.d("xDotDot inside TimInt", solver.getXDotDot().toString());
+                    //Log.d("xDotDot", solver.getXDotDot().toString());
+                    //Log.d("xDotDot inside TimInt", solver.getXDotDot().toString());
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 

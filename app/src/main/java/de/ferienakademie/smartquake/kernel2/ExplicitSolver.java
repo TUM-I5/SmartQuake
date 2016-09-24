@@ -43,6 +43,10 @@ public class ExplicitSolver extends Solver {
 
         C = k1.getDampingMatrix();
         K = k1.getStiffnessMatrix();
+
+       // for(int i=0; i<k1.getNumberofDOF(); i++){
+       //     K.set(i,i,K.get(i,i)*0.000000001);
+       // }
         //M is inverse at the moment
         //PAY attention
         M = k1.getInverseMassMatrix();
@@ -53,31 +57,28 @@ public class ExplicitSolver extends Solver {
      * This method provides for all explicit solver the acceleration of all nodes
      */
     public void getAcceleration() {
-
-
-       // for(int i=0; i<15; i++){
-       //     fLoad.set(i,0,0.0001);
-       // }
+        //only for testing
+       //for(int i=0; i<15; i++){
+       //     fLoad.set(i,0,1);
+       //}
 
         // next steps calculating this: tempVecotr= tempVector - C*xDot - K*x
-
         tempVector2 = fLoad.copy();
 
-        multMatrices(K,x,tempVector);
-        multMatrices(C, xDot, tempVector);
-        subMatrices(tempVector,tempVector2);
+        //multMatrices(K,x,tempVector);
+        //multMatrices(C, xDot, tempVector);
+        //subMatrices(tempVector,tempVector2);
 
         // 1.: tempVector = tempVector - C*xDot
-        //CommonOps.multAdd(-1, C,xDot,tempVector);
+        CommonOps.multAdd(-1, C,xDot,tempVector2);
         //2.: tempVector = tempVector - K*x
-        //CommonOps.multAdd(-1, K,x,tempVector);
+        CommonOps.multAdd(-1, K,x,tempVector2);
 
-        xDotDot = tempVector2 ;
+        xDotDot = tempVector2;
         for( int i =0; i<k1.getNumberofDOF(); i++){
             xDotDot.set(i,0, M.get(i,i)*xDotDot.get(i,0));
         }
 
-        //Log.e("messagen for felix", xDotDot.toString());
     }
 
 

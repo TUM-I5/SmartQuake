@@ -17,8 +17,10 @@ public class Euler extends ExplicitSolver {
      * @param k1
      * @param xDot
      */
+    DenseMatrix64F averageXDot;
     public Euler(SpatialDiscretization k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
         super(k1, accelerationProvider, xDot);
+        averageXDot =xDot.copy();
     }
 
     @Override
@@ -26,17 +28,16 @@ public class Euler extends ExplicitSolver {
         //pure euler at the moment
         //store old (n-1) velocity
         getAcceleration();
-        //DenseMatrix64F oldxDot = xDot.copy();
+        DenseMatrix64F oldxDot = xDot.copy();
 
         //velocity at n
         CommonOps.addEquals(xDot, delta_t, xDotDot);
 
         //create average matrix of velocities at step n and n+1
-        //DenseMatrix64F averageXDot = xDot.copy();
-        //CommonOps.addEquals(averageXDot, 1, oldxDot);
+        CommonOps.addEquals(averageXDot, 1, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, 1*delta_t, xDot);
+        CommonOps.addEquals(x, 0.5*delta_t, averageXDot);
 
     }
 
