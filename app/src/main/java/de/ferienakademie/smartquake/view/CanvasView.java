@@ -50,7 +50,7 @@ public class CanvasView extends View {
     }
 
     public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double modelScaling, double beamUnitSize) {
-        canvas.drawCircle((float) (node.getCurrX() * modelScaling + xOffset), (float) (node.getCurrY() * modelScaling + yOffset),
+        canvas.drawCircle((float) (node.getCurrentX() * modelScaling + xOffset), (float) (node.getCurrentY() * modelScaling + yOffset),
                 (float) (node.getRadius() * beamUnitSize), BEAM_PAINT);
     }
 

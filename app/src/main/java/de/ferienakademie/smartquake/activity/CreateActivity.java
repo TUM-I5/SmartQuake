@@ -90,8 +90,8 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     public void transformToMeters(Node node) {
-        double x = node.getCurrX();
-        double y = node.getCurrY();
+        double x = node.getCurrentX();
+        double y = node.getCurrentY();
 
         double[] modelSize = DrawHelper.boundingBox;
 
@@ -103,8 +103,8 @@ public class CreateActivity extends AppCompatActivity {
         x = (x - xOffset) / (displayScaling);
         y = (y - yOffset) / (displayScaling);
 
-        node.setCurrX(x);
-        node.setCurrY(y);
+        node.setCurrentX(x);
+        node.setCurrentY(y);
     }
 
     @Override
