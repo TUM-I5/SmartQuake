@@ -58,8 +58,8 @@ public class TimeIntegration {
         xDot.zero();
 
         // stores the numerical scheme
-        solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
-        //solver = new Euler(kernel1, accelerationProvider, xDot);
+        //solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
+        solver = new Euler(kernel1, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
         delta_t = 0.001;
@@ -91,10 +91,13 @@ public class TimeIntegration {
 
                     //update loadVector
                     kernel1.updateLoadVector(accelerationProvider.getAcceleration());
+
+                    Log.d("load vector", ""+kernel1.getLoadVector().toString());
+
                     //get the loadVector for the whole calculation
                     solver.setFLoad(kernel1.getLoadVector());
 
-                    long firstTime = System.nanoTime();
+                   // long firstTime = System.nanoTime();
                     while(t < 0.03+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
@@ -104,9 +107,10 @@ public class TimeIntegration {
                     //for the sensor team
                     globalTime += 0.03;
 
+                    //Log.d("Inside Time Itegration", solver.getFLoad().toString());
                     //for recording
-                    long secondTime = System.nanoTime();
-                    Log.e("Timestamp",""+(secondTime-firstTime));
+                    //long secondTime = System.nanoTime();
+                    //Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
                     kernel1.updateStructure(kernel1.getDisplacementVector());

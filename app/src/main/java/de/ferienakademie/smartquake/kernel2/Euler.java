@@ -36,7 +36,7 @@ public class Euler extends ExplicitSolver {
         //CommonOps.addEquals(averageXDot, 1, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, delta_t, xDot);
+        CommonOps.addEquals(x, 1*delta_t, xDot);
 
     }
 

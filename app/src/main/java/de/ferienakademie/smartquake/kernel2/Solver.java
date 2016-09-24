@@ -103,5 +103,16 @@ public class Solver implements TimeIntegrationSolver {
     }
 
 
+    public DenseMatrix64F getX(){
+        return x;
+    }
+
+    public DenseMatrix64F getXDotDot(){
+        return xDotDot;
+    }
+
+    public DenseMatrix64F getXDot(){
+        return xDot;
+    }
 
 }
