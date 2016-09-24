@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 package de.ferienakademie.smartquake.kernel2;
 
 import android.util.Log;
@@ -131,3 +133,4 @@ public class TimeIntegration {
 
     }
 }
+>>>>>>> 2330e3f1192372b559432921e13e4272ff014c18
