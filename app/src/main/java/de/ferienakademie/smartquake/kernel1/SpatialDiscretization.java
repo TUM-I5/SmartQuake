@@ -21,6 +21,7 @@ public class SpatialDiscretization {
     private DenseMatrix64F InverseMassMatrix;
 
     private DenseMatrix64F LoadVector; // vector with the forces
+
     private DenseMatrix64F influenceVectorX;
     private DenseMatrix64F influenceVectorY;
     private DenseMatrix64F DisplacementVector;  //project manager advice
@@ -36,10 +37,10 @@ public class SpatialDiscretization {
         numberofDOF = structure.getNodes().size()*3;
         DisplacementVector = new DenseMatrix64F(getNumberofDOF(), 1);
         DisplacementVector.zero();
-           //TODO Alex: temporary solution. Changes if we add hinges.
+       numberofDOF = structure.getNodes().size()*3;      //TODO Alex: temporary solution. Changes if we add hinges.
         initializeMatrices();
         calculateInfluenceVector();
-    }
+   }
 
     /**
      * return StiffnessMatrix
@@ -156,9 +157,9 @@ public class SpatialDiscretization {
         return DisplacementVector;
     }
 
-    public int getNumberofDOF() {
+   public int getNumberofDOF() {
         return numberofDOF;
-    }
+   }
 
     public Structure getStructure() {
         return structure;
@@ -207,7 +208,6 @@ public class SpatialDiscretization {
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-
             influenceVectorX.add(DOFx,0,-1); //add influence vector in x-dir
             influenceVectorY.add(DOFy,0,-1); //add influence vector in y-dir
         }
