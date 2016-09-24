@@ -163,6 +163,15 @@ public class Kernel1 {
         }
     }
 
+    public void updateStructureKernel1(DenseMatrix64F displacementVector) {
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+            node.setCurrX(node.getInitX() + displacementVector.get(3*i, 0));
+            node.setCurrY(node.getInitY() + displacementVector.get(3*i+1, 0));
+            node.setSingleRotation(0,displacementVector.get(3*i+2,0)); //TODO change with introducting of hinges
+        }
+    }
+
     public DenseMatrix64F getLoadVector() {
         return LoadVector;
     }
