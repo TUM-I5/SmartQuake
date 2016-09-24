@@ -11,10 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-
-/**
- * Created by simon on 22.09.16.
- */
+import java.util.Locale;
 
 /**
  * Records and replays stored acceleration data by Listening to the SensorExcitation-Object
@@ -116,10 +113,11 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
             outputStreamReader = new OutputStreamWriter(outputStream);
             bufferedWriter = new BufferedWriter(outputStreamReader);
             for (int i = 0; i < readings.size(); i++) {
-                readingString = String.format("%d %f %f\n", readings.get(i).timestamp,
+                readingString = String.format(Locale.ENGLISH, "%d %f %f\n", readings.get(i).timestamp,
                         readings.get(i).xAcceleration, readings.get(i).yAcceleration);
                 bufferedWriter.write(readingString);
             }
+            bufferedWriter.flush();
             //outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,6 +129,8 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      * @param inputStream stream that passes readings from a file to excitation manager
      */
     public void loadFile(InputStream inputStream) {
+        readings = new ArrayList<>();
+        currAccel = new AccelData();
         AccelData curReading = new AccelData();
         String readingString;
         String[] readStringSplit;

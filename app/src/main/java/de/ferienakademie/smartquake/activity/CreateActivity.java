@@ -1,18 +1,35 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.jar.Manifest;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.excitation.StructureIO;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
@@ -28,7 +45,7 @@ public class CreateActivity extends AppCompatActivity {
     private Node node1 = null;
     private Node node2 = null;
     private Node chosenNode = null;
-    private MotionEvent latestEvent = null;
+
 
     private GestureDetectorCompat mGestureDetector;
     private LongPressListener longPressListener;
@@ -36,9 +53,11 @@ public class CreateActivity extends AppCompatActivity {
     private DrawCanvasView canvasView;
     private Structure structure;
 
-    private int yOffset = 0;
+    private ActionBar actionBar;
 
     private double width, height;
+
+    private int yOffset = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,9 +70,22 @@ public class CreateActivity extends AppCompatActivity {
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-        yOffset = getSupportActionBar().getHeight() + 40;
+        ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
+
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    width = canvasView.getWidth();
+                    height = canvasView.getHeight();
+                }
+            });
+        }
+
+        yOffset = actionBar.getHeight() + 40;
 
     }
 
@@ -61,7 +93,7 @@ public class CreateActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.start, menu);
+        getMenuInflater().inflate(R.menu.create, menu);
         return true;
     }
 
@@ -82,11 +114,62 @@ public class CreateActivity extends AppCompatActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.clear_canvas:
+                structure.clearAll();
+                DrawHelper.drawStructure(structure, canvasView);
+                return true;
+            case R.id.save_canvas:
+                serialize();
+                return true;
         }
 
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void serialize() {
+        List<Node> nodes = structure.getNodes();
+
+        for (int i = 0; i < nodes.size(); i++) {
+            if (nodes.get(i).getBeams().size() == 0) nodes.remove(i);
+        }
+
+        for (Node node : nodes) {
+            transformToMeters(node);
+        }
+
+        List<Integer> condof = new ArrayList<>();
+
+        int j = 0;
+        for (int i = 0; i < nodes.size(); i++) {
+            List<Integer> tempList = new ArrayList<>();
+            tempList.add(j++);
+            tempList.add(j++);
+            tempList.add(j++);
+
+            nodes.get(i).setDOF(tempList);
+
+            if (nodes.get(i).getCurrentY() == height) {
+                for (Integer freedom : tempList) {
+                    condof.add(freedom);
+                }
+            }
+        }
+
+        structure.setConDOF(condof);
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = openFileOutput("structure.json", Context.MODE_PRIVATE);
+            StructureIO.writeStructure(fileOutputStream, structure);
+            fileOutputStream.close();
+            Toast.makeText(this, "File saved", Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            Log.e("CreateActivity.class", "File not found");
+        } catch (IOException e) {
+            Log.e("CreateActivity.class", "IOException");
+        }
     }
 
     public void transformToMeters(Node node) {
@@ -165,12 +248,16 @@ public class CreateActivity extends AppCompatActivity {
                     if (nodes.get(i).equals(node1)) {
                         nodes.get(i).addBeam(currBeam);
                         connectedOneNode = nodes.get(i);
-                        nodes.remove(nodes.size() - 2);
+                        for (int j = i + 1; j < nodes.size(); j++) {
+                            if (nodes.get(j).equals(node1)) nodes.remove(j);
+                        }
                     }
                     if (nodes.get(i).equals(node2)) {
                         connectedTwoNode = nodes.get(i);
                         nodes.get(i).addBeam(currBeam);
-                        nodes.remove(nodes.size() - 1);
+                        for (int j = i + 1; j < nodes.size(); j++) {
+                            if (nodes.get(j).equals(node2)) nodes.remove(j);
+                        }
                     }
                 }
                 for (Beam beam : beams) {
@@ -277,8 +364,6 @@ public class CreateActivity extends AppCompatActivity {
         DrawHelper.clearCanvas(canvasView);
         DrawHelper.drawStructure(structure, canvasView);
 
-        latestEvent = event;
-
         return super.onTouchEvent(event);
     }
 
@@ -315,6 +400,14 @@ public class CreateActivity extends AppCompatActivity {
         if (attach2) {
             node2.setCurrentX(node2Attach.getCurrentX());
             node2.setCurrentY(node2Attach.getCurrentY());
+        }
+
+        if (node1 != null && node1.getCurrentY() >= height - DELTA / 2) {
+            node1.setCurrentY(height);
+        }
+
+        if (node2 != null && node2.getCurrentY() >= height - DELTA / 2) {
+            node2.setCurrentY(height);
         }
 
     }
@@ -354,7 +447,7 @@ public class CreateActivity extends AppCompatActivity {
 
             if (dist <= minDist) {
 
-                sinAlfa = y2/(Math.sqrt(y2*y2+x2*x2));
+                sinAlfa = Math.abs(y2)/(Math.sqrt(y2*y2+x2*x2));
                 cosAlfa = Math.sqrt(1 - sinAlfa*sinAlfa);
 
                 x1 = rotateX(node1, cosAlfa, sinAlfa);

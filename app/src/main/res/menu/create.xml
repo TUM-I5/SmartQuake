@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/clear_canvas"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="@string/clear_canvas"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/save_canvas"
+        android:orderInCategory="100"
+        android:title="@string/save_canvas"
+        android:icon="@drawable/ic_save_white_24dp"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+</menu>
