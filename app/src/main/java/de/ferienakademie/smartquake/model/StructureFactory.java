@@ -23,7 +23,7 @@ public class StructureFactory {
         Material testMaterial = new Material();
 
         //Kernel1 stuff
-        //TODO Alex: redesign with ID Matrix
+
         List<Integer> DOFnode1 = new LinkedList<>();
         List<Integer> DOFnode2 = new LinkedList<>();
         List<Integer> DOFnode3 = new LinkedList<>();

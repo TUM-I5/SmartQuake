@@ -32,28 +32,20 @@ public class ExplicitSolver extends Solver {
 
         //sets up fast linear solver
         linearSolverM = LinearSolverFactory.chol(k1.getNumberofDOF());
-        for(int i = 0; i<k1.getNumberofDOF(); i++){
-            M.set(i,i,0.0001);
-        }
+//        for(int i = 0; i<k1.getNumberofDOF(); i++){
+//            M.set(i,i,0.0001);
+//        }
         linearSolverM.setA(M);
 
         tempVector = new DenseMatrix64F(k1.getNumberofDOF(),1);
         tempVector2 = new DenseMatrix64F(k1.getNumberofDOF(),1);
 
-        //JUST FOR TESTING
-       /* C.zero();
-        K.zero();
-        for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            C.set(j,j,0);
-            C.set(j+1,j+1,0);
-            K.set(j,j,0.001);
-            K.set(j+1,j+1,0.001);
-
-        }
-
 
         C = k1.getDampingMatrix();
-        K = k1.getStiffnessMatrix();*/
+        K = k1.getStiffnessMatrix();
+        //M is inverse at the moment
+        //PAY attention
+        M = k1.getInverseMassMatrix();
     }
 
 
@@ -61,24 +53,19 @@ public class ExplicitSolver extends Solver {
      * This method provides for all explicit solver the acceleration of all nodes
      */
     public void getAcceleration() {
-        //just temporarlily bypass kernel1
-        //acceleration = getAccelerationProvider().getAcceleration();
-        //k1.updateLoadVector(acceleration);
 
-        for(int i=0; i<15; i++){
-            fLoad.set(i,0,0.0001);
-        }
+
+       // for(int i=0; i<15; i++){
+       //     fLoad.set(i,0,0.0001);
+       // }
 
         // next steps calculating this: tempVecotr= tempVector - C*xDot - K*x
 
         tempVector2 = fLoad.copy();
 
         multMatrices(K,x,tempVector);
-        subMatrices(tempVector,tempVector2);
-        tempVector.zero();
         multMatrices(C, xDot, tempVector);
-
-        subMatrices(tempVector, tempVector2);
+        subMatrices(tempVector,tempVector2);
 
         // 1.: tempVector = tempVector - C*xDot
         //CommonOps.multAdd(-1, C,xDot,tempVector);
@@ -87,7 +74,7 @@ public class ExplicitSolver extends Solver {
 
         xDotDot = tempVector2 ;
         for( int i =0; i<k1.getNumberofDOF(); i++){
-            xDotDot.set(i,0, xDotDot.get(i,0));
+            xDotDot.set(i,0, M.get(i,i)*xDotDot.get(i,0));
         }
 
         //Log.e("messagen for felix", xDotDot.toString());
