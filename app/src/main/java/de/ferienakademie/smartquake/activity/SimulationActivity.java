@@ -19,7 +19,7 @@ import android.view.ViewTreeObserver;
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
@@ -36,7 +36,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private CanvasView canvasView;
     private TimeIntegration timeIntegration;
     private Structure structure;
-    private Kernel1 kernel1;
+    private SpatialDiscretization spatialDiscretization;
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
@@ -100,7 +100,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         setContentView(R.layout.activity_simulation);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
@@ -154,9 +154,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
         mExcitationManager.initSensors();
-        kernel1 = new Kernel1(structure);
-        timeIntegration = new TimeIntegration(kernel1, mExcitationManager);
-        simulation = new Simulation(kernel1, timeIntegration, canvasView);
+        spatialDiscretization = new SpatialDiscretization(structure);
+        timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
+        simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
         simulation.start();
         simulation.setListener(this);
     }

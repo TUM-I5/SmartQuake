@@ -2,11 +2,10 @@ package de.ferienakademie.smartquake.kernel2;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
-import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
-import de.ferienakademie.smartquake.kernel1.Kernel1;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 /**
  * Created by Claudius, Lukas und John on 23/09/16.
@@ -19,7 +18,7 @@ public class Newmark extends ImplicitSolver {
      * @param xDot
      * @param delta_t is necessary to precalculate left and right hand side
      */
-    public Newmark(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot, double delta_t) {
+    public Newmark(SpatialDiscretization k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot, double delta_t) {
         super(k1, accelerationProvider, xDot);
         initialise(delta_t);
     }
@@ -60,27 +59,27 @@ public class Newmark extends ImplicitSolver {
     private void initialise(double delta_t) {
         //set gamma to 1/2, beta to 1/4
         //initialise left side matrix
-        A = new DenseMatrix64F(k1.getNumDOF(),k1.getNumDOF());
+        A = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
         A.zero();
 
         this.delta_t = delta_t;
 
-        CommonOps.addEquals(A,1,M); //A = A + M
-        CommonOps.addEquals(A,delta_t/2.0,C); //A = A + delta_t/2*C
-        CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
+        CommonOps.addEquals(A,1,M); //AreaOfCrossSection = AreaOfCrossSection + M
+        CommonOps.addEquals(A,delta_t/2.0,C); //AreaOfCrossSection = AreaOfCrossSection + delta_t/2*C
+        CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //AreaOfCrossSection = AreaOfCrossSection + delta_t**2*K/4
 
         //LU solver
-        solver = LinearSolverFactory.lu(k1.getNumDOF());
+        solver = LinearSolverFactory.lu(k1.getNumberofDOF());
         solver.setA(A);
 
         //initialise right side matrices: F_ext - V*dotx - K*x - B*ddotx
-        B = new DenseMatrix64F(k1.getNumDOF(),k1.getNumDOF());
+        B = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
         B.zero();
 
         CommonOps.addEquals(B,delta_t/2.0,C);
         CommonOps.addEquals(B,delta_t*delta_t/4.0,K);
 
-        V = new DenseMatrix64F(k1.getNumDOF(),k1.getNumDOF());
+        V = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
         V.zero();
 
         CommonOps.addEquals(V,1,C);
@@ -94,14 +93,14 @@ public class Newmark extends ImplicitSolver {
      */
     private DenseMatrix64F getAcceleration(double t){
 
-        DenseMatrix64F acc = new DenseMatrix64F(k1.getNumDOF(),1);
+        DenseMatrix64F acc = new DenseMatrix64F(k1.getNumberofDOF(),1);
         acc.zero();
 
         //Get external forces
         DenseMatrix64F f_load = k1.getLoadVector();
 
         //initialize right hand side
-        DenseMatrix64F RHS = new DenseMatrix64F(k1.getNumDOF(),1);
+        DenseMatrix64F RHS = new DenseMatrix64F(k1.getNumberofDOF(),1);
         RHS.zero();
 
         //Calculate RHS
@@ -111,7 +110,7 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(RHS,1,f_load); //RHS = RHS + f_load
 
         //Solve
-        solver.solve(RHS,acc); //solver.A*acc = RHS
+        solver.solve(RHS,acc); //solver.AreaOfCrossSection*acc = RHS
 
         return acc;
     }

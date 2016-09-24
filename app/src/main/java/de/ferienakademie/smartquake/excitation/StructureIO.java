@@ -5,14 +5,11 @@ import android.util.JsonToken;
 import android.util.JsonWriter;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,8 +61,8 @@ public class StructureIO {
 
     private static void writeNode(JsonWriter writer, Node node) throws IOException {
         writer.beginObject();
-        writer.name("x").value(node.getInitX());
-        writer.name("y").value(node.getInitY());
+        writer.name("x").value(node.getInitialX());
+        writer.name("y").value(node.getInitialY());
 
         writer.name("DOF").beginArray();
         for (Integer i : node.getDOF()) {
