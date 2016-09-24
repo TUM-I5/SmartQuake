@@ -74,16 +74,16 @@ public class ExplicitSolver extends Solver {
 
         // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*x
         // 1.: tempVector = tempVector - C*xDot
-        CommonOps.multAdd(-1, C,xDot,tempVector);
+        CommonOps.multAdd(-0.0000001, C,xDot,tempVector);
 
         //2.: tempVector = tempVector - K*x
-        CommonOps.multAdd(-1, K,x,tempVector);
+        CommonOps.multAdd(-0.00001, K,x,tempVector);
 
         //Log.d("Acceleretation", tempVector.toString());
 
         xDotDot = tempVector;
         for( int i =0; i<k1.getNumDOF(); i++){
-            xDotDot.set(i,i, 0.00001*xDotDot.get(i,i));
+            xDotDot.set(i,0, 1/628.0*xDotDot.get(i,0));
         }
         //xDotDot = tempVector.copy();
         //linearSolverM.solve(tempVector, xDotDot);
