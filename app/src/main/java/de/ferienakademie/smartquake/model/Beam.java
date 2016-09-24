@@ -99,25 +99,25 @@ public class Beam {
         eleStiffnessMatrix.set(5, 1, -6 * EI / (l * l));
         eleStiffnessMatrix.set(5, 2, 2 * EI / l);
         eleStiffnessMatrix.set(5, 4, 6 * EI / (l * l));
-        eleStiffnessMatrix.set(5, 5, 6 * EI / (l * l));
+        eleStiffnessMatrix.set(5, 5, 4 * EI / (l * l));
     }
 
-     void computelumpedMassMatrix() {
+    void computelumpedMassMatrix() {
 
-         eleMassMatrix = new DenseMatrix64F(6, 6);
-         eleMassMatrix.zero();
+        eleMassMatrix = new DenseMatrix64F(6, 6);
+        eleMassMatrix.zero();
 
-         double alpha = this.material.getAlpha();
-         double m = material.getM();
+        double alpha = this.material.getAlpha();
+        double m = material.getM();
 
-         eleMassMatrix.set(0, 0, 0.5 * m * l);
-         eleMassMatrix.set(1, 1, 0.5 * m * l);
-         eleMassMatrix.set(2, 2, alpha * m * l * l * l);
-         eleMassMatrix.set(3, 3, 0.5 * m * l);
-         eleMassMatrix.set(4, 4, 0.5 * m * l);
-         eleMassMatrix.set(5, 5, alpha * m * l * l * l);
+        eleMassMatrix.set(0, 0, 0.5 * m * l);
+        eleMassMatrix.set(1, 1, 0.5 * m * l);
+        eleMassMatrix.set(2, 2, alpha * m * l * l * l);
+        eleMassMatrix.set(3, 3, 0.5 * m * l);
+        eleMassMatrix.set(4, 4, 0.5 * m * l);
+        eleMassMatrix.set(5, 5, alpha * m * l * l * l);
 
-     }
+    }
     void computeconsistentMassMatrix() {
 
         eleMassMatrix = new DenseMatrix64F(6, 6);
@@ -171,36 +171,42 @@ public class Beam {
         elementMatrix_globalized.set(0, 3, elementMatrix.get(0, 3) * c * c + elementMatrix.get(1, 4) * s * s);
         elementMatrix_globalized.set(0, 4, elementMatrix.get(0, 3) * c * s - elementMatrix.get(1, 4) * c * s);
         elementMatrix_globalized.set(0, 5, elementMatrix.get(1, 5) * -s);
-        elementMatrix_globalized.set(1, 0, elementMatrix.get(0, 0) * c * s - elementMatrix.get(1, 1) * c * s);
+
+        elementMatrix_globalized.set(1, 0, (elementMatrix.get(0, 0)- elementMatrix.get(1, 1) )* c * s);
         elementMatrix_globalized.set(1, 1, elementMatrix.get(1, 1) * c * c + elementMatrix.get(0, 0) * s * s);
         elementMatrix_globalized.set(1, 2, elementMatrix.get(1, 2) * c);
-        elementMatrix_globalized.set(1, 3, elementMatrix.get(0, 3) * c * s - elementMatrix.get(1, 4) * c * s);
+        elementMatrix_globalized.set(1, 3, (elementMatrix.get(0, 3)- elementMatrix.get(1, 4)) * c * s);
         elementMatrix_globalized.set(1, 4, elementMatrix.get(1, 4) * c * c + elementMatrix.get(0, 3) * s * s);
         elementMatrix_globalized.set(1, 5, elementMatrix.get(1, 5) * c);
+
         elementMatrix_globalized.set(2, 0, elementMatrix.get(2, 1) * -s);
         elementMatrix_globalized.set(2, 1, elementMatrix.get(2, 1) * c);
         elementMatrix_globalized.set(2, 2, elementMatrix.get(2, 2));
         elementMatrix_globalized.set(2, 3, elementMatrix.get(2, 4) * -s);
         elementMatrix_globalized.set(2, 4, elementMatrix.get(2, 4) * c);
         elementMatrix_globalized.set(2, 5, elementMatrix.get(2, 5));
+
         elementMatrix_globalized.set(3, 0, elementMatrix.get(3, 0) * c * c + elementMatrix.get(4, 1) * s * s);
-        elementMatrix_globalized.set(3, 1, elementMatrix.get(3, 0) * c * s - elementMatrix.get(4, 1) * c * s);
+        elementMatrix_globalized.set(3, 1, (elementMatrix.get(3, 0)- elementMatrix.get(4, 1) ) * c * s);
         elementMatrix_globalized.set(3, 2, elementMatrix.get(4, 2) * -s);
         elementMatrix_globalized.set(3, 3, elementMatrix.get(3, 3) * c * c + elementMatrix.get(4, 4) * s * s);
-        elementMatrix_globalized.set(3, 4, elementMatrix.get(3, 3) * c * s - elementMatrix.get(4, 4) * c * s);
+        elementMatrix_globalized.set(3, 4, (elementMatrix.get(3, 3)- elementMatrix.get(4, 4)) * c * s);
         elementMatrix_globalized.set(3, 5, elementMatrix.get(4, 5) * -s);
-        elementMatrix_globalized.set(4, 0, elementMatrix.get(3, 0) * c * s - elementMatrix.get(4, 1) * c * s);
+
+        elementMatrix_globalized.set(4, 0, (elementMatrix.get(3, 0)- elementMatrix.get(4, 1)) * c * s);
         elementMatrix_globalized.set(4, 1, elementMatrix.get(4, 1) * c * c + elementMatrix.get(3, 0) * s * s);
         elementMatrix_globalized.set(4, 2, elementMatrix.get(4, 2) * c);
-        elementMatrix_globalized.set(4, 3, elementMatrix.get(3, 3) * c * s - elementMatrix.get(4, 4) * c * s);
+        elementMatrix_globalized.set(4, 3, (elementMatrix.get(3, 3)- elementMatrix.get(4, 4)) * c * s);
         elementMatrix_globalized.set(4, 4, elementMatrix.get(4, 4) * c * c + elementMatrix.get(3, 3) * s * s);
         elementMatrix_globalized.set(4, 5, elementMatrix.get(4, 5) * c);
+
         elementMatrix_globalized.set(5, 0, elementMatrix.get(5, 1) * -s);
         elementMatrix_globalized.set(5, 1, elementMatrix.get(5, 1) * c);
         elementMatrix_globalized.set(5, 2, elementMatrix.get(5, 2));
-        elementMatrix_globalized.set(5, 3, elementMatrix.get(5, 5) * -s);
-        elementMatrix_globalized.set(5, 4, elementMatrix.get(5, 4) * c);
+        elementMatrix_globalized.set(5, 3, elementMatrix.get(4, 5) * -s);
+        elementMatrix_globalized.set(5, 4, elementMatrix.get(4, 5) * c);
         elementMatrix_globalized.set(5, 5, elementMatrix.get(5, 5));
+
 
         return elementMatrix_globalized;
     }
@@ -214,15 +220,13 @@ public class Beam {
         this(new Node(startX, startY), new Node(endX, endY));
     }
 
-    public void rotateDOFsToLocal(){
+    public void dofsGlobalToLocal(){
         double[] u= new double[6];
         u[0]= startNode.getCurrX(); //x-displacement of startnode
         u[1]=startNode.getCurrY(); //y-displacement of startnode
         u[2]=endNode.getCurrX();   //x-displacement of endnode
         u[3]=endNode.getCurrY();
 
-        u[4]=  //TODO if hinges will be modelled  getCurr is of arbitrary size
-        u[5]= (endNode.getCurrROT().get(0));
 
         //TODO: mabye refactor and remove u and always use localdisplacement array
 
@@ -230,12 +234,41 @@ public class Beam {
         localdisplacements.add(u[0]*Math.sin(theta)+u[1]*Math.cos(theta));
         localdisplacements.add(u[2]*Math.cos(theta)-u[3]*Math.sin(theta));
         localdisplacements.add(u[2]*Math.sin(theta)+u[3]*Math.cos(theta));
+
+        //TODO rotations aren't rotated therefore saving them them from global to local and vice versa isn't necessary
         localdisplacements.add((startNode.getCurrROT().get(0)));
         localdisplacements.add((endNode.getCurrROT().get(0)));
 
     }
+
+    public void dofsLocalToGlobal(){
+        double[] u= new double[6];
+        u[0]= startNode.getCurrX(); //x-displacement of startnode
+        u[1]=startNode.getCurrY(); //y-displacement of startnode
+        u[2]=endNode.getCurrX();   //x-displacement of endnode
+        u[3]=endNode.getCurrY();
+
+        //TODO: mabye refactor and remove u and always use localdisplacement array
+
+        localdisplacements.add(u[0]*Math.cos(theta)+u[1]*Math.sin(theta));
+        localdisplacements.add(-u[0]*Math.sin(theta)+u[1]*Math.cos(theta));
+        localdisplacements.add(u[2]*Math.cos(theta)+u[3]*Math.sin(theta));
+        localdisplacements.add(-u[2]*Math.sin(theta)+u[3]*Math.cos(theta));
+        localdisplacements.add((startNode.getCurrROT().get(0)));
+        localdisplacements.add((endNode.getCurrROT().get(0)));
+
+    }
+
     public int[] getDofs() {
         return Dofs;
+    }
+
+    public double getL() {
+        return l;
+    }
+
+    public Material getMaterial() {
+        return material;
     }
 
     public void setDofs(int[] dofs) {

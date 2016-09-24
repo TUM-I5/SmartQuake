@@ -62,7 +62,7 @@ public class TimeIntegration {
         //solver = new Euler(kernel1, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
-        delta_t = 0.001;
+        delta_t = 0.0005;
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -94,7 +94,7 @@ public class TimeIntegration {
                     //get the loadVector for the whole calculation
                     solver.setFLoad(kernel1.getLoadVector());
 
-                    long firstTime = System.nanoTime();
+                    //long firstTime = System.nanoTime();
                     while(t < 0.03+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
