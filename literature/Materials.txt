@@ -1,0 +1,4 @@
+Steel:		E=210e9 N/m^2	rho=7860 kg/m^3
+concrete:	E=32e9 N/m^2	rho=2400 kg/m^3
+wood:		E=12e9 N/m^2	rho=600 kg/m^3
+bamboo:		E=19e9 N/m^2	rho=1000 kg/m^3

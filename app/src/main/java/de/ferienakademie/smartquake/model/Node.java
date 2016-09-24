@@ -10,17 +10,16 @@ public class Node {
     //Current node position
     private double currX;
     private double currY;
+
+    private List<Double> currROT; //List of all rotations at the node
+
     //Initial node position
     private double initX;
     private double initY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private double radius = 15;
+    private double radius = 0.1;
 
-    /**
-     * List of ALL adjacent beams
-     */
-    //This seems obsolete. The structure is already defined by startNode and endNode of the Beam class and this list isn't needed for computation.
     private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
@@ -28,6 +27,8 @@ public class Node {
         this.currY = y;
         this.initX = x;
         this.initY = y;
+        currROT = new ArrayList<>();
+        currROT.add(0.0);
     }
 
 
@@ -49,10 +50,25 @@ public class Node {
         return initY;
     }
 
+    public List<Double> getCurrROT() {
+        return currROT;
+    }
+
+    public void setCurrROT(List<Double> currROT) {
+        this.currROT = currROT;
+    }
+
+    public void setSingleRotation(int i, double rotation) {
+        this.currROT.set(i,rotation );
+    }
+
     public void setInitY(double initY) {
         this.initY = initY;
     }
 
+    public void addBeam(Beam beam) {
+        beams.add(beam);
+    }
     public List<Integer> getDOF() {
         return DOF;
     }
@@ -86,12 +102,6 @@ public class Node {
         this.radius = radius;
     }
 
-    //Probably obsolete, look above.
-    public void addBeam(Beam beam) {
-        beams.add(beam);
-    }
-
-    //Probably obsolete, look above.
     public void clearBeams() {
         beams.clear();
     }
@@ -110,3 +120,4 @@ public class Node {
         return node.currX == currX && node.currY == currY;
     }
 }
+

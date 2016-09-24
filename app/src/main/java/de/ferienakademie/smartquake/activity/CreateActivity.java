@@ -2,12 +2,18 @@ package de.ferienakademie.smartquake.activity;
 
 import android.app.Activity;
 import android.app.usage.UsageEvents;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
@@ -20,13 +26,16 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 /**
  * Created by yuriy on 22/09/16.
  */
-public class CreateActivity extends Activity {
+public class CreateActivity extends AppCompatActivity {
 
     private static final int DELTA = 80;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
     private Node chosenNode = null;
+
+    private GestureDetectorCompat mGestureDetector;
+    private LongPressListener longPressListener;
 
     private CanvasView canvasView;
     private Structure structure;
@@ -35,13 +44,17 @@ public class CreateActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
-        canvasView = (CanvasView) findViewById(R.id.shape);
+        canvasView = (CanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
+        longPressListener = new LongPressListener();
+        mGestureDetector = new GestureDetectorCompat(this, longPressListener);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        mGestureDetector.onTouchEvent(event);
 
         if (event.getPointerCount() == 2) {
             if (event.getAction() == 261) {
@@ -121,13 +134,12 @@ public class CreateActivity extends Activity {
 
             List<Node> nodes = structure.getNodes();
 
-            float x = event.getX(0);
-            float y = event.getY(0) - 220;
+            double x = event.getX(0);
+            double y = event.getY(0) - 220;
 
             double mindist = DELTA;
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                int i = 0;
                 for (Node node : nodes) {
                     if (distNodes(node, new Node(x, y)) <= mindist) {
                         mindist = distNodes(node, new Node(x, y));
@@ -150,6 +162,8 @@ public class CreateActivity extends Activity {
 
                 Node changeToThisNode = null;
 
+                boolean removed = false;
+
                 for (Node node : nodes) {
                     if (node.equals(chosenNode) && node != chosenNode) {
                         changeToThisNode = node;
@@ -159,25 +173,33 @@ public class CreateActivity extends Activity {
 
                 if (changeToThisNode != null) {
                     for (Beam beam : beamList) {
-                        if (beam.getStartNode().equals(changeToThisNode)) {
+                        if (beam.getStartNode().equals(changeToThisNode) && changeToThisNode != beam.getStartNode()) {
                             Node startNode = beam.getStartNode();
-                            for (int i = 0; i < nodes.size(); i++) {
-                                if (startNode == nodes.get(i)) {
-                                    nodes.remove(i);
-                                    break;
+                            if (!removed) {
+                                for (int i = 0; i < nodes.size(); i++) {
+                                    if (startNode == nodes.get(i)) {
+                                        nodes.remove(i);
+                                        removed = true;
+                                        break;
+                                    }
                                 }
                             }
                             beam.setStartNode(changeToThisNode);
+                            changeToThisNode.addBeam(beam);
                         }
-                        if (beam.getEndNode().equals(changeToThisNode)) {
+                        if (beam.getEndNode().equals(changeToThisNode) && changeToThisNode != beam.getEndNode()) {
                             Node endNode = beam.getEndNode();
-                            for (int i = 0; i < nodes.size(); i++) {
-                                if (endNode == nodes.get(i)) {
-                                    nodes.remove(i);
-                                    break;
+                            if (!removed) {
+                                for (int i = 0; i < nodes.size(); i++) {
+                                    if (endNode == nodes.get(i)) {
+                                        nodes.remove(i);
+                                        removed = true;
+                                        break;
+                                    }
                                 }
                             }
                             beam.setEndNode(changeToThisNode);
+                            changeToThisNode.addBeam(beam);
                         }
                     }
                 }
@@ -232,4 +254,92 @@ public class CreateActivity extends Activity {
     private static double distNodes(Node node1, Node node2) {
         return Math.abs(node1.getCurrX() - node2.getCurrX()) + Math.abs(node1.getCurrY() - node2.getCurrY());
     }
+
+
+    public void deleteBeam(double x, double y) {
+
+        List<Beam> beams = structure.getBeams();
+
+        Beam deleteBeam = null;
+
+        double minDist = DELTA;
+
+        for (Beam beam : beams) {
+
+            Node node1 = beam.getStartNode();
+            Node node2 = beam.getEndNode();
+
+            double x1 = node1.getCurrX();
+            double x2 = node2.getCurrX();
+            double y1 = node1.getCurrY();
+            double y2 = node2.getCurrY();
+
+            x2 = x2 - x1;
+            x1 = x - x1;
+            y2 = y2 - y1;
+            y1 = y - y1;
+
+            double cosAlfa = (x1*x2+y1*y2)/(Math.sqrt(y1*y1+x1*x1)*Math.sqrt(y2*y2+x2*x2));
+            double sinAlfa = Math.sqrt(1 - cosAlfa*cosAlfa);
+
+            double dist = sinAlfa * Math.sqrt(y1*y1+x1*x1);
+
+            if (dist <= minDist) {
+
+                sinAlfa = y2/(Math.sqrt(y2*y2+x2*x2));
+                cosAlfa = Math.sqrt(1 - sinAlfa*sinAlfa);
+
+                x1 = rotateX(node1, cosAlfa, sinAlfa);
+                x2 = rotateX(node2, cosAlfa, sinAlfa);
+
+                x = rotateX(new Node(x, y), cosAlfa, sinAlfa);
+
+                if (x >= Math.min(x1, x2) && x <= Math.max(x1, x2)) {
+                    minDist = dist;
+                    deleteBeam = beam;
+                }
+            }
+        }
+
+        for (int i = 0; i < beams.size(); i++) {
+            if (beams.get(i) == deleteBeam) {
+                beams.remove(i);
+                Node startNode = deleteBeam.getStartNode();
+                Node endNode = deleteBeam.getEndNode();
+                // delete reference of the deleted beam on start and end nodes
+
+                startNode.getBeams().remove(deleteBeam);
+                endNode.getBeams().remove(deleteBeam);
+
+                if (startNode.getBeams().isEmpty())
+                    structure.getNodes().remove(startNode);
+
+                if (endNode.getBeams().isEmpty())
+                    structure.getNodes().remove(endNode);
+
+                break;
+            }
+        }
+
+    }
+
+    private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
+        return cosAlfa*node.getCurrX() + sinAlfa*node.getCurrY();
+    }
+
+    public class LongPressListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+            Log.w("LONG PRESS", "TRUE");
+            deleteBeam(e.getX(), e.getY() - 220);
+        }
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            return true;
+        }
+
+    }
+
 }

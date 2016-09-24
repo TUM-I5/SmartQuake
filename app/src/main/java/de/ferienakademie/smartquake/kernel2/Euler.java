@@ -4,6 +4,7 @@ import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -16,25 +17,26 @@ public class Euler extends ExplicitSolver {
      * @param k1
      * @param xDot
      */
-    public Euler(Kernel1 k1, DenseMatrix64F xDot) {
-        super(k1, xDot);
+    public Euler(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
+        super(k1, accelerationProvider, xDot);
     }
 
     @Override
     public void nextStep(double t, double delta_t) {
+        //pure euler at the moment
         //store old (n-1) velocity
         getAcceleration();
-        DenseMatrix64F oldxDot = xDot.copy();
+        //DenseMatrix64F oldxDot = xDot.copy();
 
         //velocity at n
         CommonOps.addEquals(xDot, delta_t, xDotDot);
 
         //create average matrix of velocities at step n and n+1
-        DenseMatrix64F averageXDot = xDot.copy();
-        CommonOps.addEquals(averageXDot, 1, oldxDot);
+        //DenseMatrix64F averageXDot = xDot.copy();
+        //CommonOps.addEquals(averageXDot, 1, oldxDot);
 
         //displacement at step n+1
-        CommonOps.addEquals(x, 1 / 2.0 * delta_t, oldxDot);
+        CommonOps.addEquals(x, delta_t, xDot);
 
     }
 
