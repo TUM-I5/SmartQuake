@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.kernel1;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -11,7 +9,6 @@ import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.model.StructureFactory;
 
 /**
  * Created by alex on 22.09.16.
@@ -79,7 +76,7 @@ public class Kernel1 {
         DampingMatrix.zero();
 
         calcDampingMatrix();
-        calclumpedMassMatrix();
+        calcMassMatrix();
         calcStiffnessMatrix();
     }
 
@@ -103,7 +100,7 @@ public class Kernel1 {
         }
     }
 
-    public void calclumpedMassMatrix() {
+    public void calcMassMatrix() {
         for (int e = 0; e < structure.getBeams().size(); e++) {
             Beam beam = structure.getBeams().get(e);
             int[] dofs = beam.getDofs();
