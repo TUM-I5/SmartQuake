@@ -76,13 +76,13 @@ public class ExplicitSolver extends Solver {
         // 1.: tempVector = tempVector - C*xDot
         //CommonOps.multAdd(-1, C,xDot,tempVector);
 
-        multMatrices(C,xDot, tempVector);
+        multMatrices(C,xDot, tempVector); //tempVector = tempVector + C*xDot
 
-        subMatrices(tempVector, fLoad);
+        subMatrices(tempVector, fLoad); //fLoad = fLoad - tempVector
 
-        multMatrices(K, x, tempVector);
+        multMatrices(K, x, tempVector); //tempVector = tempVector + K*x
 
-        subMatrices(tempVector, fLoad);
+        subMatrices(tempVector, fLoad); //fLoad = fLoad - tempVector
 
         //2.: tempVector = tempVector - K*x
         //CommonOps.multAdd(-1, K,x,tempVector);
