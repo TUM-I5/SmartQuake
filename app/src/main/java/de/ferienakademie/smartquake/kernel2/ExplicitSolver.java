@@ -54,25 +54,26 @@ public class ExplicitSolver extends Solver {
      */
     public void getAcceleration() {
         //just temporarlily bypass kernel1
-        acceleration = getAccelerationProvider().getAcceleration();
-        k1.updateLoadVector(acceleration);
+        //acceleration = getAccelerationProvider().getAcceleration();
+        //k1.updateLoadVector(acceleration);
 
         //tempVector = k1.getLoadVector();
         //tempVector = k1.getLoadVector().copy();
 
 
-        for (int j = 6; j < k1.getNumDOF(); j += 3) {
-            tempVector.set(j, 0, 20 * acceleration[0] );
-            tempVector.set(j + 1, 0, 20 * acceleration[1] );
-        }
+        //for (int j = 6; j < k1.getNumDOF(); j += 3) {
+        //    tempVector.set(j, 0, 20 * acceleration[0] );
+        //    tempVector.set(j + 1, 0, 20 * acceleration[1] );
+        //}
 
+        tempVector = fLoad;
 
         // next two steps calculating this: tempVecotr= tempVector - C*xDot - K*x
         // 1.: tempVector = tempVector - C*xDot
-        CommonOps.multAdd(-1, C,xDot,tempVector);
+        CommonOps.multAdd(-0, C,xDot,tempVector);
 
         //2.: tempVector = tempVector - K*x
-        CommonOps.multAdd(-1, K,x,tempVector);
+        CommonOps.multAdd(-0.000000001, K,x,tempVector);
 
 
         xDotDot = tempVector.copy();
@@ -82,4 +83,6 @@ public class ExplicitSolver extends Solver {
 
         //Log.e("messagen for felix", xDotDot.toString());
     }
+
+
 }
