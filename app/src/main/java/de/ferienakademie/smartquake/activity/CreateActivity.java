@@ -135,10 +135,6 @@ public class CreateActivity extends AppCompatActivity {
             if (nodes.get(i).getBeams().size() == 0) nodes.remove(i);
         }
 
-        for (Node node : nodes) {
-            transformToMeters(node);
-        }
-
         List<Integer> condof = new ArrayList<>();
 
         int j = 0;
@@ -155,6 +151,10 @@ public class CreateActivity extends AppCompatActivity {
                     condof.add(freedom);
                 }
             }
+        }
+
+        for (Node node : nodes) {
+            transformToMeters(node);
         }
 
         structure.setConDOF(condof);

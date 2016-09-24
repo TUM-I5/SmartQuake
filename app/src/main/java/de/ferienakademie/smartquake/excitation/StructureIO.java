@@ -168,6 +168,8 @@ public class StructureIO {
                 case "beams":
                     tempBeams = parseBeams(reader);
                     break;
+                default:
+                    break;
             }
         }
 
