@@ -1,7 +1,9 @@
 package de.ferienakademie.smartquake.kernel2;
 
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.interfaces.linsol.LinearSolver;
 
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.Kernel1;
 
 /**
@@ -14,9 +16,10 @@ public class ImplicitSolver extends Solver {
      * @param k1
      * @param xDot
      */
-    public ImplicitSolver(Kernel1 k1, DenseMatrix64F xDot) {
-        super(k1, xDot);
+    public ImplicitSolver(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot) {
+        super(k1, accelerationProvider, xDot);
     }
-
+    //solver for LU decomposition
+    LinearSolver<DenseMatrix64F> solver;
 
 }

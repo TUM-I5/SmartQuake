@@ -1,11 +1,11 @@
 package de.ferienakademie.smartquake.view;
 
-import java.util.ArrayList;
-import java.util.List;
+        import java.util.ArrayList;
+        import java.util.List;
 
-import de.ferienakademie.smartquake.model.Beam;
-import de.ferienakademie.smartquake.model.Node;
-import de.ferienakademie.smartquake.model.Structure;
+        import de.ferienakademie.smartquake.model.Beam;
+        import de.ferienakademie.smartquake.model.Node;
+        import de.ferienakademie.smartquake.model.Structure;
 
 /**
  * Created by yuriy on 22/09/16.
@@ -14,9 +14,11 @@ public class DrawHelper {
 
     public static List<Node> snapNodes = new ArrayList<>();
     public static List<Beam> snapBeams = new ArrayList<>();
+    public static double[] boundingBox = new double[2];
 
     public static void drawStructure(Structure structure, CanvasView view) {
         snapShot(structure.getNodes(), structure.getBeams());
+        boundingBox = structure.getModelSize();
         view.isBeingDrawn = true;
         view.postInvalidate();
     }
