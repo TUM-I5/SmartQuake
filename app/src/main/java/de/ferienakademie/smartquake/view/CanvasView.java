@@ -57,9 +57,9 @@ public class CanvasView extends View {
         PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
-    public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
+    private void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double displayScaling) {
         canvas.drawCircle((float) (node.getCurrX() * displayScaling + xOffset), (float) (node.getCurrY()* displayScaling + yOffset),
-                (float) (node.getRadius() * displayScaling), PAINT);
+                (float) (node.getRadius()), PAINT);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CanvasView extends View {
 
         double[] modelSize = DrawHelper.boundingBox;
 
-        double displayScaling = Math.min(0.75 * canvas.getWidth() / modelSize[0], 0.75 * canvas.getWidth() / modelSize[1]);
+        double displayScaling = Math.min(0.75 * canvas.getWidth() / modelSize[0], 0.75 * canvas.getHeight() / modelSize[1]);
 
         double xOffset = 0.5 * (canvas.getWidth() - modelSize[0] * displayScaling);
         double yOffset = canvas.getHeight() - modelSize[1] * displayScaling;
