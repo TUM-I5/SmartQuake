@@ -25,6 +25,7 @@ public class CreateActivity extends AppCompatActivity {
     private Node node1 = null;
     private Node node2 = null;
     private Node chosenNode = null;
+    private MotionEvent latestEvent = null;
 
     private GestureDetectorCompat mGestureDetector;
     private LongPressListener longPressListener;
@@ -76,8 +77,10 @@ public class CreateActivity extends AppCompatActivity {
                 node1 = new Node(event.getX(0), (event.getY(0) - 220));
                 node2 = new Node(event.getX(1), (event.getY(1) - 220));
 
-                structure.addNode(node1);
-                structure.addNode(node2);
+                if (chosenNode == null || distNodes(chosenNode, node1) > DELTA)
+                    structure.addNode(node1);
+                if (chosenNode == null || distNodes(chosenNode, node2) > DELTA)
+                    structure.addNode(node2);
                 Beam beam = new Beam(node1, node2);
                 structure.addBeam(beam);
 
@@ -236,6 +239,8 @@ public class CreateActivity extends AppCompatActivity {
 
         DrawHelper.clearCanvas(canvasView);
         DrawHelper.drawStructure(structure, canvasView);
+
+        latestEvent = event;
 
         return super.onTouchEvent(event);
     }
