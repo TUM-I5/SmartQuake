@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
@@ -22,6 +24,10 @@ public class Newmark extends ImplicitSolver {
     public Newmark(Kernel1 k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot, double delta_t) {
         super(k1, accelerationProvider, xDot);
         initialize(delta_t);
+
+        //DEBUG
+        Log.d("const", "Newmark: ");
+        bla = false;
     }
 
     //Right and left hand side matrix
@@ -34,6 +40,9 @@ public class Newmark extends ImplicitSolver {
     //Fixed time step
     double delta_t;
 
+    //DEBUGGING
+    boolean bla;
+
 
     @Override
     public void nextStep(double t, double delta_t) {
@@ -45,7 +54,14 @@ public class Newmark extends ImplicitSolver {
         }
 
         //Get acceleration
-        xDotDot = getAcceleration(t);
+        setAcceleration();
+
+        //TODO: Remove debugshit
+        Log.d(xDotDot.toString(), "se");
+
+
+
+
 
         //Calculate velocity
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
@@ -58,6 +74,8 @@ public class Newmark extends ImplicitSolver {
 
         //update fLoad_old
         fLoad_old = fLoad;
+
+        //Log.d(xDotDot.toString(), "nextStep: ");
 
     }
 
@@ -89,6 +107,8 @@ public class Newmark extends ImplicitSolver {
         //initialize fLoad_old
         fLoad_old = new DenseMatrix64F(k1.getNumDOF(), 1);
         fLoad_old.zero();
+
+
     }
 
     /**
@@ -96,13 +116,7 @@ public class Newmark extends ImplicitSolver {
      * @param t time
      * @return ddotx_n+1
      */
-    private DenseMatrix64F getAcceleration(double t){
-
-        DenseMatrix64F acc = new DenseMatrix64F(k1.getNumDOF(),1);
-        acc.zero();
-
-        //Get external forces
-        DenseMatrix64F f_load = k1.getLoadVector();
+    private void setAcceleration(){
 
         //initialize right hand side
         DenseMatrix64F RHS = new DenseMatrix64F(k1.getNumDOF(),1);
@@ -114,10 +128,18 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(RHS,1,fLoad); //RHS = RHS + fLoad
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
+        if(!bla){
+            Log.d(xDotDot.toString(), "setAcceleration: ");
+        }
         //Solve
-        solver.solve(RHS,acc); //solver.A*acc = RHS
+        solver.solve(RHS,xDotDot); //solver.A*xDotDot = RHS
 
-        return acc;
+        if(!bla){
+            Log.d(xDotDot.toString(), "setAcceleration: ");
+        }
+
+        bla = true;
+
     }
 }
 

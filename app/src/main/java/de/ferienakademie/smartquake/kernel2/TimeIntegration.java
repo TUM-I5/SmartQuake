@@ -58,8 +58,8 @@ public class TimeIntegration {
         xDot.zero();
 
         // stores the numerical scheme
-        //solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
-        solver = new Euler(kernel1, accelerationProvider, xDot);
+        solver = new Newmark(kernel1, accelerationProvider, xDot,delta_t);
+        //solver = new Euler(kernel1, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
         delta_t = 0.001;
@@ -107,6 +107,7 @@ public class TimeIntegration {
                     //for recording
                     long secondTime = System.nanoTime();
                     Log.e("Timestamp",""+(secondTime-firstTime));
+
                     //update the displacement in the node variables
                     kernel1.updateStructure(kernel1.getDisplacementVector());
 
