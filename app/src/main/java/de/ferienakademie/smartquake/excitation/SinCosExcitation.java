@@ -3,24 +3,45 @@ package de.ferienakademie.smartquake.excitation;
 /**
  * Created by simon on 23.09.16.
  */
-public class SinCosExcitation extends AccelerationProvider {
+
+/**
+ * Class for generating a "standard" earthquake
+ * For now only uses sin-functipn default amplitude 5 and defaut frequency of one Hertz
+ */
+public class SinCosExcitation implements AccelerationProvider {
+    double amplitude;
+    double frequency;
+    private double timestep;
+    long counter;
+
+    public SinCosExcitation(double amplitude, double frequency) {
+        this.amplitude = amplitude;
+        this.frequency = frequency;
+        this.timestep = 2e-8;
+        this.counter = 0;
+    }
+
+    public SinCosExcitation() {
+        this.amplitude = 5;
+        this.frequency = 8;
+        this.timestep = 2e-8;
+    }
+
     @Override
     public double[] getAcceleration() {
-        return new double[0];
+        counter++;
+        return new double[]{amplitude * Math.sin(2* Math.PI *frequency * counter * timestep), 0};
     }
 
     @Override
     public AccelData getAccelerationMeasurement() {
-        return null;
+        counter++;
+        return new AccelData(Math.sin(2* Math.PI *frequency * counter * timestep), 0,
+                (long) (counter * timestep * 1000) );
     }
 
     @Override
-    public AccelData getAccelerationMeasurement(long timestamp) {
-        return null;
-    }
-
-    @Override
-    public double[] getAcceleration(long timestamp) {
-        return new double[0];
+    public void initTime(long timeStamp, double timeStep) {
+        this.timestep = timeStep;
     }
 }
