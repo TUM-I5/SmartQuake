@@ -20,7 +20,6 @@ public class SpatialDiscretization {
     private DenseMatrix64F DampingMatrix;
     private DenseMatrix64F MassMatrix;
     private DenseMatrix64F InverseMassMatrix;
-
     private DenseMatrix64F LoadVector; // vector with the forces
 
     private DenseMatrix64F influenceVectorX;
@@ -31,6 +30,7 @@ public class SpatialDiscretization {
     private DenseMatrix64F eigenvectorsmatrix;
     private DenseMatrix64F[] eigenvectors;
     private double[] eigenvalues;
+    private DenseMatrix64F eigentransposemultMassmatrix; //product of phi^T *M
 
 
     private int numberofDOF;
@@ -241,6 +241,13 @@ public class SpatialDiscretization {
         CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
     }
 
+    public void updateLoadVectorModalAnalyis(double[] acceleration) {
+        CommonOps.scale(acceleration[0], influenceVectorX);
+        CommonOps.scale(acceleration[1], influenceVectorY);
+        CommonOps.addEquals(influenceVectorX, influenceVectorY);
+        CommonOps.mult(eigentransposemultMassmatrix, influenceVectorX, LoadVector);
+    }
+
     public void calculateEigenvaluesAndVectors(){
         GenEig eigen = new GenEig(StiffnessMatrix,MassMatrix); //solve GEN eigenvalues problem
         eigenvalues = eigen.getLambda();
@@ -256,6 +263,7 @@ public class SpatialDiscretization {
             CommonOps.scale(1 / Math.sqrt(MassMatrix.get(i, i)), eigenvectors[i]);
         }
     }
+
     public void performModalAnalysis(){
 
 
@@ -280,8 +288,20 @@ public class SpatialDiscretization {
         MassMatrix.zero();
         for (int i = 0; i < numberofDOF; i++) {
             StiffnessMatrix.set(i,i,eigenvalues[i]);
+
             MassMatrix.set(i,i,1.0);
         }
     }
+    public void calcEigentransposemultMassmatrix(){
+        DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());
+        CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
+        CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,eigentransposemultMassmatrix);
+    }
 
+    public void superimposeModalAnalyisSolutions(double[] modalSolutionvector){
+        DisplacementVector.zero();
+        for (int i = 0; i < numberofDOF; i++) {
+            CommonOps.add(eigenvectors[i],modalSolutionvector[i],DisplacementVector);
+        }
+    }
 }
