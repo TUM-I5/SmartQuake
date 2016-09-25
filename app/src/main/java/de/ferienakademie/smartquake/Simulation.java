@@ -43,6 +43,7 @@ public class Simulation {
                     }
                     currentStep = kernel2.performSimulationStep();
                     try {
+                        //TODO: think about dynamic frame rate
                         Thread.sleep(30);
                     } catch (InterruptedException ex) {
                         Log.e("Simulation", ex.getMessage());

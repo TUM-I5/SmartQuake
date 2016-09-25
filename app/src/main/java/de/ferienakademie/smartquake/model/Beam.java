@@ -2,7 +2,7 @@ package de.ferienakademie.smartquake.model;
 
 import org.ejml.data.DenseMatrix64F;
 
-import java.util.List;
+import de.ferienakademie.smartquake.BuildConfig;
 
 /**
  * Created by yuriy on 21/09/16.
@@ -10,16 +10,16 @@ import java.util.List;
 
 public class Beam {
 
+    private static Material stdMaterial = new Material();
+
     private Node startNode;
     private Node endNode;
-    private Material material;
+    private Material material = stdMaterial;
     private float thickness = 0.1f;
     private double length;
     private double sin_theta;
     private double cos_theta;
     private double theta;
-
-    private List<Double> localdisplacements;
 
     /**
      *array of degrees of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
@@ -36,6 +36,7 @@ public class Beam {
         this.startNode = startNode;
         this.endNode = endNode;
         this.thickness = thickness;
+        material = stdMaterial;
     }
 
     //Kernel1 constructor
@@ -50,7 +51,7 @@ public class Beam {
         this.thickness = 0.1f;
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
-        length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        length = computeLength();
 
         theta = Math.atan((y2 - y1) / (x2 - x1));
         cos_theta = Math.cos(theta); //rotation of displacement
@@ -66,6 +67,40 @@ public class Beam {
             elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
         }
 
+    }
+
+    public void computeAll(boolean lumped) {
+        this.dofs = new int[]{
+                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
+                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
+        };
+
+        double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
+        double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
+        length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+
+        theta = Math.atan((y2 - y1) / (x2 - x1));
+        cos_theta = Math.cos(theta); //rotation of displacement
+        sin_theta = Math.sin(theta);
+        computeStiffnessMatrix();
+        elementStiffnessMatrix_globalized = GlobalizeElementMatrix(elementStiffnessMatrix);
+
+        if (lumped) {
+            computelumpedMassMatrix();
+            elementMassMatrix_globalized = elementMassMatrix;
+        } else {
+            computeconsistentMassMatrix();
+            elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
+        }
+    }
+
+    double computeLength() {
+        double x1 = startNode.getInitialX();
+        double y1 = startNode.getInitialY();
+        double x2 = endNode.getInitialX();
+        double y2 = endNode.getInitialY();
+
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
     void computeStiffnessMatrix() {
@@ -219,45 +254,111 @@ public class Beam {
     }
 
 
-    public List<Double> getdofsGlobalToLocal(){
-        double[] u= new double[6];
-        u[0]= startNode.getCurrentX(); //x-displacement of startnode
-        u[1]=startNode.getCurrentY(); //y-displacement of startnode
-        u[2]=endNode.getCurrentX();   //x-displacement of endnode
-        u[3]=endNode.getCurrentY();
+    /**
+     * Transform global displacements to local displacements.
+     * @return local displacements in form:<br>axialDisplacementStartNode, orthogonalDisplacementStartNode, rotationStartNode,
+    axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode
+     */
+    public Displacements getLocalDisplacements() {
+        double startNodeDisplacementX = startNode.getCurrentX() - startNode.getInitialX();
+        double startNodeDisplacementY = startNode.getCurrentY() - startNode.getInitialY();
+        double endNodeDisplacementX   = endNode.getCurrentX() - endNode.getInitialX();
+        double endNodeDisplacementY   = endNode.getCurrentY() - endNode.getInitialY();
 
+        double axialDisplacementStartNode =
+                computeLocalAxialDisplacement(startNodeDisplacementX, startNodeDisplacementY);
+        double orthogonalDisplacementStartNode =
+                computeLocalOrthogonalDisplacement(startNodeDisplacementX, startNodeDisplacementY);
+        double axialDisplacementEndNode =
+                computeLocalAxialDisplacement(endNodeDisplacementX, endNodeDisplacementY);
+        double orthogonalDisplacementEndNode =
+                computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
-        //TODO: mabye refactor and remove u and always use localdisplacement array
+        if (BuildConfig.DEBUG) { // assert that formulas are right
+            double v = startNodeDisplacementX * Math.cos(theta) - startNodeDisplacementY * Math.sin(theta);
+            if (axialDisplacementStartNode != v) {
+                throw new AssertionError("axialdisplacement start node not right: " + axialDisplacementStartNode + " should be " + v);
+            }
 
-        localdisplacements.add(u[0]*Math.cos(theta)-u[1]*Math.sin(theta));
-        localdisplacements.add(u[0]*Math.sin(theta)+u[1]*Math.cos(theta));
-        localdisplacements.add(u[2]*Math.cos(theta)-u[3]*Math.sin(theta));
-        localdisplacements.add(u[2]*Math.sin(theta)+u[3]*Math.cos(theta));
+            double v1 = startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
+            if (orthogonalDisplacementStartNode != v1) {
+                throw new AssertionError("orthogonalStartNode not right: " + axialDisplacementStartNode + " should be " + v1);
+            }
 
-        //TODO rotations aren't rotated therefore saving them them from global to local and vice versa isn't necessary
-        localdisplacements.add((startNode.getCurrentRotations().get(0)));
-        localdisplacements.add((endNode.getCurrentRotations().get(0)));
+            if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
+                throw new AssertionError();
+            }
 
-        return localdisplacements;
+            if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
+                throw new AssertionError();
+            }
+        }
+
+        double rotationStartNode = startNode.getCurrentRotations().get(0);
+        double rotationEndNode = endNode.getCurrentRotations().get(0);
+
+        return new Displacements(axialDisplacementStartNode, orthogonalDisplacementStartNode, rotationStartNode,
+                            axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode);
     }
 
-    public List<Double> getdofsLocalToGlobal(){
-        double[] u= new double[6];
-        u[0]= startNode.getCurrentX(); //x-displacement of startnode
-        u[1]=startNode.getCurrentY(); //y-displacement of startnode
-        u[2]=endNode.getCurrentX();   //x-displacement of endnode
-        u[3]=endNode.getCurrentY();
+    /**
+     * U = axial
+     * W = orthogonal
+     */
 
-        //TODO: mabye refactor and remove u and always use localdisplacement array
+    public float[] getGlobalDisplacementAt(double _x) {
+        double axialDisplacement = getAxialDisplacement(_x);
+        double orthogonalDisplacement = getOrthogonalDisplacement(_x);
 
-        localdisplacements.add(u[0]*Math.cos(theta)+u[1]*Math.sin(theta));
-        localdisplacements.add(-u[0]*Math.sin(theta)+u[1]*Math.cos(theta));
-        localdisplacements.add(u[2]*Math.cos(theta)+u[3]*Math.sin(theta));
-        localdisplacements.add(-u[2]*Math.sin(theta)+u[3]*Math.cos(theta));
-        localdisplacements.add((startNode.getCurrentRotations().get(0)));
-        localdisplacements.add((endNode.getCurrentRotations().get(0)));
+        double u = axialDisplacement * Math.cos(theta) + orthogonalDisplacement * Math.sin(theta);
+        double w = -axialDisplacement * Math.sin(theta) + orthogonalDisplacement * Math.cos(theta);
 
-        return localdisplacements;
+        return new float[]{(float) u, (float) w};
+    }
+
+    private double getOrthogonalDisplacement(double _x) {
+        double orthogonalDisplacementStartNode, orthogonalDisplacementEndNode,
+                rotationStartNode, rotationEndNode, initialLength;
+
+        Displacements localDisplacements = this.getLocalDisplacements();
+
+        orthogonalDisplacementStartNode = localDisplacements.getOrthogonalDisplacementStartNode();
+        orthogonalDisplacementEndNode = localDisplacements.getOrthogonalDisplacementEndNode();
+        rotationStartNode = localDisplacements.getRotationStartNode();
+        rotationEndNode = localDisplacements.getRotationEndNode();
+
+        initialLength = this.getLength();
+
+        double xl = _x / initialLength;
+        double xl2 = xl * xl;
+        double xl3 = xl2 * xl;
+
+        double h1 = 1 - 3 * xl2 + 2 * xl3;
+        double h2 = - _x * (xl - 1) * (xl - 1);
+        double h3 = 3 * xl2 - 2 * xl3;
+        double h4 = (_x * xl) * (1 - xl);
+
+        return h1 * orthogonalDisplacementStartNode + h2 * rotationStartNode + h3 * orthogonalDisplacementEndNode + h4 * rotationEndNode;
+    }
+
+    private double getAxialDisplacement(double _x) {
+        Displacements localDisplacements = this.getLocalDisplacements();
+
+        double axialDisplacementStartNode = localDisplacements.getAxialDisplacementStartNode();
+        double axialDisplacementEndNode = localDisplacements.getAxialDisplacementEndNode();
+
+        double initialLength = this.getLength();
+        double xl = _x / initialLength;
+
+        return xl * axialDisplacementEndNode + (1 - xl) * axialDisplacementStartNode;
+    }
+
+    private double computeLocalAxialDisplacement(double x, double y) {
+        return x * Math.cos(theta) - y * Math.sin(theta);
+    }
+
+    private double computeLocalOrthogonalDisplacement(double x, double y) {
+        return x * Math.sin(theta) + y * Math.cos(theta);
     }
 
     public int[] getDofs() {
