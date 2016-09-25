@@ -1,5 +1,8 @@
 package de.ferienakademie.smartquake.excitation;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Created by user on 21.09.2016.
  */
@@ -23,4 +26,10 @@ public interface AccelerationProvider {
      * @param timeStep timeStep of the simulation in nanoseconds
      */
     void initTime(double timeStep);
+
+    void saveFile(OutputStream outputStream) throws IOException;
+
+    void setActive();
+
+    void setInactive();
 }

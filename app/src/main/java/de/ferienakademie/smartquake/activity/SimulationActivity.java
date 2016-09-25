@@ -34,7 +34,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
-    private SensorAccelerationProvider mSensorAccelerationProvider; // custom accelerometer listener
+    private AccelerationProvider mCurrentAccelerationProvider;
 
     private FloatingActionButton simFab;
     private CanvasView canvasView;
@@ -105,8 +105,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         if (id == R.id.replay_button && state == SimulationState.STOPPED) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-            mSensorManager.unregisterListener(mSensorAccelerationProvider);
-
             FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
             try {
@@ -145,7 +143,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorAccelerationProvider = new SensorAccelerationProvider();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
@@ -172,25 +169,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onResume() {
         super.onResume();
-        if (state != SimulationState.REPLAY_RUNNING && state != SimulationState.REPLAY_STOPPED) {
-            mSensorManager.registerListener(mSensorAccelerationProvider, mAccelerometer,
-                    SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
-        }
+        mCurrentAccelerationProvider.setActive();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        if (state != SimulationState.REPLAY_RUNNING && state != SimulationState.REPLAY_STOPPED) {
-            mSensorManager.unregisterListener(mSensorAccelerationProvider); // do not receive updates when paused
-        }
+        mCurrentAccelerationProvider.setInactive();
     }
 
     private void onStartButtonClicked() {
-        mSensorManager.registerListener(mSensorAccelerationProvider, mAccelerometer,
-                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
-        startSimulation(mSensorAccelerationProvider);
+        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
         if (state == SimulationState.REPLAY_STOPPED) {
             state = SimulationState.REPLAY_RUNNING;
         } else if (state == SimulationState.STOPPED) {
@@ -214,9 +203,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
-        mSensorManager.unregisterListener(mSensorAccelerationProvider);
+        mCurrentAccelerationProvider.setInactive();
         try {
-            mSensorAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -227,6 +216,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
+        if (mCurrentAccelerationProvider != null)
+        {
+            mCurrentAccelerationProvider.setInactive();
+        }
+
+        mCurrentAccelerationProvider = accelerationProvider;
+
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
 
@@ -234,6 +230,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
 
+        accelerationProvider.setActive();
         accelerationProvider.initTime(30_000_000);
         simulation.start();
         simulation.setListener(this);

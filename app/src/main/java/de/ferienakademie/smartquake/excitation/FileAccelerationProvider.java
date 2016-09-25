@@ -35,4 +35,14 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
             readingString = bufferedReader.readLine();
         }
     }
+
+    public void setActive()
+    {
+
+    }
+
+    public void setInactive()
+    {
+
+    }
 }
