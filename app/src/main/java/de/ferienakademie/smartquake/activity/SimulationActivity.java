@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
@@ -24,6 +23,7 @@ import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -96,12 +96,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.settings_button) {
-            if (simulation != null) simulation.stop();
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-
         if (id == R.id.replay_button && state == SimulationState.STOPPED) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             mSensorManager.unregisterListener(mExcitationManager);
@@ -140,6 +134,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
+
+        for (Beam beam : structure.getBeams()) {
+            beam.computeAll(true);
+        }
+
     }
 
     @Override

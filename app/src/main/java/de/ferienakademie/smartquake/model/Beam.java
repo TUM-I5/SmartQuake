@@ -10,9 +10,11 @@ import de.ferienakademie.smartquake.BuildConfig;
 
 public class Beam {
 
+    private static Material stdMaterial = new Material();
+
     private Node startNode;
     private Node endNode;
-    private Material material;
+    private Material material = stdMaterial;
     private float thickness = 0.1f;
     private double length;
     private double sin_theta;
@@ -34,6 +36,7 @@ public class Beam {
         this.startNode = startNode;
         this.endNode = endNode;
         this.thickness = thickness;
+        material = stdMaterial;
     }
 
     //Kernel1 constructor
@@ -64,6 +67,31 @@ public class Beam {
             elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
         }
 
+    }
+
+    public void computeAll(boolean lumped) {
+        this.dofs = new int[]{
+                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
+                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
+        };
+
+        double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
+        double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
+        length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+
+        theta = Math.atan((y2 - y1) / (x2 - x1));
+        cos_theta = Math.cos(theta); //rotation of displacement
+        sin_theta = Math.sin(theta);
+        computeStiffnessMatrix();
+        elementStiffnessMatrix_globalized = GlobalizeElementMatrix(elementStiffnessMatrix);
+
+        if (lumped) {
+            computelumpedMassMatrix();
+            elementMassMatrix_globalized = elementMassMatrix;
+        } else {
+            computeconsistentMassMatrix();
+            elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
+        }
     }
 
     double computeLength() {

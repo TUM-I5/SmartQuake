@@ -31,6 +31,7 @@ import java.util.jar.Manifest;
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.StructureIO;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.DrawCanvasView;
@@ -56,6 +57,9 @@ public class CreateActivity extends AppCompatActivity {
     private ActionBar actionBar;
 
     private double width, height;
+
+    private Material material = new Material();
+    private boolean lumped = true;
 
     private int yOffset = 0;
 
@@ -130,6 +134,7 @@ public class CreateActivity extends AppCompatActivity {
 
     public void serialize() {
         List<Node> nodes = structure.getNodes();
+        List<Beam> allBeams = structure.getBeams();
 
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
