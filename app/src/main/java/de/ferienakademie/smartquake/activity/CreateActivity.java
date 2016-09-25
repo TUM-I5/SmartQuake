@@ -130,10 +130,19 @@ public class CreateActivity extends AppCompatActivity {
 
     public void serialize() {
         List<Node> nodes = structure.getNodes();
-        List<Beam> beams = structure.getBeams();
 
         for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getBeams().size() == 0) nodes.remove(i);
+            Node node = nodes.get(i);
+            List<Beam> beams = node.getBeams();
+
+            if (nodes.get(i).getBeams().size() == 0) {
+                nodes.remove(i);
+                break;
+            }
+
+            for (Beam beam : beams) {
+                if (beam.getStartNode() != node && beam.getEndNode() != node) nodes.remove(i);
+            }
         }
 
         List<Integer> condof = new ArrayList<>();
@@ -201,7 +210,6 @@ public class CreateActivity extends AppCompatActivity {
         node.setCurrentY(y);
         node.setInitialX(x1);
         node.setInitialY(y1);
-        node.setRadius(0);
     }
 
     @Override
