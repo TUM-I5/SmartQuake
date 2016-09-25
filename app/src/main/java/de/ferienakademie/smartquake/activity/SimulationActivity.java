@@ -202,6 +202,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
+        mSensorManager.unregisterListener(mExcitationManager);
         try {
             mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
         } catch (FileNotFoundException e) {
