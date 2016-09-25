@@ -135,8 +135,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_simulation);
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        //mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mExcitationManager = new ExcitationManager();
 
