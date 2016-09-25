@@ -57,7 +57,7 @@ public class TimeIntegration {
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
-        delta_t = 0.01;
+        delta_t = 0.003;
 
 
         //stores the numerical scheme
@@ -97,7 +97,7 @@ public class TimeIntegration {
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 
-                   // long firstTime = System.nanoTime();
+                    //long firstTime = System.nanoTime();
                     while(t < 0.03+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
@@ -108,10 +108,9 @@ public class TimeIntegration {
                     //for the sensor team
                     globalTime += 0.03;
 
-                    //Log.d("Inside Time Itegration", solver.getFLoad().toString());
                     //for recording
                     //long secondTime = System.nanoTime();
-                    //Log.e("Timestamp",""+(secondTime-firstTime));
+                  //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
                     spatialDiscretization.updateStructure_SpatialDiscretization(spatialDiscretization.getDisplacementVector());
