@@ -20,7 +20,6 @@ public interface AccelerationProvider {
 
     /**
      *
-     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
      * @param timeStep timeStep of the simulation in nanoseconds
      */
     void initTime(double timeStep);
