@@ -187,14 +187,31 @@ public class SpatialDiscretization {
      * @param displacementVector a (3 * number of nodes) x 1 matrix. Three consequent values contain displacements in x, y, z direction.
      */
     public void updateStructure(DenseMatrix64F displacementVector) {
+        List<Integer> conDOF = structure.getConDOF();
+
+        for(int k=0; k<conDOF.size(); k++){
+            displacementVector.set(conDOF.get(k),0,0);
+        }
+
+
+
         for (int i = 0; i < structure.getNodes().size(); i++) {
+
             Node node = structure.getNodes().get(i);
+            List<Integer> dof = node.getDOF();
+
             node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
             node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
         }
     }
 
     public void updateStructure_SpatialDiscretization(DenseMatrix64F displacementVector) {
+        List<Integer> conDOF = structure.getConDOF();
+
+        for(int k=0; k<conDOF.size(); k++){
+            displacementVector.set(conDOF.get(k),0,0);
+        }
+
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
             node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
@@ -252,7 +269,7 @@ public class SpatialDiscretization {
         GenEig eigen = new GenEig(StiffnessMatrix,MassMatrix); //solve GEN eigenvalues problem
         eigenvalues = eigen.getLambda();
         double[][] ev = eigen.getV();
-         eigenvectorsmatrix = new DenseMatrix64F(ev);
+        eigenvectorsmatrix = new DenseMatrix64F(ev);
         CommonOps.transpose(eigenvectorsmatrix,eigenvectorsmatrix); //transpose due to constructor of DenseMatrix64F in which rows and column are switched
     }
 

@@ -57,12 +57,14 @@ public class TimeIntegration {
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
+        delta_t = 0.01;
+
+
         //stores the numerical scheme
-        //solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
-        solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
-        delta_t = 0.0001;
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -92,10 +94,6 @@ public class TimeIntegration {
                     //update loadVector
                     spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
 
-
-                    //Log.d("load vector", ""+spatialDiscretization.getLoadVector().toString());
-                    //Log.d("xDotDot", solver.getXDotDot().toString());
-                    //Log.d("xDotDot inside TimInt", solver.getXDotDot().toString());
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 
@@ -106,6 +104,7 @@ public class TimeIntegration {
                         t += delta_t;
 
                     }
+
                     //for the sensor team
                     globalTime += 0.03;
 
@@ -115,7 +114,7 @@ public class TimeIntegration {
                     //Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
-                    spatialDiscretization.updateStructure(spatialDiscretization.getDisplacementVector());
+                    spatialDiscretization.updateStructure_SpatialDiscretization(spatialDiscretization.getDisplacementVector());
 
                     isRunning = false;
                 }
