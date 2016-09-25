@@ -54,12 +54,27 @@ public class CanvasView extends View {
                 (float) (node.getRadius() * beamUnitSize), BEAM_PAINT);
     }
 
-    private void drawBeam(Beam beam, Canvas canvas, double xOffset, double yOffset, double modelScaling, double beamUnitSize) {
+    private void drawBeam(Beam beam, Canvas canvas, float xOffset, float yOffset, float modelScaling, double beamUnitSize) {
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
         Path p = new Path();
-        p.moveTo((float) (startNode.getCurrentX() * modelScaling + xOffset), (float) (startNode.getCurrentY() * modelScaling + yOffset));
-        p.lineTo((float) (endNode.getCurrentX() * modelScaling + xOffset), (float) (endNode.getCurrentY() * modelScaling + yOffset));
+
+        p.moveTo(startNode.getCurrentXf() * modelScaling + xOffset, startNode.getCurrentYf() * modelScaling + yOffset);
+
+        int numberOfSegments = 20;
+        double singleSegmentlength = beam.getLength() / numberOfSegments;
+
+        for (float x = 0; x < beam.getLength(); x += singleSegmentlength) {
+            double px = (endNode.getInitialX() - startNode.getInitialX())/beam.getLength() * x + startNode.getInitialX();
+            double py = (endNode.getInitialY() - startNode.getInitialY())/beam.getLength() * x + startNode.getInitialY();
+
+            float[] intermediateDisplacement = beam.getGlobalDisplacementAt(x);
+            intermediateDisplacement[0] = (intermediateDisplacement[0] + (float) px) * modelScaling + xOffset;
+            intermediateDisplacement[1] = (intermediateDisplacement[1] + (float) py) * modelScaling + yOffset;
+            p.lineTo(intermediateDisplacement[0], intermediateDisplacement[1]);
+        }
+
+        p.lineTo(endNode.getCurrentXf() * modelScaling + xOffset, endNode.getCurrentYf() * modelScaling + yOffset);
 
 
         BEAM_PAINT.setStrokeWidth((float) (beam.getThickness() * beamUnitSize));
@@ -98,7 +113,7 @@ public class CanvasView extends View {
 
         BEAM_PAINT.setStyle(Paint.Style.STROKE);
         for (Beam beam : DrawHelper.snapBeams) {
-            drawBeam(beam, canvas, xOffset, yOffset, modelScaling, beamUnitSize);
+            drawBeam(beam, canvas, (float) xOffset, (float) yOffset, (float) modelScaling, beamUnitSize);
         }
         BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
         for (Node node : DrawHelper.snapNodes) {
