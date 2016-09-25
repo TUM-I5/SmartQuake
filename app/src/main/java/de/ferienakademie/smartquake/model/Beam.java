@@ -98,7 +98,7 @@ public class Beam {
         elementStiffnessMatrix.set(5, 1, -6 * EI / (length * length));
         elementStiffnessMatrix.set(5, 2, 2 * EI / length);
         elementStiffnessMatrix.set(5, 4, 6 * EI / (length * length));
-        elementStiffnessMatrix.set(5, 5, 4 * EI / length);
+        elementStiffnessMatrix.set(5, 5, 4 * EI / (length));
     }
 
     void computelumpedMassMatrix() {

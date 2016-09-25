@@ -13,17 +13,24 @@ public class Solver implements TimeIntegrationSolver {
 
     AccelerationProvider accelerationProvider;
 
-    //vector of acceleration=xDotDot
+    // Acceleration
     DenseMatrix64F xDotDot;
-    //vector of velocity=xDot
+
+    // Velocity
     DenseMatrix64F xDot;
-    //vector of displacement=x
+
+    // Displacement
     DenseMatrix64F x;
+
+    //vector for fLoad
+    DenseMatrix64F fLoad;
 
     //Stiffness Matrix
     DenseMatrix64F K;
+
     //Damping Matrix
     DenseMatrix64F C;
+
     //Mass Matrix
     DenseMatrix64F M;
 
@@ -51,6 +58,9 @@ public class Solver implements TimeIntegrationSolver {
         //fill xDotDot with zeros
         xDotDot = new DenseMatrix64F(k1.getNumberofDOF(), 1);
         xDotDot.zero();
+
+        //create and fill fLoad vector with zeros
+        fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);
     }
 
     /**
@@ -65,8 +75,44 @@ public class Solver implements TimeIntegrationSolver {
         //will be overwritten in the subclasses
     }
 
+    /**
+     *
+     * @return
+     */
     public AccelerationProvider getAccelerationProvider() {
         return accelerationProvider;
 
     }
+
+    /**
+     *
+     * @return
+     */
+    public DenseMatrix64F getFLoad(){
+        return fLoad;
+    }
+
+
+    /**
+     *
+     * @param vec
+     */
+    @Override
+    public void setFLoad(DenseMatrix64F vec) {
+        fLoad = vec.copy();
+    }
+
+
+    public DenseMatrix64F getX(){
+        return x;
+    }
+
+    public DenseMatrix64F getXDotDot(){
+        return xDotDot;
+    }
+
+    public DenseMatrix64F getXDot(){
+        return xDot;
+    }
+
 }

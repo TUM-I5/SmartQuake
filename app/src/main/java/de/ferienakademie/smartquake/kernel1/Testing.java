@@ -43,6 +43,7 @@ public class Testing {
         solver.setA(kern1.getStiffnessMatrix());
         solver.solve(LoadVector,Displacement);
 
+
         double eps = 10e-8;
 
         if ( Math.abs(Displacement.get(4,0)-structure.getBeams().get(0).getLength()/structure.getBeams().get(0).getMaterial().getAxialStiffnessOfBar())>eps){
