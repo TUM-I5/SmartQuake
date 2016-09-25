@@ -45,6 +45,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Snackbar slowSnackbar;
     private SimulationState state = SimulationState.STOPPED;
 
+    private int structureId;
+    private String structureName;
+
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
@@ -82,7 +85,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             if (state == SimulationState.RUNNING) {
                 onStopButtonClicked();
             }
-            createStructure();
+            createStructure(structureId, structureName);
             DrawHelper.drawStructure(structure, canvasView);
             return true;
         }
@@ -127,8 +130,16 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         return super.onOptionsItemSelected(item);
     }
 
-    private void createStructure() {
-        structure = StructureFactory.getSimpleHouse();
+    private void createStructure(int structureId, String structureName) {
+        if (structureId == 0) {
+            structure = StructureFactory.cantileverBeam();
+        } else if (structureId == 1) {
+            structure = StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            structure = StructureFactory.getSimpleEiffelTower();
+        } else {
+            structure = StructureFactory.getStructure(this, structureName);
+        }
     }
 
     @Override
@@ -148,12 +159,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
+        structureId = getIntent().getExtras().getInt("id");
+        structureName = getIntent().getExtras().getString("name");
+
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    createStructure();
+                    createStructure(structureId, structureName);
                     DrawHelper.drawStructure(structure, canvasView);
                 }
             });

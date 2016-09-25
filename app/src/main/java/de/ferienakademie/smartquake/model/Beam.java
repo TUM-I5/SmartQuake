@@ -13,7 +13,7 @@ public class Beam {
     private Node startNode;
     private Node endNode;
     private Material material;
-    private float thickness;
+    private float thickness = 0.1f;
     private double length;
     private double sin_theta;
     private double cos_theta;
@@ -50,9 +50,9 @@ public class Beam {
         this.thickness = 0.1f;
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
-        length = Math.sqrt((x1 - x2) * (x1 - x2)) + (y1 - y2) * (y1 - y2);
+        length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 
-        theta = -Math.atan((y2 - y1) / (x2 - x1));
+        theta = Math.atan((y2 - y1) / (x2 - x1));
         cos_theta = Math.cos(theta); //rotation of displacement
         sin_theta = Math.sin(theta);
         computeStiffnessMatrix();
@@ -98,7 +98,7 @@ public class Beam {
         elementStiffnessMatrix.set(5, 1, -6 * EI / (length * length));
         elementStiffnessMatrix.set(5, 2, 2 * EI / length);
         elementStiffnessMatrix.set(5, 4, 6 * EI / (length * length));
-        elementStiffnessMatrix.set(5, 5, 4 * EI / (length * length));
+        elementStiffnessMatrix.set(5, 5, 4 * EI / (length));
     }
 
     void computelumpedMassMatrix() {
@@ -211,7 +211,7 @@ public class Beam {
 
 
     public Beam(Node startNode, Node endNode) {
-        this(startNode, endNode, 10f);
+        this(startNode, endNode, 0.1f);
     }
 
     public Beam(double startX, double startY, double endX, double endY) {
