@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
@@ -39,7 +41,8 @@ public class Newmark extends ImplicitSolver {
     @Override
     public void nextStep(double t, double delta_t) {
 
-        DenseMatrix64F xDotDot_old = xDotDot;
+
+        DenseMatrix64F xDotDot_old = xDotDot.copy();
 
         if(this.delta_t != delta_t){
             //TODO Throw exception
@@ -57,8 +60,9 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4
         CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old); // x = x + delta_t**2*xDotDot_old/4
 
+
         //update fLoad_old
-        fLoad_old = fLoad;
+        fLoad_old = fLoad.copy();
 
     }
 
