@@ -18,19 +18,23 @@ public class TimeIntegration {
     SpatialDiscretization spatialDiscretization;
     AccelerationProvider accelerationProvider;
 
-    //total computed time between every time step. This variable prevents computing more than GUI
+    // total computed time between every time step. This variable prevents computing more than GUI
     double t;
-    //time_step
+    // time step
     double delta_t;
 
-    //matrices of velocity
+    double globalTime;
+
+    // matrices of velocity
     DenseMatrix64F xDot;
 
-    //this solver provides the numerical algorithm  for calculating the displacement
+    // provides the numerical algorithm for calculating the displacement
     TimeIntegrationSolver solver;
 
-    //this manages the multi threading
+    // manages the multi threading
     ExecutorService executorService;
+
+
 
     /**
     * @param spatialDiscretization
@@ -47,17 +51,18 @@ public class TimeIntegration {
      * This method is called from the Simulation class to prepare everything for simulation
      */
     public void prepareSimulation(){
+
         //initial condition for the velocity.
         xDot = new DenseMatrix64F(spatialDiscretization.getNumberofDOF(),1);
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
         //stores the numerical scheme
-        //solver = new Newmark(kernel1, xDot,delta_t);
+        //solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
-        //only for fixed stepsize
-        delta_t = 0.001;
+        // fixed step size for implicit schemes
+        delta_t = 0.0001;
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -67,7 +72,7 @@ public class TimeIntegration {
     }
 
     /**
-     * Class that represent single simulation step of {@link TimeIntegration}.
+     * Class that represents single simulation step of {@link TimeIntegration}.
      * If simulation step can not be performed during a single frame, it will be stopped.
      */
     public class SimulationStep {
@@ -82,17 +87,33 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    long firstTime = System.nanoTime();
-
                     //calculates time step
-                    while(t < 0.02+0.000001 && isRunning) {
+
+                    //update loadVector
+                    spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
+
+
+                    //Log.d("load vector", ""+spatialDiscretization.getLoadVector().toString());
+                    //Log.d("xDotDot", solver.getXDotDot().toString());
+                    //Log.d("xDotDot inside TimInt", solver.getXDotDot().toString());
+                    //get the loadVector for the whole calculation
+                    solver.setFLoad(spatialDiscretization.getLoadVector());
+
+                   // long firstTime = System.nanoTime();
+                    while(t < 0.03+0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         t += delta_t;
 
                     }
-                    long secondTime = System.nanoTime();
-                    Log.e("Timestamp",""+(secondTime-firstTime));
+                    //for the sensor team
+                    globalTime += 0.03;
+
+                    //Log.d("Inside Time Itegration", solver.getFLoad().toString());
+                    //for recording
+                    //long secondTime = System.nanoTime();
+                    //Log.e("Timestamp",""+(secondTime-firstTime));
+
                     //update the displacement in the node variables
                     spatialDiscretization.updateStructure(spatialDiscretization.getDisplacementVector());
 
