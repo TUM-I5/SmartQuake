@@ -127,7 +127,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void createStructure() {
-        structure = StructureFactory.getSimpleHouse();
+        structure = StructureFactory.getStructure(this, "structure.json");
     }
 
     @Override

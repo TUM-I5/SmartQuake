@@ -130,6 +130,7 @@ public class CreateActivity extends AppCompatActivity {
 
     public void serialize() {
         List<Node> nodes = structure.getNodes();
+        List<Beam> beams = structure.getBeams();
 
         for (int i = 0; i < nodes.size(); i++) {
             if (nodes.get(i).getBeams().size() == 0) nodes.remove(i);
@@ -190,6 +191,11 @@ public class CreateActivity extends AppCompatActivity {
 
         x1 = (x1 - xOffset) / (displayScaling);
         y1 = (y1 - yOffset) / (displayScaling);
+
+        double temp = (height - yOffset) / (displayScaling);
+
+        if (y >= temp)   y = temp;
+        if (y1 >= temp) y1 = temp;
 
         node.setCurrentX(x);
         node.setCurrentY(y);
