@@ -108,7 +108,7 @@ public class Newmark extends ImplicitSolver {
         RHS.zero();
 
         //Calculate RHS
-        CommonOps.multAdd(-1,K,xDot,RHS); //RHS = RHS - K*x
+        CommonOps.multAdd(-1,K,x,RHS); //RHS = RHS - K*x
         CommonOps.multAdd(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
         CommonOps.addEquals(RHS,1,fLoad); //RHS = RHS + fLoad
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old

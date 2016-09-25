@@ -59,8 +59,8 @@ public class TimeIntegration {
 
 
         //stores the numerical scheme
-        //solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
-        solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
         delta_t = 0.01;
@@ -93,10 +93,6 @@ public class TimeIntegration {
                     //update loadVector
                     spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
 
-                    
-                    //Log.d("load vector", ""+spatialDiscretization.getLoadVector().toString());
-                    //Log.d("xDotDot", solver.getXDotDot().toString());
-                    //Log.d("xDotDot inside TimInt", solver.getXDotDot().toString());
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 
