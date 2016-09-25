@@ -61,7 +61,7 @@ public class DrawCanvasView extends View {
     public static void drawBeam(Beam beam, Canvas canvas, Paint paint) {
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
-        paint.setStrokeWidth(beam.getThickness());
+        paint.setStrokeWidth(10);
         canvas.drawLine((float) startNode.getCurrentX(), (float) startNode.getCurrentY(),
                 (float) endNode.getCurrentX(), (float) endNode.getCurrentY(), paint);
     }
