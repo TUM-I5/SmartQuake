@@ -25,7 +25,6 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
     @Override
     public void initTime(double timeStep) {
         this.timeStep = timeStep;
-        readings = new ArrayList<>();
         currentPosition = 0;
     }
 
@@ -42,7 +41,7 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
                 && readings.get(currentPosition).timestamp < currTime) {
             ++currentPosition;
         }
-        tick++;
+        ++tick;
 
         return readings.get(currentPosition);
     }

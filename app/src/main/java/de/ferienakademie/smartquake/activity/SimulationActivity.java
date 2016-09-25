@@ -21,6 +21,7 @@ import java.io.IOException;
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
@@ -35,7 +36,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
-    private AccelerationProvider mCurrentAccelerationProvider;
+    private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
     private FloatingActionButton simFab;
     private CanvasView canvasView;

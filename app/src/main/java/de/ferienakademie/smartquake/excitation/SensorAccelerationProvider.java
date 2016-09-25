@@ -27,6 +27,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         super.initTime(timeStep);
         baseTime = SystemClock.elapsedRealtimeNanos();
         readings = new ArrayList<>();
+        readings.add(new AccelData());
     }
 
     @Override
