@@ -19,15 +19,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.ferienakademie.smartquake.R;
 
 public class StartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private int mPosition = ListView.INVALID_POSITION;
-    String[] values = new String[] { "Simple House",
-            "Eiffel Tower", "Empire State", "Statue of Liberty", "Coloseum", "Sample 6", "Sample 7", "Sample 8", "Sample 9", "Sample 10", "Sample 11"
-    };
+
+    private List<String> values = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,16 @@ public class StartActivity extends AppCompatActivity
                 startActivity(new Intent(StartActivity.this, CreateActivity.class));
             }
         });
+
+        values = new ArrayList<>();
+        values.add("Simple House");
+        values.add("Eiffel Tower");
+
+        String[] structures = getFilesDir().list();
+
+        for (String str : structures) {
+            if (!str.equals("instant-run")) values.add(str);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -141,19 +153,10 @@ public class StartActivity extends AppCompatActivity
         return true;
     }
 
-    /**
-     *This should be changed!!!
-     * */
     public void onItemSelected(Integer id_of_predefined_model) {
-        if(id_of_predefined_model==0){
         Intent intent = new Intent(this, SimulationActivity.class);
-        intent.putExtra("test", id_of_predefined_model);
-        startActivity(intent);}
-        else{
-            // Show Alert if you pressed anything but simple house model
-            Toast.makeText(getApplicationContext(),
-                    "We are sorry but this model is still not defined" , Toast.LENGTH_SHORT)
-                    .show();
-        }
+        intent.putExtra("id", id_of_predefined_model);
+        intent.putExtra("name", values.get(id_of_predefined_model));
+        startActivity(intent);
     }
 }
