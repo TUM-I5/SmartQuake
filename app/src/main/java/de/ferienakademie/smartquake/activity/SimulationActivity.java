@@ -23,6 +23,7 @@ import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -139,6 +140,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
+
+        for (Beam beam : structure.getBeams()) {
+            beam.computeAll(true);
+        }
+
     }
 
     @Override
