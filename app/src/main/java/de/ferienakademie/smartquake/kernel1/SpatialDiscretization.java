@@ -242,9 +242,9 @@ public class SpatialDiscretization {
     }
 
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
-        CommonOps.scale(acceleration[0], influenceVectorX);
-        CommonOps.scale(acceleration[1], influenceVectorY);
-        CommonOps.addEquals(influenceVectorX, influenceVectorY);
+        CommonOps.scale(acceleration[0], influenceVectorX, influenceVectorX_temp);
+        CommonOps.scale(acceleration[1], influenceVectorY, influenceVectorY_temp);
+        CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
         CommonOps.mult(eigentransposemultMassmatrix, influenceVectorX, LoadVector);
     }
 
@@ -285,12 +285,22 @@ public class SpatialDiscretization {
     public void getModalAnalysisMatrices(){
         performModalAnalysis();
         StiffnessMatrix.zero();
+
         MassMatrix.zero();
         for (int i = 0; i < numberofDOF; i++) {
             StiffnessMatrix.set(i,i,eigenvalues[i]);
 
             MassMatrix.set(i,i,1.0);
         }
+
+        DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());
+        CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
+
+
+        DenseMatrix64F temp = new DenseMatrix64F(getNumberofDOF());
+        CommonOps.mult(eigenvectorsDenseTranspose,DampingMatrix,temp);
+        CommonOps.mult(temp,eigenvectorsmatrix,DampingMatrix); //massmatrix converted into Eigenvectorspace
+
     }
     public void calcEigentransposemultMassmatrix(){
         DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());

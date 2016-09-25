@@ -72,25 +72,21 @@ public class StructureFactory {
         DOFnode2.add(4);
         DOFnode2.add(5);
 
-        DOFnode3.add(6);
-        DOFnode3.add(7);
-        DOFnode3.add(8);
 
         Node n1 = new Node(0, height, DOFnode1);
-        Node n2 = new Node(0, height-1,DOFnode2);
-        Node n3 = new Node(0, height-2, DOFnode3);
+        Node n2 = new Node(0, height-2, DOFnode3);
 
         //rotated cantilever node
         // Node n3 = new Node(1,height - half, DOFnode2);
 
         Beam b1 = new Beam(n1, n2, testMaterial,false);
-        Beam b2 = new Beam(n2, n3, testMaterial,false);
+
         //Beam b2 = new Beam(n1, n3, testMaterial,true);
 
 
 
-        cantilever.addNodes(n1, n2,n3);
-        cantilever.addBeams(b1,b2);
+        cantilever.addNodes(n1, n2);
+        cantilever.addBeams(b1);
 
         // rotcantilever.addNodes(n1,n3);
         //  rotcantilever.addBeam(b2);

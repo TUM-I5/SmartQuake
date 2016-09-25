@@ -37,11 +37,25 @@ public class Testing {
         //GenEig eigen = new GenEig(kern1.getStiffnessMatrix(),kern1.getMassMatrix()); //TODO does it something inplace???
         //double[] frequences = eigen.getLambda();
 
+        kern1.performModalAnalysis();
+
+        kern1.getModalAnalysisMatrices();
 
 
-        LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(kern1.getNumberofDOF());
-        solver.setA(kern1.getStiffnessMatrix());
-        solver.solve(LoadVector,Displacement);
+        kern1.updateLoadVectorModalAnalyis({});
+
+        
+
+        //IMplicit things
+        double[] displacement;
+        double[] velocity;
+        double[] acc;
+
+
+
+        //LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(kern1.getNumberofDOF());
+        //solver.setA(kern1.getStiffnessMatrix());
+        //solver.solve(LoadVector,Displacement);
 
 
         double eps = 10e-8;

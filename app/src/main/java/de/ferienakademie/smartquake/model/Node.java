@@ -20,6 +20,7 @@ public class Node {
 
     private double radius = 0.1;
 
+
     private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
