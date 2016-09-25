@@ -16,11 +16,11 @@ public class DrawHelper {
 
     public static List<Node> snapNodes = new ArrayList<>();
     public static List<Beam> snapBeams = new ArrayList<>();
-    public static double[] boundingBox = new double[2];
+    public static double[] boundingBox = new double[4];
 
     public static void drawStructure(Structure structure, View view1) {
         snapShot(structure.getNodes(), structure.getBeams());
-        boundingBox = structure.getModelSize();
+        boundingBox = structure.getBoundingBox();
         if (view1 instanceof CanvasView) {
             CanvasView view = (CanvasView)view1;
             view.isBeingDrawn = true;
