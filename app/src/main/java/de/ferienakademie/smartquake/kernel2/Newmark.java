@@ -34,6 +34,7 @@ public class Newmark extends ImplicitSolver {
     //old load vector
     DenseMatrix64F fLoad_old;
 
+    DenseMatrix64F xDotDot_old;
     //Fixed time step
     double delta_t;
 
@@ -42,7 +43,7 @@ public class Newmark extends ImplicitSolver {
     public void nextStep(double t, double delta_t) {
 
 
-        DenseMatrix64F xDotDot_old = xDotDot.copy();
+        xDotDot_old = xDotDot.copy();
 
         if(this.delta_t != delta_t){
             //TODO Throw exception
@@ -70,12 +71,11 @@ public class Newmark extends ImplicitSolver {
     private void initialize(double delta_t) {
         //set gamma to 1/2, beta to 1/4
         //initialise left side matrix
-        A = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
-        A.zero();
+        A = M.copy();
 
         this.delta_t = delta_t;
 
-        CommonOps.addEquals(A,1,M); //A = A + M
+
         CommonOps.addEquals(A,delta_t/2.0,C); //A = A + delta_t/2*C
         CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
 
@@ -104,13 +104,12 @@ public class Newmark extends ImplicitSolver {
     private void getAcceleration(){
 
         //initialize right hand side
-        DenseMatrix64F RHS = new DenseMatrix64F(k1.getNumberofDOF(),1);
-        RHS.zero();
+        DenseMatrix64F RHS = fLoad.copy();
 
         //Calculate RHS
-        CommonOps.multAdd(-1,K,x,RHS); //RHS = RHS - K*x
+        CommonOps.multAdd(-delta_t,K,xDot,RHS); //RHS = RHS - delta_t*K*xDot
         CommonOps.multAdd(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
-        CommonOps.addEquals(RHS,1,fLoad); //RHS = RHS + fLoad
+
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
         //Solve

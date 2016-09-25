@@ -57,13 +57,14 @@ public class TimeIntegration {
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
+        delta_t = 0.01;
+
 
         //stores the numerical scheme
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         // fixed step size for implicit schemes
-        delta_t = 0.01;
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -103,6 +104,7 @@ public class TimeIntegration {
                         t += delta_t;
 
                     }
+
                     //for the sensor team
                     globalTime += 0.03;
 
