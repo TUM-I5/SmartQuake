@@ -41,6 +41,11 @@ public class SinCosExcitation implements AccelerationProvider {
     }
 
     @Override
+    public AccelData getAccelerationMeasurement(long timeStamp) {
+        return null;
+    }
+
+    @Override
     public void initTime(long timeStamp, double timeStep) {
         this.timestep = timeStep;
     }
