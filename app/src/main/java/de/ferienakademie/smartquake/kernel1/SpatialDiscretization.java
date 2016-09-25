@@ -208,16 +208,21 @@ public class SpatialDiscretization {
     public void updateStructure_SpatialDiscretization(DenseMatrix64F displacementVector) {
         List<Integer> conDOF = structure.getConDOF();
 
+        DenseMatrix64F displacementVector2 = displacementVector.copy();
+
         for(int k=0; k<conDOF.size(); k++){
-            displacementVector.set(conDOF.get(k),0,0);
+            displacementVector2.set(conDOF.get(k),0,0);
         }
+
 
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
-            node.setSingleRotation(0,displacementVector.get(3*i+2,0)); //TODO change with introducting of hinges
+            node.setCurrentX(node.getInitialX() + displacementVector2.get(3*i, 0));
+            node.setCurrentY(node.getInitialY() + displacementVector2.get(3*i+1, 0));
+            node.setSingleRotation(0,displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
         }
+
+
     }
 
     public DenseMatrix64F getLoadVector() {
