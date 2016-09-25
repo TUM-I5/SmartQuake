@@ -21,9 +21,9 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     private ArrayList<AccelData> readings;
     private AccelData currAccel;
     private int currPos;
-    private long baseTime;
-    private double timestep;
-    private int tick;
+    private long baseTime; //in nanoseconds
+    private double timestep; //in nanoseconds
+    private int tick; //current simulationtick
 
     public ExcitationManager() {
         readings = new ArrayList<>();
@@ -31,7 +31,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         readings.add(currAccel);
         currPos = 0;
         baseTime = Long.MAX_VALUE;
-        timestep = 1000;
+        timestep = 30_000_000;
         tick = 0;
     }
 
@@ -51,7 +51,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        currAccel = new AccelData(event.values[0], event.values[1], event.timestamp);
+        currAccel = new AccelData(event.values[0], event.values[1], event.timestamp-baseTime);
         // put new element to the queue of sensor measurements
         readings.add(currAccel);
     }
@@ -85,12 +85,12 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public void initTime(double timeStep) {
-        this.baseTime = SystemClock.elapsedRealtimeNanos();;
         this.timestep = timeStep;
         readings = new ArrayList<>();
         currAccel = new AccelData();
         currPos = 0;
         readings.add(currAccel);
+        this.baseTime = SystemClock.elapsedRealtimeNanos();
     }
 
     /**
