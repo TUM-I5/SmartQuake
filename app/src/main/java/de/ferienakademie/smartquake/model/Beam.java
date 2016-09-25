@@ -13,7 +13,7 @@ public class Beam {
     private Node startNode;
     private Node endNode;
     private Material material;
-    private float thickness;
+    private float thickness = 0.1f;
     private double length;
     private double sin_theta;
     private double cos_theta;
