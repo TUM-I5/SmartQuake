@@ -7,6 +7,7 @@ import android.os.SystemClock;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -97,30 +98,27 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      * Store the data to a file
      * @param outputStream reference to a stream passing readings to internal storage
      */
-    public void saveFile(OutputStream outputStream) {
+    public void saveFile(OutputStream outputStream) throws IOException {
         String readingString;
         OutputStreamWriter outputStreamReader;
         BufferedWriter bufferedWriter;
-        try {
-            outputStreamReader = new OutputStreamWriter(outputStream);
-            bufferedWriter = new BufferedWriter(outputStreamReader);
-            for (int i = 0; i < readings.size(); i++) {
-                readingString = String.format(Locale.ENGLISH, "%d %f %f\n", readings.get(i).timestamp,
-                        readings.get(i).xAcceleration, readings.get(i).yAcceleration);
-                bufferedWriter.write(readingString);
-            }
-            bufferedWriter.flush();
-            //outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        outputStreamReader = new OutputStreamWriter(outputStream);
+        bufferedWriter = new BufferedWriter(outputStreamReader);
+        for (int i = 0; i < readings.size(); i++) {
+            readingString = String.format(Locale.ENGLISH, "%d %f %f\n", readings.get(i).timestamp,
+                    readings.get(i).xAcceleration, readings.get(i).yAcceleration);
+            bufferedWriter.write(readingString);
         }
+        bufferedWriter.flush();
+
+        //Please, no try{}catch(Exception ex){} ... :(
     }
 
     /**
      * Load acceleration data from a file
      * @param inputStream stream that passes readings from a file to excitation manager
      */
-    public void loadFile(InputStream inputStream) {
+    public void loadFile(InputStream inputStream) throws IOException {
         readings = new ArrayList<>();
         currAccel = new AccelData();
         AccelData curReading = new AccelData();
@@ -128,22 +126,18 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         String[] readStringSplit;
         InputStreamReader inputStreamReader;
         BufferedReader bufferedReader;
-        try {
-            inputStreamReader = new InputStreamReader(inputStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
+        inputStreamReader = new InputStreamReader(inputStream);
+        bufferedReader = new BufferedReader(inputStreamReader);
+        readingString = bufferedReader.readLine();
+        while (readingString != null) {
+            readStringSplit = readingString.split(" ");
+
+            curReading.timestamp = Long.parseLong(readStringSplit[0]);
+            curReading.xAcceleration = Double.parseDouble(readStringSplit[1]);
+            curReading.yAcceleration = Double.parseDouble(readStringSplit[2]);
+
+            readings.add(new AccelData(curReading));
             readingString = bufferedReader.readLine();
-            while (readingString != null) {
-                readStringSplit = readingString.split(" ");
-
-                curReading.timestamp = Long.parseLong(readStringSplit[0]);
-                curReading.xAcceleration = Double.parseDouble(readStringSplit[1]);
-                curReading.yAcceleration = Double.parseDouble(readStringSplit[2]);
-
-                readings.add(new AccelData(curReading));
-                readingString = bufferedReader.readLine();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
