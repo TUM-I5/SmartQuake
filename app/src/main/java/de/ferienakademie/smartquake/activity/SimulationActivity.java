@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
@@ -108,7 +109,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
             try {
                 mExcitationManager.loadFile(openFileInput("saveAcc.txt"));
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             state = SimulationState.REPLAY_RUNNING;
@@ -154,6 +155,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
@@ -221,9 +223,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
+        mSensorManager.unregisterListener(mExcitationManager);
         try {
             mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -233,18 +236,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation() {
-        mExcitationManager.initTime(System.nanoTime(),0.001);
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
-        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
-        mExcitationManager.initSensors();
+        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
 
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
 
+        mExcitationManager.initTime(30_000_000);
         simulation.start();
         simulation.setListener(this);
 
