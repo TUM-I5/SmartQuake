@@ -57,7 +57,7 @@ public class TimeIntegration {
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
-        delta_t = 0.003;
+        delta_t = 0.006;
 
 
         //stores the numerical scheme
