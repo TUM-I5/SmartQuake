@@ -16,6 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.ExcitationManager;
@@ -40,6 +43,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
+    private SimulationState state = SimulationState.STOPPED;
+
+    private int structureId;
+    private String structureName;
 
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
@@ -48,7 +55,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onStartButtonClicked();
         }
     };
-
     private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -61,8 +67,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.simulation_activity_actions, menu);
         menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.load_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.save_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.findItem(R.id.reset_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.findItem(R.id.replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -70,8 +76,16 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.load_replay_button) {
-            createStructure();
+        if (id == R.id.reset_button) {
+            // reset implicitly ends replaying
+            if (state == SimulationState.REPLAY_RUNNING) {
+                state = SimulationState.RUNNING;
+            }
+
+            if (state == SimulationState.RUNNING) {
+                onStopButtonClicked();
+            }
+            createStructure(structureId, structureName);
             DrawHelper.drawStructure(structure, canvasView);
             return true;
         }
@@ -88,12 +102,46 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
+        if (id == R.id.replay_button && state == SimulationState.STOPPED) {
+            Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+            mSensorManager.unregisterListener(mExcitationManager);
+
+            try {
+                mExcitationManager.loadFile(openFileInput("saveAcc.txt"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            state = SimulationState.REPLAY_RUNNING;
+            mExcitationManager.initReplay();
+
+
+            spatialDiscretization = new SpatialDiscretization(structure);
+            timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
+            simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
+
+
+            simulation.start();
+            simulation.setListener(this);
+            simFab.setOnClickListener(stopSimulationListener);
+            simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 
-    private void createStructure() {
-        structure = StructureFactory.getSimpleHouse();
+    private void createStructure(int structureId, String structureName) {
+        if (structureId == 0) {
+            structure = StructureFactory.cantileverBeam();
+        } else if (structureId == 1) {
+            structure = StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            structure = StructureFactory.getSimpleEiffelTower();
+        } else {
+            structure = StructureFactory.getStructure(this, structureName);
+        }
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +149,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
@@ -110,12 +159,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
+        structureId = getIntent().getExtras().getInt("id");
+        structureName = getIntent().getExtras().getString("name");
+
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    createStructure();
+                    createStructure(structureId, structureName);
                     DrawHelper.drawStructure(structure, canvasView);
                 }
             });
@@ -123,42 +175,75 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        mSensorManager.registerListener(mExcitationManager, mAccelerometer,
-                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
+        if (state != SimulationState.REPLAY_RUNNING && state != SimulationState.REPLAY_STOPPED) {
+            mSensorManager.registerListener(mExcitationManager, mAccelerometer,
+                    SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+
+        if (state != SimulationState.REPLAY_RUNNING && state != SimulationState.REPLAY_STOPPED) {
+            mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+        }
     }
 
     private void onStartButtonClicked() {
         startSimulation();
-
+        if (state == SimulationState.REPLAY_STOPPED) {
+            state = SimulationState.REPLAY_RUNNING;
+        } else if (state == SimulationState.STOPPED) {
+            state = SimulationState.RUNNING;
+        } else {
+            throw new IllegalStateException("Simulation already running (" + state.name() + ") before Start button press");
+        }
         simFab.setOnClickListener(stopSimulationListener);
         simFab.setImageResource(R.drawable.ic_pause_white_24dp);
     }
 
     private void onStopButtonClicked() {
         simulation.stop();
+        if (state == SimulationState.RUNNING) {
+            state = SimulationState.STOPPED;
+        } else if (state == SimulationState.REPLAY_RUNNING) {
+            state = SimulationState.REPLAY_STOPPED;
+        } else {
+            throw new IllegalStateException("Simulation already stopped (" + state.name() + ") before Stop button press");
+        }
+
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
+
+        mSensorManager.unregisterListener(mExcitationManager);
+        try {
+            mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         simFab.setOnClickListener(startSimulationListener);
     }
 
     void startSimulation() {
+        mSensorManager.registerListener(mExcitationManager, mAccelerometer,
+                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
 
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-        mExcitationManager.initSensors();
+
+
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
+
+        mExcitationManager.initTime(30_000_000);
         simulation.start();
         simulation.setListener(this);
+
     }
 
     @Override
@@ -193,5 +278,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         Log.d("SimSpeed", msg);
 
+    }
+
+    // TODO: shouldn't this be part of Simulation?
+    private enum SimulationState {
+        RUNNING,
+        STOPPED,
+        REPLAY_RUNNING,
+        REPLAY_STOPPED
     }
 }

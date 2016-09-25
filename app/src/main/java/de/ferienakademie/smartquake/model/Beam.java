@@ -13,7 +13,7 @@ public class Beam {
     private Node startNode;
     private Node endNode;
     private Material material;
-    private float thickness;
+    private float thickness = 0.1f;
     private double length;
     private double sin_theta;
     private double cos_theta;
@@ -50,7 +50,7 @@ public class Beam {
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
         length = computeLength();
 
-        theta = -Math.atan((y2 - y1) / (x2 - x1));
+        theta = Math.atan((y2 - y1) / (x2 - x1));
         cos_theta = Math.cos(theta); //rotation of displacement
         sin_theta = Math.sin(theta);
         computeStiffnessMatrix();
@@ -84,7 +84,6 @@ public class Beam {
 
         elementStiffnessMatrix.set(0, 0, EA / length);
         elementStiffnessMatrix.set(0, 3, -EA / length);
-
         elementStiffnessMatrix.set(1, 1, 12 * EI / (length * length * length));
         elementStiffnessMatrix.set(1, 2, -6 * EI / (length * length));
         elementStiffnessMatrix.set(1, 4, -12 * EI / (length * length * length));
@@ -106,7 +105,7 @@ public class Beam {
         elementStiffnessMatrix.set(5, 1, -6 * EI / (length * length));
         elementStiffnessMatrix.set(5, 2, 2 * EI / length);
         elementStiffnessMatrix.set(5, 4, 6 * EI / (length * length));
-        elementStiffnessMatrix.set(5, 5, 4 * EI / (length * length));
+        elementStiffnessMatrix.set(5, 5, 4 * EI / (length));
     }
 
     void computelumpedMassMatrix() {
@@ -171,7 +170,6 @@ public class Beam {
         DenseMatrix64F elementMatrix_globalized;
         elementMatrix_globalized = new DenseMatrix64F(6, 6);
         elementMatrix_globalized.zero();
-
         elementMatrix_globalized.set(0, 0, elementMatrix.get(0, 0) * cos_theta * cos_theta + elementMatrix.get(1, 1) * sin_theta * sin_theta);
         elementMatrix_globalized.set(0, 1, elementMatrix.get(0, 0) * cos_theta * sin_theta - elementMatrix.get(1, 1) * cos_theta * sin_theta);
         elementMatrix_globalized.set(0, 2, elementMatrix.get(1, 2) * -sin_theta);
@@ -220,12 +218,13 @@ public class Beam {
 
 
     public Beam(Node startNode, Node endNode) {
-        this(startNode, endNode, 10f);
+        this(startNode, endNode, 0.1f);
     }
 
     public Beam(double startX, double startY, double endX, double endY) {
         this(new Node(startX, startY), new Node(endX, endY));
     }
+
 
     /**
      * Transform global displacements to local displacements.

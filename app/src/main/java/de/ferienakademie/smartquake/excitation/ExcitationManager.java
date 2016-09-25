@@ -3,18 +3,17 @@ package de.ferienakademie.smartquake.excitation;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.os.SystemClock;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-
-/**
- * Created by simon on 22.09.16.
- */
+import java.util.Locale;
 
 /**
  * Records and replays stored acceleration data by Listening to the SensorExcitation-Object
@@ -23,9 +22,9 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     private ArrayList<AccelData> readings;
     private AccelData currAccel;
     private int currPos;
-    private long baseTime;
-    private double timestep;
-    private int tick;
+    private long baseTime; //in nanoseconds
+    private double timestep; //in nanoseconds
+    private int tick; //current simulationtick
 
     public ExcitationManager() {
         readings = new ArrayList<>();
@@ -33,7 +32,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         readings.add(currAccel);
         currPos = 0;
         baseTime = Long.MAX_VALUE;
-        timestep = 1000;
+        timestep = 30_000_000;
         tick = 0;
     }
 
@@ -46,18 +45,6 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
         currAccel = readings.get(0);
     }
 
-
-    /**
-     * This has to be called before the Simulation starts and
-     * before the Listener is registered
-     */
-    public void initSensors() {
-        readings = new ArrayList<>();
-        currAccel = new AccelData();
-        currPos = 0;
-        readings.add(currAccel);
-    }
-
     /**
      * Records the sensor data
      *
@@ -65,7 +52,7 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        currAccel = new AccelData(event.values[0], event.values[1], event.timestamp - baseTime);
+        currAccel = new AccelData(event.values[0], event.values[1], event.timestamp-baseTime);
         // put new element to the queue of sensor measurements
         readings.add(currAccel);
     }
@@ -95,63 +82,62 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
     }
 
     /**
-     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
      * @param timeStep  timeStep of the simulation in nanoseconds
      */
     @Override
-    public void initTime(long timeStamp, double timeStep) {
-        this.baseTime = timeStamp;
+    public void initTime(double timeStep) {
         this.timestep = timeStep;
+        readings = new ArrayList<>();
+        currAccel = new AccelData();
+        currPos = 0;
+        readings.add(currAccel);
+        this.baseTime = SystemClock.elapsedRealtimeNanos();
     }
 
     /**
      * Store the data to a file
      * @param outputStream reference to a stream passing readings to internal storage
      */
-    public void saveFile(OutputStream outputStream) {
+    public void saveFile(OutputStream outputStream) throws IOException {
         String readingString;
         OutputStreamWriter outputStreamReader;
         BufferedWriter bufferedWriter;
-        try {
-            outputStreamReader = new OutputStreamWriter(outputStream);
-            bufferedWriter = new BufferedWriter(outputStreamReader);
-            for (int i = 0; i < readings.size(); i++) {
-                readingString = String.format("%d %f %f\n", readings.get(i).timestamp,
-                        readings.get(i).xAcceleration, readings.get(i).yAcceleration);
-                bufferedWriter.write(readingString);
-            }
-            //outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        outputStreamReader = new OutputStreamWriter(outputStream);
+        bufferedWriter = new BufferedWriter(outputStreamReader);
+        for (int i = 0; i < readings.size(); i++) {
+            readingString = String.format(Locale.ENGLISH, "%d %f %f\n", readings.get(i).timestamp,
+                    readings.get(i).xAcceleration, readings.get(i).yAcceleration);
+            bufferedWriter.write(readingString);
         }
+        bufferedWriter.flush();
+
+        //Please, no try{}catch(Exception ex){} ... :(
     }
 
     /**
      * Load acceleration data from a file
      * @param inputStream stream that passes readings from a file to excitation manager
      */
-    public void loadFile(InputStream inputStream) {
+    public void loadFile(InputStream inputStream) throws IOException {
+        readings = new ArrayList<>();
+        currAccel = new AccelData();
         AccelData curReading = new AccelData();
         String readingString;
         String[] readStringSplit;
         InputStreamReader inputStreamReader;
         BufferedReader bufferedReader;
-        try {
-            inputStreamReader = new InputStreamReader(inputStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
+        inputStreamReader = new InputStreamReader(inputStream);
+        bufferedReader = new BufferedReader(inputStreamReader);
+        readingString = bufferedReader.readLine();
+        while (readingString != null) {
+            readStringSplit = readingString.split(" ");
+
+            curReading.timestamp = Long.parseLong(readStringSplit[0]);
+            curReading.xAcceleration = Double.parseDouble(readStringSplit[1]);
+            curReading.yAcceleration = Double.parseDouble(readStringSplit[2]);
+
+            readings.add(new AccelData(curReading));
             readingString = bufferedReader.readLine();
-            while (readingString != null) {
-                readStringSplit = readingString.split(" ");
-
-                curReading.timestamp = Long.parseLong(readStringSplit[0]);
-                curReading.xAcceleration = Double.parseDouble(readStringSplit[1]);
-                curReading.yAcceleration = Double.parseDouble(readStringSplit[2]);
-
-                readings.add(new AccelData(curReading));
-                readingString = bufferedReader.readLine();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

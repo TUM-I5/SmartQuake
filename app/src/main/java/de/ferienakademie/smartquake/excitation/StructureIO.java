@@ -4,9 +4,12 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,21 +21,22 @@ import de.ferienakademie.smartquake.model.Structure;
 /**
  * Created by David Schneller on 23.09.2016.
  */
+
+/**
+ * used for reading and Writing structures
+ */
 public class StructureIO {
 
-    public static void writeStructure(Writer stream, Structure structure) throws IOException {
-        JsonWriter writer = new JsonWriter(stream);
+    public static void writeStructure(OutputStream stream, Structure structure) throws IOException {
+        //NOTE: For now, I have removed some calls like writer.a().b().c() and so on, b/c it looked a bit inconsistent to have it and not to have it in some other place. But that's simply a personal preference. But I think the code is easier to read like that.
+
+        JsonWriter writer = new JsonWriter(new OutputStreamWriter((new BufferedOutputStream(stream))));
         writer.beginObject();
         writer.name("nodes");
         writer.beginArray();
         for (Node node : structure.getNodes())
         {
-            writer.beginObject();
-            writer.name("x");
-            writer.value(node.getInitialX());
-            writer.name("y");
-            writer.value(node.getInitialY());
-            writer.endObject();
+            writeNode(writer, node);
         }
         writer.endArray();
         writer.name("beams");
@@ -49,14 +53,37 @@ public class StructureIO {
             writer.endObject();
         }
         writer.endArray();
+        writer.name("degreesOfFreedom");
+        writer.beginArray();
+        for (Integer i : structure.getConDOF()) {
+            writer.value(i);
+        }
+        writer.endArray();
         writer.endObject();
         writer.flush();
-        stream.close();
+        //NO stream.close() here, please. There is the hypothetical case that someone else wants to write in it. (imagine f.ex. a TCP connection)
+    }
+
+    private static void writeNode(JsonWriter writer, Node node) throws IOException {
+        writer.beginObject();
+        writer.name("x");
+        writer.value(node.getInitialX());
+        writer.name("y");
+        writer.value(node.getInitialY());
+
+        writer.name("degreesOfFreedom");
+        writer.beginArray();
+        for (Integer i : node.getDOF()) {
+            writer.value(i);
+        }
+        writer.endArray();
+
+        writer.endObject();
     }
 
     private static Node parseNode(JsonReader reader) throws IOException {
         double x = Double.NaN, y = Double.NaN;
-
+        LinkedList<Integer> DOF = null;
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT)
         {
@@ -69,16 +96,25 @@ public class StructureIO {
                 case "y":
                     y = reader.nextDouble();
                     break;
+                case "degreesOfFreedom":
+                    reader.beginArray();
+                    DOF = new LinkedList<>();
+                    while(reader.peek() != JsonToken.END_ARRAY)
+                    {
+                        DOF.add(reader.nextInt());
+                    }
+                    reader.endArray();
+                    break;
             }
         }
         reader.endObject();
 
-        if (Double.isNaN(x) || Double.isNaN(y))
+        if (Double.isNaN(x) || Double.isNaN(y) || DOF == null)
         {
             throw new IOException("Malformed file format.");
         }
 
-        return new Node(x, y);
+        return new Node(x, y, DOF);
     }
 
     private static List<Node> parseNodes(JsonReader reader) throws IOException {
@@ -127,12 +163,24 @@ public class StructureIO {
         return beams;
     }
 
-    public static Structure readStructure(Reader stream) throws IOException {
-        JsonReader reader = new JsonReader(stream);
+    private static List<Integer> parseDegreesOfFreedom(JsonReader reader) throws IOException {
+        List<Integer> degreesOfFreedom = new ArrayList<Integer>();
+        reader.beginArray();
+        while (reader.peek() != JsonToken.END_ARRAY)
+        {
+            degreesOfFreedom.add(reader.nextInt());
+        }
+        reader.endArray();
+        return degreesOfFreedom;
+    }
+
+    public static Structure readStructure(InputStream stream) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(stream));
         reader.beginObject();
 
         List<TemporaryBeam> tempBeams = null;
         List<Node> nodes = null;
+        List<Integer> degreesOfFreedom = null;
         while (reader.peek() != JsonToken.END_OBJECT) {
             String name = reader.nextName();
             switch (name) {
@@ -142,21 +190,26 @@ public class StructureIO {
                 case "beams":
                     tempBeams = parseBeams(reader);
                     break;
+                case "degreesOfFreedom":
+                    degreesOfFreedom = parseDegreesOfFreedom(reader);
+                    break;
             }
         }
 
-        if (tempBeams == null || nodes == null) {
+        if (tempBeams == null || nodes == null || degreesOfFreedom == null) {
             throw new IOException("Malformed file format.");
         }
 
         List<Beam> beams = new ArrayList<>();
         for (TemporaryBeam tbeam : tempBeams) {
             Beam b = new Beam(nodes.get(tbeam.start), nodes.get(tbeam.end));
+            b.setThickness(0.1f);
             beams.add(b);
         }
-        stream.close();
-        //TODO store conDofs!!
-        return new Structure(nodes, beams, new LinkedList<Integer>()); //? whatever...
+
+        //Again, no stream.close() here, please.
+
+        return new Structure(nodes, beams, degreesOfFreedom); //? whatever...
     }
 
     private static class TemporaryBeam {

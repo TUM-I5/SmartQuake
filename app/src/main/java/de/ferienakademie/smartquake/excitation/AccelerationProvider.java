@@ -19,9 +19,7 @@ public interface AccelerationProvider {
     AccelData getAccelerationMeasurement();
 
     /**
-     *
-     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
      * @param timeStep timeStep of the simulation in nanoseconds
      */
-    void initTime(long timeStamp, double timeStep);
+    void initTime(double timeStep);
 }
