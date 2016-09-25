@@ -18,25 +18,28 @@ public class Testing {
         SpatialDiscretization kern1 = new SpatialDiscretization(structure);
         kern1.initializeMatrices();
 
-        DenseMatrix64F LoadVector = new DenseMatrix64F(6,1);
-        DenseMatrix64F Displacement = new DenseMatrix64F(6,1);
+        DenseMatrix64F LoadVector = new DenseMatrix64F(9,1);
+        DenseMatrix64F Displacement = new DenseMatrix64F(9,1);
         Displacement.zero();
 
         LoadVector.add(0,0,0);
         LoadVector.add(1,0,0);
         LoadVector.add(2,0,0);
-        LoadVector.add(3,0,1);
+        LoadVector.add(3,0,0);
         LoadVector.add(4,0,0);
         LoadVector.add(5,0,0);
+        LoadVector.add(6,0,1);
+        LoadVector.add(7,0,0);
+        LoadVector.add(8,0,0);
 
 
         //Solving eigenvalue problem test
-        GenEig eigen = new GenEig(kern1.getStiffnessMatrix(),kern1.getMassMatrix());
-        double[] frequences = eigen.getLambda();
+        //GenEig eigen = new GenEig(kern1.getStiffnessMatrix(),kern1.getMassMatrix()); //TODO does it something inplace???
+        //double[] frequences = eigen.getLambda();
 
 
 
-        LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(6);
+        LinearSolver<DenseMatrix64F> solver = LinearSolverFactory.lu(kern1.getNumberofDOF());
         solver.setA(kern1.getStiffnessMatrix());
         solver.solve(LoadVector,Displacement);
 
