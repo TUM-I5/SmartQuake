@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
@@ -94,12 +93,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         if (id == R.id.create_button) {
             if (simulation != null) simulation.stop();
             startActivity(new Intent(this, CreateActivity.class));
-            return true;
-        }
-
-        if (id == R.id.settings_button) {
-            if (simulation != null) simulation.stop();
-            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
