@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
@@ -104,7 +105,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
             try {
                 mExcitationManager.loadFile(openFileInput("saveAcc.txt"));
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             state = SimulationState.REPLAY_RUNNING;
@@ -205,7 +206,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mSensorManager.unregisterListener(mExcitationManager);
         try {
             mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
