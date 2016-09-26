@@ -13,8 +13,8 @@
         <SwitchPreference
             android:key="pref_modal_analysis"
             android:title="@string/pref_modal_analysis_title"
-            android:textOn="@string/pref_modal_analysis_summary_On"
-            android:textOff="@string/pref_modal_analysis_summary_Off"
+            android:summaryOn="@string/pref_modal_analysis_summary_On"
+            android:summaryOff="@string/pref_modal_analysis_summary_Off"
             android:defaultValue="false"
             />
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
