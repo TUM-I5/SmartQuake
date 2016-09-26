@@ -179,6 +179,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             StructureIO.writeStructure(fileOutputStream, structure);
             fileOutputStream.close();
             Toast.makeText(this, "Structure saved", Toast.LENGTH_SHORT).show();
+            finish();
         } catch (FileNotFoundException e) {
             Log.e("CreateActivity.class", "File not found");
         } catch (IOException e) {

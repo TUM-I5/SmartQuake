@@ -12,6 +12,8 @@ public interface AccelerationProvider {
     /**
      * has to inform the listener
      * @return first element acceleration in X axis, second element acceleration in Y axis
+     *          third element gravity (acceleration) in X axis,
+     *          fourth element gravity (acceleration) in Y axis
      */
     double[] getAcceleration();
 

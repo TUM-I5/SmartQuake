@@ -31,7 +31,7 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
     @Override
     public double[] getAcceleration() {
         AccelData temp = getAccelerationMeasurement();
-        return new double[]{temp.xAcceleration, temp.yAcceleration};
+        return new double[]{temp.xAcceleration, temp.yAcceleration, temp.xGravity, temp.yGravity};
     }
 
     @Override
