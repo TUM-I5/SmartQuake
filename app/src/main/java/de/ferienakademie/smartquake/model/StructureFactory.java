@@ -519,7 +519,7 @@ public class StructureFactory {
         Node n3 = new Node(width/2, height);
         Node n4 = new Node(3*width/4, height);
         Node n5 = new Node(width, height);
-        Node n6 = new Node(0, height);
+        Node n6 = new Node(0, 3*height/4);
         Node n7 = new Node(width/4, 3*height/4);
         Node n8 = new Node(width/2, 3*height/4);
         Node n9 = new Node(3*width/4, 3*height/4);
@@ -556,10 +556,15 @@ public class StructureFactory {
         Beam b20 = new Beam(n16, n19, testMaterial);
         Beam b21 = new Beam(n17, n19, testMaterial);
         Beam b22 = new Beam(n18, n19, testMaterial);
-
+        Beam b23 = new Beam(n11, n12, testMaterial);
+        Beam b24 = new Beam(n12, n13, testMaterial);
+        Beam b25 = new Beam(n13, n14, testMaterial);
+        Beam b26 = new Beam(n14, n15, testMaterial);
+        Beam b27 = new Beam(n16, n17, testMaterial);
+        Beam b28 = new Beam(n17, n18, testMaterial);
 
         structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19);
-        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22);
+        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24,b25,b26,b27,b28);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -608,9 +613,9 @@ public class StructureFactory {
         Node n16 = new Node(5*width/9, height3);
         Node n17 = new Node(11*width/27, height3);
         Node n18 = new Node(16*width/27, height3);
-        Node n19 = new Node(12.25*width/9, height3/3);
+        Node n19 = new Node(12.25*width/27, height3/3);
         Node n20 = new Node(width/2, 0);
-        Node n21 = new Node(14.75*width/9, height3/3);
+        Node n21 = new Node(14.75*width/27, height3/3);
 
         //Left thing
         Beam b1 = new Beam(n1, n5, testMaterial);
