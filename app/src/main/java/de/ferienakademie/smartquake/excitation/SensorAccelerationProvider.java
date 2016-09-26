@@ -17,6 +17,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private GravityProvider gravityProvider;
+    private int sensorRate;
 
     public SensorAccelerationProvider(SensorManager sensorManager)
     {
@@ -36,10 +37,11 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public void initTime(double timeStep) {
         super.initTime(timeStep);
+        sensorRate = (int)(timeStep/2);
         baseTime = SystemClock.elapsedRealtimeNanos();
         readings = new ArrayList<>();
         readings.add(new AccelData());
-        gravityProvider.init();
+        gravityProvider.init(timeStep);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
 
     public void setActive()
     {
-        sensorManager.registerListener(this, accelerometer, 5);
+        sensorManager.registerListener(this, accelerometer, sensorRate);
         gravityProvider.setActive();
     }
 

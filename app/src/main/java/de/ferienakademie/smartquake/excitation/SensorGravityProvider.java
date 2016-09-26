@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class SensorGravityProvider extends GravityProvider implements SensorEventListener {
     SensorManager manager;
     Sensor gSensor;
+    private int sampleRate;
     private ArrayList<double[]> readings = new ArrayList<>();
     private ArrayList<Long> reading_ts = new ArrayList<>();
     protected int currentPosition;
@@ -51,19 +52,28 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
         //not used
     }
 
-    public void init(){
+    @Override
+    public void init(double timestep){
         readings = new ArrayList<>();
         readings.add(new double[]{0,0});
+        reading_ts.add((long)0);
+        sampleRate = (int)(timestep/2);
     }
 
     public void setInactive() {
         manager.unregisterListener(this);
         readings = new ArrayList<>();
+        reading_ts = new ArrayList<>();
+        readings.add(new double[]{0,0});
+        reading_ts.add((long)0);
     }
 
     public void setActive(){
-        manager.registerListener(this, gSensor, 5);
+        manager.registerListener(this, gSensor, sampleRate);
         readings = new ArrayList<>();
+        reading_ts = new ArrayList<>();
+        readings.add(new double[]{0,0});
+        reading_ts.add((long)0);
     }
 
 
