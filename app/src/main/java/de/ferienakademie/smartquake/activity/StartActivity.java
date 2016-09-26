@@ -136,10 +136,7 @@ public class StartActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_gallery) {
-            //TODO What happens when you want to load
-
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_slideshow) {
             //TODO What happens when you want to play recorded quake data
 
         } else if (id == R.id.nav_manage) {
