@@ -6,7 +6,7 @@ package de.ferienakademie.smartquake.excitation;
 public abstract class GravityProvider {
     public abstract void getGravity(AccelData data);
 
-    public abstract void init();
+    public abstract void init(double timestep);
 
     public abstract void setActive();
 
