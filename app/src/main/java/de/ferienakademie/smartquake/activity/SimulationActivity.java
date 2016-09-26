@@ -88,7 +88,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
         try {
-            fileAccelerationProvider.load(openFileInput(fileName));
+            if (fileName.equals("SinCos.earthquake")) {
+                SinCosExcitation sinCosExcitation = new SinCosExcitation();
+                sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
+                startSimulation(sinCosExcitation);
+            } else if (fileName.equals("Sensors.earthquake")) {
+                onStartButtonClicked();
+            } else {
+                fileAccelerationProvider.load(openFileInput(fileName));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,14 +139,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
-            runReplay("Last.earthquake");
+            runReplay("SinCos.earthquake");
             toggleStartStopAvailability();
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
-            // TODO need to start a new activity with a list of earthquakes
-//            SinCosExcitation sinCosExcitation = new SinCosExcitation();
-//            sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
-//            startSimulation(sinCosExcitation);
             ActionMenuItemView loadEqDataButton = (ActionMenuItemView)findViewById(id);
             if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);

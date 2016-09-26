@@ -31,7 +31,8 @@ public class ChooseDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_data);
 
         values = new ArrayList<>();
-        values.add("Phone sensors");
+        values.add("Sensors");
+        values.add("SinCos");
 
         String[] fileNames = getFilesDir().list();
         Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.earthquake");
@@ -81,9 +82,7 @@ public class ChooseDataActivity extends AppCompatActivity {
 
     public void onItemSelected(Integer dataSourceId) {
         Intent sel = new Intent();
-        if (dataSourceId != 0) {
-            sel.putExtra("eqDataFile", values.get(dataSourceId));
-        }
+        sel.putExtra("eqDataFile", values.get(dataSourceId));
         setResult(Activity.RESULT_OK, sel);
         finish();
     }
