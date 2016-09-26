@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -351,6 +352,23 @@ public class StructureFactory {
             fileInputStream = context.openFileInput(structureName);
 
             Structure structure = StructureIO.readStructure(fileInputStream);
+
+            List<Node> nodes = structure.getNodes();
+            List<Beam> beams = structure.getBeams();
+
+            HashSet<Node> nodeSet = new HashSet<>();
+
+            nodeSet.addAll(nodes);
+
+            for (int i = nodes.size() - 1; i >= 0; i--) {
+                if (nodes.get(i).getBeams().isEmpty()) nodes.remove(i);
+            }
+
+            for (int i = beams.size() - 1; i >= 0; i--) {
+                if (!nodeSet.contains(beams.get(i).getStartNode())
+                        || !nodeSet.contains(beams.get(i).getEndNode())) beams.remove(i);
+            }
+
             enumerateDOFs(structure);
             return structure;
 

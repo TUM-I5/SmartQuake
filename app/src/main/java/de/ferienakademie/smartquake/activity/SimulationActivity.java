@@ -121,9 +121,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
             startSimulation(sinCosExcitation);
             ActionMenuItemView loadEqDataButton = (ActionMenuItemView)findViewById(id);
-            loadEqDataButton.setEnabled(false);
+            if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
-            replay.setEnabled(false);
+            if (replay != null) replay.setEnabled(false);
         } else if (id == R.id.save_simulation) {
             if (simulation.isRunning()) {
                 simulation.stop();
