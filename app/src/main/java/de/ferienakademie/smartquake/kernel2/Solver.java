@@ -51,7 +51,7 @@ public class Solver implements TimeIntegrationSolver {
         this.M = k1.getMassMatrix();
         this.K = k1.getStiffnessMatrix();
         this.C = k1.getDampingMatrix();
-        this.x = k1.getDisplacementVector();
+        this.x = new DenseMatrix64F(k1.getNumberofDOF(),1);
 
         this.xDot = xDot;
 

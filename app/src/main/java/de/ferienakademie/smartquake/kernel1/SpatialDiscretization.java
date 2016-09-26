@@ -44,12 +44,11 @@ public class SpatialDiscretization {
     public SpatialDiscretization(Structure structure) {
         this.structure = structure;
         //initialize displacement with zeros
-        numberofDOF = structure.getNodes().size()*3;
+        numberofDOF = structure.getNumberOfDOF();
 
         influenceVectorX = new DenseMatrix64F(getNumberofDOF(), 1);
         influenceVectorY = new DenseMatrix64F(getNumberofDOF(), 1);
 
-        initialeDiscretization();
         initializeMatrices();
         calculateInfluenceVector();
    }
@@ -93,84 +92,7 @@ public class SpatialDiscretization {
         calculateDampingMatrix();
     }
 
-    public void initialeDiscretization(){
-        numberofDOF=0;
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-            Node node = structure.getNodes().get(i);
 
-            List<Integer>  dofs = new ArrayList<>();
-
-            // dof for x direction
-            dofs.add(numberofDOF);
-            if (node.getConstraint(0)){
-                structure.addSingleConDOF(numberofDOF);
-            }
-            numberofDOF++;
-
-            // dof for y direction
-            dofs.add(numberofDOF);
-            if (node.getConstraint(1)){
-                structure.addSingleConDOF(numberofDOF);
-            }
-            numberofDOF++;
-
-            if (node.isHinge()){
-                List<Beam> beams = node.getBeams();
-                for (int j = 0; j < beams.size(); j++) {
-                    Beam beam = beams.get(i);
-
-                    // dof for rotation of this beam
-                    dofs.add(numberofDOF);
-
-                    if(beam.getStartNode()==node){
-                        beam.setSingleDof(0,dofs.get(0));
-                        beam.setSingleDof(1,dofs.get(1));
-                        beam.setSingleDof(2,numberofDOF);
-                    }
-                    else {
-                        beam.setSingleDof(3,dofs.get(0));
-                        beam.setSingleDof(4,dofs.get(1));
-                        beam.setSingleDof(5, numberofDOF);
-                    }
-                    numberofDOF++;
-
-                }
-            }
-            // rigid connection
-            else {
-                List<Beam> beams = node.getBeams();
-
-                // dof for rotation of all beams
-                dofs.add(numberofDOF);
-
-                if (node.getConstraint(2)){
-                    structure.addSingleConDOF(numberofDOF);
-                }
-
-                for (int j = 0; j < beams.size(); j++) {
-                    Beam beam = beams.get(i);
-
-                    if(beam.getStartNode()==node){
-                        beam.setSingleDof(0,dofs.get(0));
-                        beam.setSingleDof(1,dofs.get(1));
-                        beam.setSingleDof(2,numberofDOF);
-                    }
-                    else {
-                        beam.setSingleDof(3,dofs.get(0));
-                        beam.setSingleDof(4,dofs.get(1));
-                        beam.setSingleDof(5, numberofDOF);
-                    }
-
-                }
-                numberofDOF++;
-
-            }
-
-            // dofs am Knoten setzen
-            node.setDOF(dofs);
-        }
-
-    }
 
     public void calculateStiffnessMatrix() {
         for (int e = 0; e < structure.getBeams().size(); e++) {
@@ -270,10 +192,10 @@ public class SpatialDiscretization {
             Node node = structure.getNodes().get(e);
 
             List<Integer> dofs = node.getDOF();
-            node.setCurrentX(DisplacementVector.get(0, dofs.get(0)) + node.getInitialX());
-            node.setCurrentY(DisplacementVector.get(0, dofs.get(0)) + node.getInitialY());
+            node.setCurrentX(displacementVector2.get(dofs.get(0), 0) + node.getInitialX());
+            node.setCurrentY(displacementVector2.get(dofs.get(1), 0) + node.getInitialY());
             for (int j = 2; j < dofs.size(); j++) {
-                node.setSingleRotation(j - 2, DisplacementVector.get(0, dofs.get(j)));
+                node.setSingleRotation(j - 2, displacementVector2.get(dofs.get(j), 0));
             }
         }
 

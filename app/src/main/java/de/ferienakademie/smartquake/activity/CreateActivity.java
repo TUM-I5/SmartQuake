@@ -1,12 +1,8 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,17 +15,15 @@ import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.jar.Manifest;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.StructureIO;
+import de.ferienakademie.smartquake.fragment.SaveDialogFragment;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
@@ -40,7 +34,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 /**
  * Created by yuriy on 22/09/16.
  */
-public class CreateActivity extends AppCompatActivity {
+public class CreateActivity extends AppCompatActivity implements SaveDialogFragment.SaveDialogListener {
     private static double DELTA = 90;
     private static boolean adding = false;
     private Node node1 = null;
@@ -62,6 +56,10 @@ public class CreateActivity extends AppCompatActivity {
     private boolean lumped = true;
 
     private int yOffset = 0;
+
+    public void onNameChosen(String s) {
+        serializeStructure(s);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,25 +112,22 @@ public class CreateActivity extends AppCompatActivity {
                  * startActivity(new Intent(this, SettingsActivity.class));
                  return true;
                  */
-                return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                return true;
+                break;
             case R.id.clear_canvas:
                 structure.clearAll();
                 DrawHelper.drawStructure(structure, canvasView);
-                return true;
+                break;
             case R.id.save_canvas:
-                serialize();
-                return true;
+                new SaveDialogFragment().show(getFragmentManager(), "save");
+                break;
         }
-
-
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void serialize() {
+    private void serializeStructure(String name) {
         List<Node> nodes = structure.getNodes();
         List<Beam> allBeams = structure.getBeams();
 
@@ -174,9 +169,13 @@ public class CreateActivity extends AppCompatActivity {
 
         structure.setConDOF(condof);
 
+        for (int i = 0; i < allBeams.size(); i++) {
+            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode())) allBeams.remove(i);
+        }
+
         FileOutputStream fileOutputStream = null;
         try {
-            fileOutputStream = openFileOutput("structure.json", Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput(name + ".structure", Context.MODE_PRIVATE);
             StructureIO.writeStructure(fileOutputStream, structure);
             fileOutputStream.close();
             Toast.makeText(this, "Structure saved", Toast.LENGTH_SHORT).show();
@@ -191,7 +190,7 @@ public class CreateActivity extends AppCompatActivity {
         double x = node.getCurrentX();
         double y = node.getCurrentY();
 
-        double[] modelSize = DrawHelper.boundingBox;
+        double[] modelSize = {8, 8};
 
         double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
 
@@ -202,8 +201,9 @@ public class CreateActivity extends AppCompatActivity {
         y = (y - yOffset) / (displayScaling);
 
         double temp = (height - yOffset) / (displayScaling);
+        double deltaTemp = (DELTA - yOffset) / (displayScaling);
 
-        if (y >= temp)   y = temp;
+        if (y >= temp - deltaTemp / 2)   y = temp;
 
         node.setCurrentX(x);
         node.setCurrentY(y);
@@ -345,7 +345,8 @@ public class CreateActivity extends AppCompatActivity {
                 }
 
                 if (changeToThisNode != null) {
-                    for (Beam beam : beamList) {
+                    for (int k = 0; k < beamList.size(); k++) {
+                        Beam beam = beamList.get(k);
                         if (beam.getStartNode().equals(changeToThisNode) && changeToThisNode != beam.getStartNode()) {
                             Node startNode = beam.getStartNode();
                             if (!removed) {
@@ -353,6 +354,22 @@ public class CreateActivity extends AppCompatActivity {
                                     if (startNode == nodes.get(i)) {
                                         nodes.remove(i);
                                         removed = true;
+                                        if (beam.getStartNode().equals(beam.getEndNode())) {
+                                            boolean delete = true;
+                                            for (Beam connectedBeam : beam.getStartNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            for (Beam connectedBeam : beam.getEndNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            if (delete) {
+                                                nodes.remove(beam.getStartNode());
+                                                nodes.remove(beam.getEndNode());
+                                                beamList.remove(beam);
+                                            }
+                                        }
                                         break;
                                     }
                                 }
@@ -367,6 +384,22 @@ public class CreateActivity extends AppCompatActivity {
                                     if (endNode == nodes.get(i)) {
                                         nodes.remove(i);
                                         removed = true;
+                                        if (beam.getEndNode().equals(beam.getEndNode())) {
+                                            boolean delete = true;
+                                            for (Beam connectedBeam : beam.getStartNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            for (Beam connectedBeam : beam.getEndNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            if (delete) {
+                                                nodes.remove(beam.getStartNode());
+                                                nodes.remove(beam.getEndNode());
+                                                beamList.remove(beam);
+                                            }
+                                        }
                                         break;
                                     }
                                 }

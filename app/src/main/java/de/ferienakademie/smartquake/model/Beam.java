@@ -23,7 +23,6 @@ public class Beam {
     private double cos_theta;
     private double theta;
 
-    private List<Double> localdisplacements;
     private double[] displacement;
 
 
@@ -41,26 +40,47 @@ public class Beam {
     private DenseMatrix64F elementMassMatrix_globalized;
 
     public Beam(Node startNode, Node endNode, float thickness) {
+        this.dofs = new int[6];
         this.startNode = startNode;
         this.endNode = endNode;
+        startNode.addBeam(this);
+        endNode.addBeam(this);
         this.thickness = thickness;
         material = stdMaterial;
     }
 
     //Kernel1 constructor
-    public Beam(Node startNode, Node endNode, Material material,boolean lumped) {
-        this.startNode = startNode;
-        this.endNode = endNode;
+    public Beam(Node startNode, Node endNode, Material material) {
+
+        this(startNode, endNode, 0.1f);
         this.displacement = new double[6];
         this.material = material;
-        this.thickness = 0.1f;
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
         length = computeLength();
 
-        theta = Math.atan((y2 - y1) / (x2 - x1));
+        theta = Math.atan2(y2 - y1, x2 - x1);
         cos_theta = Math.cos(theta); //rotation of displacement
         sin_theta = Math.sin(theta);
+
+
+    }
+
+    public void computeAll(boolean lumped) {
+
+        //this.dofs = new int[]{
+        //        startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
+        //        endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
+        //};
+
+        double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
+        double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
+        length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+
+        theta = Math.atan2(y2 - y1, x2 - x1);
+        cos_theta = Math.cos(theta); //rotation of displacement
+        sin_theta = Math.sin(theta);
+
         computeStiffnessMatrix();
         elementStiffnessMatrix_globalized = GlobalizeElementMatrix(elementStiffnessMatrix);
 
@@ -68,32 +88,6 @@ public class Beam {
             computelumpedMassMatrix();
             elementMassMatrix_globalized = elementMassMatrix;
         }else {
-            computeconsistentMassMatrix();
-            elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
-        }
-
-    }
-
-    public void computeAll(boolean lumped) {
-        this.dofs = new int[]{
-                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
-                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
-        };
-
-        double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
-        double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
-        length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-
-        theta = Math.atan((y2 - y1) / (x2 - x1));
-        cos_theta = Math.cos(theta); //rotation of displacement
-        sin_theta = Math.sin(theta);
-        computeStiffnessMatrix();
-        elementStiffnessMatrix_globalized = GlobalizeElementMatrix(elementStiffnessMatrix);
-
-        if (lumped) {
-            computelumpedMassMatrix();
-            elementMassMatrix_globalized = elementMassMatrix;
-        } else {
             computeconsistentMassMatrix();
             elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
         }
@@ -280,22 +274,25 @@ public class Beam {
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
         if (BuildConfig.DEBUG) { // assert that formulas are right
+            double eps = 0.01;
             double v = startNodeDisplacementX * Math.cos(theta) - startNodeDisplacementY * Math.sin(theta);
-            if (axialDisplacementStartNode != v) {
-                throw new AssertionError("axialdisplacement start node not right: " + axialDisplacementStartNode + " should be " + v);
+            if (Math.abs(axialDisplacementStartNode - v) > eps) {
+                throw new AssertionError("axialDisplacementStartNode not right: " + axialDisplacementStartNode + " should be " + v);
             }
 
             double v1 = startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
-            if (orthogonalDisplacementStartNode != v1) {
-                throw new AssertionError("orthogonalStartNode not right: " + axialDisplacementStartNode + " should be " + v1);
+            if (Math.abs(orthogonalDisplacementStartNode - v1) > eps) {
+                throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementEndNode + " should be " + v1);
             }
 
-            if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
-                throw new AssertionError();
+            double v2 = endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta);
+            if (Math.abs(axialDisplacementEndNode - v2) > eps) {
+                throw new AssertionError("axialDisplacementEndNode not right: " + axialDisplacementEndNode + " should be " + v2);
             }
 
-            if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
-                throw new AssertionError();
+            double v3 = endNodeDisplacementX * Math.sin(theta) + endNodeDisplacementY * Math.cos(theta);
+            if (Math.abs(orthogonalDisplacementEndNode - v3) > eps) {
+                throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
 

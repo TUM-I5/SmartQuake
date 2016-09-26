@@ -34,6 +34,7 @@ public class Node {
         this.initialX = x;
         this.initialY = y;
         currentRotations = new ArrayList<>();
+        currentRotations.add(0.0);
     }
 
 
@@ -149,6 +150,10 @@ public class Node {
 
     public void setConstraint(boolean[] constraint) {
         this.constraint = constraint;
+    }
+
+    public void setSingleConstraint(int i, boolean constraint) {
+        this.constraint[i] = constraint;
     }
 }
 
