@@ -25,7 +25,7 @@ public class StructureFactory {
 
 
         Node bottom = new Node(4, 8);
-        Node up = new Node(4, 0);
+        Node up = new Node(4, 3);
 
         List<Integer> condof = new ArrayList<>();
 
@@ -34,7 +34,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = Material.STEEL;
+        Material testMaterial = Material.STEEL2;
 
         Beam b = new Beam(bottom, up, testMaterial);
 
