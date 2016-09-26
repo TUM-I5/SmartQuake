@@ -28,7 +28,7 @@ public class SoftwareGravityProvider extends GravityProvider{
     }
 
     @Override
-    public void init(double timestep) {
+    public void init(double timestep, long baseTime) {
 
     }
 

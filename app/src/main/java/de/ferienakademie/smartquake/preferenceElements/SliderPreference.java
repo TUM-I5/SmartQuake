@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import de.ferienakademie.smartquake.R;
 
@@ -118,6 +119,8 @@ public class SliderPreference extends DialogPreference {
         mSeekBarValue = (int) (mValue * SEEKBAR_RESOLUTION);
         View view = super.onCreateDialogView();
         SeekBar seekbar = (SeekBar) view.findViewById(R.id.slider_preference_seekbar);
+        final TextView textView = (TextView) view.findViewById(R.id.slider_preference_value);
+        textView.setText(this.getSummary());
         seekbar.setMax(SEEKBAR_RESOLUTION);
         seekbar.setProgress(mSeekBarValue);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -134,6 +137,7 @@ public class SliderPreference extends DialogPreference {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     SliderPreference.this.mSeekBarValue = progress;
+                    textView.setText(mSummaries[Math.min((int) ((float) mSeekBarValue / SEEKBAR_RESOLUTION * mSummaries.length), mSummaries.length - 1)]);
                 }
             }
         });
