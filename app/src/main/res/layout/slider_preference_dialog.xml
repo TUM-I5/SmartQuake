@@ -26,4 +26,9 @@ Licensed under the MIT License (see LICENSE.txt)
         android:paddingBottom="12dip"
         android:paddingTop="12dip" />
 
+    <TextView
+        android:id="@+id/slider_preference_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
