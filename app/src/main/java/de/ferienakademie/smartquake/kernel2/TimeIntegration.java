@@ -59,8 +59,9 @@ public class TimeIntegration {
 
 
         //stores the numerical scheme
-        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        //solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+        solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
 
         // fixed step size for implicit schemes
 
@@ -111,7 +112,7 @@ public class TimeIntegration {
                   //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
-                    spatialDiscretization.updateDisplacementsOfStructure(spatialDiscretization.getDisplacementVector());
+                    spatialDiscretization.updateDisplacementsOfStructure(solver.getX());
 
                     isRunning = false;
                 }

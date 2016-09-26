@@ -7,40 +7,43 @@ import java.util.List;
  * Created by yuriy on 21/09/16.
  */
 public class Node {
-    //Current node position
-    //private double currentX;
-    //private double currentY;
-
-    //private List<Double> currentRotations; //List of all rotations at the node
 
     //Initial node position
     private double initialX;
     private double initialY;
 
+    private boolean[] constraint = new boolean[3];
 
     private List<Integer> DOF; //Degrees of freedom
     private List<Double> displacements; //List of all displacements at the node
 
-
     private double radius = 0.1;
+
+
+
+    private boolean hinge = false;
 
     private List<Beam> beams = new ArrayList<>();
 
+
     public Node(double x, double y) {
-        //this.currentX = x;
-        //this.currentY = y;
         this.initialX = x;
         this.initialY = y;
-        displacements = new ArrayList<>(6);
-        //currentRotations.add(0.0);
+        displacements = new ArrayList<>();
+    }
+
+
+    public Node(double x, double y, boolean hinged) {
+        this.initialX = x;
+        this.initialY = y;
+        this.hinge = hinged;
+        displacements = new ArrayList<>();
     }
 
 
     public Node(double x, double y, List<Integer> DOF) {
         this(x, y);
         this.DOF = DOF;
-        displacements = new ArrayList<>(6);
-
     }
 
 
@@ -56,24 +59,11 @@ public class Node {
         return initialY;
     }
 
-//    public List<Double> getCurrentRotations() {
-//        return currentRotations;
-//    }
-//
-//    public void setCurrentRotations(List<Double> currentRotations) {
-//        this.currentRotations = currentRotations;
-//    }
-//
-//    public void setSingleRotation(int i, double rotation) {
-//        this.currentRotations.set(i,rotation );
-//    }
-
-
 
     public void setSingleDisplacement(int i, double value) {
         this.displacements.set(i,value );
-    }
 
+    }
 
 
     public double getSingleDisplacement(int i) {
@@ -89,12 +79,17 @@ public class Node {
     public void addBeam(Beam beam) {
         beams.add(beam);
     }
+
+
     public List<Integer> getDOF() {
         return DOF;
     }
 
+
     public void setDOF(List<Integer> DOF) {
         this.DOF = DOF;
+        for (int i=0; i<DOF.size(); i++)
+            displacements.add(0.0);
     }
 
 
@@ -149,6 +144,26 @@ public class Node {
 
         //return node.currentX == currentX && node.currentY == currentY;
         return node.initialX == initialX && node.initialY == initialY;
+    }
+
+    public boolean isHinge() {
+        return hinge;
+    }
+
+    public void setHinge(boolean hinge) {
+        this.hinge = hinge;
+    }
+
+    public boolean getConstraint(int i) {
+        return constraint[i];
+    }
+
+    public void setConstraint(boolean[] constraint) {
+        this.constraint = constraint;
+    }
+
+    public void setSingleConstraint(int i, boolean constraint) {
+        this.constraint[i] = constraint;
     }
 }
 

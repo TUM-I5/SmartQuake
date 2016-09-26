@@ -2,6 +2,7 @@ package de.ferienakademie.smartquake.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PatternMatcher;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +19,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
 
@@ -47,12 +50,15 @@ public class StartActivity extends AppCompatActivity
         values = new ArrayList<>();
         values.add("Simple Beam");
         values.add("Simple House");
-        values.add("Eiffel Tower");
 
         String[] structures = getFilesDir().list();
 
+        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
+        Matcher matcher;
+
         for (String str : structures) {
-            if (!str.equals("instant-run")) values.add(str);
+            matcher = pattern.matcher(str);
+            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -130,10 +136,7 @@ public class StartActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_gallery) {
-            //TODO What happens when you want to load
-
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_slideshow) {
             //TODO What happens when you want to play recorded quake data
 
         } else if (id == R.id.nav_manage) {
@@ -148,7 +151,7 @@ public class StartActivity extends AppCompatActivity
     public void onItemSelected(Integer id_of_predefined_model) {
         Intent intent = new Intent(this, SimulationActivity.class);
         intent.putExtra("id", id_of_predefined_model);
-        intent.putExtra("name", values.get(id_of_predefined_model));
+        intent.putExtra("name", values.get(id_of_predefined_model) + ".structure");
         startActivity(intent);
     }
 }

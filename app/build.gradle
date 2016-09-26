@@ -41,8 +41,6 @@ dependencies {
     compile files('libs/fab-1.6.4-javadoc.jar')
     compile files('libs/junit-4.12.jar')
 
-    // TODO Malte: kein Junit
-    //testCompile 'junit:junit:4.12'
     testCompile files('libs/junit-4.12.jar')
     testCompile files('libs/hamcrest-all-1.3.jar')
 

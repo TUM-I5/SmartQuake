@@ -99,6 +99,13 @@ public class CanvasView extends View {
         double[] boundingBox = DrawHelper.boundingBox;
         double modelXSize = boundingBox[1] - boundingBox[0];
         double modelYSize = boundingBox[3] - boundingBox[2];
+        // special case for single beam
+        if (modelXSize == 0){
+            modelXSize = 8;
+        }
+        if (modelYSize == 0) {
+            modelYSize = 8;
+        }
 
         double widthFitScaling = (1 - 2 * SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth() / modelXSize;
         double heightFitScaling = (1 - TOP_MARGIN_SCREEN_FRACTION) * canvas.getHeight() / modelYSize;
