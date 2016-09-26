@@ -31,7 +31,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         Beam b = new Beam(bottom, up, testMaterial);
 
@@ -49,7 +49,7 @@ public class StructureFactory {
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         //Kernel1 stuff
 
@@ -94,7 +94,7 @@ public class StructureFactory {
         boolean lumped = true;
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         //Kernel1 stuff
 
@@ -147,7 +147,7 @@ public class StructureFactory {
         boolean lumped = true;
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         //Kernel1 stuff
 
@@ -237,7 +237,7 @@ public class StructureFactory {
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
 
         Node n1 = new Node(0.000000, 18.000000);
