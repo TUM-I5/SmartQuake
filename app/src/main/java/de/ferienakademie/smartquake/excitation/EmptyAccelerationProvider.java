@@ -9,7 +9,7 @@ import java.io.OutputStream;
 public class EmptyAccelerationProvider implements AccelerationProvider {
     @Override
     public double[] getAcceleration() {
-        return new double[0];
+        return new double[] { Double.NaN, Double.NaN };
     }
 
     @Override
