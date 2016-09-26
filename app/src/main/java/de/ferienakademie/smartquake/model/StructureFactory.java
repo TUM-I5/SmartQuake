@@ -115,6 +115,59 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getWeirdBridge() {
+        double width = 8;
+        double height = 8;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        structure.setLumped(lumped);
+        Material testMaterial = new Material();
+
+        Node g1 = new Node(width/4, height);
+        Node g2 = new Node(width/2, height);
+        Node g3 = new Node(3*width/4, height);
+        Node s1 = new Node(0, height/2);
+        Node s2 = new Node(width/4, height/2);
+        Node s3 = new Node(width/2, height/2);
+        Node s4 = new Node(3*width/4, height/2);
+        Node s5 = new Node(width, height/2);
+        Node t1 = new Node(width/4, 0);
+        Node t2 = new Node(width/2, 0);
+        Node t3 = new Node(3*width/4, 0);
+
+        Beam c1 = new Beam(g1, t1, testMaterial);
+        Beam c2 = new Beam(g2, t2, testMaterial);
+        Beam c3 = new Beam(g3, t3, testMaterial);
+        Beam sb1 = new Beam(s1, s2, testMaterial);
+        Beam sb2 = new Beam(s2, s3, testMaterial);
+        Beam sb3 = new Beam(s3, s4, testMaterial);
+        Beam sb4 = new Beam(s4, s5, testMaterial);
+        Beam h1 = new Beam(t1, s2, testMaterial);
+        Beam h2 = new Beam(t2, s3, testMaterial);
+        Beam h3 = new Beam(t3, s4, testMaterial);
+
+        structure.addNodes(g1,g2,g3,s1,s2,s3,s4,s5,t1,t2,t3);
+        structure.addBeams(c1,c2,c3,sb1,sb2,sb3,sb4,h1,h2,h3);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        g1.setConstraint(con);
+        g2.setConstraint(con);
+        g3.setConstraint(con);
+        t1.setHinge(true);
+        t2.setHinge(true);
+        t3.setHinge(true);
+        //TODO: Make s2/s3/s4 hinges between h1 and the group sb1,sb2/between h2 and the group sb2,sb3/between h3 and the group sb3/sb4
+        //In the current implementation of hinges, each beam makes up one group
+        enumerateDOFs(structure);
+        return structure;
+    }
+
 
     public static Structure getStructure(Context context, String structureName) {
 
