@@ -31,6 +31,8 @@ public class AccelData implements Comparable {
         this.xAcceleration = xAccel;
         this.yAcceleration = yAccel;
         this.timestamp = timestamp;
+        xGravity = 0;
+        yGravity = 0;
     }
 
     @Override
