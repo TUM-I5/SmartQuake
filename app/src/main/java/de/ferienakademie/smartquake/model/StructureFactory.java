@@ -40,6 +40,31 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getDoubleBeam() {
+        Structure structure = new Structure();
+        Material testMaterial = new Material();
+
+        Node bottom = new Node(4, 8);
+        Node up = new Node(4, 0);
+
+        Beam b1 = new Beam(bottom, up, testMaterial);
+        Beam b2 = new Beam(bottom, up, testMaterial);
+
+        structure.addNodes(bottom, up);
+        structure.addBeams(b1, b2);
+
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        bottom.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
+
+
     public static Structure getSimpleHouse() {
         double width = 8;
         double height = 8;

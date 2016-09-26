@@ -53,6 +53,7 @@ public class StartActivity extends AppCompatActivity
         values.add("Crane");
         values.add("Better Eiffel Tower");
         values.add("Empire State Building");
+        values.add("doubleBeamBug");
 
         String[] structures = getFilesDir().list();
 
