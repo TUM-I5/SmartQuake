@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.excitation;
 
-import android.os.SystemClock;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,7 +10,7 @@ import java.util.Locale;
 /**
  * Created by David Schneller on 25.09.2016.
  */
-public abstract class StoredAccelerationProvider implements AccelerationProvider {
+public abstract class StoredAccelerationProvider extends AccelerationProvider {
     //Sorry, setting protected is dirty, I know... But I do like getters/setters less.
     protected ArrayList<AccelData> readings = new ArrayList<>();
     protected int currentPosition;
@@ -43,7 +41,9 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
         }
         ++tick;
 
-        return readings.get(currentPosition);
+        AccelData data = readings.get(currentPosition);
+        notifyNewAccelData(data);
+        return data;
     }
 
     /**
