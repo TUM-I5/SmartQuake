@@ -25,4 +25,8 @@ public class PreferenceReader {
     public static double getExcitationFrequency() {
         return (double) 10.0f * sharedPref.getFloat("frequency_slider", 0.1f);
     }
+
+    public static boolean showRawSensorData() {
+        return sharedPref.getBoolean("pref_show_raw_sensor_data", false);
+    }
 }
