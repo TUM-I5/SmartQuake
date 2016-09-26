@@ -1,10 +1,14 @@
 package de.ferienakademie.smartquake.model;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Class for the whole structure.
@@ -36,7 +40,7 @@ public class Structure {
         this.nodes = nodes;
         this.beams = beams;
         this.conDOF = conDOF;
-
+        lumped = PreferenceReader.massMatrices();
     }
 
     public Structure() {

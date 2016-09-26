@@ -25,4 +25,9 @@ public class PreferenceReader {
     public static double getExcitationFrequency() {
         return (double) 10.0f * sharedPref.getFloat("frequency_slider", 0.1f);
     }
+
+    public static boolean massMatrices() {
+        return sharedPref.getBoolean("pref_use_lumped", false);
+    }
+
 }
