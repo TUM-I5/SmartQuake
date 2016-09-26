@@ -83,19 +83,24 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onStartButtonClicked();
         }
     };
+    private long lastDebugSensorDataTimestamp;
 
     private void runReplay(String fileName) {
         FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
         try {
-            if (fileName.equals("SinCos.earthquake")) {
-                SinCosExcitation sinCosExcitation = new SinCosExcitation();
-                sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
-                startSimulation(sinCosExcitation);
-            } else if (fileName.equals("Sensors.earthquake")) {
-                onStartButtonClicked();
-            } else {
-                fileAccelerationProvider.load(openFileInput(fileName));
+            switch (fileName) {
+                case "SinCos.earthquake":
+                    SinCosExcitation sinCosExcitation = new SinCosExcitation();
+                    sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
+                    startSimulation(sinCosExcitation);
+                    break;
+                case "Sensors.earthquake":
+                    onStartButtonClicked();
+                    break;
+                default:
+                    fileAccelerationProvider.load(openFileInput(fileName));
+                    break;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,8 +116,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             startSimulation(fileAccelerationProvider);
             toggleStartStopAvailability();
         }
-    };
-    private long lastDebugSensorDataTimestamp;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -293,6 +297,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStopButtonClicked() {
+        if (mode == SimulationMode.REPLAY) {
+            replaySeekBar.setVisibility(View.GONE);
+            replayrunningLabel.setVisibility(View.GONE);
+        }
         if (simulation == null) return;
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
@@ -331,7 +339,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onSimulationStateChanged(Simulation.SimulationState newSpeedState) {
 
-        String msg = "";
+        String msg;
 
         if (!slowSnackbar.isShownOrQueued() && newSpeedState == Simulation.SimulationState.RUNNING_SLOW) {
             msg = "Simulation speed might be slow...";
@@ -349,16 +357,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     }
 
-    private void setReplayProgress(double progress) {
-        replayProgress = progress;
-        replaySeekBar.setProgress((int) Math.round(progress));
-        if (progress >= 100) {
-            replaySeekBar.setVisibility(View.GONE);
-            replayrunningLabel.setVisibility(View.GONE);
-            onStopButtonClicked();
-            mode = SimulationMode.LIVE;
-        }
-    }
 
     public void onNameChosen(String name) {
         FileOutputStream fileOutputStream = null;
@@ -414,7 +412,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     @Override
     public void onNewReplayPercent(double percent) {
-        // todo display to progress bar
+        replayProgress = percent;
+        replaySeekBar.setProgress((int) Math.round(percent));
+        if (percent >= 100) {
+            onStopButtonClicked();
+            mode = SimulationMode.LIVE;
+        }
     }
 
     // TODO: should this be part of Simulation too?
