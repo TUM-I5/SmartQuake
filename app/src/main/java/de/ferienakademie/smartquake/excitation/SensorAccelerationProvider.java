@@ -5,6 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -21,11 +22,11 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         this.sensorManager = sensorManager;
         if(sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION).size() == 0){
-           //gravity kann im Sensor nicht rausgerechnet werden
+           //gravity cannot be excluded from Sensor
             gravityProvider = new SoftwareGravityProvider();
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         } else {
-            // gravity kann rausgerechnet werden
+            // gravity can be excluded
             gravityProvider = new SensorGravityProvider(sensorManager);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         }
@@ -62,8 +63,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
 
     public void setActive()
     {
-        sensorManager.registerListener(this, accelerometer,
-                SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, accelerometer, 5);
         gravityProvider.setActive();
     }
 

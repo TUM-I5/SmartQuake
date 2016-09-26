@@ -18,13 +18,13 @@ import java.util.ArrayList;
 public class SensorGravityProvider extends GravityProvider implements SensorEventListener {
     SensorManager manager;
     Sensor gSensor;
-    //Sorry, setting protected is dirty, I know... But I do like getters/setters less.
-    protected ArrayList<double[]> readings = new ArrayList<>();
+    private ArrayList<double[]> readings = new ArrayList<>();
     private ArrayList<Long> reading_ts = new ArrayList<>();
     protected int currentPosition;
 
     public SensorGravityProvider(SensorManager manager){
         this.manager = manager;
+        gSensor = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
     public void getGravity(AccelData data) {
@@ -58,10 +58,12 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
 
     public void setInactive() {
         manager.unregisterListener(this);
+        readings = new ArrayList<>();
     }
 
     public void setActive(){
-        manager.registerListener(this, gSensor, SensorManager.SENSOR_DELAY_UI);
+        manager.registerListener(this, gSensor, 5);
+        readings = new ArrayList<>();
     }
 
 

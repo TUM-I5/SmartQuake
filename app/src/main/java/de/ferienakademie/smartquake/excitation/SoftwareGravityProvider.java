@@ -5,13 +5,17 @@ package de.ferienakademie.smartquake.excitation;
  */
 
 /**
- * uses only softwareemulation to get the current gravity-values
+ * uses only software emulation to get the current gravity-values
  */
 public class SoftwareGravityProvider extends GravityProvider{
     private double lastXGravity = 0;
     private double lastYGravity = 9.81;
     private final double alpha = 0.8;
 
+    /**
+     * fills in gravity properties with acceleration passed through low-frequency filter
+     * @param data datastrucure with acceleretation along X,Y axis already provided
+     */
     @Override
     public void getGravity(AccelData data) {
         lastXGravity = alpha * lastXGravity + (1 - alpha) * data.xAcceleration;
