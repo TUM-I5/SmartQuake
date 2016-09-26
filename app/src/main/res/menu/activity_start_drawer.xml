@@ -11,8 +11,6 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
     </group>
-
-    <item android:title="Further Settings">
-    </item>
+    
 
 </menu>
