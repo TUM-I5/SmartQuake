@@ -19,7 +19,7 @@ public class Node {
     private double initialY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private double radius = 0.1;
+    private double radius = 0.02;
 
     private boolean[] constraint = new boolean[3];
 
