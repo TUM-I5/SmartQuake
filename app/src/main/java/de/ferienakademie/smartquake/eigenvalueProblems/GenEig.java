@@ -60,28 +60,28 @@ public class GenEig {
 		/* Solve generalized eigenvalue problem */
         Dggev.dggev("N", "V", n, aVWork, 0, n, bVWork, 0, n, alphaReD, 0, alphaImD, 0, betaD, 0, vL, 0, n, vR, 0, n, work, 0, 8 * n, info);
 
-        /* Sort eigenvalues */
+        /* Sort eigenvalues from smallest to biggest */
         if (sortEigenvalues && n > 1) {
             if (anyZero(betaD) && (! anyZero(alphaImD))) {
                 System.out.println("Warning: At least one eigenvalue is complex or arbitrary. Hence, the eigenvalues cannot be sorted.");
             } else {
                 double[] lambda = vecElDiv(alphaReD, betaD);
-                double max;
-                int maxInd;
-                for (int i = 0; i < n - 1; i++) {
-                    max = lambda[i];
-                    maxInd = i;
-                    for (int j = i + 1; j < n; j++) {
-                        if (lambda[j] > max) {
-                            max = lambda[j];
-                            maxInd = j;
+                double min;
+                int minInd;
+                for (int i = n - 1; i > 0; i--) {
+                    min = lambda[i];
+                    minInd = i;
+                    for (int j = i - 1; j >= 0; j--) {
+                        if (lambda[j] < min) {
+                            min = lambda[j];
+                            minInd = j;
                         }
                     }
-                    lambda = switchElements(lambda, i, maxInd);
-                    alphaReD = switchElements(alphaReD, i, maxInd);
-                    betaD = switchElements(betaD, i, maxInd);
+                    lambda = switchElements(lambda, i, minInd);
+                    alphaReD = switchElements(alphaReD, i, minInd);
+                    betaD = switchElements(betaD, i, minInd);
                     for (int k = 0; k < n; k++) {
-                        vR = switchElements(vR, i * n + k, maxInd * n + k);
+                        vR = switchElements(vR, i * n + k, minInd * n + k);
                     }
                 }
             }
