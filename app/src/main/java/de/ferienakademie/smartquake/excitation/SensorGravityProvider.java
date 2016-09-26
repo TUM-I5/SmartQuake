@@ -51,7 +51,6 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
             reading_ts.add(sensorEvent.timestamp - baseTime);
             readings.add(currentGravity);
         }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
         //not used
