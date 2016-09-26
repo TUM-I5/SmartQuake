@@ -1,12 +1,8 @@
 package de.ferienakademie.smartquake.kernel1;
 
-import android.content.SharedPreferences;
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
@@ -15,7 +11,6 @@ import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.preferenceElements.SliderPreference;
 
 /**
  * Created by alex on 22.09.16.
@@ -176,36 +171,54 @@ public class SpatialDiscretization {
     }
 
 
-   public int getNumberofDOF() {
-        return numberofDOF;
-   }
+
+    public int getNumberofDOF() {
+         return numberofDOF;
+    }
+
+
 
     public Structure getStructure() {
         return structure;
     }
 
+
+
+
     public void setStructure(Structure structure) {
         this.structure = structure;
     }
 
-    public void updateStructure_SpatialDiscretization(DenseMatrix64F DisplacementVector) {
-        DenseMatrix64F displacementVector2 = DisplacementVector.copy();
+
+
+
+    public void updateDisplacementsOfStructure(DenseMatrix64F displacementVector, double[] groundDisplacement) {
+
+        // list of constrained dofs
         List<Integer> conDOF = structure.getConDOF();
+
+        DenseMatrix64F displacementVector2 = displacementVector.copy();
+
         for(int k=0; k<conDOF.size(); k++){
             displacementVector2.set(conDOF.get(k),0,0);
         }
-        for (int e = 0; e < structure.getNodes().size(); e++) {
-            Node node = structure.getNodes().get(e);
 
-            List<Integer> dofs = node.getDOF();
-            node.setCurrentX(displacementVector2.get(dofs.get(0), 0) * displacementScale + node.getInitialX());
-            node.setCurrentY(displacementVector2.get(dofs.get(1), 0) * displacementScale + node.getInitialY());
-            for (int j = 2; j < dofs.size(); j++) {
-                node.setSingleRotation(j - 2, displacementScale * displacementVector2.get(dofs.get(j), 0));
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+
+            List<Integer> dofsOfNode = node.getDOF();
+
+            for (int j = 0; j < dofsOfNode.size(); j++) {
+                node.setSingleDisplacement( j, displacementScale * displacementVector2.get( dofsOfNode.get(j) , 0));
             }
+            node.saveTimeStepGroundDisplacement(groundDisplacement);
+            node.saveTimeStepDisplacement();
         }
 
     }
+
+
+
 
     public DenseMatrix64F getLoadVector() {
         return LoadVector;
@@ -245,6 +258,8 @@ public class SpatialDiscretization {
         CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
     }
 
+
+
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
         calcEigentransposemultMassmatrix();
         CommonOps.scale(acceleration[0], influenceVectorX);
@@ -252,6 +267,9 @@ public class SpatialDiscretization {
         CommonOps.addEquals(influenceVectorX, influenceVectorY);
         CommonOps.mult(eigentransposemultMassmatrix, influenceVectorX, LoadVector);
     }
+
+
+
 
     public void calculateEigenvaluesAndVectors(){
         GenEig eigen = new GenEig(StiffnessMatrix,MassMatrix); //solve GEN eigenvalues problem
@@ -269,8 +287,10 @@ public class SpatialDiscretization {
         }
     }
 
-    public void performModalAnalysis(){
 
+
+
+    public void performModalAnalysis(){
 
         calculateEigenvaluesAndVectors();
 
@@ -284,9 +304,10 @@ public class SpatialDiscretization {
         CommonOps.mult(temp,eigenvectorsmatrix,MassMatrix); //massmatrix converted into Eigenvectorspace
 
         normaliseEigenvectors();
-
-
     }
+
+
+
     public void getModalAnalysisMatrices(){
         performModalAnalysis();
         StiffnessMatrix.zero();
@@ -297,6 +318,9 @@ public class SpatialDiscretization {
             MassMatrix.set(i,i,1.0);
         }
     }
+
+
+
     public void calcEigentransposemultMassmatrix(){
         DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());
         CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
@@ -305,15 +329,14 @@ public class SpatialDiscretization {
 
 
 
-    public void superimposeModalAnalyisSolutions(double[] modalSolutionvector){
+    public void superimposeModalAnalyisSolutions(double[] modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F();
         DisplacementVector.zero();
         for (int i = 0; i < numberofDOF; i++) {
             CommonOps.add(eigenvectors[i],modalSolutionvector[i],DisplacementVector);
         }
 
-        updateStructure_SpatialDiscretization(DisplacementVector);
-
+        updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
 
     }
 }
