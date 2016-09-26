@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.kernel1;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
@@ -24,7 +25,7 @@ public class SpatialDiscretization {
 
     private DenseMatrix64F influenceVectorX;
     private DenseMatrix64F influenceVectorY;
-    private DenseMatrix64F DisplacementVector;  //project manager advice
+    //private DenseMatrix64F DisplacementVector;  //project manager advice
 
     //Modal Analysis part
     private DenseMatrix64F eigenvectorsmatrix;
@@ -44,13 +45,11 @@ public class SpatialDiscretization {
         this.structure = structure;
         //initialize displacement with zeros
         numberofDOF = structure.getNodes().size()*3;
-        DisplacementVector = new DenseMatrix64F(getNumberofDOF(), 1);
-        DisplacementVector.zero();
-        numberofDOF = structure.getNodes().size()*3;      //TODO Alex: temporary solution. Changes if we add hinges.
 
         influenceVectorX = new DenseMatrix64F(getNumberofDOF(), 1);
         influenceVectorY = new DenseMatrix64F(getNumberofDOF(), 1);
 
+        initialeDiscretization();
         initializeMatrices();
         calculateInfluenceVector();
    }
@@ -92,6 +91,85 @@ public class SpatialDiscretization {
         calculateMassMatrix();
         calculateStiffnessMatrix();
         calculateDampingMatrix();
+    }
+
+    public void initialeDiscretization(){
+        numberofDOF=0;
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+
+            List<Integer>  dofs = new ArrayList<>();
+
+            // dof for x direction
+            dofs.add(numberofDOF);
+            if (node.getConstraint(0)){
+                structure.addSingleConDOF(numberofDOF);
+            }
+            numberofDOF++;
+
+            // dof for y direction
+            dofs.add(numberofDOF);
+            if (node.getConstraint(1)){
+                structure.addSingleConDOF(numberofDOF);
+            }
+            numberofDOF++;
+
+            if (node.isHinge()){
+                List<Beam> beams = node.getBeams();
+                for (int j = 0; j < beams.size(); j++) {
+                    Beam beam = beams.get(i);
+
+                    // dof for rotation of this beam
+                    dofs.add(numberofDOF);
+
+                    if(beam.getStartNode()==node){
+                        beam.setSingleDof(0,dofs.get(0));
+                        beam.setSingleDof(1,dofs.get(1));
+                        beam.setSingleDof(2,numberofDOF);
+                    }
+                    else {
+                        beam.setSingleDof(3,dofs.get(0));
+                        beam.setSingleDof(4,dofs.get(1));
+                        beam.setSingleDof(5, numberofDOF);
+                    }
+                    numberofDOF++;
+
+                }
+            }
+            // rigid connection
+            else {
+                List<Beam> beams = node.getBeams();
+
+                // dof for rotation of all beams
+                dofs.add(numberofDOF);
+
+                if (node.getConstraint(2)){
+                    structure.addSingleConDOF(numberofDOF);
+                }
+
+                for (int j = 0; j < beams.size(); j++) {
+                    Beam beam = beams.get(i);
+
+                    if(beam.getStartNode()==node){
+                        beam.setSingleDof(0,dofs.get(0));
+                        beam.setSingleDof(1,dofs.get(1));
+                        beam.setSingleDof(2,numberofDOF);
+                    }
+                    else {
+                        beam.setSingleDof(3,dofs.get(0));
+                        beam.setSingleDof(4,dofs.get(1));
+                        beam.setSingleDof(5, numberofDOF);
+                    }
+
+                }
+                numberofDOF++;
+
+            }
+
+            // dofs am Knoten setzen
+            node.setDOF(dofs);
+        }
+
     }
 
     public void calculateStiffnessMatrix() {
@@ -166,9 +244,6 @@ public class SpatialDiscretization {
         }
     }
 
-    public DenseMatrix64F getDisplacementVector() {
-        return DisplacementVector;
-    }
 
    public int getNumberofDOF() {
         return numberofDOF;
@@ -187,6 +262,7 @@ public class SpatialDiscretization {
      * @param displacementVector a (3 * number of nodes) x 1 matrix. Three consequent values contain displacements in x, y, z direction.
      */
     public void updateStructure(DenseMatrix64F displacementVector) {
+
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
             node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
@@ -194,14 +270,31 @@ public class SpatialDiscretization {
         }
     }
 
-    public void updateStructure_SpatialDiscretization(DenseMatrix64F displacementVector) {
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-            Node node = structure.getNodes().get(i);
-            node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
-            node.setSingleRotation(0,displacementVector.get(3*i+2,0)); //TODO change with introducting of hinges
+
+    //public void updateDisplacementToBeams(DenseMatrix64F DisplacementVector){
+//        for (int e = 0; e < structure.getBeams().size(); e++) {
+//            Beam beam = structure.getBeams().get(e);
+//            int[] dofs = beam.getDofs();
+//            for (int j = 0; j < 6; j++) {
+//                beam.setSingleDisplacement(j,DisplacementVector.get(0,dofs[j]));
+//            }
+//        }
+//    }
+
+    public void updateDisplacementToNodes(DenseMatrix64F DisplacementVector){
+        for (int e = 0; e < structure.getNodes().size(); e++) {
+            Node node = structure.getNodes().get(e);
+
+            List<Integer>  dofs = node.getDOF();
+            node.setCurrentX(DisplacementVector.get(0,dofs.get(0))+node.getInitialX());
+            node.setCurrentY(DisplacementVector.get(0,dofs.get(0))+node.getInitialY());
+            for (int j = 2; j < dofs.size(); j++) {
+                node.setSingleRotation(j-2,DisplacementVector.get(0,dofs.get(j)));
+            }
         }
     }
+
+
 
     public DenseMatrix64F getLoadVector() {
         return LoadVector;
@@ -242,6 +335,7 @@ public class SpatialDiscretization {
     }
 
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
+        calcEigentransposemultMassmatrix();
         CommonOps.scale(acceleration[0], influenceVectorX);
         CommonOps.scale(acceleration[1], influenceVectorY);
         CommonOps.addEquals(influenceVectorX, influenceVectorY);
@@ -298,10 +392,17 @@ public class SpatialDiscretization {
         CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,eigentransposemultMassmatrix);
     }
 
+
+
     public void superimposeModalAnalyisSolutions(double[] modalSolutionvector){
+        DenseMatrix64F DisplacementVector = new DenseMatrix64F();
         DisplacementVector.zero();
         for (int i = 0; i < numberofDOF; i++) {
             CommonOps.add(eigenvectors[i],modalSolutionvector[i],DisplacementVector);
         }
+
+        updateDisplacementToNodes(DisplacementVector);
+
+
     }
 }

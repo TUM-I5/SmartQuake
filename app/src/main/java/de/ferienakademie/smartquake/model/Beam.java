@@ -20,11 +20,14 @@ public class Beam {
     private double theta;
 
     private List<Double> localdisplacements;
+    private double[] displacement;
 
     /**
      *array of degrees of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
       */
     private int[] dofs;
+
+
 
     private DenseMatrix64F elementStiffnessMatrix;
     private DenseMatrix64F elementMassMatrix;
@@ -42,10 +45,7 @@ public class Beam {
     public Beam(Node startNode, Node endNode, Material material,boolean lumped) {
         this.startNode = startNode;
         this.endNode = endNode;
-        this.dofs = new int[]{
-                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
-                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
-        };
+        this.displacement = new double[6];
         this.material = material;
         this.thickness = 0.1f;
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
@@ -276,6 +276,8 @@ public class Beam {
         this.dofs = dofs;
     }
 
+    public void setSingleDof(int i, int dof){this.dofs[i]=dof; };
+
     public Node getStartNode() {
         return startNode;
     }
@@ -323,7 +325,20 @@ public class Beam {
         return elementStiffnessMatrix_globalized;
     }
 
+
+
+    public void setSingleDisplacement(int i,double displacement) {
+        this.displacement[i] = displacement;
+    }
+
     public DenseMatrix64F getElementMassMatrix_globalized(){
         return elementMassMatrix_globalized;
+    }
+
+    public void setRotationDOF(boolean left, int i){
+        if(left){
+
+        }
+
     }
 }

@@ -20,21 +20,15 @@ public class Structure {
 
     // X, Y
     private double[] modelSize = {8, 8};
-
     private boolean lumped = true;  // default value!
 
-    public boolean isLumped() {
-        return lumped;
-    }
 
-    public void setLumped(boolean lumped) {
-        this.lumped = lumped;
-    }
 
     public Structure(List<Node> nodes, List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;
         this.beams = beams;
         this.conDOF = conDOF;
+
     }
 
     public Structure() {
@@ -76,6 +70,12 @@ public class Structure {
         this.conDOF = conDOF;
     }
 
+
+    public void addSingleConDOF(int conDOF) {
+        this.conDOF.add(conDOF);
+    }
+
+
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
     }
@@ -95,5 +95,12 @@ public class Structure {
     public void clearAll() {
         nodes.clear();
         beams.clear();
+    }
+    public boolean isLumped() {
+        return lumped;
+    }
+
+    public void setLumped(boolean lumped) {
+        this.lumped = lumped;
     }
 }

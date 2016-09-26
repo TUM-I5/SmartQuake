@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.excitation.StructureIO;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 public class StructureFactory {
     public static Structure cantileverBeam() {
@@ -61,36 +62,12 @@ public class StructureFactory {
 
         //Kernel1 stuff
 
-        List<Integer> DOFnode1 = new LinkedList<>();
-        List<Integer> DOFnode2 = new LinkedList<>();
-        List<Integer> DOFnode3 = new LinkedList<>();
-        List<Integer> DOFnode4 = new LinkedList<>();
-        List<Integer> DOFnode5 = new LinkedList<>();
 
-        DOFnode1.add(0); //constraint
-        DOFnode1.add(1);//constraint
-        DOFnode1.add(2);//constraint
-
-        DOFnode2.add(3);//constraint
-        DOFnode2.add(4);//constraint
-        DOFnode2.add(5);//constraint
-
-        DOFnode3.add(6);
-        DOFnode3.add(7);
-        DOFnode3.add(8);
-
-        DOFnode4.add(9);
-        DOFnode4.add(10);
-        DOFnode4.add(11);
-        DOFnode5.add(12);
-        DOFnode5.add(13);
-        DOFnode5.add(14);
-
-        Node n1 = new Node(0, height, DOFnode1);
-        Node n2 = new Node(width, height, DOFnode2);
-        Node n3 = new Node(width, height - half, DOFnode3);
-        Node n4 = new Node(0, height - half, DOFnode4);
-        Node n5 = new Node(half, height - 2 * half, DOFnode5);
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width, height);
+        Node n3 = new Node(width, height - half);
+        Node n4 = new Node(0, height - half);
+        Node n5 = new Node(half, height - 2 * half);
 
         Beam b1 = new Beam(n1, n2, testMaterial,lumped);
         Beam b2 = new Beam(n2, n3, testMaterial,lumped);
@@ -102,12 +79,16 @@ public class StructureFactory {
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
 
-        List<Integer> condof= new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            condof.add(i);
-        }
 
-        structure.setConDOF(condof);
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        n1.isHinge();
+
+        n1.setConstraint(con);
+        n2.setConstraint(con);
 
         return structure;
     }
