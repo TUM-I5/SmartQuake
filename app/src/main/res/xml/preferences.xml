@@ -12,4 +12,10 @@
         android:key="displacement_slider"
         android:summary="@array/displacement_slider_summaries"
         android:title="@string/displacement_slider_title" />
+    <de.ferienakademie.smartquake.preferenceElements.SliderPreference
+        android:defaultValue="@string/frequency_slider_default"
+        android:dialogMessage="@string/frequency_slider_message"
+        android:key="frequency_slider"
+        android:summary="@array/frequency_slider_summaries"
+        android:title="@string/frequency_slider_title" />
 </PreferenceScreen>

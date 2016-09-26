@@ -30,6 +30,7 @@ import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SinCosExcitation;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
@@ -113,7 +114,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
             // TODO need to start a new activity with a list of earthquakes
-            startSimulation(new SinCosExcitation());
+            SinCosExcitation sinCosExcitation = new SinCosExcitation();
+            sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
+            startSimulation(sinCosExcitation);
             ActionMenuItemView simulation = (ActionMenuItemView)findViewById(id);
             simulation.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
