@@ -74,6 +74,9 @@ public class Newmark extends ImplicitSolver {
 
         //initialize fLoad_old
         fLoad_old = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+
+//        k1.getModalAnalysisMatrices();
+
     }
 
 
@@ -90,6 +93,36 @@ public class Newmark extends ImplicitSolver {
 
         //Get acceleration
         getAcceleration();
+
+        //Calculate velocity
+        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
+        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot_old);
+
+        //Calculate displacement
+        CommonOps.addEquals(x,delta_t,xDot); //x = x + delta_t*xDot
+        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4
+        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old); // x = x + delta_t**2*xDotDot_old/4
+
+
+        //update fLoad_old
+        fLoad_old = fLoad.copy();
+        //diagonalizes everything
+
+    }
+
+
+    /**
+     * @param t
+     *        global time since start in seconds
+     * @param delta_t
+     *        time step
+     */
+    public void nextStepLumped(double t, double delta_t) {
+
+        xDotDot_old = xDotDot.copy();
+
+        //Get acceleration
+        getAccelerationLumped();
 
         //Calculate velocity
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
@@ -123,4 +156,39 @@ public class Newmark extends ImplicitSolver {
         //Solve to get xDotDot
         solver.solve(RHS,xDotDot); //solver.A*acc = RHS
     }
+
+
+    private void getAccelerationLumped(){
+
+        //initialize right hand side
+        RHS = fLoad.copy();
+
+        //Calculate RHS
+        multAddDiagMatrix(-delta_t,K,xDot,RHS); //RHS = RHS - delta_t*K*xDot
+        multAddDiagMatrix(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
+        CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
+
+        //Solve to get xDotDot
+        for(int i = 0; i<k1.getNumberofDOF(); i++){
+            xDotDot.set(i,0,RHS.get(i,0)/1.0);
+        }
+    }
+
+    /**
+     * result = result - skalar*matrix*vec
+     * @param delta_t
+     * @param matrix
+     * @param vec
+     * @param result
+     */
+    private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
+        for(int i = 0; i< k1.getNumberofDOF(); i++){
+            result.set(i,0,result.get(i)-delta_t*matrix.get(i,i)*vec.get(i,0));
+        }
+    }
+
+    private void addEqualsDiagMatrix(){
+
+    }
+
 }

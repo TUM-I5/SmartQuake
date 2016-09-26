@@ -13,6 +13,8 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  */
 public class Simulation {
 
+    private int slowStateCount = 0;
+
     public enum SimulationState {
         RUNNING_NORMAL,
         RUNNING_SLOW,
@@ -67,13 +69,17 @@ public class Simulation {
                     if (currentStep.isRunning()) {
                         Log.e("Simulation", "Kernel2 can not catch up the gui");
 
+                        slowStateCount++;
+
                         // If the last speed state was normal and now we're slow, notify the listener
-                        if (listener != null && state == SimulationState.RUNNING_NORMAL) {
+                        if (listener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 2) {
+                            slowStateCount = 0;
                             state = SimulationState.RUNNING_SLOW;
                             listener.onSimulationStateChanged(state);
                         }
                         currentStep.stop();
                     } else {
+                        slowStateCount = 0;
                         if (listener != null && state == SimulationState.RUNNING_SLOW) {
                             state = SimulationState.RUNNING_NORMAL;
                             listener.onSimulationStateChanged(state);
