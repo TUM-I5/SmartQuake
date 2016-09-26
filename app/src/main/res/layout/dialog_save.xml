@@ -5,12 +5,15 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/fileNameEditor"
         android:editable="true"
         android:enabled="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:inputType="text"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:inputType="text|textCapSentences"
         android:visibility="visible" />
+
 </LinearLayout>

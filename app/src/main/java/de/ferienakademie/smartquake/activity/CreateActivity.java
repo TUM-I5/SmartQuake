@@ -127,7 +127,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         return super.onOptionsItemSelected(item);
     }
 
-    // TODO: should conversion be a part of Structure?
     private void serializeStructure(String name) {
         List<Node> nodes = structure.getNodes();
         List<Beam> allBeams = structure.getBeams();
@@ -172,7 +171,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         FileOutputStream fileOutputStream = null;
         try {
-            fileOutputStream = openFileOutput("Fun.structure", Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput(name + ".structure", Context.MODE_PRIVATE);
             StructureIO.writeStructure(fileOutputStream, structure);
             fileOutputStream.close();
             Toast.makeText(this, "Structure saved", Toast.LENGTH_SHORT).show();
@@ -342,7 +341,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 }
 
                 if (changeToThisNode != null) {
-                    for (Beam beam : beamList) {
+                    for (int k = 0; k < beamList.size(); k++) {
+                        Beam beam = beamList.get(k);
                         if (beam.getStartNode().equals(changeToThisNode) && changeToThisNode != beam.getStartNode()) {
                             Node startNode = beam.getStartNode();
                             if (!removed) {
@@ -350,6 +350,22 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                                     if (startNode == nodes.get(i)) {
                                         nodes.remove(i);
                                         removed = true;
+                                        if (beam.getStartNode().equals(beam.getEndNode())) {
+                                            boolean delete = true;
+                                            for (Beam connectedBeam : beam.getStartNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            for (Beam connectedBeam : beam.getEndNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            if (delete) {
+                                                nodes.remove(beam.getStartNode());
+                                                nodes.remove(beam.getEndNode());
+                                                beamList.remove(beam);
+                                            }
+                                        }
                                         break;
                                     }
                                 }
@@ -364,6 +380,22 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                                     if (endNode == nodes.get(i)) {
                                         nodes.remove(i);
                                         removed = true;
+                                        if (beam.getEndNode().equals(beam.getEndNode())) {
+                                            boolean delete = true;
+                                            for (Beam connectedBeam : beam.getStartNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            for (Beam connectedBeam : beam.getEndNode().getBeams()) {
+                                                if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
+                                                    delete = false;
+                                            }
+                                            if (delete) {
+                                                nodes.remove(beam.getStartNode());
+                                                nodes.remove(beam.getEndNode());
+                                                beamList.remove(beam);
+                                            }
+                                        }
                                         break;
                                     }
                                 }
