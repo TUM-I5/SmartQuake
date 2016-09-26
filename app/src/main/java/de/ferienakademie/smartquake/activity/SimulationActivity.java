@@ -1,6 +1,7 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +27,7 @@ import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
+import de.ferienakademie.smartquake.excitation.SinCosExcitation;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Beam;
@@ -109,7 +112,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             simFab.setImageResource(R.drawable.ic_pause_white_24dp);
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
-            // load EQ data
+            // TODO need to start a new activity with a list of earthquakes
+            startSimulation(new SinCosExcitation());
+            ActionMenuItemView simulation = (ActionMenuItemView)findViewById(id);
+            simulation.setEnabled(false);
+            ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
+            replay.setEnabled(false);
         }
 
 
