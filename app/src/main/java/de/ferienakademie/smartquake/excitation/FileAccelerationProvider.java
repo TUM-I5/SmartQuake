@@ -14,8 +14,23 @@ import de.ferienakademie.smartquake.activity.SimulationActivity;
  */
 public class FileAccelerationProvider extends StoredAccelerationProvider {
 
+    public boolean isEmpty() {
+        return this.readings.isEmpty();
+    }
+
+    @Override
+    public double[] getAcceleration() {
+        double[] temp = super.getAcceleration();
+        for (AccelerationProviderObserver observer : accelerationProviderObservers) {
+            observer.onNewReplayPercent(readings.get(currentPosition).timestamp/
+                    readings.get(readings.size()-1).timestamp);
+        }
+        return temp;
+    }
+
     /**
      * Load acceleration data from a file
+     *
      * @param inputStream stream that passes readings from a file to excitation manager
      */
     public void load(InputStream inputStream) throws IOException {
@@ -42,13 +57,11 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         }
     }
 
-    public void setActive()
-    {
+    public void setActive() {
 
     }
 
-    public void setInactive()
-    {
+    public void setInactive() {
 
     }
 }

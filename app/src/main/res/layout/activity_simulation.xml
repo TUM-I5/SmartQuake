@@ -5,6 +5,28 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:orientation="horizontal"
+        android:layout_gravity="top|center"
+        android:id="@+id/sim_layout_sensor_debug"
+        android:layout_marginTop="4dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sim_tv_sensor_x"
+            android:layout_marginEnd="8dp"
+            android:textSize="18sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sim_tv_sensor_y"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -15,44 +37,41 @@
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
-        <View
-            android:id="@+id/simGround"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="11"
-            android:background="@color/groundColor" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="11"
             android:background="@color/groundColor"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            >
 
-            <SeekBar
+            <ProgressBar
                 android:id="@+id/replaySeekBar"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_gravity="center"
                 android:layout_weight="11"
                 android:background="@android:color/transparent"
-                android:max="100" />
+                android:max="100"
+                style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                />
 
             <TextView
                 android:id="@+id/replaytext"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginRight="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:enabled="false"
                 android:text="@string/replay"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#fa0707"
+                android:textColor="@color/colorAccent"
                 android:textIsSelectable="false"
                 android:textSize="20sp"
-                android:textStyle="normal" />
+                android:textStyle="normal"
+                android:layout_marginEnd="82dp"
+                />
 
         </LinearLayout>
 

@@ -7,15 +7,17 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 import de.ferienakademie.smartquake.R;
 
-public class SaveDialogFragment extends DialogFragment {
-public interface SaveDialogListener {
-    public void onNameChosen(String s);
-}
+/**
+ * Created by yuriy on 26/09/16.
+ */
+public class SaveEarthquakeFragment extends DialogFragment {
+    public interface SaveEarthquakeListener {
+        public void onNameChosen(String s);
+    }
 
 
 
@@ -24,18 +26,14 @@ public interface SaveDialogListener {
         AlertDialog.Builder bob = new AlertDialog.Builder(getActivity());
         LayoutInflater i = getActivity().getLayoutInflater();
 
-        final View view = i.inflate(R.layout.dialog_save, null);
-
-//        ((EditText)view.findViewById(R.id.fileNameEditor));
+        final View view = i.inflate(R.layout.dialog_save_earthquake, null);
 
         bob.setView(view)
-                .setMessage("Choose structure name")
+                .setMessage("Earthquake name")
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // view returned is null...
-                        //View v = SaveDialogFragment.this.getView();
                         EditText t = (EditText) view.findViewById(R.id.fileNameEditor);
-                        ((SaveDialogListener) getActivity()).onNameChosen(t.getText().toString());
+                        ((SaveEarthquakeListener) getActivity()).onNameChosen(t.getText().toString());
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

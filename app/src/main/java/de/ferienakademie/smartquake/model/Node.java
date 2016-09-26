@@ -1,26 +1,27 @@
 package de.ferienakademie.smartquake.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by yuriy on 21/09/16.
  */
 public class Node {
-    //Current node position
-    private double currentX;
-    private double currentY;
-
-    private List<Double> currentRotations; //List of all rotations at the node
 
     //Initial node position
     private double initialX;
     private double initialY;
-    private List<Integer> DOF; //Degrees of freedom
-
-    private double radius = 0.1;
 
     private boolean[] constraint = new boolean[3];
+
+    private List<Integer> DOF; //Degrees of freedom
+    private List<Double> displacements; //List of all displacements at the node
+
+    private List <List <Double>>  historyOfDisplacements;
+    private List <double[]> historyOfGroundDisplacement;
+
+    private double radius = 0.02;
 
 
 
@@ -28,13 +29,19 @@ public class Node {
 
     private List<Beam> beams = new ArrayList<>();
 
+
     public Node(double x, double y) {
-        this.currentX = x;
-        this.currentY = y;
         this.initialX = x;
         this.initialY = y;
-        currentRotations = new ArrayList<>();
-        currentRotations.add(0.0);
+        displacements = new ArrayList<>();
+        historyOfDisplacements = new ArrayList<>();
+        historyOfGroundDisplacement = new ArrayList<>();
+    }
+
+
+    public Node(double x, double y, boolean hinged) {
+        this(x, y);
+        this.hinge = hinged;
     }
 
 
@@ -52,21 +59,35 @@ public class Node {
         this.initialX = initialX;
     }
 
+
+
+
     public double getInitialY() {
         return initialY;
     }
 
-    public List<Double> getCurrentRotations() {
-        return currentRotations;
+
+
+
+    public void setSingleDisplacement(int i, double value) {
+        this.displacements.set(i,value );
+
     }
 
-    public void setRotations(List<Double> currentRotations) {
-        this.currentRotations = currentRotations;
+
+
+
+    public double getSingleDisplacement(int i) {
+        return this.displacements.get(i);
     }
 
-    public void setSingleRotation(int i, double rotation) {
-        this.currentRotations.set(i,rotation );
+
+
+
+    public double getDisplacementForDof(int i) {
+        return this.displacements.get( DOF.indexOf(i) );
     }
+
 
 
 
@@ -77,50 +98,66 @@ public class Node {
     public void addBeam(Beam beam) {
         beams.add(beam);
     }
+
+
     public List<Integer> getDOF() {
         return DOF;
     }
 
+
     public void setDOF(List<Integer> DOF) {
         this.DOF = DOF;
+        for (int i=0; i<DOF.size(); i++)
+            displacements.add(0.0);
     }
+
+
 
     public double getCurrentX() {
-        return currentX;
+        return initialX + displacements.get(0);
     }
+
+
 
     public float getCurrentXf() {
-        return (float) currentX;
+        return (float)(initialX + displacements.get(0));
     }
 
-    public void setCurrentX(double currentX) {
-        this.currentX = currentX;
-    }
+
 
     public double getCurrentY() {
-        return currentY;
+        return initialY + displacements.get(1);
     }
+
+
 
     public float getCurrentYf() {
-        return (float) currentY;
+        return (float)(initialY + displacements.get(1));
     }
 
-    public void setCurrentY(double currentY) {
-        this.currentY = currentY;
-    }
+
 
 
     public double getRadius() {
         return radius;
     }
 
+
+
+
     public void setRadius(double radius) {
         this.radius = radius;
     }
 
+
+
+
     public void clearBeams() {
         beams.clear();
     }
+
+
+
 
     public List<Beam> getBeams() {
         return beams;
@@ -128,12 +165,29 @@ public class Node {
 
     @Override
     public boolean equals(Object obj) {
-
         if (!(obj instanceof Node)) return false;
 
         Node node = (Node) obj;
 
-        return node.currentX == currentX && node.currentY == currentY;
+        return node.initialX == initialX && node.initialY == initialY;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(getInitialX());
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(getInitialY());
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (displacements != null ? displacements.hashCode() : 0);
+        result = 31 * result + (DOF != null ? DOF.hashCode() : 0);
+        temp = Double.doubleToLongBits(radius);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + Arrays.hashCode(constraint);
+        result = 31 * result + (hinge ? 1 : 0);
+        result = 31 * result + beams.hashCode();
+        return result;
     }
 
     public boolean isHinge() {
@@ -155,5 +209,20 @@ public class Node {
     public void setSingleConstraint(int i, boolean constraint) {
         this.constraint[i] = constraint;
     }
+
+
+    public void saveTimeStepDisplacement() {
+        historyOfDisplacements.add(displacements);
+    }
+
+
+
+    public void saveTimeStepGroundDisplacement(double[] gD) {
+        historyOfGroundDisplacement.add(gD);
+    }
+
+
+
+
 }
 

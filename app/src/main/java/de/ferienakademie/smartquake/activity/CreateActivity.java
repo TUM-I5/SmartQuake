@@ -52,7 +52,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     private double width, height;
 
-    private Material material = new Material();
+    private Material material = Material.STEEL;
     private boolean lumped = true;
 
     private int yOffset = 0;
@@ -167,10 +167,16 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             transformToMeters(node);
         }
 
+        for (int i = nodes.size() - 1; i >= 0; i--) {
+            if (nodes.get(i).getBeams().isEmpty()) {
+                nodes.remove(i);
+            }
+        }
+
         structure.setConDOF(condof);
 
         for (int i = 0; i < allBeams.size(); i++) {
-            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode())) allBeams.remove(i);
+            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode())) allBeams.remove(i--);
         }
 
         FileOutputStream fileOutputStream = null;
@@ -206,8 +212,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         if (y >= temp - deltaTemp / 2)   y = temp;
 
-        node.setCurrentX(x);
-        node.setCurrentY(y);
         node.setInitialX(x);
         node.setInitialY(y);
     }
@@ -241,11 +245,11 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
                 node1 = nodes.get(nodes.size() - 2);
                 node2 = nodes.get(nodes.size() - 1);
-                node1.setCurrentX(event.getX(0));
-                node1.setCurrentY(event.getY(0) - yOffset);
+                node1.setInitialX(event.getX(0));
+                node1.setInitialY(event.getY(0) - yOffset);
 
-                node2.setCurrentX(event.getX(1));
-                node2.setCurrentY(event.getY(1) - yOffset);
+                node2.setInitialX(event.getX(1));
+                node2.setInitialY(event.getY(1) - yOffset);
 
                 Beam beam = new Beam(node1, node2);
                 node1.clearBeams();
@@ -322,8 +326,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 if (chosenNode != null) {
-                    chosenNode.setCurrentX(x);
-                    chosenNode.setCurrentY(y);
+                    chosenNode.setInitialX(x);
+                    chosenNode.setInitialY(y);
                     node1 = chosenNode;
                     node2 = null;
                 }
@@ -448,21 +452,21 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
 
         if (attach1) {
-            node1.setCurrentX(node1Attach.getCurrentX());
-            node1.setCurrentY(node1Attach.getCurrentY());
+            node1.setInitialX(node1Attach.getCurrentX());
+            node1.setInitialY(node1Attach.getCurrentY());
         }
 
         if (attach2) {
-            node2.setCurrentX(node2Attach.getCurrentX());
-            node2.setCurrentY(node2Attach.getCurrentY());
+            node2.setInitialX(node2Attach.getCurrentX());
+            node2.setInitialY(node2Attach.getCurrentY());
         }
 
         if (node1 != null && node1.getCurrentY() >= height - DELTA / 2) {
-            node1.setCurrentY(height);
+            node1.setInitialY(height);
         }
 
         if (node2 != null && node2.getCurrentY() >= height - DELTA / 2) {
-            node2.setCurrentY(height);
+            node2.setInitialY(height);
         }
 
     }

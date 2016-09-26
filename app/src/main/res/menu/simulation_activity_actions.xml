@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:smartquake="http://schemas.android.com/apk/res-auto">
+    xmlns:smartquake="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/sim_reset_button"
@@ -17,5 +18,11 @@
         android:icon="@drawable/ic_wifi_tethering_white_24dp"
         android:title="@string/load_data_button"
         smartquake:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/save_simulation"
+        android:orderInCategory="100"
+        android:title="Save simulation"
+        app:showAsAction="never" />
 
 </menu>

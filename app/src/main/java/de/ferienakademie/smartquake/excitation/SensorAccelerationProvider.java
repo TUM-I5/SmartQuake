@@ -5,6 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -16,9 +17,12 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private GravityProvider gravityProvider;
+    private int sensorRate;
+    private boolean gravityActive;
 
     public SensorAccelerationProvider(SensorManager sensorManager)
     {
+        gravityActive = true;
         this.sensorManager = sensorManager;
         if(sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION).size() == 0){
            //gravity cannot be excluded from Sensor
@@ -35,10 +39,12 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public void initTime(double timeStep) {
         super.initTime(timeStep);
+        sensorRate = (int)(timeStep/2);
         baseTime = SystemClock.elapsedRealtimeNanos();
+        gravityProvider.setBaseTime(baseTime);
         readings = new ArrayList<>();
         readings.add(new AccelData());
-        gravityProvider.init();
+        gravityProvider.init(timeStep);
     }
 
     @Override
@@ -46,12 +52,16 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         AccelData currentAcceleration = new AccelData(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.timestamp-baseTime);
         // put new element to the queue of sensor measurements
         readings.add(currentAcceleration);
+
+        notifyNewAccelData(currentAcceleration);
     }
 
     @Override
     public AccelData getAccelerationMeasurement(){
         AccelData data = super.getAccelerationMeasurement();
-        gravityProvider.getGravity(data);
+        if(gravityActive) {
+            gravityProvider.getGravity(data);
+        }
         return data;
     }
 
@@ -62,8 +72,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
 
     public void setActive()
     {
-        sensorManager.registerListener(this, accelerometer,
-                SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, accelerometer, sensorRate);
         gravityProvider.setActive();
     }
 
@@ -71,5 +80,13 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         sensorManager.unregisterListener(this);
         gravityProvider.setInactive();
+    }
+
+    /**
+     *
+     * @param active activates gravity if true
+     */
+    public void setGravityActive(boolean active){
+            gravityActive = true;
     }
 }
