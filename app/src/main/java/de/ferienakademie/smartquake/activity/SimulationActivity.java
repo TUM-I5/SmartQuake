@@ -14,7 +14,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -34,7 +35,6 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener {
 
-    private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
@@ -46,12 +46,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-
+    private SeekBar replaySeekBar;
+    private TextView replayrunningLabel;
+    private double replayProgress;
     private SimulationMode mode = SimulationMode.LIVE;
 
     private int structureId;
     private String structureName;
-
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
@@ -92,6 +93,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         if (id == R.id.sim_replay_button && !simulation.isRunning()) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+            replaySeekBar.setVisibility(View.VISIBLE);
+            replayrunningLabel.setVisibility(View.VISIBLE);
             FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
             try {
@@ -133,11 +136,29 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_simulation);
 
+        setContentView(R.layout.activity_simulation);
+        replaySeekBar = (SeekBar) findViewById(R.id.replaySeekBar);
+        replaySeekBar.setVisibility(View.GONE);
+        replaySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //TODO call excitation to set correct replay position in current array
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        replayrunningLabel = (TextView) findViewById(R.id.replaytext);
+        replayrunningLabel.setVisibility(View.GONE);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
@@ -164,13 +185,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onResume() {
         super.onResume();
-        mCurrentAccelerationProvider.setActive();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCurrentAccelerationProvider.setInactive();
+        onStopButtonClicked();
     }
 
     private void toggleStartStopAvailability() {
@@ -194,7 +214,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
         Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
-        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
+        startSimulation(new SensorAccelerationProvider(mSensorManager));
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
@@ -273,12 +293,23 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     }
 
+    private void setReplayProgress(double progress) {
+        replayProgress = progress;
+        replaySeekBar.setProgress((int) Math.round(progress));
+        if (progress >= 100) {
+            replaySeekBar.setVisibility(View.GONE);
+            replayrunningLabel.setVisibility(View.GONE);
+            onStopButtonClicked();
+            mode = SimulationMode.LIVE;
+        }
+    }
+
+
     // TODO: should this be part of Simulation too?
     private enum SimulationMode {
         LIVE,
         REPLAY,
         FILE_REPLAY
     }
-
 
 }

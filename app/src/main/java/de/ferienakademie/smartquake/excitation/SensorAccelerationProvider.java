@@ -15,11 +15,21 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     private long baseTime; //in nanoseconds
     private SensorManager sensorManager;
     private Sensor accelerometer;
+    private GravityProvider gravityProvider;
 
-    public SensorAccelerationProvider(SensorManager sensorManager, Sensor accelerometer)
+    public SensorAccelerationProvider(SensorManager sensorManager)
     {
         this.sensorManager = sensorManager;
-        this.accelerometer = accelerometer;
+        if(sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION).size() == 0){
+           //gravity kann im Sensor nicht rausgerechnet werden
+            gravityProvider = new SoftwareGravityProvider();
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        } else {
+            // gravity kann rausgerechnet werden
+            gravityProvider = new SensorGravityProvider(sensorManager);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        }
+
     }
 
     @Override
@@ -28,6 +38,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         baseTime = SystemClock.elapsedRealtimeNanos();
         readings = new ArrayList<>();
         readings.add(new AccelData());
+        gravityProvider.init();
     }
 
     @Override
@@ -35,6 +46,13 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         AccelData currentAcceleration = new AccelData(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.timestamp-baseTime);
         // put new element to the queue of sensor measurements
         readings.add(currentAcceleration);
+    }
+
+    @Override
+    public AccelData getAccelerationMeasurement(){
+        AccelData data = super.getAccelerationMeasurement();
+        gravityProvider.getGravity(data);
+        return data;
     }
 
     @Override
@@ -46,10 +64,12 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         sensorManager.registerListener(this, accelerometer,
                 SensorManager.SENSOR_DELAY_UI);
+        gravityProvider.setActive();
     }
 
     public void setInactive()
     {
         sensorManager.unregisterListener(this);
+        gravityProvider.setInactive();
     }
 }
