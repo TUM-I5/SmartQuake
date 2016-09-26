@@ -18,6 +18,10 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_gravity", false);
     }
 
+    public static boolean useModalAnalysis() {
+        return sharedPref.getBoolean("pref_modal_analysis", false);
+    }
+
     public static double getDisplacementScaling() {
         return (double) (4.0f * sharedPref.getFloat("loadVector_slider", 0.0f) + 1.0f);
     }

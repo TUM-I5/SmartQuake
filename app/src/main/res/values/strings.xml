@@ -22,6 +22,11 @@
     <string name="replay_running">Replay running.</string>
     <string name="replay">Replay</string>
 
+    <!-- Preference modal analysis -->
+    <string name="pref_modal_analysis_title">Use modal analysis</string>
+    <string name="pref_modal_analysis_summary_On">Use modal analysis</string>
+    <string name="pref_modal_analysis_summary_Off">Use modal analysis in the simulation.</string>
+
     <!-- Preference slider excitation frequency -->
     <string name="frequency_slider_title">Excitation frequency</string>
     <item name="frequency_slider_default" format="float" type="string">0.1</item>
