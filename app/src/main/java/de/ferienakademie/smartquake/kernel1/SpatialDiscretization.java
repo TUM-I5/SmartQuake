@@ -1,5 +1,8 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.content.SharedPreferences;
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -8,9 +11,11 @@ import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.preferenceElements.SliderPreference;
 
 /**
  * Created by alex on 22.09.16.
@@ -36,6 +41,8 @@ public class SpatialDiscretization {
 
     private int numberofDOF;
 
+    private double displacementScale = 1.0;
+
     Structure structure;
     // temporary vectors that will be scaled by acceleration
     private DenseMatrix64F influenceVectorX_temp;
@@ -51,6 +58,8 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
+
+        displacementScale = 4.0 * PreferenceReader.getDisplacementScaling() + 1.0;
    }
 
     /**
@@ -153,8 +162,8 @@ public class SpatialDiscretization {
     public void calculateDampingMatrix() {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
-        double a0 = 4.788640506;
-        double a1 =0.0001746899608;
+        double a0 = 4.788640506/10;
+        double a1 =0.0001746899608/10;
         CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
@@ -185,7 +194,6 @@ public class SpatialDiscretization {
     }
 
 
-
     public void updateDisplacementsOfStructure(DenseMatrix64F displacementVector) {
 
         // list of constrained dofs
@@ -197,7 +205,6 @@ public class SpatialDiscretization {
             displacementVector2.set(conDOF.get(k),0,0);
         }
 
-
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
 
@@ -205,9 +212,8 @@ public class SpatialDiscretization {
 
             for (int j = 0; j < dofsOfNode.size(); j++) {
                 //TODO change with introducting of hinges
-                node.setSingleDisplacement( j, 1* displacementVector2.get( dofsOfNode.get(j) , 0));
+                node.setSingleDisplacement( j, displacementScale * displacementVector2.get( dofsOfNode.get(j) , 0));
             }
-
         }
 
     }
