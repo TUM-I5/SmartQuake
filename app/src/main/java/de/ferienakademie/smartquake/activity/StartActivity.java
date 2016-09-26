@@ -137,7 +137,8 @@ public class StartActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            //TODO What happens when you want to play recorded quake data
+            startActivity(new Intent(this, EarthquakeDataActivity.class));
+            return true;
 
         } else if (id == R.id.nav_manage) {
             startActivity(new Intent(this, SettingsActivity.class));
