@@ -333,19 +333,19 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         String msg = "";
 
-        switch (newSpeedState) {
-            case RUNNING_SLOW:
-                msg = "Simulation speed slow";
-                slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
-                slowSnackbar.show();
-                break;
-            case RUNNING_NORMAL:
-                msg = "Simulation speed normal";
-                if (slowSnackbar != null) slowSnackbar.dismiss();
-                break;
+        if (!slowSnackbar.isShownOrQueued() && newSpeedState == Simulation.SimulationState.RUNNING_SLOW) {
+            msg = "Simulation speed might be slow...";
+            slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
+            slowSnackbar.setAction("DISMISS", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    slowSnackbar.dismiss();
+                }
+            });
+            slowSnackbar.show();
         }
 
-        Log.d("SimSpeed", msg);
+        Log.v("SimSpeed", newSpeedState.name());
 
     }
 
