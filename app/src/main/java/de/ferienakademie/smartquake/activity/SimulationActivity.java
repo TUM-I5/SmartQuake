@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -24,7 +25,9 @@ import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
+import de.ferienakademie.smartquake.excitation.AccelData;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.excitation.AccelerationProviderObserver;
 import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
@@ -40,7 +43,7 @@ import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener,
-        SaveEarthquakeFragment.SaveEarthquakeListener {
+        SaveEarthquakeFragment.SaveEarthquakeListener, AccelerationProviderObserver {
 
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
@@ -58,6 +61,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private double replayProgress;
     private SimulationMode mode = SimulationMode.LIVE;
 
+    //Sensor Debug Views
+    private TextView tvSensorDataX;
+    private TextView tvSensorDataY;
+    private LinearLayout layoutSensorDebug;
+
     private int structureId;
     private String structureName;
     // Click listeners
@@ -73,6 +81,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onStopButtonClicked();
         }
     };
+    private long lastDebugSensorDataTimestamp;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -179,6 +188,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         structureId = getIntent().getExtras().getInt("id");
         structureName = getIntent().getExtras().getString("name");
 
+        findSensorDataDebugViews();
+
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -189,6 +200,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 }
             });
         }
+    }
+
+    private void findSensorDataDebugViews() {
+        layoutSensorDebug = (LinearLayout) findViewById(R.id.sim_layout_sensor_debug);
+        tvSensorDataX = (TextView) findViewById(R.id.sim_tv_sensor_x);
+        tvSensorDataY = (TextView) findViewById(R.id.sim_tv_sensor_y);
+
+        int visibility = PreferenceReader.showRawSensorData() ? View.VISIBLE : View.GONE;
+        layoutSensorDebug.setVisibility(visibility);
     }
 
     @Override
@@ -229,10 +249,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     void startSimulation(AccelerationProvider accelerationProvider) {
         if (mCurrentAccelerationProvider != null)
         {
+            mCurrentAccelerationProvider.removeObserver(this);
             mCurrentAccelerationProvider.setInactive();
         }
 
         mCurrentAccelerationProvider = accelerationProvider;
+        mCurrentAccelerationProvider.addObserver(this);
+
 
         String msgString = "Simulation started";
         if (mode == SimulationMode.LIVE) {
@@ -257,6 +280,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
+        mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
         try {
             mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
@@ -344,6 +368,27 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     }
 
+    @Override
+    public void onNewAccelerationValue(AccelData data) {
+        long timestamp = System.currentTimeMillis();
+        if (timestamp - lastDebugSensorDataTimestamp  > 100) {
+            lastDebugSensorDataTimestamp = System.currentTimeMillis();
+            final String xData = String.format("x: %.2f %.2f", data.xAcceleration, data.xGravity);
+            final String yData = String.format("y: %.2f %.2f", data.yAcceleration, data.yGravity);
+            tvSensorDataX.post(new Runnable() {
+                @Override
+                public void run() {
+                    tvSensorDataX.setText(xData);
+                    tvSensorDataY.setText(yData);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onNewReplayPercent(double percent) {
+        // todo display to progress bar
+    }
 
     // TODO: should this be part of Simulation too?
     private enum SimulationMode {

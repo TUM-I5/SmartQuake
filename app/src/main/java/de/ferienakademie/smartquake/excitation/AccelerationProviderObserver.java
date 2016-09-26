@@ -5,4 +5,6 @@ package de.ferienakademie.smartquake.excitation;
  */
 public interface AccelerationProviderObserver {
     void onNewAccelerationValue(AccelData data);
+
+    void onNewReplayPercent(double percent);
 }

@@ -34,14 +34,17 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
 
     @Override
     public AccelData getAccelerationMeasurement() {
+        AccelData accelData = readings.get(currentPosition);
         long currTime = (long) (tick * timeStep);
         while (readings.size() - 1 > currentPosition
-                && readings.get(currentPosition).timestamp < currTime) {
+                && accelData.timestamp < currTime) {
             ++currentPosition;
         }
         ++tick;
 
-        return readings.get(currentPosition);
+        notifyNewAccelData(accelData);
+
+        return accelData;
     }
 
     /**

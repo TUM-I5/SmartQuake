@@ -49,9 +49,15 @@ public abstract class AccelerationProvider {
         accelerationProviderObservers.remove(observer);
     }
 
-    private void notifyObservers(AccelData data) {
+    protected void notifyNewAccelData(AccelData data) {
         for (AccelerationProviderObserver o : accelerationProviderObservers) {
             o.onNewAccelerationValue(data);
+        }
+    }
+
+    protected void notifyNewReplayPercent(double percent) {
+        for (AccelerationProviderObserver o: accelerationProviderObservers) {
+            o.onNewReplayPercent(percent);
         }
     }
 }
