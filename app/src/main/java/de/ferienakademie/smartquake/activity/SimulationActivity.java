@@ -45,7 +45,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Snackbar slowSnackbar;
 
     private SimulationMode mode = SimulationMode.LIVE;
-    private SimulationState state = SimulationState.STOPPED;
 
     private int structureId;
     private String structureName;
@@ -83,7 +82,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 mode = SimulationMode.LIVE;
             }
 
-            if (state == SimulationState.RUNNING) {
+            if (simulation.isRunning()) {
                 onStopButtonClicked();
             }
             createStructure(structureId, structureName);
@@ -97,7 +96,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.replay_button && state == SimulationState.STOPPED) {
+        if (id == R.id.replay_button && !simulation.isRunning()) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             mSensorManager.unregisterListener(mExcitationManager);
 
@@ -107,13 +106,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 e.printStackTrace();
             }
             mode = SimulationMode.REPLAY;
-            state = SimulationState.RUNNING;
             mExcitationManager.initReplay();
 
             spatialDiscretization = new SpatialDiscretization(structure);
             timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
             simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
-
 
             simulation.start();
             simulation.setListener(this);
@@ -177,7 +174,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onResume() {
         super.onResume();
-        if (mode != SimulationMode.LIVE) {
+        if (mode == SimulationMode.LIVE) {
             mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                     SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
         }
@@ -186,51 +183,26 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onPause() {
         super.onPause();
+        mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+    }
 
-        if (state != SimulationState.STOPPED) {
-            mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+    private void toggleStartStopAvailability() {
+        if (simulation.isRunning()) {
+            // started
+            simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+            simFab.setOnClickListener(stopSimulationListener);
+        } else {
+            // stopped
+            simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+            simFab.setOnClickListener(startSimulationListener);
         }
     }
 
     private void onStartButtonClicked() {
-        startSimulation();
-        if (state == SimulationState.STOPPED) {
-            state = SimulationState.RUNNING;
-        } else {
-            throw new IllegalStateException("Simulation already running (" + state.name() + ") before Start button press");
-        }
-        simFab.setOnClickListener(stopSimulationListener);
-        simFab.setImageResource(R.drawable.ic_pause_white_24dp);
-    }
-
-    private void onStopButtonClicked() {
-        simulation.stop();
-        if (state == SimulationState.RUNNING) {
-            state = SimulationState.STOPPED;
-        } else {
-            throw new IllegalStateException("Simulation already stopped (" + state.name() + ") before Stop button press");
-        }
-
-        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
-
-        mSensorManager.unregisterListener(mExcitationManager);
-        try {
-            mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-        simFab.setOnClickListener(startSimulationListener);
-    }
-
-    void startSimulation() {
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
 
         Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
@@ -240,6 +212,20 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simulation.start();
         simulation.setListener(this);
 
+        toggleStartStopAvailability();
+    }
+
+    private void onStopButtonClicked() {
+        simulation.stop();
+        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
+
+        mSensorManager.unregisterListener(mExcitationManager);
+        try {
+            mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        toggleStartStopAvailability();
     }
 
     @Override
@@ -256,17 +242,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     @Override
-    public void onSimulationSpeedChanged(Simulation.SpeedState newSpeedState) {
+    public void onSimulationStateChanged(Simulation.SimulationState newSpeedState) {
 
         String msg = "";
 
         switch (newSpeedState) {
-            case SLOW:
+            case RUNNING_SLOW:
                 msg = "Simulation speed slow";
                 slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
                 slowSnackbar.show();
                 break;
-            case NORMAL:
+            case RUNNING_NORMAL:
                 msg = "Simulation speed normal";
                 if (slowSnackbar != null) slowSnackbar.dismiss();
                 break;
@@ -276,15 +262,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     }
 
-    // TODO: shouldn't this be part of Simulation?
+    // TODO: should this be part of Simulation too?
     private enum SimulationMode {
         LIVE,
         REPLAY,
         FILE_REPLAY
     }
 
-    private enum SimulationState {
-        RUNNING,
-        STOPPED
-    }
+
 }
