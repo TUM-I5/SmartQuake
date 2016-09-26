@@ -46,7 +46,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-    private SimulationState state = SimulationState.STOPPED;
+
+    private SimulationMode mode = SimulationMode.LIVE;
 
     private int structureId;
     private String structureName;
@@ -80,12 +81,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         int id = item.getItemId();
 
         if (id == R.id.reset_button) {
-            // reset implicitly ends replaying
-            if (state == SimulationState.REPLAY_RUNNING) {
-                state = SimulationState.RUNNING;
+            if (mode != SimulationMode.LIVE) {
+                mode = SimulationMode.LIVE;
             }
 
-            if (state == SimulationState.RUNNING) {
+            if (simulation.isRunning()) {
                 onStopButtonClicked();
             }
             createStructure(structureId, structureName);
@@ -99,7 +99,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.replay_button && state == SimulationState.STOPPED) {
+        if (id == R.id.replay_button && !simulation.isRunning()) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
@@ -108,7 +108,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            state = SimulationState.REPLAY_RUNNING;
+            mode = SimulationMode.REPLAY;
 
             startSimulation(fileAccelerationProvider);
             simFab.setOnClickListener(stopSimulationListener);
@@ -124,8 +124,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.cantileverBeam();
         } else if (structureId == 1) {
             structure = StructureFactory.getSimpleHouse();
-        } else if (structureId == 2) {
-            structure = StructureFactory.getSimpleEiffelTower();
         } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
@@ -179,42 +177,28 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mCurrentAccelerationProvider.setInactive();
     }
 
-    private void onStartButtonClicked() {
-        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
-        if (state == SimulationState.REPLAY_STOPPED) {
-            state = SimulationState.REPLAY_RUNNING;
-        } else if (state == SimulationState.STOPPED) {
-            state = SimulationState.RUNNING;
+    private void toggleStartStopAvailability() {
+        if (simulation.isRunning()) {
+            // started
+            simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+            simFab.setOnClickListener(stopSimulationListener);
         } else {
-            throw new IllegalStateException("Simulation already running (" + state.name() + ") before Start button press");
+            // stopped
+            simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+            simFab.setOnClickListener(startSimulationListener);
         }
-        simFab.setOnClickListener(stopSimulationListener);
-        simFab.setImageResource(R.drawable.ic_pause_white_24dp);
     }
 
-    private void onStopButtonClicked() {
-        simulation.stop();
-        if (state == SimulationState.RUNNING) {
-            state = SimulationState.STOPPED;
-        } else if (state == SimulationState.REPLAY_RUNNING) {
-            state = SimulationState.REPLAY_STOPPED;
-        } else {
-            throw new IllegalStateException("Simulation already stopped (" + state.name() + ") before Stop button press");
+    private void onStartButtonClicked()
+    {
+        String msgString = "Simulation started";
+        if (mode == SimulationMode.LIVE)
+        {
+            msgString += ". Start shaking!";
         }
+        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
-        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
-
-        mCurrentAccelerationProvider.setInactive();
-        try {
-            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        mCurrentAccelerationProvider = new EmptyAccelerationProvider();
-        simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-        simFab.setOnClickListener(startSimulationListener);
+        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
@@ -225,8 +209,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mCurrentAccelerationProvider = accelerationProvider;
 
-        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-
+        String msgString = "Simulation started";
+        if (mode == SimulationMode.LIVE) {
+            msgString += ". Start shaking!";
+        }
+        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
@@ -237,6 +224,23 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simulation.start();
         simulation.setListener(this);
 
+        toggleStartStopAvailability();
+    }
+
+    private void onStopButtonClicked() {
+        simulation.stop();
+        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
+
+        mCurrentAccelerationProvider.setInactive();
+        try {
+            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mCurrentAccelerationProvider = new EmptyAccelerationProvider();
+
+        toggleStartStopAvailability();
     }
 
     @Override
@@ -253,17 +257,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     @Override
-    public void onSimulationSpeedChanged(Simulation.SpeedState newSpeedState) {
+    public void onSimulationStateChanged(Simulation.SimulationState newSpeedState) {
 
         String msg = "";
 
         switch (newSpeedState) {
-            case SLOW:
+            case RUNNING_SLOW:
                 msg = "Simulation speed slow";
                 slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
                 slowSnackbar.show();
                 break;
-            case NORMAL:
+            case RUNNING_NORMAL:
                 msg = "Simulation speed normal";
                 if (slowSnackbar != null) slowSnackbar.dismiss();
                 break;
@@ -273,11 +277,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     }
 
-    // TODO: shouldn't this be part of Simulation?
-    private enum SimulationState {
-        RUNNING,
-        STOPPED,
-        REPLAY_RUNNING,
-        REPLAY_STOPPED
+    // TODO: should this be part of Simulation too?
+    private enum SimulationMode {
+        LIVE,
+        REPLAY,
+        FILE_REPLAY
     }
+
+
 }

@@ -13,32 +13,40 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  */
 public class Simulation {
 
-    public enum SpeedState { SLOW, NORMAL }
+    public enum SimulationState {
+        RUNNING_NORMAL,
+        RUNNING_SLOW,
+        STOPPED
+    }
+
+    private SimulationState state;
 
     SpatialDiscretization spatialDiscretization;
     TimeIntegration kernel2;
     CanvasView view;
     SimulationProgressListener listener;
-    boolean isRunning;
+    public boolean isRunning() {
+        return state != SimulationState.STOPPED;
+    }
 
-    private SpeedState lastSpeedState;
+
 
     public Simulation(SpatialDiscretization spatialDiscretization, TimeIntegration kernel2, CanvasView view) {
         this.spatialDiscretization = spatialDiscretization;
         this.kernel2 = kernel2;
         this.view = view;
-        lastSpeedState = SpeedState.NORMAL;
+        state = SimulationState.STOPPED;
     }
 
     public void start() {
-        isRunning = true;
+        state = SimulationState.RUNNING_NORMAL;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 kernel2.prepareSimulation();
                 TimeIntegration.SimulationStep currentStep;
                 while(true) {
-                    if (!isRunning) {
+                    if (!isRunning()) {
                         break;
                     }
                     currentStep = kernel2.performSimulationStep();
@@ -60,15 +68,15 @@ public class Simulation {
                         Log.e("Simulation", "Kernel2 can not catch up the gui");
 
                         // If the last speed state was normal and now we're slow, notify the listener
-                        if (listener != null && lastSpeedState == SpeedState.NORMAL) {
-                            lastSpeedState = SpeedState.SLOW;
-                            listener.onSimulationSpeedChanged(SpeedState.SLOW);
+                        if (listener != null && state == SimulationState.RUNNING_NORMAL) {
+                            state = SimulationState.RUNNING_SLOW;
+                            listener.onSimulationStateChanged(state);
                         }
                         currentStep.stop();
                     } else {
-                        if (listener != null && lastSpeedState == SpeedState.SLOW) {
-                            lastSpeedState = SpeedState.NORMAL;
-                            listener.onSimulationSpeedChanged(SpeedState.NORMAL);
+                        if (listener != null && state == SimulationState.RUNNING_SLOW) {
+                            state = SimulationState.RUNNING_NORMAL;
+                            listener.onSimulationStateChanged(state);
                         }
                     }
                     DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
@@ -85,7 +93,7 @@ public class Simulation {
      * Stop simulation. This will also kill all background threads.
      */
     public void stop() {
-        isRunning = false;
+        state = SimulationState.STOPPED;
     }
 
     public void setListener(SimulationProgressListener listener) {
@@ -102,7 +110,7 @@ public class Simulation {
         /**
          * Is called when the simulation speed has changed
          */
-        void onSimulationSpeedChanged(SpeedState newSpeedState);
+        void onSimulationStateChanged(SimulationState newSpeedState);
     }
 
 }
