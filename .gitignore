@@ -79,3 +79,6 @@ com_crashlytics_export_strings.xml
 *.iml*
 
 captures/
+
+__pycache__/
+
