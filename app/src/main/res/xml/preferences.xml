@@ -7,9 +7,15 @@
         android:defaultValue="false"
         />
     <de.ferienakademie.smartquake.preferenceElements.SliderPreference
-        android:defaultValue="@string/slider_default"
-        android:dialogMessage="@string/slider_message"
+        android:defaultValue="@string/displacement_slider_default"
+        android:dialogMessage="@string/displacement_slider_message"
         android:key="displacement_slider"
-        android:summary="@array/slider_summaries"
-        android:title="@string/slider_title" />
+        android:summary="@array/displacement_slider_summaries"
+        android:title="@string/displacement_slider_title" />
+    <de.ferienakademie.smartquake.preferenceElements.SliderPreference
+        android:defaultValue="@string/frequency_slider_default"
+        android:dialogMessage="@string/frequency_slider_message"
+        android:key="frequency_slider"
+        android:summary="@array/frequency_slider_summaries"
+        android:title="@string/frequency_slider_title" />
 </PreferenceScreen>
