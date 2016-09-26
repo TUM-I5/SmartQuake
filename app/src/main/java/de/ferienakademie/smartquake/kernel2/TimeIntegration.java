@@ -59,9 +59,9 @@ public class TimeIntegration {
 
 
         //stores the numerical scheme
-        //solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
-        solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        //solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
 
         // fixed step size for implicit schemes
 

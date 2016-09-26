@@ -189,9 +189,12 @@ public class SpatialDiscretization {
 
 
 
+
     public void setStructure(Structure structure) {
         this.structure = structure;
     }
+
+
 
 
     public void updateDisplacementsOfStructure(DenseMatrix64F displacementVector) {
@@ -211,12 +214,15 @@ public class SpatialDiscretization {
             List<Integer> dofsOfNode = node.getDOF();
 
             for (int j = 0; j < dofsOfNode.size(); j++) {
-                //TODO change with introducting of hinges
                 node.setSingleDisplacement( j, displacementScale * displacementVector2.get( dofsOfNode.get(j) , 0));
             }
+            node.saveTimeStepData();
         }
 
     }
+
+
+
 
     public DenseMatrix64F getLoadVector() {
         return LoadVector;

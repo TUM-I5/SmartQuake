@@ -17,6 +17,8 @@ public class Node {
     private List<Integer> DOF; //Degrees of freedom
     private List<Double> displacements; //List of all displacements at the node
 
+    private List <List <Double>>  historyOfDisplacements;
+
     private double radius = 0.1;
 
 
@@ -30,14 +32,13 @@ public class Node {
         this.initialX = x;
         this.initialY = y;
         displacements = new ArrayList<>();
+        historyOfDisplacements = new ArrayList<>();
     }
 
 
     public Node(double x, double y, boolean hinged) {
-        this.initialX = x;
-        this.initialY = y;
+        this(x, y);
         this.hinge = hinged;
-        displacements = new ArrayList<>();
     }
 
 
@@ -55,9 +56,14 @@ public class Node {
         this.initialX = initialX;
     }
 
+
+
+
     public double getInitialY() {
         return initialY;
     }
+
+
 
 
     public void setSingleDisplacement(int i, double value) {
@@ -66,9 +72,19 @@ public class Node {
     }
 
 
+
+
     public double getSingleDisplacement(int i) {
         return this.displacements.get(i);
     }
+
+
+
+
+    public double getDisplacementForDof(int i) {
+        return this.displacements.get( DOF.indexOf(i) );
+    }
+
 
 
 
@@ -123,13 +139,22 @@ public class Node {
         return radius;
     }
 
+
+
+
     public void setRadius(double radius) {
         this.radius = radius;
     }
 
+
+
+
     public void clearBeams() {
         beams.clear();
     }
+
+
+
 
     public List<Beam> getBeams() {
         return beams;
@@ -165,5 +190,16 @@ public class Node {
     public void setSingleConstraint(int i, boolean constraint) {
         this.constraint[i] = constraint;
     }
+
+
+    public void saveTimeStepData() {
+
+        historyOfDisplacements.add(displacements);
+
+    }
+
+
+
+
 }
 

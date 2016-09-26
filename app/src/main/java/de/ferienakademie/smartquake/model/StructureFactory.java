@@ -23,8 +23,8 @@ public class StructureFactory {
         List<Integer> dofNode2 = new LinkedList<>();
 
 
-        Node bottom = new Node(0, 4);
-        Node up = new Node(8, 4);
+        Node bottom = new Node(4, 8);
+        Node up = new Node(4, 0);
 
         List<Integer> condof = new ArrayList<>();
 
@@ -55,8 +55,6 @@ public class StructureFactory {
         Structure structure = new Structure();
         structure.setLumped(lumped);
         Material testMaterial = new Material();
-
-        //Kernel1 stuff
 
 
         Node n1 = new Node(0, height, true);

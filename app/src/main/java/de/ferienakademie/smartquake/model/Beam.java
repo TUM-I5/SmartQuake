@@ -236,18 +236,24 @@ public class Beam {
         elementMatrix_globalized.set(5, 4, elementMatrix.get(4, 5) * cos_theta);
         elementMatrix_globalized.set(5, 5, elementMatrix.get(5, 5));
 
-
         return elementMatrix_globalized;
     }
+
+
 
 
     public Beam(Node startNode, Node endNode) {
         this(startNode, endNode, 0.1f);
     }
 
+
+
+
     public Beam(double startX, double startY, double endX, double endY) {
         this(new Node(startX, startY), new Node(endX, endY));
     }
+
+
 
 
     /**
@@ -271,7 +277,7 @@ public class Beam {
         double orthogonalDisplacementEndNode =
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
-        /*
+
         if (BuildConfig.DEBUG) { // assert that formulas are right
             double eps = 0.01;
             double v = startNodeDisplacementX * Math.cos(theta) + startNodeDisplacementY * Math.sin(theta);
@@ -294,11 +300,12 @@ public class Beam {
                 throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
-        */
 
-        // TODO richtige Rotation raussuchen
-        double rotationStartNode = startNode.getSingleDisplacement(0);
-        double rotationEndNode   = endNode.getSingleDisplacement(0);
+
+        // get correct rotations from the nodes
+        double rotationStartNode = startNode.getDisplacementForDof( dofs[2]  );
+        double rotationEndNode   = endNode.getDisplacementForDof( dofs[5] );
+
 
         return new Displacements(axialDisplacementStartNode, orthogonalDisplacementStartNode, rotationStartNode,
                             axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode);
@@ -329,9 +336,6 @@ public class Beam {
         orthogonalDisplacementEndNode = localDisplacements.getOrthogonalDisplacementEndNode();
         rotationStartNode = localDisplacements.getRotationStartNode();
         rotationEndNode = localDisplacements.getRotationEndNode();
-
-        Log.i("Bending: ", "oDeN" + orthogonalDisplacementEndNode);
-        Log.i("Bending: ", "ReN" + rotationEndNode);
 
         initialLength = this.getLength();
 
