@@ -34,6 +34,8 @@ public class Node {
         this.initialX = x;
         this.initialY = y;
         displacements = new ArrayList<>();
+        displacements.add(0.0);
+        displacements.add(0.0);
         historyOfDisplacements = new ArrayList<>();
         historyOfGroundDisplacement = new ArrayList<>();
     }
