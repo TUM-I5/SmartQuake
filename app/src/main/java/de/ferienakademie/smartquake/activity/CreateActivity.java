@@ -170,7 +170,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         structure.setConDOF(condof);
 
         for (int i = 0; i < allBeams.size(); i++) {
-            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode())) allBeams.remove(i);
+            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode())) allBeams.remove(i--);
         }
 
         FileOutputStream fileOutputStream = null;
