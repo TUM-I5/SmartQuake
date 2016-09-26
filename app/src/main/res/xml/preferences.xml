@@ -3,6 +3,20 @@
 
     <PreferenceCategory
         android:title="Simulation">
+        <SwitchPreference
+            android:key="pref_use_lumped"
+            android:title="@string/pref_lumped_title"
+            android:textOn="@string/pref_lumped_summary_On"
+            android:textOff="@string/pref_lumped_summary_Off"
+            android:defaultValue="false"
+            />
+        <SwitchPreference
+            android:key="pref_modal_analysis"
+            android:title="@string/pref_modal_analysis_title"
+            android:textOn="@string/pref_modal_analysis_summary_On"
+            android:textOff="@string/pref_modal_analysis_summary_Off"
+            android:defaultValue="false"
+            />
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/loadVector_slider_default"
             android:dialogMessage="@string/loadVector_slider_message"

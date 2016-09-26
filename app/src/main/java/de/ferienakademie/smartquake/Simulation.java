@@ -72,18 +72,11 @@ public class Simulation {
                         slowStateCount++;
 
                         // If the last speed state was normal and now we're slow, notify the listener
-                        if (listener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 2) {
-                            slowStateCount = 0;
+                        if (listener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 5) {
                             state = SimulationState.RUNNING_SLOW;
                             listener.onSimulationStateChanged(state);
                         }
                         currentStep.stop();
-                    } else {
-                        slowStateCount = 0;
-                        if (listener != null && state == SimulationState.RUNNING_SLOW) {
-                            state = SimulationState.RUNNING_NORMAL;
-                            listener.onSimulationStateChanged(state);
-                        }
                     }
                     DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
                 }

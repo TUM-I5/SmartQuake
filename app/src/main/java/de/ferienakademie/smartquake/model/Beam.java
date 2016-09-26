@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.model;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 
 import java.util.List;
@@ -67,11 +69,6 @@ public class Beam {
     }
 
     public void computeAll(boolean lumped) {
-
-        //this.dofs = new int[]{
-        //        startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
-        //        endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
-        //};
 
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
@@ -239,18 +236,24 @@ public class Beam {
         elementMatrix_globalized.set(5, 4, elementMatrix.get(4, 5) * cos_theta);
         elementMatrix_globalized.set(5, 5, elementMatrix.get(5, 5));
 
-
         return elementMatrix_globalized;
     }
+
+
 
 
     public Beam(Node startNode, Node endNode) {
         this(startNode, endNode, 0.1f);
     }
 
+
+
+
     public Beam(double startX, double startY, double endX, double endY) {
         this(new Node(startX, startY), new Node(endX, endY));
     }
+
+
 
 
     /**
@@ -259,10 +262,11 @@ public class Beam {
     axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode
      */
     public Displacements getLocalDisplacements() {
-        double startNodeDisplacementX = startNode.getCurrentX() - startNode.getInitialX();
-        double startNodeDisplacementY = startNode.getCurrentY() - startNode.getInitialY();
-        double endNodeDisplacementX   = endNode.getCurrentX() - endNode.getInitialX();
-        double endNodeDisplacementY   = endNode.getCurrentY() - endNode.getInitialY();
+
+        double startNodeDisplacementX = startNode.getSingleDisplacement(0);
+        double startNodeDisplacementY = startNode.getSingleDisplacement(1);
+        double endNodeDisplacementX   = endNode.getSingleDisplacement(0);
+        double endNodeDisplacementY   = endNode.getSingleDisplacement(1);
 
         double axialDisplacementStartNode =
                 computeLocalAxialDisplacement(startNodeDisplacementX, startNodeDisplacementY);
@@ -273,7 +277,7 @@ public class Beam {
         double orthogonalDisplacementEndNode =
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
-        /*
+
         if (BuildConfig.DEBUG) { // assert that formulas are right
             double eps = 0.01;
             double v = startNodeDisplacementX * Math.cos(theta) + startNodeDisplacementY * Math.sin(theta);
@@ -283,7 +287,7 @@ public class Beam {
 
             double v1 = -startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
             if (Math.abs(orthogonalDisplacementStartNode - v1) > eps) {
-                throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementEndNode + " should be " + v1);
+                throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementStartNode + " should be " + v1);
             }
 
             double v2 = endNodeDisplacementX * Math.cos(theta) + endNodeDisplacementY * Math.sin(theta);
@@ -296,20 +300,22 @@ public class Beam {
                 throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
-        */
 
-        double rotationStartNode = startNode.getCurrentRotations().get(0);
-        double rotationEndNode = endNode.getCurrentRotations().get(0);
+
+        // get correct rotations from the nodes
+        double rotationStartNode = startNode.getDisplacementForDof( dofs[2]  );
+        double rotationEndNode   = endNode.getDisplacementForDof( dofs[5] );
+
 
         return new Displacements(axialDisplacementStartNode, orthogonalDisplacementStartNode, rotationStartNode,
                             axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode);
     }
 
+
     /**
      * U = axial
      * W = orthogonal
      */
-
     public float[] getGlobalDisplacementAt(double _x) {
         double axialDisplacement = getAxialDisplacement(_x);
         double orthogonalDisplacement = getOrthogonalDisplacement(_x);
@@ -440,10 +446,5 @@ public class Beam {
         return elementMassMatrix_globalized;
     }
 
-    public void setRotationDOF(boolean left, int i){
-        if(left){
 
-        }
-
-    }
 }
