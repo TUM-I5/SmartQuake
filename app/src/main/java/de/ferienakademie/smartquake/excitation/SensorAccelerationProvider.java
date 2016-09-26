@@ -21,11 +21,11 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         this.sensorManager = sensorManager;
         if(sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION).size() == 0){
-           //gravity kann im Sensor nicht rausgerechnet werden
+           //gravity cannot be excluded from Sensor
             gravityProvider = new SoftwareGravityProvider();
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         } else {
-            // gravity kann rausgerechnet werden
+            // gravity can be excluded
             gravityProvider = new SensorGravityProvider(sensorManager);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         }
