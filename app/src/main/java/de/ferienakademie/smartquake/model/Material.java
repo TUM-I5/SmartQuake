@@ -7,8 +7,10 @@ public class Material {
 
     public static Material STEEL = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "rectangular"); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     public static Material STEEL_I_SHAPED = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "I-shaped beam");
-    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005, "rectangular"); // Source: Holzbau, wikipedia
-    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005, "rectangular"); // Source: Betonbau, wikipedia
+    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005, "rectangular");// Source: Holzbau, wikipedia
+    public static Material WOOD_I_SHAPED = new Material(0.1,0.1,12e9,600,0.005, "I-shaped beam");
+    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005, "rectangular");// Source: Betonbau, wikipedia
+    public static Material CONCRETE_I_SHAPED = new Material(0.1,0.1,32e9,2400,0.005, "I-shaped beam");
     public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005, "rectangular");
 
     public String shape;
