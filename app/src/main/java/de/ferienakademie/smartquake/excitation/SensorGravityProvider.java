@@ -58,10 +58,12 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
 
     public void setInactive() {
         manager.unregisterListener(this);
+        readings = new ArrayList<>();
     }
 
     public void setActive(){
         manager.registerListener(this, gSensor, 5);
+        readings = new ArrayList<>();
     }
 
 
