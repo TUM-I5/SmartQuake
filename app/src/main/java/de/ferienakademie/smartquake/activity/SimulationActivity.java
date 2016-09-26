@@ -85,7 +85,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
                 startSimulation(sinCosExcitation);
             } else if (fileName.equals("Sensors.earthquake")) {
-
+                onStartButtonClicked();
             } else {
                 fileAccelerationProvider.load(openFileInput(fileName));
             }

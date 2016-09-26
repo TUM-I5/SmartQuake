@@ -82,9 +82,7 @@ public class ChooseDataActivity extends AppCompatActivity {
 
     public void onItemSelected(Integer dataSourceId) {
         Intent sel = new Intent();
-        if (dataSourceId != 0) {
-            sel.putExtra("eqDataFile", values.get(dataSourceId));
-        }
+        sel.putExtra("eqDataFile", values.get(dataSourceId));
         setResult(Activity.RESULT_OK, sel);
         finish();
     }
