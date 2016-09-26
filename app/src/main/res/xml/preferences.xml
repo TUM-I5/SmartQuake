@@ -4,11 +4,11 @@
     <PreferenceCategory
         android:title="Simulation">
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
-            android:defaultValue="@string/displacement_slider_default"
-            android:dialogMessage="@string/displacement_slider_message"
-            android:key="displacement_slider"
-            android:summary="@array/displacement_slider_summaries"
-            android:title="@string/displacement_slider_title" />
+            android:defaultValue="@string/loadVector_slider_default"
+            android:dialogMessage="@string/loadVector_slider_message"
+            android:key="loadVector_slider"
+            android:summary="@array/loadVector_slider_summaries"
+            android:title="@string/loadVector_slider_title" />
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/frequency_slider_default"
             android:dialogMessage="@string/frequency_slider_message"

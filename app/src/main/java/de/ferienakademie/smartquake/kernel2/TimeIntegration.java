@@ -101,6 +101,8 @@ public class TimeIntegration {
                     while(t < 0.03-0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
+                       // solver.nextStepLumped(t, delta_t);
+
                         solver.setGroundPosition(delta_t);
                         t += delta_t;
 

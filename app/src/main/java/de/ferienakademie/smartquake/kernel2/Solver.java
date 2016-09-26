@@ -86,6 +86,10 @@ public class Solver implements TimeIntegrationSolver {
         //will be overwritten in the subclasses
     }
 
+
+    public void nextStepLumped(double t, double delta_t){
+        //will be overwritten in subclasses
+    }
     /**
      *
      * @return
