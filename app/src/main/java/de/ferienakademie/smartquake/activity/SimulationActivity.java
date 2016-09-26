@@ -35,7 +35,6 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener {
 
-    private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
@@ -160,8 +159,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         replayrunningLabel = (TextView) findViewById(R.id.replaytext);
         replayrunningLabel.setVisibility(View.GONE);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
@@ -188,13 +185,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onResume() {
         super.onResume();
-        mCurrentAccelerationProvider.setActive();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCurrentAccelerationProvider.setInactive();
+        onStopButtonClicked();
     }
 
     private void toggleStartStopAvailability() {
@@ -218,7 +214,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
         Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
-        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
+        startSimulation(new SensorAccelerationProvider(mSensorManager));
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
