@@ -40,12 +40,12 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] currentGravity =
-                    new double[]{sensorEvent.values[0], sensorEvent.values[1]};
-            // put new element to the queue of sensor measurements
-            reading_ts.add(sensorEvent.timestamp);
-            readings.add(currentGravity);
-        }
+        double[] currentGravity =
+                new double[]{sensorEvent.values[0], sensorEvent.values[1]};
+        // put new element to the queue of sensor measurements
+        reading_ts.add(sensorEvent.timestamp);
+        readings.add(currentGravity);
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {

@@ -347,8 +347,7 @@ public class StructureFactory {
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        structure.setLumped(lumped);
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         Node g1 = new Node(width/4, height);
         Node g2 = new Node(width/2, height);
@@ -401,8 +400,7 @@ public class StructureFactory {
 
         Structure structure = new Structure();
         structure.setLumped(lumped);
-        Material testMaterial = new Material();
-
+        Material testMaterial = Material.STEEL;
         Node n1 = new Node(0, height);
         Node n2 = new Node(width/4, height);
         Node n3 = new Node(width/2, height);
@@ -473,8 +471,7 @@ public class StructureFactory {
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        structure.setLumped(lumped);
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         //Ground
         Node n1 = new Node(width/3, height);
