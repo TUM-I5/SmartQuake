@@ -1,7 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -20,7 +19,10 @@ import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
-import de.ferienakademie.smartquake.excitation.ExcitationManager;
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
+import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
+import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Beam;
@@ -33,7 +35,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
-    private ExcitationManager mExcitationManager; // custom accelerometer listener
+    private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
     private FloatingActionButton simFab;
     private CanvasView canvasView;
@@ -67,9 +69,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.simulation_activity_actions, menu);
-        menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.reset_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -77,7 +76,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.reset_button) {
+        if (id == R.id.sim_reset_button) {
             if (mode != SimulationMode.LIVE) {
                 mode = SimulationMode.LIVE;
             }
@@ -90,33 +89,26 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.create_button) {
-            if (simulation != null) simulation.stop();
-            startActivity(new Intent(this, CreateActivity.class));
-            return true;
-        }
-
-        if (id == R.id.replay_button && !simulation.isRunning()) {
+        if (id == R.id.sim_replay_button && !simulation.isRunning()) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-            mSensorManager.unregisterListener(mExcitationManager);
+            FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
             try {
-                mExcitationManager.loadFile(openFileInput("saveAcc.txt"));
+                fileAccelerationProvider.load(openFileInput("saveAcc.txt"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             mode = SimulationMode.REPLAY;
-            mExcitationManager.initReplay();
 
-            spatialDiscretization = new SpatialDiscretization(structure);
-            timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
-            simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
-
-            simulation.start();
-            simulation.setListener(this);
+            startSimulation(fileAccelerationProvider);
             simFab.setOnClickListener(stopSimulationListener);
             simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+            return true;
+        } else if (id == R.id.sim_load_earthquake_data_button) {
+            // load EQ data
         }
+
+
 
 
         return super.onOptionsItemSelected(item);
@@ -127,8 +119,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.cantileverBeam();
         } else if (structureId == 1) {
             structure = StructureFactory.getSimpleHouse();
-        } else if (structureId == 2) {
-            structure = StructureFactory.getSimpleEiffelTower();
         } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
@@ -147,7 +137,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mExcitationManager = new ExcitationManager();
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
@@ -174,16 +163,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onResume() {
         super.onResume();
-        if (mode == SimulationMode.LIVE) {
-            mSensorManager.registerListener(mExcitationManager, mAccelerometer,
-                    SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
-        }
+        mCurrentAccelerationProvider.setActive();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(mExcitationManager); // do not receive updates when paused
+        mCurrentAccelerationProvider.setInactive();
     }
 
     private void toggleStartStopAvailability() {
@@ -198,17 +184,38 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     }
 
-    private void onStartButtonClicked() {
-        mSensorManager.registerListener(mExcitationManager, mAccelerometer,
-                SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
+    private void onStartButtonClicked()
+    {
+        String msgString = "Simulation started";
+        if (mode == SimulationMode.LIVE)
+        {
+            msgString += ". Start shaking!";
+        }
+        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
-        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
+    }
+
+    void startSimulation(AccelerationProvider accelerationProvider) {
+        if (mCurrentAccelerationProvider != null)
+        {
+            mCurrentAccelerationProvider.setInactive();
+        }
+
+        mCurrentAccelerationProvider = accelerationProvider;
+
+        String msgString = "Simulation started";
+        if (mode == SimulationMode.LIVE) {
+            msgString += ". Start shaking!";
+        }
+        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
         spatialDiscretization = new SpatialDiscretization(structure);
-        timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
+        timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
 
-        mExcitationManager.initTime(30_000_000);
+        accelerationProvider.setActive();
+        accelerationProvider.initTime(30_000_000);
         simulation.start();
         simulation.setListener(this);
 
@@ -219,12 +226,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
-        mSensorManager.unregisterListener(mExcitationManager);
+        mCurrentAccelerationProvider.setInactive();
         try {
-            mExcitationManager.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        mCurrentAccelerationProvider = new EmptyAccelerationProvider();
+
         toggleStartStopAvailability();
     }
 
