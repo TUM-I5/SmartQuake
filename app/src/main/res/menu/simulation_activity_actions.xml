@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:smartquake="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/create_button"
-        android:icon="@drawable/ic_mode_edit_white_24dp"
-        android:title="@string/create_button"
-        smartquake:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/sim_reset_button"
         android:icon="@drawable/ic_replay_white_24dp"
@@ -17,7 +14,7 @@
         smartquake:showAsAction="ifRoom"/>
 
     <item android:id="@+id/sim_load_earthquake_data_button"
-        android:icon="@android:drawable/btn_star"
+        android:icon="@drawable/ic_wifi_tethering_white_24dp"
         android:title="@string/load_data_button"
         smartquake:showAsAction="ifRoom"/>
 

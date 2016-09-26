@@ -1,7 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -67,9 +66,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.simulation_activity_actions, menu);
-        menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.sim_reset_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.sim_replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -87,12 +83,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             }
             createStructure(structureId, structureName);
             DrawHelper.drawStructure(structure, canvasView);
-            return true;
-        }
-
-        if (id == R.id.create_button) {
-            if (simulation != null) simulation.stop();
-            startActivity(new Intent(this, CreateActivity.class));
             return true;
         }
 
