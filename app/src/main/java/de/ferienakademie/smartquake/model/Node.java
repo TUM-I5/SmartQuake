@@ -88,12 +88,20 @@ public class Node {
         return currentX;
     }
 
+    public float getCurrentXf() {
+        return (float) currentX;
+    }
+
     public void setCurrentX(double currentX) {
         this.currentX = currentX;
     }
 
     public double getCurrentY() {
         return currentY;
+    }
+
+    public float getCurrentYf() {
+        return (float) currentY;
     }
 
     public void setCurrentY(double currentY) {

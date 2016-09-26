@@ -14,12 +14,16 @@ public class Structure {
     // TODO: somebody plz initialize this array conDOF
     private List<Integer> conDOF ; //constraint dofs TODO: But how's the data structure?
 
-    public double[] getModelSize() {
-        return modelSize;
+    public double[] getBoundingBox() {
+        return boundingBox;
     }
+
 
     // X, Y
     private double[] modelSize = {8, 8};
+    // left/right X, top/bottom Y //TODO which one will be used?
+    private double[] boundingBox = new double[4];
+
     private boolean lumped = true;  // default value!
 
 
@@ -52,13 +56,26 @@ public class Structure {
     }
 
     public void addNode(Node node) {
+        if (this.nodes.isEmpty()) {
+            boundingBox[0] = node.getInitialX();
+            boundingBox[1] = node.getInitialX();
+            boundingBox[2] = node.getInitialY();
+            boundingBox[3] = node.getInitialY();
+        } else {
+            if (node.getInitialX() < boundingBox[0]) {
+                boundingBox[0] = node.getInitialX();
+            }
+            if (node.getInitialX() > boundingBox[1]) {
+                boundingBox[1] = node.getInitialX();
+            }
+            if (node.getInitialY() < boundingBox[2]) {
+                boundingBox[2] = node.getInitialY();
+            }
+            if (node.getInitialY() > boundingBox[3]) {
+                boundingBox[3] = node.getInitialY();
+            }
+        }
         this.nodes.add(node);
-//        if (node.getInitX() > modelSize[0]) {
-//            modelSize[0] = node.getInitX();
-//        }
-//        if (node.getInitY() > modelSize[1]) {
-//            modelSize[1] = node.getInitY();
-//        }
     }
 
 

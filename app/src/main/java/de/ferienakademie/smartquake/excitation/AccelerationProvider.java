@@ -19,16 +19,7 @@ public interface AccelerationProvider {
     AccelData getAccelerationMeasurement();
 
     /**
-     *
-     * @param timeStamp time in nanoseconds from start of the simulationfor which acceleration need to be retrieved
-     * @return sensor excitation in m/s^2 in X and Y direction, timestemp if the reading
-     */
-    AccelData getAccelerationMeasurement(long timeStamp);
-
-    /**
-     *
-     * @param timeStamp timeStamp at the beginning of the Simulation in nanoseconds
      * @param timeStep timeStep of the simulation in nanoseconds
      */
-    void initTime(long timeStamp, double timeStep);
+    void initTime(double timeStep);
 }
