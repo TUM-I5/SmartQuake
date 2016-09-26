@@ -13,33 +13,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.excitation.StructureIO;
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 public class StructureFactory {
     public static Structure cantileverBeam() {
         List<Integer> dofNode1 = new LinkedList<>();
         List<Integer> dofNode2 = new LinkedList<>();
 
-        dofNode1.add(0); //constraint
-        dofNode1.add(1);//constraint
-        dofNode1.add(2);//constraint
 
-        dofNode2.add(3);//constraint
-        dofNode2.add(4);//constraint
-        dofNode2.add(5);//constraint
-
-        Node bottom = new Node(4, 8, dofNode1);
-        Node up = new Node(4, 0, dofNode2);
+        Node bottom = new Node(4, 8);
+        Node up = new Node(4, 0);
 
         List<Integer> condof = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            condof.add(i);
-        }
+
+        bottom.setSingleConstraint(0,true);
+        bottom.setSingleConstraint(1,true);
+        bottom.setSingleConstraint(2,true);
+
 
         Material testMaterial = new Material();
 
-        Beam b = new Beam(bottom, up, testMaterial, true);
+        Beam b = new Beam(bottom, up, testMaterial);
 
-        return new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+        Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+        enumerateDOFs(structure);
+        return structure;
     }
 
     public static Structure getSimpleHouse() {
@@ -50,65 +48,40 @@ public class StructureFactory {
 
         boolean lumped = true; // Make it false for consistent mass matrices!
 
-        List<Double> unode1 = new LinkedList<>();
-        unode1.add(0.0);
-        unode1.add(0.0);
-        unode1.add(0.0);
-
         Structure structure = new Structure();
         structure.setLumped(lumped);
         Material testMaterial = new Material();
 
         //Kernel1 stuff
 
-        List<Integer> DOFnode1 = new LinkedList<>();
-        List<Integer> DOFnode2 = new LinkedList<>();
-        List<Integer> DOFnode3 = new LinkedList<>();
-        List<Integer> DOFnode4 = new LinkedList<>();
-        List<Integer> DOFnode5 = new LinkedList<>();
 
-        DOFnode1.add(0); //constraint
-        DOFnode1.add(1);//constraint
-        DOFnode1.add(2);//constraint
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width, height);
+        Node n3 = new Node(width, height - half);
+        Node n4 = new Node(0, height - half);
+        Node n5 = new Node(half, height - 2 * half);
 
-        DOFnode2.add(3);//constraint
-        DOFnode2.add(4);//constraint
-        DOFnode2.add(5);//constraint
-
-        DOFnode3.add(6);
-        DOFnode3.add(7);
-        DOFnode3.add(8);
-
-        DOFnode4.add(9);
-        DOFnode4.add(10);
-        DOFnode4.add(11);
-        DOFnode5.add(12);
-        DOFnode5.add(13);
-        DOFnode5.add(14);
-
-        Node n1 = new Node(0, height, DOFnode1);
-        Node n2 = new Node(width, height, DOFnode2);
-        Node n3 = new Node(width, height - half, DOFnode3);
-        Node n4 = new Node(0, height - half, DOFnode4);
-        Node n5 = new Node(half, height - 2 * half, DOFnode5);
-
-        Beam b1 = new Beam(n1, n2, testMaterial,lumped);
-        Beam b2 = new Beam(n2, n3, testMaterial,lumped);
-        Beam b3 = new Beam(n3, n4, testMaterial,lumped);
-        Beam b4 = new Beam(n4, n1, testMaterial,lumped);
-        Beam b5 = new Beam(n4, n5, testMaterial,lumped);
-        Beam b6 = new Beam(n5, n3, testMaterial,lumped);
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
 
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
 
-        List<Integer> condof= new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            condof.add(i);
-        }
 
-        structure.setConDOF(condof);
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
 
+        n1.isHinge();
+
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
         return structure;
     }
 
@@ -137,6 +110,7 @@ public class StructureFactory {
         structure.addBeams(BeamFactory.createTriangleShapedBeam(tri02, tri12, tri22));
 
         structure.addNodes(tri00, tri01, tri11, tri12, tri02, tri22);
+        enumerateDOFs(structure);
         return structure;
     }
 
@@ -148,15 +122,99 @@ public class StructureFactory {
         try {
             fileInputStream = context.openFileInput(structureName);
 
-            return StructureIO.readStructure(fileInputStream);
+            Structure structure = StructureIO.readStructure(fileInputStream);
+            enumerateDOFs(structure);
+            return structure;
 
         } catch (FileNotFoundException e) {
+            //TODO: handle exception in the calling function and make appropriate actions.
             Log.e(StructureFactory.class.toString(), "FileNotFound");
         } catch (IOException e) {
             Log.e(StructureFactory.class.toString(), "IOException");
         }
 
         return new Structure();
+    }
+
+
+    public static void enumerateDOFs(Structure structure){
+        int numberofDOF=0;
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+
+            List<Integer>  dofs = new ArrayList<>();
+
+            // dof for x direction
+            dofs.add(numberofDOF);
+            if (node.getConstraint(0)){
+                structure.addSingleConDOF(numberofDOF);
+            }
+            numberofDOF++;
+
+            // dof for y direction
+            dofs.add(numberofDOF);
+            if (node.getConstraint(1)){
+                structure.addSingleConDOF(numberofDOF);
+            }
+            numberofDOF++;
+
+            if (node.isHinge()){
+                List<Beam> beams = node.getBeams();
+                for (int j = 0; j < beams.size(); j++) {
+                    Beam beam = beams.get(i);
+
+                    // dof for rotation of this beam
+                    dofs.add(numberofDOF);
+
+                    if(beam.getStartNode()==node){
+                        beam.setSingleDof(0,dofs.get(0));
+                        beam.setSingleDof(1,dofs.get(1));
+                        beam.setSingleDof(2,numberofDOF);
+                    }
+                    else {
+                        beam.setSingleDof(3,dofs.get(0));
+                        beam.setSingleDof(4,dofs.get(1));
+                        beam.setSingleDof(5, numberofDOF);
+                    }
+                    numberofDOF++;
+
+                }
+            }
+            // rigid connection
+            else {
+                List<Beam> beams = node.getBeams();
+
+                // dof for rotation of all beams
+                dofs.add(numberofDOF);
+
+                if (node.getConstraint(2)){
+                    structure.addSingleConDOF(numberofDOF);
+                }
+
+                for (int j = 0; j < beams.size(); j++) {
+                    Beam beam = beams.get(j);
+
+                    if(beam.getStartNode()==node){
+                        beam.setSingleDof(0,dofs.get(0));
+                        beam.setSingleDof(1,dofs.get(1));
+                        beam.setSingleDof(2,numberofDOF);
+                    }
+                    else {
+                        beam.setSingleDof(3,dofs.get(0));
+                        beam.setSingleDof(4,dofs.get(1));
+                        beam.setSingleDof(5, numberofDOF);
+                    }
+
+                }
+                numberofDOF++;
+
+            }
+
+            // dofs am Knoten setzen
+            node.setDOF(dofs);
+            structure.setNumberOfDOF(numberofDOF);
+        }
+
     }
 
 }

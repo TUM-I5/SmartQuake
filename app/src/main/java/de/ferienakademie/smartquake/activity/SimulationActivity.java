@@ -1,7 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 
 import java.io.IOException;
 
@@ -71,9 +71,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater i = getMenuInflater();
         i.inflate(R.menu.simulation_activity_actions, menu);
-        menu.findItem(R.id.create_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.reset_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.findItem(R.id.replay_button).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -81,7 +78,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.reset_button) {
+        if (id == R.id.sim_reset_button) {
             if (mode != SimulationMode.LIVE) {
                 mode = SimulationMode.LIVE;
             }
@@ -94,18 +91,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.create_button) {
-            if (simulation != null) simulation.stop();
-            startActivity(new Intent(this, CreateActivity.class));
-            return true;
-        }
-
-        if (id == R.id.replay_button && !simulation.isRunning()) {
+        if (id == R.id.sim_replay_button && !simulation.isRunning()) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
             try {
-                fileAccelerationProvider.load(openFileInput("saveAcc.txt"));
+                fileAccelerationProvider.load(openFileInput("Last.earthquake"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -114,7 +105,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             startSimulation(fileAccelerationProvider);
             simFab.setOnClickListener(stopSimulationListener);
             simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+            return true;
+        } else if (id == R.id.sim_load_earthquake_data_button) {
+            // load EQ data
         }
+
+
 
 
         return super.onOptionsItemSelected(item);
@@ -130,7 +126,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         for (Beam beam : structure.getBeams()) {
-            beam.computeAll(true);
+            beam.computeAll(structure.isLumped());
         }
 
     }
@@ -235,7 +231,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mCurrentAccelerationProvider.setInactive();
         try {
-            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+            mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
         } catch (IOException e) {
             e.printStackTrace();
         }
