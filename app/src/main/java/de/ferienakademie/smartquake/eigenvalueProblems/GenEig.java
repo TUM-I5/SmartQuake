@@ -68,10 +68,10 @@ public class GenEig {
                 double[] lambda = vecElDiv(alphaReD, betaD);
                 double min;
                 int minInd;
-                for (int i = n - 1; i > 0; i--) {
+                for (int i = 0; i < n - 1; i++) {
                     min = lambda[i];
                     minInd = i;
-                    for (int j = i - 1; j >= 0; j--) {
+                    for (int j = i + 1; j < n; j++) {
                         if (lambda[j] < min) {
                             min = lambda[j];
                             minInd = j;
