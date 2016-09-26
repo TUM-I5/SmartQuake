@@ -37,6 +37,11 @@ public class Solver implements TimeIntegrationSolver {
     //connection to kernel1
     SpatialDiscretization k1;
 
+    //Ground position, velocity and acceleration
+    double[] groundPosition;
+    double[] groundVelocity;
+    double[] groundAcceleration;
+
     /**
      *
      * @param k1
@@ -61,6 +66,12 @@ public class Solver implements TimeIntegrationSolver {
 
         //create and fill fLoad vector with zeros
         fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);
+
+        //create ground position, velocity and acceleration
+        groundPosition = new double[2];
+        groundVelocity = new double[2];
+        groundAcceleration = new double[2];
+
     }
 
     /**
@@ -113,6 +124,28 @@ public class Solver implements TimeIntegrationSolver {
 
     public DenseMatrix64F getXDot(){
         return xDot;
+    }
+
+    public double[] getGroundPosition() { return groundPosition; }
+
+    /**
+     * Updates ground position
+     * @param delta_t
+     */
+    public void setGroundPosition(double delta_t){
+
+        //Initialize new acceleration and save old velocity
+        double[] acc_new = accelerationProvider.getAcceleration();
+        double[] velo_old = groundVelocity.clone();
+
+        //Get new velocity
+        groundVelocity[0] = 0.5*delta_t*(groundAcceleration[0]+acc_new[0]);
+        groundVelocity[1] = 0.5*delta_t*(groundAcceleration[1]+acc_new[1]);
+
+        //Get new position
+        groundPosition[0] = 0.5*delta_t*(velo_old[0]+groundVelocity[0]);
+        groundPosition[1] = 0.5*delta_t*(velo_old[1]+groundVelocity[1]);
+
     }
 
 }

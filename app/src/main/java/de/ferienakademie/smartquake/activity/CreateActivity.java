@@ -52,7 +52,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     private double width, height;
 
-    private Material material = new Material();
+    private Material material = Material.STEEL;
     private boolean lumped = true;
 
     private int yOffset = 0;
@@ -167,8 +167,10 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             transformToMeters(node);
         }
 
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getBeams().isEmpty()) nodes.remove(i--);
+        for (int i = nodes.size() - 1; i >= 0; i--) {
+            if (nodes.get(i).getBeams().isEmpty()) {
+                nodes.remove(i);
+            }
         }
 
         structure.setConDOF(condof);

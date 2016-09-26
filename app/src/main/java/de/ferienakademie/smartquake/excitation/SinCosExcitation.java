@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 /**
  * Class for generating a "standard" earthquake
- * For now only uses sin-functipn default amplitude 5 and defaut frequency of one Hertz
+ * For now only uses sin-function default amplitude 5 and default frequency of one Hertz
  */
 public class SinCosExcitation extends AccelerationProvider {
     double amplitude;
@@ -30,10 +30,15 @@ public class SinCosExcitation extends AccelerationProvider {
         this.timestep = 30_000_000;
     }
 
+    /**
+     * produces harmonic acceleration along X axis a=sin(2*pi*f*t)
+     * @return 4d vector with accelerations along X,Y axis and gravitation vector (-9.81,0)
+     */
     @Override
     public double[] getAcceleration() {
         counter++;
-        return new double[]{amplitude * Math.sin(2* Math.PI *frequency * counter * timestep * 1e-9), 0.0};
+        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9),
+                0.0, 9.81, 0.0};
     }
 
     @Override
