@@ -80,7 +80,7 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
 
         //LU solver
-        solver = LinearSolverFactory.lu(k1.getNumberofDOF());
+        solver = LinearSolverFactory.chol(k1.getNumberofDOF());
         solver.setA(A);
 
         //initialise right side matrices: F_ext - K*dotx - B*ddotx
