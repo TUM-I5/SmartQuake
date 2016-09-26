@@ -53,7 +53,7 @@ public class Beam {
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
         length = computeLength();
 
-        theta = Math.atan((y2 - y1) / (x2 - x1));
+        theta = Math.atan2(y2 - y1, x2 - x1);
         cos_theta = Math.cos(theta); //rotation of displacement
         sin_theta = Math.sin(theta);
         computeStiffnessMatrix();
