@@ -1,8 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -259,8 +257,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStopButtonClicked() {
-        if (simulation == null) return;
-        simulation.stop();
+        if (simulation != null) simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         mCurrentAccelerationProvider.setInactive();
