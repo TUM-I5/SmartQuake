@@ -15,12 +15,11 @@ public class CanvasView extends View {
     // for future reference: 1 dpi = 100 / 2.54 pixels per meter
     // get dpi with context.getResources().getDisplayMetrics().xdpi
 
-    private static final Paint BEAM_PAINT = new Paint();
-    private static final Paint RULER_PAINT = new Paint();
-
     public static final double SIDE_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double TOP_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double BEAM_UNIT_SCREEN_FRACTION = 0.1;
+    private static final Paint BEAM_PAINT = new Paint();
+    private static final Paint RULER_PAINT = new Paint();
 
     static {
         BEAM_PAINT.setColor(Color.RED);
@@ -31,7 +30,11 @@ public class CanvasView extends View {
         RULER_PAINT.setAntiAlias(true);
     }
 
+    // TODO: improve?
     public boolean isBeingDrawn = false;
+    private double[] screenCenteringOffsets = new double[2];
+    private double[] negativeMinCorrections = new double[2];
+    private double modelScaling, beamUnitSize;
 
     public CanvasView(Context context) {
         super(context);
@@ -49,33 +52,37 @@ public class CanvasView extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public static void drawNode(Node node, Canvas canvas, double xOffset, double yOffset, double modelScaling, double beamUnitSize) {
-        canvas.drawCircle((float) (node.getCurrentX() * modelScaling + xOffset), (float) (node.getCurrentY() * modelScaling + yOffset),
+    private float internalToScreen(double internal_value, Axis axis) {
+        return (float) ((internal_value + negativeMinCorrections[axis.ordinal()]) * modelScaling + screenCenteringOffsets[axis.ordinal()]);
+    }
+
+    public void drawNode(Node node, Canvas canvas) {
+        canvas.drawCircle(internalToScreen(node.getCurrentX(), Axis.X),
+                internalToScreen(node.getCurrentY(), Axis.Y),
                 (float) (node.getRadius() * beamUnitSize), BEAM_PAINT);
     }
 
-    private void drawBeam(Beam beam, Canvas canvas, float xOffset, float yOffset, float modelScaling, double beamUnitSize) {
+    private void drawBeam(Beam beam, Canvas canvas) {
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
         Path p = new Path();
 
-        p.moveTo(startNode.getCurrentXf() * modelScaling + xOffset, startNode.getCurrentYf() * modelScaling + yOffset);
+        p.moveTo(internalToScreen(startNode.getCurrentXf(), Axis.X), internalToScreen(startNode.getCurrentYf(), Axis.Y));
 
         int numberOfSegments = 20;
-        double singleSegmentlength = beam.getLength() / numberOfSegments;
+        double singleSegmentLength = beam.getLength() / numberOfSegments;
 
-        for (float x = 0; x < beam.getLength(); x += singleSegmentlength) {
-            double px = (endNode.getInitialX() - startNode.getInitialX())/beam.getLength() * x + startNode.getInitialX();
-            double py = (endNode.getInitialY() - startNode.getInitialY())/beam.getLength() * x + startNode.getInitialY();
+        for (float x = 0; x < beam.getLength(); x += singleSegmentLength) {
+            double px = (endNode.getInitialX() - startNode.getInitialX()) / beam.getLength() * x + startNode.getInitialX();
+            double py = (endNode.getInitialY() - startNode.getInitialY()) / beam.getLength() * x + startNode.getInitialY();
 
             float[] intermediateDisplacement = beam.getGlobalDisplacementAt(x);
-            intermediateDisplacement[0] = (intermediateDisplacement[0] + (float) px) * modelScaling + xOffset;
-            intermediateDisplacement[1] = (intermediateDisplacement[1] + (float) py) * modelScaling + yOffset;
+            intermediateDisplacement[0] = internalToScreen(intermediateDisplacement[0] + px, Axis.X);
+            intermediateDisplacement[1] = internalToScreen(intermediateDisplacement[1] + py, Axis.Y);
             p.lineTo(intermediateDisplacement[0], intermediateDisplacement[1]);
         }
 
-        p.lineTo(endNode.getCurrentXf() * modelScaling + xOffset, endNode.getCurrentYf() * modelScaling + yOffset);
-
+        p.lineTo(internalToScreen(endNode.getCurrentXf(), Axis.X), internalToScreen(endNode.getCurrentYf(), Axis.Y));
 
         BEAM_PAINT.setStrokeWidth((float) (beam.getThickness() * beamUnitSize));
         canvas.drawPath(p, BEAM_PAINT);
@@ -86,38 +93,54 @@ public class CanvasView extends View {
         isBeingDrawn = true;
         super.onDraw(canvas);
 
-        double w = canvas.getWidth();
-        double h = canvas.getHeight();
-
         RULER_PAINT.setStrokeWidth(canvas.getWidth() / 144);
         RULER_PAINT.setTextSize(canvas.getHeight() / 38);
 
-        double[] modelSize = DrawHelper.boundingBox;
+        double[] boundingBox = DrawHelper.boundingBox;
+        double modelXSize = boundingBox[1] - boundingBox[0];
+        double modelYSize = boundingBox[3] - boundingBox[2];
+        // special case for single beam
+        if (modelXSize == 0){
+            modelXSize = 8;
+        }
+        if (modelYSize == 0) {
+            modelYSize = 8;
+        }
 
-        double widthFitScaling = (1 - 2 * SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth() / modelSize[0];
-        double heightFitScaling = (1 - TOP_MARGIN_SCREEN_FRACTION) * canvas.getHeight() / modelSize[1];
-        double modelScaling;
+        double widthFitScaling = (1 - 2 * SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth() / modelXSize;
+        double heightFitScaling = (1 - TOP_MARGIN_SCREEN_FRACTION) * canvas.getHeight() / modelYSize;
 
         if (widthFitScaling < heightFitScaling) {
             modelScaling = widthFitScaling;
-            drawRuler(modelSize[0], canvas);
+            drawRuler(modelXSize, canvas);
         } else {
             modelScaling = heightFitScaling;
-            drawRuler(modelSize[1], canvas);
+            drawRuler(modelYSize, canvas);
         }
 
-        double xOffset = 0.5 * (canvas.getWidth() - modelSize[0] * modelScaling);
-        double yOffset = canvas.getHeight() - modelSize[1] * modelScaling;
-        double beamUnitSize = canvas.getWidth() * BEAM_UNIT_SCREEN_FRACTION;
+        screenCenteringOffsets[0] = 0.5 * (canvas.getWidth() - modelXSize * modelScaling);
+        screenCenteringOffsets[1] = canvas.getHeight() - modelYSize * modelScaling;
+        beamUnitSize = canvas.getWidth() * BEAM_UNIT_SCREEN_FRACTION;
 
+        if (boundingBox[0] < 0) {
+            negativeMinCorrections[0] = -boundingBox[0];
+        } else {
+            negativeMinCorrections[0] = 0;
+        }
+
+        if (boundingBox[2] < 0) {
+            negativeMinCorrections[1] = -boundingBox[1];
+        } else {
+            negativeMinCorrections[1] = 0;
+        }
 
         BEAM_PAINT.setStyle(Paint.Style.STROKE);
         for (Beam beam : DrawHelper.snapBeams) {
-            drawBeam(beam, canvas, (float) xOffset, (float) yOffset, (float) modelScaling, beamUnitSize);
+            drawBeam(beam, canvas);
         }
         BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
         for (Node node : DrawHelper.snapNodes) {
-            drawNode(node, canvas, xOffset, yOffset, modelScaling, beamUnitSize);
+            drawNode(node, canvas);
         }
 
         isBeingDrawn = false;
@@ -130,5 +153,10 @@ public class CanvasView extends View {
         canvas.drawText(Double.toString(meterWidth) + " meter(s)",
                 (float) SIDE_MARGIN_SCREEN_FRACTION * canvas.getWidth(),
                 (float) ((TOP_MARGIN_SCREEN_FRACTION - 0.025) * canvas.getHeight()), RULER_PAINT);
+    }
+
+    private enum Axis {
+        X,
+        Y
     }
 }

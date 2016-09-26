@@ -219,7 +219,7 @@ public class SpatialDiscretization {
             Node node = structure.getNodes().get(i);
             node.setCurrentX(node.getInitialX() + displacementVector2.get(3*i, 0));
             node.setCurrentY(node.getInitialY() + displacementVector2.get(3*i+1, 0));
-            node.setSingleRotation(0,displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
+            node.setSingleRotation(0,-displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
         }
 
 
