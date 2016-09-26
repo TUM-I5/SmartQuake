@@ -6,7 +6,7 @@ package de.ferienakademie.smartquake.model;
 public class Material {
 
     public static Material STEEL  = new Material(0.1, 0.01, 2.1e11, 7850, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
-    public static Material STEEL2 = new Material(0.00474, 0.00474, 2.1e11, 7850, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
+    public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005); // Source: Holzbau, wikipedia
     public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005); // Source: Betonbau, wikipedia
     public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005);
