@@ -18,6 +18,16 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         return this.readings.isEmpty();
     }
 
+    @Override
+    public double[] getAcceleration() {
+        double[] temp = super.getAcceleration();
+        for (AccelerationProviderObserver observer : accelerationProviderObservers) {
+            observer.onNewReplayPercent(readings.get(currentPosition).timestamp/
+                    readings.get(readings.size()-1).timestamp);
+        }
+        return temp;
+    }
+
     /**
      * Load acceleration data from a file
      *
