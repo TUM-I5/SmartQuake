@@ -9,14 +9,13 @@ import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
-import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 /**
  * Created by Claudius, Lukas and John on 23/09/16.
+ * This class implements a solver. This is a implicit solver. We use the \beta-Newmark implementation.
+ * It is unconditional stable.
  */
 public class Newmark extends ImplicitSolver {
-
-
 
     //Right and left hand side matrix
     DenseMatrix64F B; //right
@@ -32,7 +31,6 @@ public class Newmark extends ImplicitSolver {
 
     //Fixed time step
     double delta_t;
-
 
 
     /**
@@ -60,7 +58,6 @@ public class Newmark extends ImplicitSolver {
         //delta_t fixed
         this.delta_t = delta_t;
 
-
         //A is calculated
         CommonOps.addEquals(A,delta_t/2.0,C); //A = A + delta_t/2*C
         CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
@@ -81,10 +78,8 @@ public class Newmark extends ImplicitSolver {
 
 
     /**
-     *
      * @param t
      *        global time since start in seconds
-     *
      * @param delta_t
      *        time step
      */
@@ -127,6 +122,5 @@ public class Newmark extends ImplicitSolver {
 
         //Solve to get xDotDot
         solver.solve(RHS,xDotDot); //solver.A*acc = RHS
-
     }
 }
