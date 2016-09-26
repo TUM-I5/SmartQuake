@@ -132,11 +132,17 @@ public class CreateActivity extends AppCompatActivity {
         List<Node> nodes = structure.getNodes();
 
         for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getBeams().size() == 0) nodes.remove(i);
-        }
+            Node node = nodes.get(i);
+            List<Beam> beams = node.getBeams();
 
-        for (Node node : nodes) {
-            transformToMeters(node);
+            if (nodes.get(i).getBeams().size() == 0) {
+                nodes.remove(i);
+                break;
+            }
+
+            for (Beam beam : beams) {
+                if (beam.getStartNode() != node && beam.getEndNode() != node) nodes.remove(i);
+            }
         }
 
         List<Integer> condof = new ArrayList<>();
@@ -157,6 +163,10 @@ public class CreateActivity extends AppCompatActivity {
             }
         }
 
+        for (Node node : nodes) {
+            transformToMeters(node);
+        }
+
         structure.setConDOF(condof);
 
         FileOutputStream fileOutputStream = null;
@@ -175,6 +185,8 @@ public class CreateActivity extends AppCompatActivity {
     public void transformToMeters(Node node) {
         double x = node.getCurrentX();
         double y = node.getCurrentY();
+        double x1 = node.getInitialX();
+        double y1 = node.getInitialY();
 
         double[] modelSize = DrawHelper.boundingBox;
 
@@ -186,8 +198,18 @@ public class CreateActivity extends AppCompatActivity {
         x = (x - xOffset) / (displayScaling);
         y = (y - yOffset) / (displayScaling);
 
+        x1 = (x1 - xOffset) / (displayScaling);
+        y1 = (y1 - yOffset) / (displayScaling);
+
+        double temp = (height - yOffset) / (displayScaling);
+
+        if (y >= temp)   y = temp;
+        if (y1 >= temp) y1 = temp;
+
         node.setCurrentX(x);
         node.setCurrentY(y);
+        node.setInitialX(x1);
+        node.setInitialY(y1);
     }
 
     @Override

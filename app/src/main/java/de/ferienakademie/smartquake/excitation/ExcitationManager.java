@@ -81,6 +81,11 @@ public class ExcitationManager implements SensorEventListener, AccelerationProvi
 
     @Override
     public AccelData getAccelerationMeasurement() {
+        return currAccel;
+    }
+
+    @Override
+    public AccelData getAccelerationMeasurement(long timeStamp) {
         long currTime = (long) (tick * timestep);
         while (readings.size() - 1 > currPos
                 && readings.get(currPos).timestamp < currTime) {

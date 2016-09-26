@@ -203,6 +203,7 @@ public class StructureIO {
         List<Beam> beams = new ArrayList<>();
         for (TemporaryBeam tbeam : tempBeams) {
             Beam b = new Beam(nodes.get(tbeam.start), nodes.get(tbeam.end));
+            b.setThickness(0.1f);
             beams.add(b);
         }
 
