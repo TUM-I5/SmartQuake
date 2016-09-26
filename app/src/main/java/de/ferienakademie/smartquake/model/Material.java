@@ -5,11 +5,17 @@ package de.ferienakademie.smartquake.model;
  */
 public class Material {
 
-    public static Material STEEL  = new Material(0.1, 0.01, 2.1e11, 7850, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
+    public static Material STEEL = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005, "rectangular"); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005); // for cantilever beam !!! DO NOT CHANGE !!!
-    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005); // Source: Holzbau, wikipedia
-    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005); // Source: Betonbau, wikipedia
-    public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005);
+    public static Material STEEL_I_SHAPED = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "I-shaped beam");
+    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005, "rectangular");// Source: Holzbau, wikipedia
+    public static Material WOOD_I_SHAPED = new Material(0.1,0.1,12e9,600,0.005, "I-shaped beam");
+    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005, "rectangular");// Source: Betonbau, wikipedia
+    public static Material CONCRETE_I_SHAPED = new Material(0.1,0.1,32e9,2400,0.005, "I-shaped beam");
+    public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005, "rectangular");
+
+    public String shape;
+    //shape = "rectangular" ;  // Can be changed for using other than rectangular cross-sections.
 
     protected double YoungsModulus = 0;   //Young's modulus
     protected double AreaOfCrossSection = 0;   //cross section
@@ -25,8 +31,8 @@ public class Material {
     protected double alpha = 0;   //alpha for mass matrix
     //may have to change zeroes
 
-    //constructor
-    public Material(double BreadthOfBeam, double HeightOfBeam, double YoungsModulus, double Density, double alpha){
+    //constructor - The I-shaped beam only uses the 240 profile from DIN 1025; source: https://www.bauforumstahl.de/upload/documents/profile/querschnittswerte/I.pdf
+    public Material(double BreadthOfBeam, double HeightOfBeam, double YoungsModulus, double Density, double alpha, String shape){
         this.BreadthOfBeam = BreadthOfBeam;
         this.HeightOfBeam = HeightOfBeam;
         this.YoungsModulus = YoungsModulus;
@@ -39,9 +45,16 @@ public class Material {
         this.MassPerLength = Density * AreaOfCrossSection;
         this.DampingCoefficient =10;
 
+        if (shape.equals("I-shaped beam")) { // SI-Units
+            this.BreadthOfBeam = 0.106;
+            this.HeightOfBeam = 0.24;
+            this.AreaOfCrossSection = 46.1 * 0.0001;
+            this.MomentOfInertia = 4250 * 0.00000001;
+        }
+
     }
 
-    public void setNewProperties(double b, double h) { //necessary, if BreadthOfBeam and HeightOfBeam are changed - changes all relevant properties
+    public void setNewProperties(double b, double h) { //necessary, if BreadthOfBeam and HeightOfBeam are changed - changes all relevant properties - only useful for rectangular cross-sections.
         this.BreadthOfBeam = b;
         this.HeightOfBeam = h;
         AreaOfCrossSection = b*h;
@@ -62,6 +75,8 @@ public class Material {
 
     public void setAlpha(double alpha){this.alpha = alpha;
     }
+
+    //Most of this is only useful for rectangular cross-sections.
 
     public double getBreadthOfBeam(){return BreadthOfBeam;}
     public double getHeightOfBeam(){return HeightOfBeam;}

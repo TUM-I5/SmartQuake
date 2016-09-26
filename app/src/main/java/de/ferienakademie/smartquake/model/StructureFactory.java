@@ -61,7 +61,6 @@ public class StructureFactory {
         Node n4 = new Node(0, height - half, true);
         Node n5 = new Node(half, height - 2 * half, true);
 
-        Beam b1 = new Beam(n1, n2, testMaterial);
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);
         Beam b4 = new Beam(n4, n1, testMaterial);
@@ -69,8 +68,7 @@ public class StructureFactory {
         Beam b6 = new Beam(n5, n3, testMaterial);
 
         structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4, b5, b6);
-
+        structure.addBeams( b2, b3, b4, b5, b6);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -565,6 +563,7 @@ public class StructureFactory {
         g1.setConstraint(con);
         g2.setConstraint(con);
         g3.setConstraint(con);
+
         //t1.setHinge(true);
         //t2.setHinge(true);
         //t3.setHinge(true);
@@ -588,6 +587,7 @@ public class StructureFactory {
         Node n3 = new Node(width/2, height);
         Node n4 = new Node(3*width/4, height);
         Node n5 = new Node(width, height);
+
         Node n6 = new Node(0, 3*height/4);
         Node n7 = new Node(width/4, 3*height/4);
         Node n8 = new Node(width/2, 3*height/4);
@@ -682,6 +682,8 @@ public class StructureFactory {
         Node n16 = new Node(5*width/9, height3);
         Node n17 = new Node(11*width/27, height3);
         Node n18 = new Node(16*width/27, height3);
+
+
         Node n19 = new Node(12.25*width/27, height3/3);
         Node n20 = new Node(width/2, 0);
         Node n21 = new Node(14.75*width/27, height3/3);
@@ -727,6 +729,8 @@ public class StructureFactory {
         return structure;
     }
 
+
+
     public static Structure getStructure(Context context, String structureName) {
 
         FileInputStream fileInputStream = null;
@@ -764,6 +768,8 @@ public class StructureFactory {
 
         return new Structure();
     }
+
+
 
 
     public static void enumerateDOFs(Structure structure){
