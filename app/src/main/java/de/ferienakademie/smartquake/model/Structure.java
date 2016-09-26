@@ -4,37 +4,39 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+
 /**
  * Class for the whole structure.
  */
 public class Structure {
 
+    private int numberOfDOF;
     private List<Node> nodes;
     private List<Beam> beams;
     // TODO: somebody plz initialize this array conDOF
+
     private List<Integer> conDOF ; //constraint dofs TODO: But how's the data structure?
 
     public double[] getBoundingBox() {
         return boundingBox;
     }
 
-    // left/right X, top/bottom Y
+
+    // X, Y
+    private double[] modelSize = {8, 8};
+    // left/right X, top/bottom Y //TODO which one will be used?
     private double[] boundingBox = new double[4];
 
-    private boolean lumped = true;  // default value!
+    private boolean lumped = false;  // default value!
 
-    public boolean isLumped() {
-        return lumped;
-    }
 
-    public void setLumped(boolean lumped) {
-        this.lumped = lumped;
-    }
 
     public Structure(List<Node> nodes, List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;
         this.beams = beams;
         this.conDOF = conDOF;
+
     }
 
     public Structure() {
@@ -89,6 +91,12 @@ public class Structure {
         this.conDOF = conDOF;
     }
 
+
+    public void addSingleConDOF(int conDOF) {
+        this.conDOF.add(conDOF);
+    }
+
+
     public void addBeams(List<Beam> beams) {
         this.beams.addAll(beams);
     }
@@ -108,5 +116,20 @@ public class Structure {
     public void clearAll() {
         nodes.clear();
         beams.clear();
+    }
+    public boolean isLumped() {
+        return lumped;
+    }
+
+    public void setLumped(boolean lumped) {
+        this.lumped = lumped;
+    }
+
+    public int getNumberOfDOF() {
+        return numberOfDOF;
+    }
+
+    public void setNumberOfDOF(int numberOfDOF) {
+        this.numberOfDOF = numberOfDOF;
     }
 }

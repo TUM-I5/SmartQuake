@@ -2,6 +2,8 @@ package de.ferienakademie.smartquake.model;
 
 import org.ejml.data.DenseMatrix64F;
 
+import java.util.List;
+
 import de.ferienakademie.smartquake.BuildConfig;
 
 /**
@@ -21,10 +23,15 @@ public class Beam {
     private double cos_theta;
     private double theta;
 
+    private double[] displacement;
+
+
     /**
      *array of degrees of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
       */
     private int[] dofs;
+
+
 
     private DenseMatrix64F elementStiffnessMatrix;
     private DenseMatrix64F elementMassMatrix;
@@ -33,22 +40,21 @@ public class Beam {
     private DenseMatrix64F elementMassMatrix_globalized;
 
     public Beam(Node startNode, Node endNode, float thickness) {
+        this.dofs = new int[6];
         this.startNode = startNode;
         this.endNode = endNode;
+        startNode.addBeam(this);
+        endNode.addBeam(this);
         this.thickness = thickness;
         material = stdMaterial;
     }
 
     //Kernel1 constructor
-    public Beam(Node startNode, Node endNode, Material material,boolean lumped) {
-        this.startNode = startNode;
-        this.endNode = endNode;
-        this.dofs = new int[]{
-                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
-                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
-        };
+    public Beam(Node startNode, Node endNode, Material material) {
+
+        this(startNode, endNode, 0.1f);
+        this.displacement = new double[6];
         this.material = material;
-        this.thickness = 0.1f;
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
         length = computeLength();
@@ -56,24 +62,16 @@ public class Beam {
         theta = Math.atan2(y2 - y1, x2 - x1);
         cos_theta = Math.cos(theta); //rotation of displacement
         sin_theta = Math.sin(theta);
-        computeStiffnessMatrix();
-        elementStiffnessMatrix_globalized = GlobalizeElementMatrix(elementStiffnessMatrix);
 
-        if (lumped){
-            computelumpedMassMatrix();
-            elementMassMatrix_globalized = elementMassMatrix;
-        }else {
-            computeconsistentMassMatrix();
-            elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
-        }
 
     }
 
     public void computeAll(boolean lumped) {
-        this.dofs = new int[]{
-                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
-                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
-        };
+
+        //this.dofs = new int[]{
+        //        startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
+        //        endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
+        //};
 
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();
@@ -82,13 +80,14 @@ public class Beam {
         theta = Math.atan2(y2 - y1, x2 - x1);
         cos_theta = Math.cos(theta); //rotation of displacement
         sin_theta = Math.sin(theta);
+
         computeStiffnessMatrix();
         elementStiffnessMatrix_globalized = GlobalizeElementMatrix(elementStiffnessMatrix);
 
-        if (lumped) {
+        if (lumped){
             computelumpedMassMatrix();
             elementMassMatrix_globalized = elementMassMatrix;
-        } else {
+        }else {
             computeconsistentMassMatrix();
             elementMassMatrix_globalized = GlobalizeElementMatrix(elementMassMatrix);
         }
@@ -274,28 +273,30 @@ public class Beam {
         double orthogonalDisplacementEndNode =
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
+        /*
         if (BuildConfig.DEBUG) { // assert that formulas are right
             double eps = 0.01;
-            double v = startNodeDisplacementX * Math.cos(theta) - startNodeDisplacementY * Math.sin(theta);
+            double v = startNodeDisplacementX * Math.cos(theta) + startNodeDisplacementY * Math.sin(theta);
             if (Math.abs(axialDisplacementStartNode - v) > eps) {
                 throw new AssertionError("axialDisplacementStartNode not right: " + axialDisplacementStartNode + " should be " + v);
             }
 
-            double v1 = startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
+            double v1 = -startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
             if (Math.abs(orthogonalDisplacementStartNode - v1) > eps) {
                 throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementEndNode + " should be " + v1);
             }
 
-            double v2 = endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta);
+            double v2 = endNodeDisplacementX * Math.cos(theta) + endNodeDisplacementY * Math.sin(theta);
             if (Math.abs(axialDisplacementEndNode - v2) > eps) {
                 throw new AssertionError("axialDisplacementEndNode not right: " + axialDisplacementEndNode + " should be " + v2);
             }
 
-            double v3 = endNodeDisplacementX * Math.sin(theta) + endNodeDisplacementY * Math.cos(theta);
+            double v3 = -endNodeDisplacementX * Math.sin(theta) + endNodeDisplacementY * Math.cos(theta);
             if (Math.abs(orthogonalDisplacementEndNode - v3) > eps) {
                 throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
+        */
 
         double rotationStartNode = startNode.getCurrentRotations().get(0);
         double rotationEndNode = endNode.getCurrentRotations().get(0);
@@ -313,8 +314,8 @@ public class Beam {
         double axialDisplacement = getAxialDisplacement(_x);
         double orthogonalDisplacement = getOrthogonalDisplacement(_x);
 
-        double u = axialDisplacement * Math.cos(theta) + orthogonalDisplacement * Math.sin(theta);
-        double w = -axialDisplacement * Math.sin(theta) + orthogonalDisplacement * Math.cos(theta);
+        double u = axialDisplacement * Math.cos(theta) - orthogonalDisplacement * Math.sin(theta);
+        double w = axialDisplacement * Math.sin(theta) + orthogonalDisplacement * Math.cos(theta);
 
         return new float[]{(float) u, (float) w};
     }
@@ -337,9 +338,9 @@ public class Beam {
         double xl3 = xl2 * xl;
 
         double h1 = 1 - 3 * xl2 + 2 * xl3;
-        double h2 = - _x * (xl - 1) * (xl - 1);
+        double h2 = (- _x * (xl - 1) * (xl - 1));
         double h3 = 3 * xl2 - 2 * xl3;
-        double h4 = (_x * xl) * (1 - xl);
+        double h4 = ((_x * xl) * (1 - xl));
 
         return h1 * orthogonalDisplacementStartNode + h2 * rotationStartNode + h3 * orthogonalDisplacementEndNode + h4 * rotationEndNode;
     }
@@ -357,11 +358,11 @@ public class Beam {
     }
 
     private double computeLocalAxialDisplacement(double x, double y) {
-        return x * Math.cos(theta) - y * Math.sin(theta);
+        return x * Math.cos(theta) + y * Math.sin(theta);
     }
 
     private double computeLocalOrthogonalDisplacement(double x, double y) {
-        return x * Math.sin(theta) + y * Math.cos(theta);
+        return -x * Math.sin(theta) + y * Math.cos(theta);
     }
 
     public int[] getDofs() {
@@ -379,6 +380,8 @@ public class Beam {
     public void setDofs(int[] dofs) {
         this.dofs = dofs;
     }
+
+    public void setSingleDof(int i, int dof){this.dofs[i]=dof; };
 
     public Node getStartNode() {
         return startNode;
@@ -427,7 +430,20 @@ public class Beam {
         return elementStiffnessMatrix_globalized;
     }
 
+
+
+    public void setSingleDisplacement(int i,double displacement) {
+        this.displacement[i] = displacement;
+    }
+
     public DenseMatrix64F getElementMassMatrix_globalized(){
         return elementMassMatrix_globalized;
+    }
+
+    public void setRotationDOF(boolean left, int i){
+        if(left){
+
+        }
+
     }
 }

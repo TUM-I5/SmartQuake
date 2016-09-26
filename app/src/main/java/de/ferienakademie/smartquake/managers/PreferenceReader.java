@@ -17,4 +17,8 @@ public class PreferenceReader {
     public static boolean includeGravity() {
         return sharedPref.getBoolean("pref_gravity", false);
     }
+
+    public static double getDisplacementScaling() {
+        return (double) sharedPref.getFloat("displacement_slider", 0.0f);
+    }
 }

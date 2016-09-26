@@ -1,6 +1,7 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -8,12 +9,15 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -23,6 +27,7 @@ import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
+import de.ferienakademie.smartquake.excitation.SinCosExcitation;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.model.Beam;
@@ -33,7 +38,6 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener {
 
-    private Sensor mAccelerometer; //sensor object
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
@@ -45,12 +49,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-
+    private SeekBar replaySeekBar;
+    private TextView replayrunningLabel;
+    private double replayProgress;
     private SimulationMode mode = SimulationMode.LIVE;
 
     private int structureId;
     private String structureName;
-
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
@@ -91,10 +96,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         if (id == R.id.sim_replay_button && !simulation.isRunning()) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+            replaySeekBar.setVisibility(View.VISIBLE);
+            replayrunningLabel.setVisibility(View.VISIBLE);
             FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
             try {
-                fileAccelerationProvider.load(openFileInput("saveAcc.txt"));
+                fileAccelerationProvider.load(openFileInput("Last.earthquake"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -105,7 +112,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             simFab.setImageResource(R.drawable.ic_pause_white_24dp);
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
-            // load EQ data
+            // TODO need to start a new activity with a list of earthquakes
+            startSimulation(new SinCosExcitation());
+            ActionMenuItemView simulation = (ActionMenuItemView)findViewById(id);
+            simulation.setEnabled(false);
+            ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
+            replay.setEnabled(false);
         }
 
 
@@ -131,7 +143,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         for (Beam beam : structure.getBeams()) {
-            beam.computeAll(true);
+            beam.computeAll(structure.isLumped());
         }
 
     }
@@ -139,11 +151,29 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_simulation);
 
+        setContentView(R.layout.activity_simulation);
+        replaySeekBar = (SeekBar) findViewById(R.id.replaySeekBar);
+        replaySeekBar.setVisibility(View.GONE);
+        replaySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //TODO call excitation to set correct replay position in current array
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        replayrunningLabel = (TextView) findViewById(R.id.replaytext);
+        replayrunningLabel.setVisibility(View.GONE);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        //mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         simFab = (FloatingActionButton) findViewById(R.id.simFab);
         simFab.setOnClickListener(startSimulationListener);
@@ -170,13 +200,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onResume() {
         super.onResume();
-        mCurrentAccelerationProvider.setActive();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCurrentAccelerationProvider.setInactive();
+        onStopButtonClicked();
     }
 
     private void toggleStartStopAvailability() {
@@ -200,7 +229,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
         Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
-        startSimulation(new SensorAccelerationProvider(mSensorManager, mAccelerometer));
+        startSimulation(new SensorAccelerationProvider(mSensorManager));
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
@@ -235,7 +264,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mCurrentAccelerationProvider.setInactive();
         try {
-            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+            mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -279,12 +308,23 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     }
 
+    private void setReplayProgress(double progress) {
+        replayProgress = progress;
+        replaySeekBar.setProgress((int) Math.round(progress));
+        if (progress >= 100) {
+            replaySeekBar.setVisibility(View.GONE);
+            replayrunningLabel.setVisibility(View.GONE);
+            onStopButtonClicked();
+            mode = SimulationMode.LIVE;
+        }
+    }
+
+
     // TODO: should this be part of Simulation too?
     private enum SimulationMode {
         LIVE,
         REPLAY,
         FILE_REPLAY
     }
-
 
 }

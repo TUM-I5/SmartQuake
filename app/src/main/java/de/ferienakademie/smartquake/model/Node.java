@@ -20,6 +20,12 @@ public class Node {
 
     private double radius = 0.1;
 
+    private boolean[] constraint = new boolean[3];
+
+
+
+    private boolean hinge = false;
+
     private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
@@ -54,13 +60,15 @@ public class Node {
         return currentRotations;
     }
 
-    public void setCurrentRotations(List<Double> currentRotations) {
+    public void setRotations(List<Double> currentRotations) {
         this.currentRotations = currentRotations;
     }
 
     public void setSingleRotation(int i, double rotation) {
         this.currentRotations.set(i,rotation );
     }
+
+
 
     public void setInitialY(double initialY) {
         this.initialY = initialY;
@@ -126,6 +134,26 @@ public class Node {
         Node node = (Node) obj;
 
         return node.currentX == currentX && node.currentY == currentY;
+    }
+
+    public boolean isHinge() {
+        return hinge;
+    }
+
+    public void setHinge(boolean hinge) {
+        this.hinge = hinge;
+    }
+
+    public boolean getConstraint(int i) {
+        return constraint[i];
+    }
+
+    public void setConstraint(boolean[] constraint) {
+        this.constraint = constraint;
+    }
+
+    public void setSingleConstraint(int i, boolean constraint) {
+        this.constraint[i] = constraint;
     }
 }
 

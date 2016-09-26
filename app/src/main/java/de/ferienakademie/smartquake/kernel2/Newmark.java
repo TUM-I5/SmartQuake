@@ -9,12 +9,29 @@ import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
-import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 /**
  * Created by Claudius, Lukas and John on 23/09/16.
+ * This class implements a solver. This is a implicit solver. We use the \beta-Newmark implementation.
+ * It is unconditional stable.
  */
 public class Newmark extends ImplicitSolver {
+
+    //Right and left hand side matrix
+    DenseMatrix64F B; //right
+    DenseMatrix64F A; //left
+
+
+    //right hand side of implicit differential equation
+    DenseMatrix64F RHS;
+    //old load vector
+    DenseMatrix64F fLoad_old;
+    //old xDotDot
+    DenseMatrix64F xDotDot_old;
+
+    //Fixed time step
+    double delta_t;
+
 
     /**
      *
@@ -24,30 +41,52 @@ public class Newmark extends ImplicitSolver {
      */
     public Newmark(SpatialDiscretization k1, AccelerationProvider accelerationProvider, DenseMatrix64F xDot, double delta_t) {
         super(k1, accelerationProvider, xDot);
+        //initialization
         initialize(delta_t);
     }
 
-    //Right and left hand side matrix
-    DenseMatrix64F B; //right
-    DenseMatrix64F A; //left
 
-    //old load vector
-    DenseMatrix64F fLoad_old;
+    /**
+     * This method initializes RHS, the solverFactor, A, delta_t, B
+     * @param delta_t
+     */
+    private void initialize(double delta_t) {
+        //set gamma to 1/2, beta to 1/4
+        //initialise left side matrix
+        A = M.copy();
 
-    DenseMatrix64F xDotDot_old;
-    //Fixed time step
-    double delta_t;
+        //delta_t fixed
+        this.delta_t = delta_t;
+
+        //A is calculated
+        CommonOps.addEquals(A,delta_t/2.0,C); //A = A + delta_t/2*C
+        CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
+
+        //LU solver
+        solver = LinearSolverFactory.lu(k1.getNumberofDOF());
+        solver.setA(A);
+
+        //initialise right side matrices: F_ext - K*xDot- B*xDotDot
+        B = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
+        CommonOps.addEquals(B,delta_t/2.0,C);
+        CommonOps.addEquals(B,delta_t*delta_t/4.0,K);
+        CommonOps.addEquals(B,-1,M);
+
+        //initialize fLoad_old
+        fLoad_old = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+    }
 
 
+    /**
+     * @param t
+     *        global time since start in seconds
+     * @param delta_t
+     *        time step
+     */
     @Override
     public void nextStep(double t, double delta_t) {
 
-
         xDotDot_old = xDotDot.copy();
-
-        if(this.delta_t != delta_t){
-            //TODO Throw exception
-        }
 
         //Get acceleration
         getAcceleration();
@@ -67,55 +106,21 @@ public class Newmark extends ImplicitSolver {
 
     }
 
-
-    private void initialize(double delta_t) {
-        //set gamma to 1/2, beta to 1/4
-        //initialise left side matrix
-        A = M.copy();
-
-        this.delta_t = delta_t;
-
-
-        CommonOps.addEquals(A,delta_t/2.0,C); //A = A + delta_t/2*C
-        CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
-
-        //LU solver
-        solver = LinearSolverFactory.lu(k1.getNumberofDOF());
-        solver.setA(A);
-
-        //initialise right side matrices: F_ext - K*dotx - B*ddotx
-        B = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
-        B.zero();
-
-        CommonOps.addEquals(B,delta_t/2.0,C);
-        CommonOps.addEquals(B,delta_t*delta_t/4.0,K);
-        CommonOps.addEquals(B,-1,M);
-
-        //initialize fLoad_old
-        fLoad_old = new DenseMatrix64F(k1.getNumberofDOF(), 1);
-        fLoad_old.zero();
-    }
-
     /**
-     *
-     *
-     * @return ddotx_n+1
+     * This method gets the acceleration. It will be written in place into xDotDot
+     * It is calculated out of fload Vec
      */
     private void getAcceleration(){
 
         //initialize right hand side
-        DenseMatrix64F RHS = fLoad.copy();
+        RHS = fLoad.copy();
 
         //Calculate RHS
         CommonOps.multAdd(-delta_t,K,xDot,RHS); //RHS = RHS - delta_t*K*xDot
         CommonOps.multAdd(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
-
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
-        //Solve
+        //Solve to get xDotDot
         solver.solve(RHS,xDotDot); //solver.A*acc = RHS
-
     }
 }
-
-//solver.solve(input,output);
