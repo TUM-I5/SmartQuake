@@ -39,6 +39,8 @@ public class StartActivity extends AppCompatActivity
 
     private ArrayAdapter<String> adapter;
 
+    private int fixedObjectsSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,6 +167,10 @@ public class StartActivity extends AppCompatActivity
         values.add("Housing Block");
         values.add("Trump tower");
         values.add("TV Tower");
+
+        // has to be after the standard added constructions
+        fixedObjectsSize = values.size();
+
         String[] structures = getFilesDir().list();
 
         Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
@@ -213,7 +219,7 @@ public class StartActivity extends AppCompatActivity
     public void delete_action(int position){
         String name_of_file  = values.get(position) + ".structure";
 
-        if (position > 4){
+        if (position >= fixedObjectsSize){
             File file = new File(getFilesDir().getAbsoluteFile() + "/" + name_of_file);
             boolean  deleted = false;
             if(file.exists()) {
