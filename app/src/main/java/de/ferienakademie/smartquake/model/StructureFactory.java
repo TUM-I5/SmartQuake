@@ -163,6 +163,76 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getHousingBlock() {
+        double width = 10;
+        double height = 10;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        structure.setLumped(lumped);
+        Material testMaterial = new Material();
+
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width/4, height);
+        Node n3 = new Node(width/2, height);
+        Node n4 = new Node(3*width/4, height);
+        Node n5 = new Node(width, height);
+        Node n6 = new Node(0, height);
+        Node n7 = new Node(width/4, 3*height/4);
+        Node n8 = new Node(width/2, 3*height/4);
+        Node n9 = new Node(3*width/4, 3*height/4);
+        Node n10 = new Node(width, 3*height/4);
+        Node n11 = new Node(0, height/2);
+        Node n12 = new Node(width/4, height/2);
+        Node n13 = new Node(width/2, height/2);
+        Node n14 = new Node(3*width/4, height/2);
+        Node n15 = new Node(width, height/2);
+        Node n16 = new Node(width/4, height/4);
+        Node n17 = new Node(width/2, height/4);
+        Node n18 = new Node(3*width/4, height/4);
+        Node n19 = new Node(width/2, 0);
+
+        Beam b1 = new Beam(n1, n6, testMaterial);
+        Beam b2 = new Beam(n2, n7, testMaterial);
+        Beam b3 = new Beam(n3, n8, testMaterial);
+        Beam b4 = new Beam(n4, n9, testMaterial);
+        Beam b5 = new Beam(n5, n10, testMaterial);
+        Beam b6 = new Beam(n6, n7, testMaterial);
+        Beam b7 = new Beam(n7, n8, testMaterial);
+        Beam b8 = new Beam(n8, n9, testMaterial);
+        Beam b9 = new Beam(n9, n10, testMaterial);
+        Beam b10 = new Beam(n6, n11, testMaterial);
+        Beam b11 = new Beam(n7, n12, testMaterial);
+        Beam b12 = new Beam(n8, n13, testMaterial);
+        Beam b13 = new Beam(n9, n14, testMaterial);
+        Beam b14 = new Beam(n10, n15, testMaterial);
+        Beam b15 = new Beam(n11, n16, testMaterial);
+        Beam b16 = new Beam(n12, n16, testMaterial);
+        Beam b17 = new Beam(n13, n17, testMaterial);
+        Beam b18 = new Beam(n14, n18, testMaterial);
+        Beam b19 = new Beam(n15, n18, testMaterial);
+        Beam b20 = new Beam(n16, n19, testMaterial);
+        Beam b21 = new Beam(n17, n19, testMaterial);
+        Beam b22 = new Beam(n18, n19, testMaterial);
+
+
+        structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19);
+        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        n3.setConstraint(con);
+        n4.setConstraint(con);
+        n5.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
 
     public static Structure getStructure(Context context, String structureName) {
 
