@@ -119,7 +119,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.cantileverBeam();
         } else if (structureId == 1) {
             structure = StructureFactory.getSimpleHouse();
-        } else {
+        } else if (structureId == 2) {
+            structure = StructureFactory.getCraneBottom();
+        } else if (structureId == 3) {
+            structure = StructureFactory.getBetterEiffelTower();
+        } else if (structureId == 4) {
+            structure = StructureFactory.getEmpireState();
+        }
+        else {
             structure = StructureFactory.getStructure(this, structureName);
         }
 
