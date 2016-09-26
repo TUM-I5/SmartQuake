@@ -273,28 +273,30 @@ public class Beam {
         double orthogonalDisplacementEndNode =
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
+        /*
         if (BuildConfig.DEBUG) { // assert that formulas are right
             double eps = 0.01;
-            double v = startNodeDisplacementX * Math.cos(theta) - startNodeDisplacementY * Math.sin(theta);
+            double v = startNodeDisplacementX * Math.cos(theta) + startNodeDisplacementY * Math.sin(theta);
             if (Math.abs(axialDisplacementStartNode - v) > eps) {
                 throw new AssertionError("axialDisplacementStartNode not right: " + axialDisplacementStartNode + " should be " + v);
             }
 
-            double v1 = startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
+            double v1 = -startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
             if (Math.abs(orthogonalDisplacementStartNode - v1) > eps) {
                 throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementEndNode + " should be " + v1);
             }
 
-            double v2 = endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta);
+            double v2 = endNodeDisplacementX * Math.cos(theta) + endNodeDisplacementY * Math.sin(theta);
             if (Math.abs(axialDisplacementEndNode - v2) > eps) {
                 throw new AssertionError("axialDisplacementEndNode not right: " + axialDisplacementEndNode + " should be " + v2);
             }
 
-            double v3 = endNodeDisplacementX * Math.sin(theta) + endNodeDisplacementY * Math.cos(theta);
+            double v3 = -endNodeDisplacementX * Math.sin(theta) + endNodeDisplacementY * Math.cos(theta);
             if (Math.abs(orthogonalDisplacementEndNode - v3) > eps) {
                 throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
+        */
 
         double rotationStartNode = startNode.getCurrentRotations().get(0);
         double rotationEndNode = endNode.getCurrentRotations().get(0);
@@ -312,8 +314,8 @@ public class Beam {
         double axialDisplacement = getAxialDisplacement(_x);
         double orthogonalDisplacement = getOrthogonalDisplacement(_x);
 
-        double u = axialDisplacement * Math.cos(theta) + orthogonalDisplacement * Math.sin(theta);
-        double w = -axialDisplacement * Math.sin(theta) + orthogonalDisplacement * Math.cos(theta);
+        double u = axialDisplacement * Math.cos(theta) - orthogonalDisplacement * Math.sin(theta);
+        double w = axialDisplacement * Math.sin(theta) + orthogonalDisplacement * Math.cos(theta);
 
         return new float[]{(float) u, (float) w};
     }
@@ -336,9 +338,9 @@ public class Beam {
         double xl3 = xl2 * xl;
 
         double h1 = 1 - 3 * xl2 + 2 * xl3;
-        double h2 = -(- _x * (xl - 1) * (xl - 1));
+        double h2 = (- _x * (xl - 1) * (xl - 1));
         double h3 = 3 * xl2 - 2 * xl3;
-        double h4 = -((_x * xl) * (1 - xl));
+        double h4 = ((_x * xl) * (1 - xl));
 
         return h1 * orthogonalDisplacementStartNode + h2 * rotationStartNode + h3 * orthogonalDisplacementEndNode + h4 * rotationEndNode;
     }
@@ -356,11 +358,11 @@ public class Beam {
     }
 
     private double computeLocalAxialDisplacement(double x, double y) {
-        return x * Math.cos(theta) - y * Math.sin(theta);
+        return x * Math.cos(theta) + y * Math.sin(theta);
     }
 
     private double computeLocalOrthogonalDisplacement(double x, double y) {
-        return x * Math.sin(theta) + y * Math.cos(theta);
+        return -x * Math.sin(theta) + y * Math.cos(theta);
     }
 
     public int[] getDofs() {

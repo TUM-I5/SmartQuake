@@ -57,7 +57,7 @@ public class TimeIntegration {
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
-        delta_t = 0.006;
+        delta_t = 0.015;
 
 
         //stores the numerical scheme
@@ -98,7 +98,7 @@ public class TimeIntegration {
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 
                     //long firstTime = System.nanoTime();
-                    while(t < 0.03+0.000001 && isRunning) {
+                    while(t < 0.03-0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         t += delta_t;
