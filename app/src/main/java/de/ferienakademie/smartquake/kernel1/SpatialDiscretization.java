@@ -166,46 +166,59 @@ public class SpatialDiscretization {
         }
     }
 
+
+
     public DenseMatrix64F getDisplacementVector() {
         return DisplacementVector;
     }
 
-   public int getNumberofDOF() {
-        return numberofDOF;
-   }
+
+
+    public int getNumberofDOF() {
+         return numberofDOF;
+    }
+
+
 
     public Structure getStructure() {
         return structure;
     }
 
+
+
     public void setStructure(Structure structure) {
         this.structure = structure;
     }
+
+
 
     /**
      * Update {@link Structure} that is displayed using values computed by {@link de.ferienakademie.smartquake.kernel2.TimeIntegration}
      * @param displacementVector a (3 * number of nodes) x 1 matrix. Three consequent values contain displacements in x, y, z direction.
      */
-    public void updateStructure(DenseMatrix64F displacementVector) {
-        List<Integer> conDOF = structure.getConDOF();
+//    public void updateStructure(DenseMatrix64F displacementVector) {
+//        List<Integer> conDOF = structure.getConDOF();
+//
+//        for(int k=0; k<conDOF.size(); k++){
+//            displacementVector.set(conDOF.get(k),0,0);
+//        }
+//
+//        for (int i = 0; i < structure.getNodes().size(); i++) {
+//
+//            Node node = structure.getNodes().get(i);
+//            List<Integer> dof = node.getDOF();
+//
+//            node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
+//            node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
+//        }
+//    }
 
-        for(int k=0; k<conDOF.size(); k++){
-            displacementVector.set(conDOF.get(k),0,0);
-        }
 
+// TODO: What is the difference between these two functions??
 
+    public void updateDisplacementsOfStructure(DenseMatrix64F displacementVector) {
 
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-
-            Node node = structure.getNodes().get(i);
-            List<Integer> dof = node.getDOF();
-
-            node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
-        }
-    }
-
-    public void updateStructure_SpatialDiscretization(DenseMatrix64F displacementVector) {
+        // list of constrained dofs
         List<Integer> conDOF = structure.getConDOF();
 
         DenseMatrix64F displacementVector2 = displacementVector.copy();
@@ -217,11 +230,21 @@ public class SpatialDiscretization {
 
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            node.setCurrentX(node.getInitialX() + displacementVector2.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector2.get(3*i+1, 0));
-            node.setSingleRotation(0,-displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
-        }
 
+            List<Integer> dofsOfNode = node.getDOF();
+
+            for (int j = 0; j < dofsOfNode.size(); j++) {
+                //TODO change with introducting of hinges
+                node.setSingleDisplacement( j, displacementVector2.get( dofsOfNode.get(j) , 0));
+            }
+            // TODO: check minus sign for rotations!!
+
+
+
+            //node.setCurrentX(node.getInitialX() + displacementVector2.get(3*i, 0));
+            //node.setCurrentY(node.getInitialY() + displacementVector2.get(3*i+1, 0));
+            //node.setSingleRotation(0,-displacementVector2.get(3*i+2,0));
+        }
 
     }
 
@@ -263,12 +286,17 @@ public class SpatialDiscretization {
         CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
     }
 
+
+
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
         CommonOps.scale(acceleration[0], influenceVectorX);
         CommonOps.scale(acceleration[1], influenceVectorY);
         CommonOps.addEquals(influenceVectorX, influenceVectorY);
         CommonOps.mult(eigentransposemultMassmatrix, influenceVectorX, LoadVector);
     }
+
+
+
 
     public void calculateEigenvaluesAndVectors(){
         GenEig eigen = new GenEig(StiffnessMatrix,MassMatrix); //solve GEN eigenvalues problem
@@ -286,8 +314,10 @@ public class SpatialDiscretization {
         }
     }
 
-    public void performModalAnalysis(){
 
+
+
+    public void performModalAnalysis(){
 
         calculateEigenvaluesAndVectors();
 
@@ -301,9 +331,10 @@ public class SpatialDiscretization {
         CommonOps.mult(temp,eigenvectorsmatrix,MassMatrix); //massmatrix converted into Eigenvectorspace
 
         normaliseEigenvectors();
-
-
     }
+
+
+
     public void getModalAnalysisMatrices(){
         performModalAnalysis();
         StiffnessMatrix.zero();
@@ -314,11 +345,17 @@ public class SpatialDiscretization {
             MassMatrix.set(i,i,1.0);
         }
     }
+
+
+
     public void calcEigentransposemultMassmatrix(){
         DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());
         CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
         CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,eigentransposemultMassmatrix);
     }
+
+
+
 
     public void superimposeModalAnalyisSolutions(double[] modalSolutionvector){
         DisplacementVector.zero();

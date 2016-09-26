@@ -8,33 +8,39 @@ import java.util.List;
  */
 public class Node {
     //Current node position
-    private double currentX;
-    private double currentY;
+    //private double currentX;
+    //private double currentY;
 
-    private List<Double> currentRotations; //List of all rotations at the node
+    //private List<Double> currentRotations; //List of all rotations at the node
 
     //Initial node position
     private double initialX;
     private double initialY;
+
+
     private List<Integer> DOF; //Degrees of freedom
+    private List<Double> displacements; //List of all displacements at the node
+
 
     private double radius = 0.1;
 
     private List<Beam> beams = new ArrayList<>();
 
     public Node(double x, double y) {
-        this.currentX = x;
-        this.currentY = y;
+        //this.currentX = x;
+        //this.currentY = y;
         this.initialX = x;
         this.initialY = y;
-        currentRotations = new ArrayList<>();
-        currentRotations.add(0.0);
+        displacements = new ArrayList<>(6);
+        //currentRotations.add(0.0);
     }
 
 
     public Node(double x, double y, List<Integer> DOF) {
         this(x, y);
         this.DOF = DOF;
+        displacements = new ArrayList<>(6);
+
     }
 
 
@@ -50,17 +56,31 @@ public class Node {
         return initialY;
     }
 
-    public List<Double> getCurrentRotations() {
-        return currentRotations;
+//    public List<Double> getCurrentRotations() {
+//        return currentRotations;
+//    }
+//
+//    public void setCurrentRotations(List<Double> currentRotations) {
+//        this.currentRotations = currentRotations;
+//    }
+//
+//    public void setSingleRotation(int i, double rotation) {
+//        this.currentRotations.set(i,rotation );
+//    }
+
+
+
+    public void setSingleDisplacement(int i, double value) {
+        this.displacements.set(i,value );
     }
 
-    public void setCurrentRotations(List<Double> currentRotations) {
-        this.currentRotations = currentRotations;
+
+
+    public double getSingleDisplacement(int i) {
+        return this.displacements.get(i);
     }
 
-    public void setSingleRotation(int i, double rotation) {
-        this.currentRotations.set(i,rotation );
-    }
+
 
     public void setInitialY(double initialY) {
         this.initialY = initialY;
@@ -77,29 +97,31 @@ public class Node {
         this.DOF = DOF;
     }
 
+
+
     public double getCurrentX() {
-        return currentX;
+        return initialX + displacements.get(0);
     }
+
+
 
     public float getCurrentXf() {
-        return (float) currentX;
+        return (float)(initialX + displacements.get(0));
     }
 
-    public void setCurrentX(double currentX) {
-        this.currentX = currentX;
-    }
+
 
     public double getCurrentY() {
-        return currentY;
+        return initialY + displacements.get(1);
     }
+
+
 
     public float getCurrentYf() {
-        return (float) currentY;
+        return (float)(initialY + displacements.get(1));
     }
 
-    public void setCurrentY(double currentY) {
-        this.currentY = currentY;
-    }
+
 
 
     public double getRadius() {
@@ -125,7 +147,8 @@ public class Node {
 
         Node node = (Node) obj;
 
-        return node.currentX == currentX && node.currentY == currentY;
+        //return node.currentX == currentX && node.currentY == currentY;
+        return node.initialX == initialX && node.initialY == initialY;
     }
 }
 

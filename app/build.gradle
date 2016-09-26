@@ -39,8 +39,11 @@ dependencies {
     compile files('libs/lapack.jar')
     compile files('libs/xerbla.jar')
     compile files('libs/fab-1.6.4-javadoc.jar')
+    compile files('libs/junit-4.12.jar')
 
-    testCompile 'junit:junit:4.12'
+    // TODO Malte: kein Junit
+    //testCompile 'junit:junit:4.12'
+    testCompile files('libs/junit-4.12.jar')
     testCompile files('libs/hamcrest-all-1.3.jar')
 
 }

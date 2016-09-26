@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 
 import java.util.concurrent.ExecutorService;
@@ -113,7 +111,7 @@ public class TimeIntegration {
                   //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
-                    spatialDiscretization.updateStructure_SpatialDiscretization(spatialDiscretization.getDisplacementVector());
+                    spatialDiscretization.updateDisplacementsOfStructure(spatialDiscretization.getDisplacementVector());
 
                     isRunning = false;
                 }

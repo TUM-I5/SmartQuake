@@ -260,10 +260,15 @@ public class Beam {
     axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode
      */
     public Displacements getLocalDisplacements() {
-        double startNodeDisplacementX = startNode.getCurrentX() - startNode.getInitialX();
-        double startNodeDisplacementY = startNode.getCurrentY() - startNode.getInitialY();
-        double endNodeDisplacementX   = endNode.getCurrentX() - endNode.getInitialX();
-        double endNodeDisplacementY   = endNode.getCurrentY() - endNode.getInitialY();
+//        double startNodeDisplacementX = startNode.getCurrentX() - startNode.getInitialX();
+//        double startNodeDisplacementY = startNode.getCurrentY() - startNode.getInitialY();
+//        double endNodeDisplacementX   = endNode.getCurrentX() - endNode.getInitialX();
+//        double endNodeDisplacementY   = endNode.getCurrentY() - endNode.getInitialY();
+
+        double startNodeDisplacementX = startNode.getSingleDisplacement(0);
+        double startNodeDisplacementY = startNode.getSingleDisplacement(1);
+        double endNodeDisplacementX   = endNode.getSingleDisplacement(0);
+        double endNodeDisplacementY   = endNode.getSingleDisplacement(1);
 
         double axialDisplacementStartNode =
                 computeLocalAxialDisplacement(startNodeDisplacementX, startNodeDisplacementY);
@@ -282,7 +287,8 @@ public class Beam {
 
             double v1 = startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
             if (orthogonalDisplacementStartNode != v1) {
-                throw new AssertionError("orthogonalStartNode not right: " + axialDisplacementStartNode + " should be " + v1);
+                // TODO output wrong axial <-> orthogonal
+                throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementStartNode + " should be " + v1);
             }
 
             if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
@@ -294,8 +300,9 @@ public class Beam {
             }
         }
 
-        double rotationStartNode = startNode.getCurrentRotations().get(0);
-        double rotationEndNode = endNode.getCurrentRotations().get(0);
+        // TODO richtige Rotation raussuchen
+        double rotationStartNode = startNode.getSingleDisplacement(0);
+        double rotationEndNode   = endNode.getSingleDisplacement(0);
 
         return new Displacements(axialDisplacementStartNode, orthogonalDisplacementStartNode, rotationStartNode,
                             axialDisplacementEndNode, orthogonalDisplacementEndNode, rotationEndNode);
