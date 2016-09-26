@@ -55,7 +55,7 @@ public class SpatialDiscretization {
         calculateInfluenceVector();
         calculateEigenvaluesAndVectors();
         calculateDampingMatrix();
-
+        performModalAnalysis(); //test
         displacementScale = PreferenceReader.getDisplacementScaling();
     }
 
@@ -159,12 +159,12 @@ public class SpatialDiscretization {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
         DampingMatrix.zero();
-        //double omega1 = eigenvalues[0];
-        //double omega2 = eigenvalues[1];
+        double omega1 = eigenvalues[0];
+        double omega2 = eigenvalues[1];
 
         double xi = 0.05;
-        double a0 = 0;//2 * xi * omega1 * omega2 / (omega1 + omega2);
-        double a1 = 0;//2 * xi / (omega1 + omega2);
+        double a0 = 2 * xi * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 2 * xi / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
@@ -288,7 +288,6 @@ public class SpatialDiscretization {
     public void calculateEigenvaluesAndVectors() {
         DenseMatrix64F K = StiffnessMatrix.copy();
         DenseMatrix64F M = MassMatrix.copy();
-        calculateDampingMatrix();
         GenEig eigen = new GenEig(K, M); //solve GEN eigenvalues problem
         eigenvalues = eigen.getLambda();
         double[][] ev = eigen.getV();
@@ -309,8 +308,11 @@ public class SpatialDiscretization {
 
 
     public void performModalAnalysis() {
-
-        calculateEigenvaluesAndVectors();
+        double eps = 1e-8;
+        //calculateEigenvaluesAndVectors();
+        for (int i = 0; i < numberofDOF; i++) {
+            //eigenvalues[]
+        }
         normaliseEigenvectors();
         calcEigentransposemultMassmatrix();
 
@@ -337,6 +339,7 @@ public class SpatialDiscretization {
 
     public void calcEigentransposemultMassmatrix(){
         DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF(),getNumberofDOF());
+        eigentransposemultMassmatrix = new DenseMatrix64F(getNumberofDOF(),getNumberofDOF());
         CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
         CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,eigentransposemultMassmatrix);
     }

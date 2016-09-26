@@ -25,7 +25,7 @@ public class SinCosExcitation extends AccelerationProvider {
     }
 
     public SinCosExcitation() {
-        this.amplitude = 10;
+        this.amplitude = 100;
         this.frequency = 1;
         this.timestep = 15_000_000;
     }
