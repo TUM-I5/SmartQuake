@@ -14,12 +14,125 @@
     <string name="save_canvas">Save canvas</string>
     <string name="create_button">create</string>
 
-    <!-- Preference slider displacement magnification -->
-    <string name="slider_title">Displacement scaling</string>
-    <item name="slider_default" format="float" type="string">0.0</item>
-    <string name="slider_message">Test</string>
+    <string name="replay_running">Replay running.</string>
+    <string name="replay">Replay</string>
 
-    <string-array name="slider_summaries">
+    <!-- Preference slider excitation frequency -->
+    <string name="frequency_slider_title">Excitation frequency</string>
+    <item name="frequency_slider_default" format="float" type="string">0.1</item>
+    <string name="frequency_slider_message"></string>
+
+    <string-array name="frequency_slider_summaries">
+        <item>0.0 Hz</item>
+        <item>0.1 Hz</item>
+        <item>0.2 Hz</item>
+        <item>0.3 Hz</item>
+        <item>0.4 Hz</item>
+        <item>0.5 Hz</item>
+        <item>0.6 Hz</item>
+        <item>0.7 Hz</item>
+        <item>0.8 Hz</item>
+        <item>0.9 Hz</item>
+        <item>1.0 Hz</item>
+        <item>1.1 Hz</item>
+        <item>1.2 Hz</item>
+        <item>1.3 Hz</item>
+        <item>1.4 Hz</item>
+        <item>1.5 Hz</item>
+        <item>1.6 Hz</item>
+        <item>1.7 Hz</item>
+        <item>1.8 Hz</item>
+        <item>1.9 Hz</item>
+        <item>2.0 Hz</item>
+        <item>2.1 Hz</item>
+        <item>2.2 Hz</item>
+        <item>2.3 Hz</item>
+        <item>2.4 Hz</item>
+        <item>2.5 Hz</item>
+        <item>2.6 Hz</item>
+        <item>2.7 Hz</item>
+        <item>2.8 Hz</item>
+        <item>2.9 Hz</item>
+        <item>3.0 Hz</item>
+        <item>3.1 Hz</item>
+        <item>3.2 Hz</item>
+        <item>3.3 Hz</item>
+        <item>3.4 Hz</item>
+        <item>3.5 Hz</item>
+        <item>3.6 Hz</item>
+        <item>3.7 Hz</item>
+        <item>3.8 Hz</item>
+        <item>3.9 Hz</item>
+        <item>4.0 Hz</item>
+        <item>4.1 Hz</item>
+        <item>4.2 Hz</item>
+        <item>4.3 Hz</item>
+        <item>4.4 Hz</item>
+        <item>4.5 Hz</item>
+        <item>4.6 Hz</item>
+        <item>4.7 Hz</item>
+        <item>4.8 Hz</item>
+        <item>4.9 Hz</item>
+        <item>5.0 Hz</item>
+        <item>5.1 Hz</item>
+        <item>5.2 Hz</item>
+        <item>5.3 Hz</item>
+        <item>5.4 Hz</item>
+        <item>5.5 Hz</item>
+        <item>5.6 Hz</item>
+        <item>5.7 Hz</item>
+        <item>5.8 Hz</item>
+        <item>5.9 Hz</item>
+        <item>6.0 Hz</item>
+        <item>6.1 Hz</item>
+        <item>6.2 Hz</item>
+        <item>6.3 Hz</item>
+        <item>6.4 Hz</item>
+        <item>6.5 Hz</item>
+        <item>6.6 Hz</item>
+        <item>6.7 Hz</item>
+        <item>6.8 Hz</item>
+        <item>6.9 Hz</item>
+        <item>7.0 Hz</item>
+        <item>7.1 Hz</item>
+        <item>7.2 Hz</item>
+        <item>7.3 Hz</item>
+        <item>7.4 Hz</item>
+        <item>7.5 Hz</item>
+        <item>7.6 Hz</item>
+        <item>7.7 Hz</item>
+        <item>7.8 Hz</item>
+        <item>7.9 Hz</item>
+        <item>8.0 Hz</item>
+        <item>8.1 Hz</item>
+        <item>8.2 Hz</item>
+        <item>8.3 Hz</item>
+        <item>8.4 Hz</item>
+        <item>8.5 Hz</item>
+        <item>8.6 Hz</item>
+        <item>8.7 Hz</item>
+        <item>8.8 Hz</item>
+        <item>8.9 Hz</item>
+        <item>9.0 Hz</item>
+        <item>9.1 Hz</item>
+        <item>9.2 Hz</item>
+        <item>9.3 Hz</item>
+        <item>9.4 Hz</item>
+        <item>9.5 Hz</item>
+        <item>9.6 Hz</item>
+        <item>9.7 Hz</item>
+        <item>9.8 Hz</item>
+        <item>9.9 Hz</item>
+        <item>10 Hz</item>
+    </string-array>
+    <!-- End preference slider excitation frequency -->
+
+    <!-- Preference slider displacement magnification -->
+    <string name="displacement_slider_title">Displacement scaling</string>
+    <item name="displacement_slider_default" format="float" type="string">0.0</item>
+    <string name="displacement_slider_message"></string>
+
+    <string-array name="displacement_slider_summaries">
         <item>1.0</item>
         <item>1.1</item>
         <item>1.2</item>
@@ -64,6 +177,4 @@
     </string-array>
     <!-- End preference slider displacement magnification -->
 
-    <string name="replay_running">Replay running.</string>
-    <string name="replay">Replay</string>
 </resources>
