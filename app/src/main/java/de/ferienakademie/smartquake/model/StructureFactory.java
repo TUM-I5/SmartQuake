@@ -257,7 +257,7 @@ public class StructureFactory {
     }
 
     public static Structure getBetterEiffelTower() {
-        double a = 1
+        double a = 20;
         double width = 6 * a;
         double height = 16 * a;
 
@@ -445,7 +445,180 @@ public class StructureFactory {
         return structure;
 
     }
+    public static Structure getEmpireState() {
 
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        structure.setLumped(lumped);
+        Material testMaterial = new Material();
+
+        List<Integer> DOFnode1 = new LinkedList<>();
+        List<Integer> DOFnode2 = new LinkedList<>();
+        List<Integer> DOFnode3 = new LinkedList<>();
+        List<Integer> DOFnode4 = new LinkedList<>();
+        List<Integer> DOFnode5 = new LinkedList<>();
+        List<Integer> DOFnode6 = new LinkedList<>();
+        List<Integer> DOFnode7 = new LinkedList<>();
+        List<Integer> DOFnode8 = new LinkedList<>();
+        List<Integer> DOFnode9 = new LinkedList<>();
+        List<Integer> DOFnode10 = new LinkedList<>();
+        List<Integer> DOFnode11 = new LinkedList<>();
+        List<Integer> DOFnode12 = new LinkedList<>();
+        List<Integer> DOFnode13 = new LinkedList<>();
+        List<Integer> DOFnode14 = new LinkedList<>();
+        List<Integer> DOFnode15 = new LinkedList<>();
+        List<Integer> DOFnode16 = new LinkedList<>();
+        List<Integer> DOFnode17 = new LinkedList<>();
+        List<Integer> DOFnode18 = new LinkedList<>();
+        List<Integer> DOFnode19 = new LinkedList<>();
+        List<Integer> DOFnode20 = new LinkedList<>();
+        List<Integer> DOFnode21 = new LinkedList<>();
+        List<Integer> DOFnode22 = new LinkedList<>();
+        List<Integer> DOFnode23 = new LinkedList<>();
+        List<Integer> DOFnode24 = new LinkedList<>();
+
+
+        DOFnode1.add(0);
+        DOFnode1.add(1);
+        DOFnode1.add(2);
+        DOFnode2.add(3);
+        DOFnode2.add(4);
+        DOFnode2.add(5);
+        DOFnode3.add(6);
+        DOFnode3.add(7);
+        DOFnode3.add(8);
+        DOFnode4.add(9);
+        DOFnode4.add(10);
+        DOFnode4.add(11);
+        DOFnode5.add(12);
+        DOFnode5.add(13);
+        DOFnode5.add(14);
+        DOFnode6.add(15);
+        DOFnode6.add(16);
+        DOFnode6.add(17);
+        DOFnode7.add(18);
+        DOFnode7.add(19);
+        DOFnode7.add(20);
+        DOFnode8.add(21);
+        DOFnode8.add(22);
+        DOFnode8.add(23);
+        DOFnode9.add(24);
+        DOFnode9.add(25);
+        DOFnode9.add(26);
+        DOFnode10.add(27);
+        DOFnode10.add(28);
+        DOFnode10.add(29);
+        DOFnode11.add(30);
+        DOFnode11.add(31);
+        DOFnode11.add(32);
+        DOFnode12.add(33);
+        DOFnode12.add(34);
+        DOFnode12.add(35);
+        DOFnode13.add(36);
+        DOFnode13.add(37);
+        DOFnode13.add(38);
+        DOFnode14.add(39);
+        DOFnode14.add(40);
+        DOFnode14.add(41);
+        DOFnode15.add(42);
+        DOFnode15.add(43);
+        DOFnode15.add(44);
+        DOFnode16.add(45);
+        DOFnode16.add(46);
+        DOFnode16.add(47);
+        DOFnode17.add(48);
+        DOFnode17.add(49);
+        DOFnode17.add(50);
+        DOFnode18.add(51);
+        DOFnode18.add(52);
+        DOFnode18.add(53);
+        DOFnode19.add(54);
+        DOFnode19.add(55);
+        DOFnode19.add(56);
+        DOFnode20.add(57);
+        DOFnode20.add(58);
+        DOFnode20.add(59);
+        DOFnode21.add(60);
+        DOFnode21.add(61);
+        DOFnode21.add(62);
+        DOFnode22.add(63);
+        DOFnode22.add(64);
+        DOFnode22.add(65);
+        DOFnode23.add(66);
+        DOFnode23.add(67);
+        DOFnode23.add(68);
+        DOFnode24.add(69);
+        DOFnode24.add(70);
+        DOFnode24.add(71);
+
+
+        Node n1 = new Node(0.000000, 18.000000, DOFnode1);
+        Node n2 = new Node(1.000000, 18.000000, DOFnode2);
+        Node n3 = new Node(7.000000, 18.000000, DOFnode3);
+        Node n4 = new Node(8.000000, 18.000000, DOFnode4);
+        Node n5 = new Node(0.000000, 17.000000, DOFnode5);
+        Node n6 = new Node(1.000000, 17.000000, DOFnode6);
+        Node n7 = new Node(7.000000, 17.000000, DOFnode7);
+        Node n8 = new Node(8.000000, 17.000000, DOFnode8);
+        Node n9 = new Node(1.000000, 14.000000, DOFnode9);
+        Node n10 = new Node(2.000000, 14.000000, DOFnode10);
+        Node n11 = new Node(6.000000, 14.000000, DOFnode11);
+        Node n12 = new Node(7.000000, 14.000000, DOFnode12);
+        Node n13 = new Node(2.000000, 5.000000, DOFnode13);
+        Node n14 = new Node(3.000000, 5.000000, DOFnode14);
+        Node n15 = new Node(5.000000, 5.000000, DOFnode15);
+        Node n16 = new Node(6.000000, 5.000000, DOFnode16);
+        Node n17 = new Node(3.000000, 3.000000, DOFnode17);
+        Node n18 = new Node(3.500000, 3.000000, DOFnode18);
+        Node n19 = new Node(4.500000, 3.000000, DOFnode19);
+        Node n20 = new Node(5.000000, 3.000000, DOFnode20);
+        Node n21 = new Node(3.500000, 2.000000, DOFnode21);
+        Node n22 = new Node(4.000000, 2.000000, DOFnode22);
+        Node n23 = new Node(4.500000, 2.000000, DOFnode23);
+        Node n24 = new Node(4.000000, 0.000000, DOFnode24);
+
+
+        Beam b1 = new Beam(n1, n5, testMaterial,lumped);
+        Beam b2 = new Beam(n2, n6, testMaterial,lumped);
+        Beam b3 = new Beam(n3, n7, testMaterial,lumped);
+        Beam b4 = new Beam(n4, n8, testMaterial,lumped);
+        Beam b5 = new Beam(n5, n6, testMaterial,lumped);
+        Beam b6 = new Beam(n7, n8, testMaterial,lumped);
+        Beam b7 = new Beam(n6, n9, testMaterial,lumped);
+        Beam b8 = new Beam(n7, n12, testMaterial,lumped);
+        Beam b9 = new Beam(n9, n10, testMaterial,lumped);
+        Beam b10 = new Beam(n10, n11, testMaterial,lumped);
+        Beam b11 = new Beam(n11, n12, testMaterial,lumped);
+        Beam b12 = new Beam(n10, n13, testMaterial,lumped);
+        Beam b13 = new Beam(n11, n16, testMaterial,lumped);
+        Beam b14 = new Beam(n13, n14, testMaterial,lumped);
+        Beam b15 = new Beam(n14, n15, testMaterial,lumped);
+        Beam b16 = new Beam(n15, n16, testMaterial,lumped);
+        Beam b17 = new Beam(n14, n17, testMaterial,lumped);
+        Beam b18 = new Beam(n15, n20, testMaterial,lumped);
+        Beam b19 = new Beam(n17, n18, testMaterial,lumped);
+        Beam b20 = new Beam(n18, n19, testMaterial,lumped);
+        Beam b21 = new Beam(n19, n20, testMaterial,lumped);
+        Beam b22 = new Beam(n18, n21, testMaterial,lumped);
+        Beam b23 = new Beam(n19, n23, testMaterial,lumped);
+        Beam b24 = new Beam(n21, n22, testMaterial,lumped);
+        Beam b25 = new Beam(n22, n23, testMaterial,lumped);
+        Beam b26 = new Beam(n22, n24, testMaterial,lumped);
+
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, b22, b23, b24, b25, b26);
+
+        List<Integer> condof= new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            condof.add(i);
+        }
+
+        structure.setConDOF(condof);
+
+        return structure;
+    }
 
     public static Structure getSimpleEiffelTower() {
         double width = 8;
