@@ -161,7 +161,8 @@ public class StartActivity extends AppCompatActivity
         values.add("Better Eiffel Tower");
         values.add("Empire State Building");
         values.add("Golden Gate Bridge");
-        values.add("TV Tower");
+
+        values.add("SimpleElephant");
         String[] structures = getFilesDir().list();
 
         Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
