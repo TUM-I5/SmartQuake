@@ -16,7 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.SeekBar;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-    private SeekBar replaySeekBar;
+    private ProgressBar replaySeekBar;
     private TextView replayrunningLabel;
     private double replayProgress;
     private SimulationMode mode = SimulationMode.LIVE;
@@ -95,7 +95,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.sim_replay_button && !simulation.isRunning()) {
+        if (id == R.id.sim_replay_button && simulation != null
+                && !simulation.isRunning() && mode != SimulationMode.REPLAY) {
             Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             replaySeekBar.setVisibility(View.VISIBLE);
             replayrunningLabel.setVisibility(View.VISIBLE);
@@ -156,24 +157,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_simulation);
-        replaySeekBar = (SeekBar) findViewById(R.id.replaySeekBar);
+        replaySeekBar = (ProgressBar) findViewById(R.id.replaySeekBar);
         replaySeekBar.setVisibility(View.GONE);
-        replaySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //TODO call excitation to set correct replay position in current array
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
         replayrunningLabel = (TextView) findViewById(R.id.replaytext);
         replayrunningLabel.setVisibility(View.GONE);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
