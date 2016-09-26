@@ -17,6 +17,8 @@ import de.ferienakademie.smartquake.excitation.StructureIO;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 
 public class StructureFactory {
+
+
     public static Structure cantileverBeam() {
         List<Integer> dofNode1 = new LinkedList<>();
         List<Integer> dofNode2 = new LinkedList<>();
@@ -41,25 +43,23 @@ public class StructureFactory {
         return structure;
     }
 
+
+
     public static Structure getSimpleHouse() {
         double width = 8;
         double height = 8;
 
         double half = width * 0.5;
 
-        boolean lumped = true; // Make it false for consistent mass matrices!
-
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-        //Kernel1 stuff
 
-
-        Node n1 = new Node(0, height);
-        Node n2 = new Node(width, height);
-        Node n3 = new Node(width, height - half);
-        Node n4 = new Node(0, height - half);
-        Node n5 = new Node(half, height - 2 * half);
+        Node n1 = new Node(0, height, true);
+        Node n2 = new Node(width, height, true);
+        Node n3 = new Node(width, height - half, true);
+        Node n4 = new Node(0, height - half, true);
+        Node n5 = new Node(half, height - 2 * half, true);
 
         Beam b1 = new Beam(n1, n2, testMaterial);
         Beam b2 = new Beam(n2, n3, testMaterial);
@@ -77,9 +77,6 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
-        //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
-        n1.isHinge();
-
         n1.setConstraint(con);
         n2.setConstraint(con);
         enumerateDOFs(structure);
@@ -92,12 +89,8 @@ public class StructureFactory {
         double width = 8;
         double height = 24;
 
-        boolean lumped = true;
-
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
-
-        //Kernel1 stuff
 
 
         Node n1 = new Node(0, height);
@@ -130,9 +123,6 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
-        //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
-        n1.isHinge();
-
         n1.setConstraint(con);
         n2.setConstraint(con);
         enumerateDOFs(structure);
@@ -145,12 +135,8 @@ public class StructureFactory {
         double width = 6 * a;
         double height = 16 * a;
 
-        boolean lumped = true;
-
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
-
-        //Kernel1 stuff
 
 
         Node n1 = new Node(0, height);
@@ -223,8 +209,6 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
-        //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
-        n1.isHinge();
 
         n1.setConstraint(con);
         n2.setConstraint(con);
@@ -235,7 +219,6 @@ public class StructureFactory {
     }
     public static Structure getEmpireState() {
 
-        boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
@@ -303,9 +286,6 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
-        //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
-        n1.isHinge();
-
         n1.setConstraint(con);
         n2.setConstraint(con);
         n3.setConstraint(con);
@@ -314,8 +294,6 @@ public class StructureFactory {
         return structure;
     }
     public static Structure getGoldenGate() {
-
-        boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
@@ -424,9 +402,8 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getTVtower() {
 
-        boolean lumped = true; // Make it false for consistent mass matrices!
+    public static Structure getTVtower() {
 
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
@@ -810,13 +787,18 @@ public class StructureFactory {
             }
             numberofDOF++;
 
+
             if (node.isHinge()){
                 List<Beam> beams = node.getBeams();
                 for (int j = 0; j < beams.size(); j++) {
-                    Beam beam = beams.get(i);
+                    Beam beam = beams.get(j);
 
                     // dof for rotation of this beam
                     dofs.add(numberofDOF);
+
+                    if (node.getConstraint(2)){
+                        structure.addSingleConDOF(numberofDOF);
+                    }
 
                     if(beam.getStartNode()==node){
                         beam.setSingleDof(0,dofs.get(0));
