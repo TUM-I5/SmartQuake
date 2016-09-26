@@ -159,6 +159,11 @@ public class StructureFactory {
         g1.setConstraint(con);
         g2.setConstraint(con);
         g3.setConstraint(con);
+        t1.setHinge(true);
+        t2.setHinge(true);
+        t3.setHinge(true);
+        //TODO: Make s2/s3/s4 hinges between h1 and the group sb1,sb2/between h2 and the group sb2,sb3/between h3 and the group sb3/sb4
+        //In the current implementation of hinges, each beam makes up one group
         enumerateDOFs(structure);
         return structure;
     }
