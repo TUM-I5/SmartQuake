@@ -257,7 +257,7 @@ public class StructureFactory {
     }
 
     public static Structure getBetterEiffelTower() {
-        double a = 20;
+        double a = 1;
         double width = 6 * a;
         double height = 16 * a;
 
