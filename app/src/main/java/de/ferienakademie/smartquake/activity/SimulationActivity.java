@@ -202,7 +202,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mSensorManager.registerListener(mExcitationManager, mAccelerometer,
                 SensorManager.SENSOR_DELAY_UI); //subscribe for sensor events
 
-        Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+        String msgString = "Simulation started";
+        if (mode == SimulationMode.LIVE) {
+            msgString += ". Start shaking!";
+        }
+        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, mExcitationManager);
