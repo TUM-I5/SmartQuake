@@ -5,6 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -62,8 +63,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
 
     public void setActive()
     {
-        sensorManager.registerListener(this, accelerometer,
-                SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, accelerometer, 5);
         gravityProvider.setActive();
     }
 
