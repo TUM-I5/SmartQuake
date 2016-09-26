@@ -37,6 +37,8 @@ public class StartActivity extends AppCompatActivity
 
     private List<String> values = null;
 
+    private ArrayAdapter<String> adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,6 @@ public class StartActivity extends AppCompatActivity
         });
 
         values = new ArrayList<>();
-        setUpValues();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -65,9 +66,10 @@ public class StartActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<String>(this,
                 R.layout.list_item_start_activity, R.id.list_item_date_textview, values);
+
+        setUpValues();
 
         PredefinedAdapter mPredefinedAdapter = new PredefinedAdapter(this, null, 0);
         // Get a reference to the ListView, and attach this adapter to it.
@@ -167,6 +169,8 @@ public class StartActivity extends AppCompatActivity
             matcher = pattern.matcher(str);
             if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
         }
+
+        adapter.notifyDataSetChanged();
     }
 
     public void onItemSelected(Integer id_of_predefined_model) {
@@ -202,14 +206,14 @@ public class StartActivity extends AppCompatActivity
     }
 
     public void delete_action(int position){
-        String name_of_item = values.get(position);
         String name_of_file  = values.get(position) + ".structure";
 
-        if (!name_of_item.equals("Simple Beam" )&& !name_of_item.equals("Simple House")){
-            File file = new File(name_of_file);
+        if (position > 4){
+            File file = new File(getFilesDir().getAbsoluteFile() + "/" + name_of_file);
             boolean  deleted = false;
             if(file.exists()) {
                 deleted = file.delete();
+                setUpValues();
             }
             if(!deleted) {
                 Log.e("Unable to delete file: " + file.getAbsolutePath(), "IOException");
