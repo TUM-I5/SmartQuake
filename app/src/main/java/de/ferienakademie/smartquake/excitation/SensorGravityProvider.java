@@ -18,13 +18,14 @@ import java.util.ArrayList;
 public class SensorGravityProvider extends GravityProvider implements SensorEventListener {
     SensorManager manager;
     Sensor gSensor;
-    //Sorry, setting protected is dirty, I know... But I do like getters/setters less.
-    protected ArrayList<double[]> readings = new ArrayList<>();
+    private int sampleRate;
+    private ArrayList<double[]> readings = new ArrayList<>();
     private ArrayList<Long> reading_ts = new ArrayList<>();
     protected int currentPosition;
 
     public SensorGravityProvider(SensorManager manager){
         this.manager = manager;
+        gSensor = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
     public void getGravity(AccelData data) {
@@ -39,29 +40,40 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-            double[] currentGravity =
-                    new double[]{sensorEvent.values[0], sensorEvent.values[1]};
-            // put new element to the queue of sensor measurements
-            reading_ts.add(sensorEvent.timestamp);
-            readings.add(currentGravity);
-        }
+        double[] currentGravity =
+                new double[]{sensorEvent.values[0], sensorEvent.values[1]};
+        // put new element to the queue of sensor measurements
+        reading_ts.add(sensorEvent.timestamp);
+        readings.add(currentGravity);
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
         //not used
     }
 
-    public void init(){
+    @Override
+    public void init(double timestep){
         readings = new ArrayList<>();
         readings.add(new double[]{0,0});
+        reading_ts.add((long)0);
+        sampleRate = (int)(timestep/2);
     }
 
     public void setInactive() {
         manager.unregisterListener(this);
+        readings = new ArrayList<>();
+        reading_ts = new ArrayList<>();
+        readings.add(new double[]{0,0});
+        reading_ts.add((long)0);
     }
 
     public void setActive(){
-        manager.registerListener(this, gSensor, SensorManager.SENSOR_DELAY_UI);
+        manager.registerListener(this, gSensor, sampleRate);
+        readings = new ArrayList<>();
+        reading_ts = new ArrayList<>();
+        readings.add(new double[]{0,0});
+        reading_ts.add((long)0);
     }
 
 

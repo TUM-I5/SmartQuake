@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.excitation;
 
-import android.os.SystemClock;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,7 +10,7 @@ import java.util.Locale;
 /**
  * Created by David Schneller on 25.09.2016.
  */
-public abstract class StoredAccelerationProvider implements AccelerationProvider {
+public abstract class StoredAccelerationProvider extends AccelerationProvider {
     //Sorry, setting protected is dirty, I know... But I do like getters/setters less.
     protected ArrayList<AccelData> readings = new ArrayList<>();
     protected int currentPosition;
@@ -43,7 +41,9 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
         }
         ++tick;
 
-        return readings.get(currentPosition);
+        AccelData data = readings.get(currentPosition);
+        notifyNewAccelData(data);
+        return data;
     }
 
     /**
@@ -57,8 +57,9 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
         outputStreamReader = new OutputStreamWriter(outputStream);
         bufferedWriter = new BufferedWriter(outputStreamReader);
         for (int i = 0; i < readings.size(); i++) {
-            readingString = String.format(Locale.ENGLISH, "%d %f %f\n", readings.get(i).timestamp,
-                    readings.get(i).xAcceleration, readings.get(i).yAcceleration);
+            readingString = String.format(Locale.ENGLISH, "%d;%20f;%20f;%20f;%20f\n", readings.get(i).timestamp,
+                    readings.get(i).xAcceleration, readings.get(i).yAcceleration,
+                    readings.get(i).xGravity, readings.get(i).yGravity);
             bufferedWriter.write(readingString);
         }
         bufferedWriter.flush();

@@ -10,14 +10,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +36,8 @@ public class StartActivity extends AppCompatActivity
     private int mPosition = ListView.INVALID_POSITION;
 
     private List<String> values = null;
+
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +56,6 @@ public class StartActivity extends AppCompatActivity
         });
 
         values = new ArrayList<>();
-        values.add("Simple Beam");
-        values.add("Simple House");
-
-        String[] structures = getFilesDir().list();
-
-        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
-        Matcher matcher;
-
-        for (String str : structures) {
-            matcher = pattern.matcher(str);
-            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,14 +66,16 @@ public class StartActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<String>(this,
                 R.layout.list_item_start_activity, R.id.list_item_date_textview, values);
+
+        setUpValues();
 
         PredefinedAdapter mPredefinedAdapter = new PredefinedAdapter(this, null, 0);
         // Get a reference to the ListView, and attach this adapter to it.
         ListView mListView = (ListView) findViewById(R.id.listview_predefined);
         //mListView.setAdapter(mPredefinedAdapter);
+        registerForContextMenu( mListView );
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -140,7 +138,8 @@ public class StartActivity extends AppCompatActivity
             //TODO What happens when you want to play recorded quake data
 
         } else if (id == R.id.nav_manage) {
-           //TODO What happens when you want tools
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -148,10 +147,83 @@ public class StartActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpValues();
+    }
+
+    private void setUpValues() {
+        values.clear();
+        values.add("Simple Beam");
+        values.add("Simple House");
+        values.add("Crane");
+        values.add("Better Eiffel Tower");
+        values.add("Empire State Building");
+        values.add("Golden Gate Bridge");
+        String[] structures = getFilesDir().list();
+
+        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
+        Matcher matcher;
+
+        for (String str : structures) {
+            matcher = pattern.matcher(str);
+            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
     public void onItemSelected(Integer id_of_predefined_model) {
         Intent intent = new Intent(this, SimulationActivity.class);
         intent.putExtra("id", id_of_predefined_model);
         intent.putExtra("name", values.get(id_of_predefined_model) + ".structure");
         startActivity(intent);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_context_list, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int position = info.position;
+        switch(item.getItemId()) {
+            case R.id.delete:
+                delete_action(position);
+                return true;
+            case R.id.edit:
+                onItemSelected(position);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    public void delete_action(int position){
+        String name_of_file  = values.get(position) + ".structure";
+
+        if (position > 4){
+            File file = new File(getFilesDir().getAbsoluteFile() + "/" + name_of_file);
+            boolean  deleted = false;
+            if(file.exists()) {
+                deleted = file.delete();
+                setUpValues();
+            }
+            if(!deleted) {
+                Log.e("Unable to delete file: " + file.getAbsolutePath(), "IOException");
+            }
+        }
+        else {
+            Toast.makeText(getApplicationContext(),
+                    "You are not allowed to delete this model", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

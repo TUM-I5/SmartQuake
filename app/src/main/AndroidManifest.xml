@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="de.ferienakademie.smartquake"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.ferienakademie.smartquake">
 
-    <uses-feature android:name="android.hardware.sensor.accelerometer"
-        android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -28,20 +29,21 @@
         <activity
             android:name=".activity.SimulationActivity"
             android:parentActivityName=".activity.StartActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
         <activity
-            android:parentActivityName=".activity.StartActivity"
             android:name=".activity.CreateActivity"
+            android:parentActivityName=".activity.StartActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
-            android:parentActivityName=".activity.SimulationActivity"
-            android:name=".activity.SettingsActivity">
-        </activity>
+            android:name=".activity.SettingsActivity"
+            android:parentActivityName=".activity.SimulationActivity"></activity>
+
+        <activity
+            android:name=".activity.ChooseDataActivity"
+            android:parentActivityName=".activity.SimulationActivity"></activity>
 
 
     </application>
