@@ -565,9 +565,10 @@ public class StructureFactory {
         g1.setConstraint(con);
         g2.setConstraint(con);
         g3.setConstraint(con);
-        t1.setHinge(true);
-        t2.setHinge(true);
-        t3.setHinge(true);
+
+        //t1.setHinge(true);
+        //t2.setHinge(true);
+        //t3.setHinge(true);
         //TODO: Make s2/s3/s4 hinges between h1 and the group sb1,sb2/between h2 and the group sb2,sb3/between h3 and the group sb3/sb4
         //In the current implementation of hinges, each beam makes up one group
         enumerateDOFs(structure);
@@ -588,7 +589,8 @@ public class StructureFactory {
         Node n3 = new Node(width/2, height);
         Node n4 = new Node(3*width/4, height);
         Node n5 = new Node(width, height);
-        Node n6 = new Node(0, height);
+
+        Node n6 = new Node(0, 3*height/4);
         Node n7 = new Node(width/4, 3*height/4);
         Node n8 = new Node(width/2, 3*height/4);
         Node n9 = new Node(3*width/4, 3*height/4);
@@ -625,10 +627,15 @@ public class StructureFactory {
         Beam b20 = new Beam(n16, n19, testMaterial);
         Beam b21 = new Beam(n17, n19, testMaterial);
         Beam b22 = new Beam(n18, n19, testMaterial);
-
+        Beam b23 = new Beam(n11, n12, testMaterial);
+        Beam b24 = new Beam(n12, n13, testMaterial);
+        Beam b25 = new Beam(n13, n14, testMaterial);
+        Beam b26 = new Beam(n14, n15, testMaterial);
+        Beam b27 = new Beam(n16, n17, testMaterial);
+        Beam b28 = new Beam(n17, n18, testMaterial);
 
         structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19);
-        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22);
+        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24,b25,b26,b27,b28);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -677,9 +684,11 @@ public class StructureFactory {
         Node n16 = new Node(5*width/9, height3);
         Node n17 = new Node(11*width/27, height3);
         Node n18 = new Node(16*width/27, height3);
-        Node n19 = new Node(12.25*width/9, height3/3);
+
+
+        Node n19 = new Node(12.25*width/27, height3/3);
         Node n20 = new Node(width/2, 0);
-        Node n21 = new Node(14.75*width/9, height3/3);
+        Node n21 = new Node(14.75*width/27, height3/3);
 
         //Left thing
         Beam b1 = new Beam(n1, n5, testMaterial);
@@ -721,116 +730,6 @@ public class StructureFactory {
         enumerateDOFs(structure);
         return structure;
     }
-
-
-    public static Structure getSimpleElephant() {
-
-        boolean lumped = true; // Make it false for consistent mass matrices!
-
-        Structure structure = new Structure();
-      //  structure.setLumped(lumped);
-
-        Material testMaterial = Material.STEEL;
-
-        Node n1 = new Node(1, 8);
-        Node n2 = new Node(2, 8); //left foot
-        Node n3 = new Node(4, 8);
-        Node n4 = new Node(5, 8); //right foot
-
-        Node n5 = new Node(1, 6);
-        Node n6 = new Node(2, 6); //left foot/tummy
-        Node n7 = new Node(4, 6);
-        Node n8 = new Node(5, 6); //right foot/belly
-
-        Node n9 = new Node(0, 4); //posterior
-        Node n10 = new Node(1, 2);
-        Node n11 = new Node(4, 2);
-
-        Node n12 = new Node(5, 1); //ear
-        Node n13 = new Node(7, 1.5);
-        Node n14 = new Node(6.5, 4);
-        Node n15 = new Node(5, 5);
-        Node n16 = new Node(3.5, 3);
-
-        Node n17 = new Node(6.9, 2); //trunk
-        Node n18 = new Node(9, 4);
-        Node n19 = new Node(10, 6);
-        Node n20 = new Node(10, 8);
-        Node n21 = new Node(9.5, 8);
-        Node n22 = new Node(9.5, 6);
-        Node n23 = new Node(8.6, 4.5);
-        Node n24 = new Node(8, 4);
-        Node n25 = new Node(7, 4.5);
-
-        Node n26 = new Node(-1, 4); //tail
-        Node n27 = new Node(-1, 5);
-        Node n28 = new Node(-0.5, 5);
-        Node n29 = new Node(-0.5, 4.5);
-
-        Beam b1 = new Beam(n1, n5, testMaterial);
-        Beam b2 = new Beam(n2, n6, testMaterial);
-        Beam b3 = new Beam(n3, n7, testMaterial);
-        Beam b4 = new Beam(n4, n8, testMaterial);
-
-        Beam b5 = new Beam(n6, n7, testMaterial); //belly
-
-        Beam b6 = new Beam(n5, n9, testMaterial);
-        Beam b7 = new Beam(n9, n10, testMaterial);
-        Beam b8 = new Beam(n10, n11, testMaterial);
-
-        Beam b9 = new Beam(n11, n12, testMaterial);  //ear
-        Beam b10 = new Beam(n12, n13, testMaterial);
-        Beam b11 = new Beam(n13, n17, testMaterial);
-        Beam b12 = new Beam(n17, n14, testMaterial);
-        Beam b13 = new Beam(n14, n15, testMaterial);
-        Beam b14 = new Beam(n15, n16, testMaterial);
-        Beam b15 = new Beam(n16, n11, testMaterial);
-
-        Beam b16 = new Beam(n17, n18, testMaterial); //trunk
-        Beam b17 = new Beam(n18, n19, testMaterial);
-        Beam b18 = new Beam(n19, n20, testMaterial);
-        Beam b19 = new Beam(n20, n21, testMaterial);
-        Beam b20 = new Beam(n21, n22, testMaterial);
-        Beam b21 = new Beam(n22, n23, testMaterial);
-        Beam b22 = new Beam(n23, n24, testMaterial);
-        Beam b23 = new Beam(n24, n25, testMaterial);
-        Beam b24 = new Beam(n25, n8, testMaterial);
-
-        Beam b25 = new Beam(n5, n6, testMaterial);
-        Beam b26 = new Beam(n7, n8, testMaterial);
-
-        Beam b27 = new Beam(n18, n23, testMaterial);
-        Beam b28 = new Beam(n19, n22, testMaterial);
-        Beam b29 = new Beam(n18, n24, testMaterial);
-
-        Beam b30 = new Beam(n10, n5, testMaterial);
-        Beam b31 = new Beam(n10, n6, testMaterial);
-        Beam b32 = new Beam(n10, n7, testMaterial);
-        Beam b33 = new Beam(n10, n8, testMaterial);
-
-        Beam b34 = new Beam(n9, n16, testMaterial);
-        Beam b35 = new Beam(n14, n25, testMaterial);
-
-
-        structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21,n22,n23,n24,n25);
-        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24,b25,b26,b27,b28,b29,b30,b31,b32,b33,b34,b35);
-
-        boolean[] con = new boolean[3];
-        con[0]=true;
-        con[1]=true;
-        con[2]=true;
-
-        n1.setConstraint(con);
-        n2.setConstraint(con);
-        n3.setConstraint(con);
-        n4.setConstraint(con);
-
-        enumerateDOFs(structure);
-        return structure;
-
-
-    }
-
 
 
 

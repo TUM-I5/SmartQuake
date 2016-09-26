@@ -181,9 +181,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         } else if (structureId == 5) {
             structure = StructureFactory.getGoldenGate();
         } else if (structureId == 6) {
-            structure = StructureFactory.getSimpleElephant();
-        }
-        else {
+            structure = StructureFactory.getWeirdBridge();
+        } else if (structureId == 7) {
+            structure = StructureFactory.getHousingBlock();
+        } else if (structureId == 8) {
+            structure = StructureFactory.getTrumpTower();
+        } else if (structureId == 9) {
+            structure = StructureFactory.getTVtower();
+        } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
 
@@ -280,12 +285,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mCurrentAccelerationProvider = accelerationProvider;
         mCurrentAccelerationProvider.addObserver(this);
 
-        String msgString = "Simulation started";
-        if (mode == SimulationMode.LIVE) {
-            msgString += ". Start shaking!";
-        }
-        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
-
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
@@ -333,7 +332,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simFab.setOnClickListener(startSimulationListener);
                 simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
 
-                Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
+                slowSnackbar = null;
             }
         });
     }
@@ -343,7 +342,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         String msg;
 
-        if (!slowSnackbar.isShownOrQueued() && newSpeedState == Simulation.SimulationState.RUNNING_SLOW) {
+        if (newSpeedState == Simulation.SimulationState.RUNNING_SLOW && slowSnackbar == null) {
             msg = "Simulation speed might be slow...";
             slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
             slowSnackbar.setAction("DISMISS", new View.OnClickListener() {
