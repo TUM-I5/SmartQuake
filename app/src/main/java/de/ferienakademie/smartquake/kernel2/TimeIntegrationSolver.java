@@ -20,4 +20,14 @@ public interface TimeIntegrationSolver {
      */
     void nextStep( double t, double delta_t);
 
-}
+    DenseMatrix64F getFLoad();
+
+    void setFLoad(DenseMatrix64F vec);
+
+    DenseMatrix64F getX();
+
+    DenseMatrix64F getXDotDot();
+
+    DenseMatrix64F getXDot();
+
+    }

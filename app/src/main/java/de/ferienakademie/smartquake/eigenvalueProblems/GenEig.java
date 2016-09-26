@@ -82,6 +82,12 @@ public class GenEig {
         /** Return eigenvectors */
         return GenEig.arrayListToMat(v, n);
     }
+
+    public double[] getV1D() {
+        /** Return eigenvectors */
+        return GenEig.arrayListToVec(v);
+    }
+
     public double[] getLambdaRe() {
         /** Returns real part of lambda if beta != 0 */
         double[] betaD = GenEig.arrayListToVec(beta);
@@ -152,6 +158,7 @@ public class GenEig {
         }
         return m;
     }
+
     private static double[] vecElDiv(double[] v1, double[] v2) {
 		/* v1 ./ v2 */
         int d = v1.length;

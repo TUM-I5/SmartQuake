@@ -4,6 +4,9 @@ package de.ferienakademie.smartquake.excitation;
  * Created by simon on 23.09.16.
  */
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Class for generating a "standard" earthquake
  * For now only uses sin-functipn default amplitude 5 and defaut frequency of one Hertz
@@ -41,7 +44,22 @@ public class SinCosExcitation implements AccelerationProvider {
     }
 
     @Override
-    public void initTime(long timeStamp, double timeStep) {
+    public void initTime(double timeStep) {
         this.timestep = timeStep;
+    }
+
+    @Override
+    public void saveFile(OutputStream outputStream) throws IOException {
+        //no.
+    }
+
+    @Override
+    public void setActive() {
+
+    }
+
+    @Override
+    public void setInactive() {
+
     }
 }

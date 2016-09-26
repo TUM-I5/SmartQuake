@@ -3,7 +3,7 @@ package de.ferienakademie.smartquake.excitation;
 /**
  * Created by user on 22.09.2016.
  */
-public class AccelData {
+public class AccelData implements Comparable {
 
     public long timestamp;
     public double xAcceleration;
@@ -25,5 +25,10 @@ public class AccelData {
         this.xAcceleration = xAccel;
         this.yAcceleration = yAccel;
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return Long.compare(timestamp, ((AccelData)o).timestamp);
     }
 }

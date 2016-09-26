@@ -1,11 +1,9 @@
 package de.ferienakademie.smartquake.activity;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
+import android.os.PatternMatcher;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,10 +12,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
 
@@ -25,9 +28,8 @@ public class StartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private int mPosition = ListView.INVALID_POSITION;
-    String[] values = new String[] { "Simple House",
-            "Eiffel Tower", "Empire State", "Statue of Liberty", "Coloseum", "Sample 6", "Sample 7", "Sample 8", "Sample 9", "Sample 10", "Sample 11"
-    };
+
+    private List<String> values = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,20 @@ public class StartActivity extends AppCompatActivity
                 startActivity(new Intent(StartActivity.this, CreateActivity.class));
             }
         });
+
+        values = new ArrayList<>();
+        values.add("Simple Beam");
+        values.add("Simple House");
+
+        String[] structures = getFilesDir().list();
+
+        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
+        Matcher matcher;
+
+        for (String str : structures) {
+            matcher = pattern.matcher(str);
+            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -107,13 +123,7 @@ public class StartActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            /***
-             *Add here code for setting activity
-             * startActivity(new Intent(this, SettingsActivity.class));
-             return true;
-             */
-            //TODO setteings activity
-
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -126,10 +136,7 @@ public class StartActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_gallery) {
-            //TODO What happens when you want to load
-
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_slideshow) {
             //TODO What happens when you want to play recorded quake data
 
         } else if (id == R.id.nav_manage) {
@@ -141,19 +148,10 @@ public class StartActivity extends AppCompatActivity
         return true;
     }
 
-    /**
-     *This should be changed!!!
-     * */
     public void onItemSelected(Integer id_of_predefined_model) {
-        if(id_of_predefined_model==0){
         Intent intent = new Intent(this, SimulationActivity.class);
-        intent.putExtra("test", id_of_predefined_model);
-        startActivity(intent);}
-        else{
-            // Show Alert if you pressed anything but simple house model
-            Toast.makeText(getApplicationContext(),
-                    "We are sorry but this model is still not defined" , Toast.LENGTH_SHORT)
-                    .show();
-        }
+        intent.putExtra("id", id_of_predefined_model);
+        intent.putExtra("name", values.get(id_of_predefined_model) + ".structure");
+        startActivity(intent);
     }
 }
