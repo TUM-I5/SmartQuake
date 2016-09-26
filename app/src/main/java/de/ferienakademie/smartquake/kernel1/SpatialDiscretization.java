@@ -115,7 +115,7 @@ public class SpatialDiscretization {
                 StiffnessMatrix.set(j, k, 0.0);
                 StiffnessMatrix.set(k, j, 0.0);
             }
-            StiffnessMatrix.set(j, j, -1.0);
+            StiffnessMatrix.set(j, j, 11.0);
         }
     }
 
@@ -159,12 +159,12 @@ public class SpatialDiscretization {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
         DampingMatrix.zero();
-        double omega1 = 2;
-        double omega2 = 2;
+        //double omega1 = eigenvalues[0];
+        //double omega2 = eigenvalues[1];
 
         double xi = 0.05;
-        double a0 = 2 * xi * omega1 * omega2 / (omega1 + omega2);
-        double a1 = 2 * xi / (omega1 + omega2);
+        double a0 = 0;//2 * xi * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 0;//2 * xi / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
@@ -172,7 +172,7 @@ public class SpatialDiscretization {
                 DampingMatrix.set(j, k, 0.0);
                 DampingMatrix.set(k, j, 0.0);
             }
-            DampingMatrix.set(j, j, -1.0);
+            DampingMatrix.set(j, j, 1.0);
         }
     }
 
