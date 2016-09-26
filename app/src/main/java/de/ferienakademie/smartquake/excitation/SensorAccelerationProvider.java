@@ -41,10 +41,9 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         super.initTime(timeStep);
         sensorRate = (int)(timeStep/2);
         baseTime = SystemClock.elapsedRealtimeNanos();
-        gravityProvider.setBaseTime(baseTime);
         readings = new ArrayList<>();
         readings.add(new AccelData());
-        gravityProvider.init(timeStep);
+        gravityProvider.init(sensorRate, baseTime);
     }
 
     @Override

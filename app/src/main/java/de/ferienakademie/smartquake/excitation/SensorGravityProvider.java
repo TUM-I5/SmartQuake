@@ -20,17 +20,13 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
     Sensor gSensor;
     private int sampleRate;
     private long baseTime;
-    private ArrayList<double[]> readings = new ArrayList<>();
-    private ArrayList<Long> reading_ts = new ArrayList<>();
+    private ArrayList<double[]> readings;
+    private ArrayList<Long> reading_ts;
     protected int currentPosition;
 
     public SensorGravityProvider(SensorManager manager){
         this.manager = manager;
         gSensor = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-    }
-
-    public void setBaseTime(long baseTime){
-        this.baseTime = baseTime;
     }
 
     public void getGravity(AccelData data) {
@@ -58,7 +54,7 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
     }
 
     @Override
-    public void init(double timestep){
+    public void init(double timestep, long baseTime){
         readings = new ArrayList<>();
         readings.add(new double[]{0,0});
         reading_ts.add((long)0);
