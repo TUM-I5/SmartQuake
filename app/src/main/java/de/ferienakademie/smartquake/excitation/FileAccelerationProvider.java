@@ -10,8 +10,14 @@ import java.util.ArrayList;
  * Created by David Schneller on 25.09.2016.
  */
 public class FileAccelerationProvider extends StoredAccelerationProvider {
+
+    public boolean isEmpty() {
+        return this.readings.isEmpty();
+    }
+
     /**
      * Load acceleration data from a file
+     *
      * @param inputStream stream that passes readings from a file to excitation manager
      */
     public void load(InputStream inputStream) throws IOException {
@@ -36,13 +42,11 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         }
     }
 
-    public void setActive()
-    {
+    public void setActive() {
 
     }
 
-    public void setInactive()
-    {
+    public void setInactive() {
 
     }
 }
