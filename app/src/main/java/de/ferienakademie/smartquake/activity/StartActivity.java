@@ -136,7 +136,8 @@ public class StartActivity extends AppCompatActivity
             //TODO What happens when you want to play recorded quake data
 
         } else if (id == R.id.nav_manage) {
-           //TODO What happens when you want tools
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
