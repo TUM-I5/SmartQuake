@@ -53,10 +53,12 @@ public class GenEig {
         double[] vR = new double[n * n];
         double[] vL = new double[n * n];
         double[] work = new double[8 * n];
+        double[] aVWork = aV.clone();
+        double[] bVWork = bV.clone();
         intW info = new intW(0);
 
 		/* Solve generalized eigenvalue problem */
-        Dggev.dggev("N", "V", n, aV, 0, n, bV, 0, n, alphaReD, 0, alphaImD, 0, betaD, 0, vL, 0, n, vR, 0, n, work, 0, 8 * n, info);
+        Dggev.dggev("N", "V", n, aVWork, 0, n, bVWork, 0, n, alphaReD, 0, alphaImD, 0, betaD, 0, vL, 0, n, vR, 0, n, work, 0, 8 * n, info);
 
 		/* Assign results to attributes */
         alphaRe = GenEig.vecToArrayList(alphaReD);
