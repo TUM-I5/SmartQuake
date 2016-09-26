@@ -1,5 +1,8 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.content.SharedPreferences;
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -7,9 +10,11 @@ import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.preferenceElements.SliderPreference;
 
 /**
  * Created by alex on 22.09.16.
@@ -35,6 +40,8 @@ public class SpatialDiscretization {
 
     private int numberofDOF;
 
+    private double displacementScale = 1.0;
+
     Structure structure;
     // temporary vectors that will be scaled by acceleration
     private DenseMatrix64F influenceVectorX_temp;
@@ -53,6 +60,8 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
+
+        displacementScale = 4.0 * PreferenceReader.getDisplacementScaling() + 1.0;
    }
 
     /**
@@ -200,8 +209,8 @@ public class SpatialDiscretization {
             Node node = structure.getNodes().get(i);
             List<Integer> dof = node.getDOF();
 
-            node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
+            node.setCurrentX(node.getInitialX() + displacementScale * displacementVector.get(3*i, 0));
+            node.setCurrentY(node.getInitialY() + displacementScale * displacementVector.get(3*i+1, 0));
         }
     }
 
@@ -217,9 +226,9 @@ public class SpatialDiscretization {
 
         for (int i = 0; i < structure.getNodes().size(); i++) {
             Node node = structure.getNodes().get(i);
-            node.setCurrentX(node.getInitialX() + displacementVector2.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector2.get(3*i+1, 0));
-            node.setSingleRotation(0,-displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
+            node.setCurrentX(node.getInitialX() + displacementScale * displacementVector2.get(3*i, 0));
+            node.setCurrentY(node.getInitialY() + displacementScale * displacementVector2.get(3*i+1, 0));
+            node.setSingleRotation(0,- displacementScale * displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
         }
 
 
