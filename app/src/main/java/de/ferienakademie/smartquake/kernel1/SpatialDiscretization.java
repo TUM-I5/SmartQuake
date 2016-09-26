@@ -153,8 +153,8 @@ public class SpatialDiscretization {
     public void calculateDampingMatrix() {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
-        double a0 = 4.788640506;
-        double a1 =0.0001746899608;
+        double a0 = 4.788640506/10;
+        double a1 =0.0001746899608/10;
         CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
