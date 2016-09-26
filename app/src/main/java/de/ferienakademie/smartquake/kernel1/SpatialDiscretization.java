@@ -266,8 +266,8 @@ public class SpatialDiscretization {
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
         if (PreferenceReader.includeGravity()){
 
-            CommonOps.scale(acceleration[0]-acceleration[2], influenceVectorX, influenceVectorX_temp);
-            CommonOps.scale(acceleration[1]-acceleration[3], influenceVectorY, influenceVectorY_temp);
+            CommonOps.scale(acceleration[0], influenceVectorX, influenceVectorX_temp);
+            CommonOps.scale(acceleration[1], influenceVectorY, influenceVectorY_temp);
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
         }else {
@@ -318,7 +318,7 @@ public class SpatialDiscretization {
         }
     }
     public void calcEigentransposemultMassmatrix(){
-        DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF());
+        DenseMatrix64F eigenvectorsDenseTranspose = new DenseMatrix64F(getNumberofDOF(),getNumberofDOF());
         CommonOps.transpose(eigenvectorsmatrix,eigenvectorsDenseTranspose);
         CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,eigentransposemultMassmatrix);
     }
