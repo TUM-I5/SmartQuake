@@ -13,4 +13,6 @@
     <string name="clear_canvas">Clear canvas</string>
     <string name="save_canvas">Save canvas</string>
     <string name="create_button">create</string>
+    <string name="replay_running">Replay running.</string>
+    <string name="replay">Replay</string>
 </resources>
