@@ -67,6 +67,9 @@ public class DrawCanvasView extends View {
     }
 
     public static void drawNode(Node node, Canvas canvas, Paint paint) {
-        canvas.drawCircle((float) node.getInitialX(), (float) node.getInitialY(), (float) NODE_RADIUS_PIXEL, paint);
+        Paint nodePaint;
+        if (node.isHinge()) nodePaint = CanvasView.HINGE_PAINT;
+        else nodePaint = CanvasView.BEAM_PAINT;
+        canvas.drawCircle((float) node.getInitialX(), (float) node.getInitialY(), (float) NODE_RADIUS_PIXEL, nodePaint);
     }
 }
