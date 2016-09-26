@@ -1,5 +1,8 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.content.SharedPreferences;
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -8,9 +11,11 @@ import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.preferenceElements.SliderPreference;
 
 /**
  * Created by alex on 22.09.16.
@@ -36,6 +41,8 @@ public class SpatialDiscretization {
 
     private int numberofDOF;
 
+    private double displacementScale = 1.0;
+
     Structure structure;
     // temporary vectors that will be scaled by acceleration
     private DenseMatrix64F influenceVectorX_temp;
@@ -51,6 +58,8 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
+
+        displacementScale = 4.0 * PreferenceReader.getDisplacementScaling() + 1.0;
    }
 
     /**
@@ -179,9 +188,6 @@ public class SpatialDiscretization {
         this.structure = structure;
     }
 
-
-
-
     public void updateStructure_SpatialDiscretization(DenseMatrix64F DisplacementVector) {
         DenseMatrix64F displacementVector2 = DisplacementVector.copy();
         List<Integer> conDOF = structure.getConDOF();
@@ -192,10 +198,10 @@ public class SpatialDiscretization {
             Node node = structure.getNodes().get(e);
 
             List<Integer> dofs = node.getDOF();
-            node.setCurrentX(displacementVector2.get(dofs.get(0), 0) + node.getInitialX());
-            node.setCurrentY(displacementVector2.get(dofs.get(1), 0) + node.getInitialY());
+            node.setCurrentX(displacementVector2.get(dofs.get(0), 0) * displacementScale + node.getInitialX());
+            node.setCurrentY(displacementVector2.get(dofs.get(1), 0) * displacementScale + node.getInitialY());
             for (int j = 2; j < dofs.size(); j++) {
-                node.setSingleRotation(j - 2, displacementVector2.get(dofs.get(j), 0));
+                node.setSingleRotation(j - 2, displacementScale * displacementVector2.get(dofs.get(j), 0));
             }
         }
 
