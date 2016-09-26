@@ -98,7 +98,7 @@ public class TimeIntegration {
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 
                     //long firstTime = System.nanoTime();
-                    while(t < 0.03+0.000001 && isRunning) {
+                    while(t < 0.03-0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         t += delta_t;
