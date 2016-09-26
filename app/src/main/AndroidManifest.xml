@@ -44,6 +44,9 @@
         <activity
             android:name=".activity.ChooseDataActivity"
             android:parentActivityName=".activity.SimulationActivity"></activity>
+        <activity
+            android:name=".activity.EarthquakeDataActivity"
+            android:parentActivityName=".activity.StartActivity"></activity>
 
 
     </application>

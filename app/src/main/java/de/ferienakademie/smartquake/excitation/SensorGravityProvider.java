@@ -19,6 +19,7 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
     SensorManager manager;
     Sensor gSensor;
     private int sampleRate;
+    private long baseTime;
     private ArrayList<double[]> readings = new ArrayList<>();
     private ArrayList<Long> reading_ts = new ArrayList<>();
     protected int currentPosition;
@@ -26,6 +27,10 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
     public SensorGravityProvider(SensorManager manager){
         this.manager = manager;
         gSensor = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+    }
+
+    public void setBaseTime(long baseTime){
+        this.baseTime = baseTime;
     }
 
     public void getGravity(AccelData data) {
@@ -40,13 +45,12 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        double[] currentGravity =
-                new double[]{sensorEvent.values[0], sensorEvent.values[1]};
-        // put new element to the queue of sensor measurements
-        reading_ts.add(sensorEvent.timestamp);
-        readings.add(currentGravity);
-    }
-
+            double[] currentGravity =
+                    new double[]{sensorEvent.values[0], sensorEvent.values[1]};
+            // put new element to the queue of sensor measurements
+            reading_ts.add(sensorEvent.timestamp - baseTime);
+            readings.add(currentGravity);
+        }
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
         //not used
