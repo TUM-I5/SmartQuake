@@ -113,7 +113,7 @@ public class TimeIntegration {
                   //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
-                    spatialDiscretization.updateStructure_SpatialDiscretization(spatialDiscretization.getDisplacementVector());
+                    spatialDiscretization.updateStructure_SpatialDiscretization(solver.getX());
 
                     isRunning = false;
                 }

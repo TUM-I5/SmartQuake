@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.kernel1;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
@@ -24,7 +25,7 @@ public class SpatialDiscretization {
 
     private DenseMatrix64F influenceVectorX;
     private DenseMatrix64F influenceVectorY;
-    private DenseMatrix64F DisplacementVector;  //project manager advice
+    //private DenseMatrix64F DisplacementVector;  //project manager advice
 
     //Modal Analysis part
     private DenseMatrix64F eigenvectorsmatrix;
@@ -43,10 +44,7 @@ public class SpatialDiscretization {
     public SpatialDiscretization(Structure structure) {
         this.structure = structure;
         //initialize displacement with zeros
-        numberofDOF = structure.getNodes().size()*3;
-        DisplacementVector = new DenseMatrix64F(getNumberofDOF(), 1);
-        DisplacementVector.zero();
-        numberofDOF = structure.getNodes().size()*3;      //TODO Alex: temporary solution. Changes if we add hinges.
+        numberofDOF = structure.getNumberOfDOF();
 
         influenceVectorX = new DenseMatrix64F(getNumberofDOF(), 1);
         influenceVectorY = new DenseMatrix64F(getNumberofDOF(), 1);
@@ -93,6 +91,8 @@ public class SpatialDiscretization {
         calculateStiffnessMatrix();
         calculateDampingMatrix();
     }
+
+
 
     public void calculateStiffnessMatrix() {
         for (int e = 0; e < structure.getBeams().size(); e++) {
@@ -153,8 +153,8 @@ public class SpatialDiscretization {
     public void calculateDampingMatrix() {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
-        double a0 = 4.788640506;
-        double a1 =0.0001746899608;
+        double a0 = 4.788640506/10;
+        double a1 =0.0001746899608/10;
         CommonOps.add(a0,MassMatrix,a1,StiffnessMatrix,DampingMatrix);
         for (int i = 0; i <structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
@@ -166,9 +166,6 @@ public class SpatialDiscretization {
         }
     }
 
-    public DenseMatrix64F getDisplacementVector() {
-        return DisplacementVector;
-    }
 
    public int getNumberofDOF() {
         return numberofDOF;
@@ -182,46 +179,25 @@ public class SpatialDiscretization {
         this.structure = structure;
     }
 
-    /**
-     * Update {@link Structure} that is displayed using values computed by {@link de.ferienakademie.smartquake.kernel2.TimeIntegration}
-     * @param displacementVector a (3 * number of nodes) x 1 matrix. Three consequent values contain displacements in x, y, z direction.
-     */
-    public void updateStructure(DenseMatrix64F displacementVector) {
+
+
+
+    public void updateStructure_SpatialDiscretization(DenseMatrix64F DisplacementVector) {
+        DenseMatrix64F displacementVector2 = DisplacementVector.copy();
         List<Integer> conDOF = structure.getConDOF();
-
-        for(int k=0; k<conDOF.size(); k++){
-            displacementVector.set(conDOF.get(k),0,0);
-        }
-
-
-
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-
-            Node node = structure.getNodes().get(i);
-            List<Integer> dof = node.getDOF();
-
-            node.setCurrentX(node.getInitialX() + displacementVector.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector.get(3*i+1, 0));
-        }
-    }
-
-    public void updateStructure_SpatialDiscretization(DenseMatrix64F displacementVector) {
-        List<Integer> conDOF = structure.getConDOF();
-
-        DenseMatrix64F displacementVector2 = displacementVector.copy();
-
         for(int k=0; k<conDOF.size(); k++){
             displacementVector2.set(conDOF.get(k),0,0);
         }
+        for (int e = 0; e < structure.getNodes().size(); e++) {
+            Node node = structure.getNodes().get(e);
 
-
-        for (int i = 0; i < structure.getNodes().size(); i++) {
-            Node node = structure.getNodes().get(i);
-            node.setCurrentX(node.getInitialX() + displacementVector2.get(3*i, 0));
-            node.setCurrentY(node.getInitialY() + displacementVector2.get(3*i+1, 0));
-            node.setSingleRotation(0,-displacementVector2.get(3*i+2,0)); //TODO change with introducting of hinges
+            List<Integer> dofs = node.getDOF();
+            node.setCurrentX(displacementVector2.get(dofs.get(0), 0) + node.getInitialX());
+            node.setCurrentY(displacementVector2.get(dofs.get(1), 0) + node.getInitialY());
+            for (int j = 2; j < dofs.size(); j++) {
+                node.setSingleRotation(j - 2, displacementVector2.get(dofs.get(j), 0));
+            }
         }
-
 
     }
 
@@ -264,6 +240,7 @@ public class SpatialDiscretization {
     }
 
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
+        calcEigentransposemultMassmatrix();
         CommonOps.scale(acceleration[0], influenceVectorX);
         CommonOps.scale(acceleration[1], influenceVectorY);
         CommonOps.addEquals(influenceVectorX, influenceVectorY);
@@ -320,10 +297,17 @@ public class SpatialDiscretization {
         CommonOps.mult(eigenvectorsDenseTranspose,MassMatrix,eigentransposemultMassmatrix);
     }
 
+
+
     public void superimposeModalAnalyisSolutions(double[] modalSolutionvector){
+        DenseMatrix64F DisplacementVector = new DenseMatrix64F();
         DisplacementVector.zero();
         for (int i = 0; i < numberofDOF; i++) {
             CommonOps.add(eigenvectors[i],modalSolutionvector[i],DisplacementVector);
         }
+
+        updateStructure_SpatialDiscretization(DisplacementVector);
+
+
     }
 }
