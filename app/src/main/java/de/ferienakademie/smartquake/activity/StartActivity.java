@@ -50,21 +50,7 @@ public class StartActivity extends AppCompatActivity
         });
 
         values = new ArrayList<>();
-        values.add("Simple Beam");
-        values.add("Simple House");
-        values.add("Crane");
-        values.add("Better Eiffel Tower");
-        values.add("Empire State Building");
-
-        String[] structures = getFilesDir().list();
-
-        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
-        Matcher matcher;
-
-        for (String str : structures) {
-            matcher = pattern.matcher(str);
-            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
-        }
+        setUpValues();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -151,6 +137,30 @@ public class StartActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpValues();
+    }
+
+    private void setUpValues() {
+        values.clear();
+        values.add("Simple Beam");
+        values.add("Simple House");
+        values.add("Crane");
+        values.add("Better Eiffel Tower");
+        values.add("Empire State Building");
+        String[] structures = getFilesDir().list();
+
+        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
+        Matcher matcher;
+
+        for (String str : structures) {
+            matcher = pattern.matcher(str);
+            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
+        }
     }
 
     public void onItemSelected(Integer id_of_predefined_model) {
