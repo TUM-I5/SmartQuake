@@ -1,8 +1,8 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.hardware.Sensor;
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -16,9 +16,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.SeekBar;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
@@ -28,19 +31,23 @@ import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SinCosExcitation;
+import de.ferienakademie.smartquake.fragment.SaveEarthquakeFragment;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener {
+public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener,
+        SaveEarthquakeFragment.SaveEarthquakeListener {
 
+    // TODO: global enum for this?
+    private static final int REQUEST_EARTHQUAKE_DATA = 0;
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
-
     private FloatingActionButton simFab;
     private CanvasView canvasView;
     private TimeIntegration timeIntegration;
@@ -49,13 +56,18 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private Simulation simulation;
     private CoordinatorLayout layout;
     private Snackbar slowSnackbar;
-    private SeekBar replaySeekBar;
+    private ProgressBar replaySeekBar;
     private TextView replayrunningLabel;
     private double replayProgress;
     private SimulationMode mode = SimulationMode.LIVE;
-
     private int structureId;
     private String structureName;
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
@@ -63,12 +75,28 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onStartButtonClicked();
         }
     };
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
+
+    private void runReplay(String fileName) {
+        FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
+
+        try {
+            fileAccelerationProvider.load(openFileInput(fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    };
+
+        if (fileAccelerationProvider.isEmpty()) {
+            Snackbar.make(layout, "Empty acceleration file", Snackbar.LENGTH_SHORT).show();
+        } else {
+            mode = SimulationMode.REPLAY;
+            Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+            replaySeekBar.setVisibility(View.VISIBLE);
+            replayrunningLabel.setVisibility(View.VISIBLE);
+            startSimulation(fileAccelerationProvider);
+            toggleStartStopAvailability();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -94,36 +122,33 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             return true;
         }
 
-        if (id == R.id.sim_replay_button && !simulation.isRunning()) {
-            Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-            replaySeekBar.setVisibility(View.VISIBLE);
-            replayrunningLabel.setVisibility(View.VISIBLE);
-            FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
-
-            try {
-                fileAccelerationProvider.load(openFileInput("Last.earthquake"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mode = SimulationMode.REPLAY;
-
-            startSimulation(fileAccelerationProvider);
-            simFab.setOnClickListener(stopSimulationListener);
-            simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+        if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
+            runReplay("Last.earthquake");
+            toggleStartStopAvailability();
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
             // TODO need to start a new activity with a list of earthquakes
-            startSimulation(new SinCosExcitation());
-            ActionMenuItemView simulation = (ActionMenuItemView)findViewById(id);
-            simulation.setEnabled(false);
+//            SinCosExcitation sinCosExcitation = new SinCosExcitation();
+//            sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
+//            startSimulation(sinCosExcitation);
+            ActionMenuItemView loadEqDataButton = (ActionMenuItemView)findViewById(id);
+            if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
-            replay.setEnabled(false);
+            if (replay != null) replay.setEnabled(false);
+            startActivityForResult(new Intent(this, ChooseDataActivity.class), REQUEST_EARTHQUAKE_DATA);
+        } else if (id == R.id.save_simulation) {
+            if (simulation.isRunning()) {
+                simulation.stop();
+            }
+            new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
         }
-
-
-
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("id", structureId);
+        outState.putString("name", structureName);
     }
 
     private void createStructure(int structureId, String structureName) {
@@ -131,6 +156,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.cantileverBeam();
         } else if (structureId == 1) {
             structure = StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            structure = StructureFactory.getCraneBottom();
+        } else if (structureId == 3) {
+            structure = StructureFactory.getBetterEiffelTower();
+        } else if (structureId == 4) {
+            structure = StructureFactory.getEmpireState();
         } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
@@ -146,24 +177,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_simulation);
-        replaySeekBar = (SeekBar) findViewById(R.id.replaySeekBar);
+        replaySeekBar = (ProgressBar) findViewById(R.id.replaySeekBar);
         replaySeekBar.setVisibility(View.GONE);
-        replaySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //TODO call excitation to set correct replay position in current array
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
         replayrunningLabel = (TextView) findViewById(R.id.replaytext);
         replayrunningLabel.setVisibility(View.GONE);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -175,8 +191,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
-        structureId = getIntent().getExtras().getInt("id");
-        structureName = getIntent().getExtras().getString("name");
+        if (savedInstanceState != null) {
+            structureId = savedInstanceState.getInt("id");
+            structureName = savedInstanceState.getString("name");
+        }
+
+        if (getIntent().getExtras() != null) {
+            structureId = getIntent().getExtras().getInt("id");
+            structureName = getIntent().getExtras().getString("name");
+        }
 
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -213,21 +236,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     }
 
-    private void onStartButtonClicked()
-    {
-        String msgString = "Simulation started";
-        if (mode == SimulationMode.LIVE)
-        {
-            msgString += ". Start shaking!";
-        }
-        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
-
+    private void onStartButtonClicked() {
         startSimulation(new SensorAccelerationProvider(mSensorManager));
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
-        if (mCurrentAccelerationProvider != null)
-        {
+        if (mCurrentAccelerationProvider != null) {
             mCurrentAccelerationProvider.setInactive();
         }
 
@@ -252,6 +266,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStopButtonClicked() {
+        if (simulation == null) return;
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
@@ -263,6 +278,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         mCurrentAccelerationProvider = new EmptyAccelerationProvider();
+
+        ActionMenuItemView loadEQDataButton = (ActionMenuItemView) findViewById(R.id.sim_load_earthquake_data_button);
+        if (loadEQDataButton != null) loadEQDataButton.setEnabled(true);
+        ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_button);
+        if (replay != null) replay.setEnabled(true);
 
         toggleStartStopAvailability();
     }
@@ -312,12 +332,47 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     }
 
+    public void onNameChosen(String name) {
+        FileOutputStream fileOutputStream = null;
+        FileInputStream fileInputStream = null;
+        try {
+            fileOutputStream = openFileOutput(name + ".earthquake", Context.MODE_PRIVATE);
+            fileInputStream = openFileInput("Last.earthquake");
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = fileInputStream.read(bytes)) > 0) {
+                fileOutputStream.write(bytes, 0, length);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fileInputStream != null) fileInputStream.close();
+                if (fileOutputStream != null) fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_EARTHQUAKE_DATA) {
+            if (data.getExtras().containsKey("eqDataFile")) {
+                String fileName = data.getExtras().getString("eqDataFile") + ".earthquake";
+                runReplay(fileName);
+            }
+        }
+
+    }
+
 
     // TODO: should this be part of Simulation too?
     private enum SimulationMode {
         LIVE,
-        REPLAY,
-        FILE_REPLAY
+        REPLAY
     }
 
 }

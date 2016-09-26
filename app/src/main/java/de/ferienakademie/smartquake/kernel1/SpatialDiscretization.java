@@ -62,7 +62,7 @@ public class SpatialDiscretization {
         calculateEigenvaluesAndVectors();
         calculateDampingMatrix();
 
-        displacementScale = 4.0 * PreferenceReader.getDisplacementScaling() + 1.0;
+        displacementScale = PreferenceReader.getDisplacementScaling();
    }
 
     /**

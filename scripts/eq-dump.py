@@ -112,7 +112,7 @@ if len(data) > 0:
 # Finally, we print to stdout.
 printStatus('Outputting...')
 for x in data:
-    print("%d %.15f 0" % (x[0], x[1]))
+    print("%d;%.15f;0;0;9.81" % (x[0], x[1]))
 
 # That's it!
 printStatus('Done!')
