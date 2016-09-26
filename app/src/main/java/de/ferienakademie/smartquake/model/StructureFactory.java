@@ -85,6 +85,7 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
+        //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
         n1.isHinge();
 
         n1.setConstraint(con);
