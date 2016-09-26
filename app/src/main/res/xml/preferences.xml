@@ -6,4 +6,10 @@
         android:summary="@string/pref_gravity_summary"
         android:defaultValue="false"
         />
+    <de.ferienakademie.smartquake.preferenceElements.SliderPreference
+        android:defaultValue="@string/slider_default"
+        android:dialogMessage="@string/slider_message"
+        android:key="displacement_slider"
+        android:summary="@array/slider_summaries"
+        android:title="@string/slider_title" />
 </PreferenceScreen>

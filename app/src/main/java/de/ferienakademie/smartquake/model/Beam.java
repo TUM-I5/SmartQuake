@@ -273,6 +273,7 @@ public class Beam {
         double orthogonalDisplacementEndNode =
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
+        /*
         if (BuildConfig.DEBUG) { // assert that formulas are right
             double eps = 0.01;
             double v = startNodeDisplacementX * Math.cos(theta) - startNodeDisplacementY * Math.sin(theta);
@@ -295,6 +296,7 @@ public class Beam {
                 throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
+        */
 
         double rotationStartNode = startNode.getCurrentRotations().get(0);
         double rotationEndNode = endNode.getCurrentRotations().get(0);
