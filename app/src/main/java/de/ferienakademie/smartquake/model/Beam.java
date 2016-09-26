@@ -275,22 +275,25 @@ public class Beam {
                 computeLocalOrthogonalDisplacement(endNodeDisplacementX, endNodeDisplacementY);
 
         if (BuildConfig.DEBUG) { // assert that formulas are right
+            double eps = 0.01;
             double v = startNodeDisplacementX * Math.cos(theta) - startNodeDisplacementY * Math.sin(theta);
-            if (axialDisplacementStartNode != v) {
-                throw new AssertionError("axialdisplacement start node not right: " + axialDisplacementStartNode + " should be " + v);
+            if (Math.abs(axialDisplacementStartNode - v) > eps) {
+                throw new AssertionError("axialDisplacementStartNode not right: " + axialDisplacementStartNode + " should be " + v);
             }
 
             double v1 = startNodeDisplacementX * Math.sin(theta) + startNodeDisplacementY * Math.cos(theta);
-            if (orthogonalDisplacementStartNode != v1) {
-                throw new AssertionError("orthogonalStartNode not right: " + axialDisplacementStartNode + " should be " + v1);
+            if (Math.abs(orthogonalDisplacementStartNode - v1) > eps) {
+                throw new AssertionError("orthogonalStartNode not right: " + orthogonalDisplacementEndNode + " should be " + v1);
             }
 
-            if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
-                throw new AssertionError();
+            double v2 = endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta);
+            if (Math.abs(axialDisplacementEndNode - v2) > eps) {
+                throw new AssertionError("axialDisplacementEndNode not right: " + axialDisplacementEndNode + " should be " + v2);
             }
 
-            if (axialDisplacementEndNode != endNodeDisplacementX * Math.cos(theta) - endNodeDisplacementY * Math.sin(theta)) {
-                throw new AssertionError();
+            double v3 = endNodeDisplacementX * Math.sin(theta) + endNodeDisplacementY * Math.cos(theta);
+            if (Math.abs(orthogonalDisplacementEndNode - v3) > eps) {
+                throw new AssertionError("orthogonalDisplacementEndNode wrong: " + orthogonalDisplacementEndNode + " should be " + v3);
             }
         }
 
