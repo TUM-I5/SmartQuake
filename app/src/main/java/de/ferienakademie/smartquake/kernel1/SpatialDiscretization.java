@@ -197,7 +197,7 @@ public class SpatialDiscretization {
 
 
 
-    public void updateDisplacementsOfStructure(DenseMatrix64F displacementVector) {
+    public void updateDisplacementsOfStructure(DenseMatrix64F displacementVector, double[] groundDisplacement) {
 
         // list of constrained dofs
         List<Integer> conDOF = structure.getConDOF();
