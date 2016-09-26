@@ -18,8 +18,9 @@ public class CanvasView extends View {
     public static final double SIDE_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double TOP_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double BEAM_UNIT_SCREEN_FRACTION = 0.1;
-    private static final Paint BEAM_PAINT = new Paint();
-    private static final Paint RULER_PAINT = new Paint();
+    public static final Paint BEAM_PAINT = new Paint();
+    public static final Paint HINGE_PAINT = new Paint();
+    public static final Paint RULER_PAINT = new Paint();
 
     static {
         BEAM_PAINT.setColor(Color.RED);
@@ -28,6 +29,9 @@ public class CanvasView extends View {
 
         RULER_PAINT.setColor(Color.BLACK);
         RULER_PAINT.setAntiAlias(true);
+
+        HINGE_PAINT.setColor(Color.BLUE);
+        HINGE_PAINT.setAntiAlias(true);
     }
 
     // TODO: improve?
@@ -57,9 +61,13 @@ public class CanvasView extends View {
     }
 
     public void drawNode(Node node, Canvas canvas) {
+        Paint nodePaint;
+        if (node.isHinge()) nodePaint = HINGE_PAINT;
+        else nodePaint = BEAM_PAINT;
+
         canvas.drawCircle(internalToScreen(node.getCurrentX(), Axis.X),
                 internalToScreen(node.getCurrentY(), Axis.Y),
-                (float) (node.getRadius() * beamUnitSize), BEAM_PAINT);
+                (float) (node.getRadius() * beamUnitSize), nodePaint);
     }
 
     private void drawBeam(Beam beam, Canvas canvas) {

@@ -67,6 +67,8 @@ public class StructureIO {
         writer.value(node.getInitialX());
         writer.name("y");
         writer.value(node.getInitialY());
+        writer.name("hinge");
+        writer.value(node.isHinge());
 
         writer.name("degreesOfFreedom");
         writer.beginArray();
@@ -80,6 +82,7 @@ public class StructureIO {
 
     private static Node parseNode(JsonReader reader) throws IOException {
         double x = Double.NaN, y = Double.NaN;
+        boolean hinge = false;
         LinkedList<Integer> DOF = null;
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT)
@@ -102,6 +105,9 @@ public class StructureIO {
                     }
                     reader.endArray();
                     break;
+                case "hinge":
+                    hinge = reader.nextBoolean();
+                    break;
             }
         }
         reader.endObject();
@@ -111,7 +117,9 @@ public class StructureIO {
             throw new IOException("Malformed file format.");
         }
 
-        return new Node(x, y, DOF);
+        Node node = new Node(x, y, DOF);
+        node.setHinge(hinge);
+        return node;
     }
 
     private static List<Node> parseNodes(JsonReader reader) throws IOException {

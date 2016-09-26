@@ -543,6 +543,21 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     }
 
+    public void setHinge(Node finger) {
+        List<Node> nodes = structure.getNodes();
+        double mindist = DELTA;
+        Node hingeNode = null;
+        for (Node node : nodes) {
+            if (distNodes(node, finger) <= mindist) {
+                mindist = distNodes(node, finger);
+                hingeNode = node;
+            }
+        }
+        if (hingeNode != null) {
+            hingeNode.setHinge(!hingeNode.isHinge());
+        }
+    }
+
     private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
         return cosAlfa*node.getCurrentX() + sinAlfa*node.getCurrentY();
     }
@@ -554,7 +569,11 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             Node n = new Node(e.getX(), e.getY() - yOffset);
 
-            deleteBeam(n.getCurrentX(), n.getCurrentY());
+            setHinge(n);
+
+//            deleteBeam(n.getCurrentX(), n.getCurrentY());
+
+            DrawHelper.drawStructure(structure, canvasView);
         }
 
         @Override
