@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Created by Felix Wechsler on 21/09/16.
@@ -55,15 +56,21 @@ public class TimeIntegration {
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
+        //fixed step size
         delta_t = 0.015;
 
+        //give the class the time step
+        accelerationProvider.initTime(delta_t*1e9);
 
         //stores the numerical scheme
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
         //solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
 
-        // fixed step size for implicit schemes
+        if(PreferenceReader.useModalAnalysis()) {
+            spatialDiscretization.getModalAnalysisMatrices();
+        }
+
 
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -96,10 +103,18 @@ public class TimeIntegration {
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
 
+
+
+
                     //long firstTime = System.nanoTime();
                     while(t < 0.03-0.000001 && isRunning) {
                         //calculate new displacement
-                        solver.nextStep(t, delta_t);
+                        if(PreferenceReader.useModalAnalysis()){
+                            solver.nextStepLumped(t, delta_t);
+                        }
+                        else {
+                            solver.nextStep(t, delta_t);
+                        }
                        // solver.nextStepLumped(t, delta_t);
 
                         solver.setGroundPosition(delta_t);

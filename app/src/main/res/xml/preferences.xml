@@ -6,8 +6,8 @@
         <SwitchPreference
             android:key="pref_use_lumped"
             android:title="@string/pref_lumped_title"
-            android:textOn="@string/pref_lumped_summary_On"
-            android:textOff="@string/pref_lumped_summary_Off"
+            android:summaryOn="@string/pref_lumped_summary_On"
+            android:summaryOff="@string/pref_lumped_summary_Off"
             android:defaultValue="false"
             />
         <SwitchPreference

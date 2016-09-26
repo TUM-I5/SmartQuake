@@ -75,8 +75,6 @@ public class Newmark extends ImplicitSolver {
         //initialize fLoad_old
         fLoad_old = new DenseMatrix64F(k1.getNumberofDOF(), 1);
 
-//        k1.getModalAnalysisMatrices();
-
     }
 
 
