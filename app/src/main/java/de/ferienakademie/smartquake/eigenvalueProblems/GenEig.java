@@ -67,7 +67,7 @@ public class GenEig {
             } else {
                 double[] lambda = vecElDiv(alphaReD, betaD);
                 double max;
-                int maxInd = 0;
+                int maxInd;
                 for (int i = 0; i < n - 1; i++) {
                     max = lambda[i];
                     maxInd = i;
@@ -77,7 +77,9 @@ public class GenEig {
                             maxInd = j;
                         }
                     }
+                    lambda = switchElements(lambda, i, maxInd);
                     alphaReD = switchElements(alphaReD, i, maxInd);
+                    betaD = switchElements(betaD, i, maxInd);
                     for (int k = 0; k < n; k++) {
                         vR = switchElements(vR, i * n + k, maxInd * n + k);
                     }
