@@ -192,10 +192,10 @@ public class SpatialDiscretization {
             Node node = structure.getNodes().get(e);
 
             List<Integer> dofs = node.getDOF();
-            node.setCurrentX(DisplacementVector.get(dofs.get(0), 0) + node.getInitialX());
-            node.setCurrentY(DisplacementVector.get(dofs.get(0), 0) + node.getInitialY());
+            node.setCurrentX(displacementVector2.get(dofs.get(0), 0) + node.getInitialX());
+            node.setCurrentY(displacementVector2.get(dofs.get(1), 0) + node.getInitialY());
             for (int j = 2; j < dofs.size(); j++) {
-                node.setSingleRotation(j - 2, DisplacementVector.get(dofs.get(j), 0));
+                node.setSingleRotation(j - 2, displacementVector2.get(dofs.get(j), 0));
             }
         }
 

@@ -28,7 +28,7 @@ public class Structure {
     // left/right X, top/bottom Y //TODO which one will be used?
     private double[] boundingBox = new double[4];
 
-    private boolean lumped = true;  // default value!
+    private boolean lumped = false;  // default value!
 
 
 

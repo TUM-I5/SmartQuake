@@ -33,7 +33,7 @@ public class StructureFactory {
 
         Material testMaterial = new Material();
 
-        Beam b = new Beam(bottom, up, testMaterial, false);
+        Beam b = new Beam(bottom, up, testMaterial);
 
         Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
         enumerateDOFs(structure);
@@ -48,11 +48,6 @@ public class StructureFactory {
 
         boolean lumped = true; // Make it false for consistent mass matrices!
 
-        List<Double> unode1 = new LinkedList<>();
-        unode1.add(0.0);
-        unode1.add(0.0);
-        unode1.add(0.0);
-
         Structure structure = new Structure();
         structure.setLumped(lumped);
         Material testMaterial = new Material();
@@ -66,12 +61,12 @@ public class StructureFactory {
         Node n4 = new Node(0, height - half);
         Node n5 = new Node(half, height - 2 * half);
 
-        Beam b1 = new Beam(n1, n2, testMaterial,lumped);
-        Beam b2 = new Beam(n2, n3, testMaterial,lumped);
-        Beam b3 = new Beam(n3, n4, testMaterial,lumped);
-        Beam b4 = new Beam(n4, n1, testMaterial,lumped);
-        Beam b5 = new Beam(n4, n5, testMaterial,lumped);
-        Beam b6 = new Beam(n5, n3, testMaterial,lumped);
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
 
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams(b1, b2, b3, b4, b5, b6);
@@ -197,7 +192,7 @@ public class StructureFactory {
                 }
 
                 for (int j = 0; j < beams.size(); j++) {
-                    Beam beam = beams.get(i);
+                    Beam beam = beams.get(j);
 
                     if(beam.getStartNode()==node){
                         beam.setSingleDof(0,dofs.get(0));

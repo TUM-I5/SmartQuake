@@ -124,7 +124,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         for (Beam beam : structure.getBeams()) {
-            beam.computeAll(true);
+            beam.computeAll(structure.isLumped());
         }
 
     }
