@@ -167,6 +167,10 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             transformToMeters(node);
         }
 
+        for (int i = 0; i < nodes.size(); i++) {
+            if (nodes.get(i).getBeams().isEmpty()) nodes.remove(i--);
+        }
+
         structure.setConDOF(condof);
 
         for (int i = 0; i < allBeams.size(); i++) {
