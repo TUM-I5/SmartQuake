@@ -128,13 +128,13 @@
     <!-- End preference slider excitation frequency -->
 
     <!-- Preference slider displacement magnification -->
-    <string name="displacement_slider_title">Displacement scaling</string>
-    <item name="displacement_slider_default" format="float" type="string">0.0</item>
-    <string name="displacement_slider_message"></string>
+    <string name="loadVector_slider_title">Earth quake magnitude scale</string>
+    <item name="loadVector_slider_default" format="float" type="string">0.0</item>
+    <string name="loadVector_slider_message"></string>
     <string name="pref_show_raw_sensor_data_summary">Display raw sensor data while simulating.</string>
     <string name="pref_show_raw_sensor_data_title">Show raw sensor data</string>
 
-    <string-array name="displacement_slider_summaries">
+    <string-array name="loadVector_slider_summaries">
         <item>1.0</item>
         <item>1.1</item>
         <item>1.2</item>
