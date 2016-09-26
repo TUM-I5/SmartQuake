@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 
 import java.util.concurrent.ExecutorService;
@@ -63,6 +61,7 @@ public class TimeIntegration {
         //stores the numerical scheme
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+        //solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
 
         // fixed step size for implicit schemes
 
@@ -101,6 +100,8 @@ public class TimeIntegration {
                     while(t < 0.03-0.000001 && isRunning) {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
+                       // solver.nextStepLumped(t, delta_t);
+
                         solver.setGroundPosition(delta_t);
                         t += delta_t;
 
@@ -114,7 +115,7 @@ public class TimeIntegration {
                   //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     //update the displacement in the node variables
-                    spatialDiscretization.updateStructure_SpatialDiscretization(solver.getX());
+                    spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
 
                     isRunning = false;
                 }

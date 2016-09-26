@@ -11,7 +11,7 @@ import java.io.OutputStream;
  * Class for generating a "standard" earthquake
  * For now only uses sin-function default amplitude 5 and default frequency of one Hertz
  */
-public class SinCosExcitation implements AccelerationProvider {
+public class SinCosExcitation extends AccelerationProvider {
     double amplitude;
     double frequency;
     private double timestep;
@@ -44,8 +44,10 @@ public class SinCosExcitation implements AccelerationProvider {
     @Override
     public AccelData getAccelerationMeasurement() {
         counter++;
-        return new AccelData(Math.sin(2* Math.PI *frequency * counter * timestep * 1e-9), 0.0,
-                (long) (counter * timestep ) );
+        AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
+                (long) (counter * timestep));
+        notifyNewAccelData(accelData);
+        return accelData;
     }
 
     public void setFrequency(double frequency){

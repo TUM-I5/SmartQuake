@@ -36,17 +36,17 @@ public class GenEig {
 
     /* Constructor */
     public GenEig(double[][] a, double[][] b) {
-        this(matToVec(a),matToVec(b),a.length);
+        this(matToVec(a),matToVec(b),a.length, true);
     }
 
 
     public GenEig(DenseMatrix64F a, DenseMatrix64F b) {
-        this(a.getData(),b.getData(),a.getNumRows());
+        this(a.getData(),b.getData(),a.getNumRows(), true);
     }
 
-    public GenEig(double[] aV, double[] bV,int n) {
+    public GenEig(double[] aV, double[] bV,int n, boolean sortEigenvalues) {
 		/* Initialize local variables */
-        this.n=n;
+        this.n = n;
         double[] alphaReD = new double[n];
         double[] alphaImD = new double[n];
         double[] betaD = new double[n];
@@ -60,63 +60,90 @@ public class GenEig {
 		/* Solve generalized eigenvalue problem */
         Dggev.dggev("N", "V", n, aVWork, 0, n, bVWork, 0, n, alphaReD, 0, alphaImD, 0, betaD, 0, vL, 0, n, vR, 0, n, work, 0, 8 * n, info);
 
-		/* Assign results to attributes */
-        alphaRe = GenEig.vecToArrayList(alphaReD);
-        alphaIm = GenEig.vecToArrayList(alphaImD);
-        beta = GenEig.vecToArrayList(betaD);
-        v = GenEig.vecToArrayList(vR);
+        /* Sort eigenvalues */
+        if (sortEigenvalues && n > 1) {
+            if (anyZero(betaD) && (! anyZero(alphaImD))) {
+                System.out.println("Warning: At least one eigenvalue is complex or arbitrary. Hence, the eigenvalues cannot be sorted.");
+            } else {
+                double[] lambda = vecElDiv(alphaReD, betaD);
+                double max;
+                int maxInd;
+                for (int i = 0; i < n - 1; i++) {
+                    max = lambda[i];
+                    maxInd = i;
+                    for (int j = i + 1; j < n; j++) {
+                        if (lambda[j] > max) {
+                            max = lambda[j];
+                            maxInd = j;
+                        }
+                    }
+                    lambda = switchElements(lambda, i, maxInd);
+                    alphaReD = switchElements(alphaReD, i, maxInd);
+                    betaD = switchElements(betaD, i, maxInd);
+                    for (int k = 0; k < n; k++) {
+                        vR = switchElements(vR, i * n + k, maxInd * n + k);
+                    }
+                }
+            }
+        }
+
+        /* Assign results to attributes */
+        alphaRe = vecToArrayList(alphaReD);
+        alphaIm = vecToArrayList(alphaImD);
+        beta = vecToArrayList(betaD);
+        v = vecToArrayList(vR);
     }
 
     /* Getter methods */
     public double[] getAlphaRe() {
         /** Returns real part of alpha */
-        return GenEig.arrayListToVec(alphaRe);
+        return arrayListToVec(alphaRe);
     }
     public double[] getAlphaIm() {
         /** Return imaginary part of alpha */
-        return GenEig.arrayListToVec(alphaIm);
+        return arrayListToVec(alphaIm);
     }
     public double[] getBeta() {
         /** Return beta */
-        return GenEig.arrayListToVec(beta);
+        return arrayListToVec(beta);
     }
     public double[][] getV() {
         /** Return eigenvectors */
-        return GenEig.arrayListToMat(v, n);
+        return arrayListToMat(v, n);
     }
 
     public double[] getV1D() {
         /** Return eigenvectors */
-        return GenEig.arrayListToVec(v);
+        return arrayListToVec(v);
     }
 
     public double[] getLambdaRe() {
         /** Returns real part of lambda if beta != 0 */
-        double[] betaD = GenEig.arrayListToVec(beta);
+        double[] betaD = arrayListToVec(beta);
         if (anyZero(betaD)) {
             System.out.println("Error: At least one generalized eigenvalue is either arbitrary or not defined.");
             System.exit(0);
         }
-        return GenEig.vecElDiv(GenEig.arrayListToVec(alphaRe), betaD);
+        return vecElDiv(arrayListToVec(alphaRe), betaD);
     }
     public double[] getLambda() {
         /** Returns real part of lambda if beta != 0 *
          *  Warning: Only use this method if you are sure by theory that the eigenvalues are real! */
-        double[] betaD = GenEig.arrayListToVec(beta);
+        double[] betaD = arrayListToVec(beta);
         if (anyZero(betaD)) {
             System.out.println("Error: At least one generalized eigenvalue is either arbitrary or not defined.");
             System.exit(0);
         }
-        return GenEig.vecElDiv(GenEig.arrayListToVec(alphaRe), betaD);
+        return vecElDiv(arrayListToVec(alphaRe), betaD);
     }
     public double[] getLambdaIm() {
         /** Returns imaginary part of lambda if beta != 0 */
-        double[] betaD = GenEig.arrayListToVec(beta);
+        double[] betaD = arrayListToVec(beta);
         if (anyZero(betaD)) {
             System.out.println("Error: At least one generalized eigenvalue is either arbitrary or not defined.");
             System.exit(0);
         }
-        return GenEig.vecElDiv(GenEig.arrayListToVec(alphaIm), betaD);
+        return vecElDiv(arrayListToVec(alphaIm), betaD);
     }
 
     /* Functions */
@@ -160,7 +187,6 @@ public class GenEig {
         }
         return m;
     }
-
     private static double[] vecElDiv(double[] v1, double[] v2) {
 		/* v1 ./ v2 */
         int d = v1.length;
@@ -181,6 +207,24 @@ public class GenEig {
             i++;
         }
         return aZ;
+    }
+    private static boolean allZero(double[] v) {
+		/* true if all elements of v are 0, false otherwise */
+        boolean aZ = true;
+        int i = 0;
+        while (aZ && i < v.length) {
+            if (v[i] != 0) {
+                aZ = false;
+            }
+            i++;
+        }
+        return aZ;
+    }
+    private static double[] switchElements(double[] vec, int index1, int index2) {
+        double temp = vec[index1];
+        vec[index1] = vec[index2];
+        vec[index2] = temp;
+        return vec;
     }
 
 }

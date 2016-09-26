@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,7 +27,9 @@ import java.io.IOException;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
+import de.ferienakademie.smartquake.excitation.AccelData;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+import de.ferienakademie.smartquake.excitation.AccelerationProviderObserver;
 import de.ferienakademie.smartquake.excitation.EmptyAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 import de.ferienakademie.smartquake.excitation.SensorAccelerationProvider;
@@ -42,7 +45,7 @@ import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener,
-        SaveEarthquakeFragment.SaveEarthquakeListener {
+        SaveEarthquakeFragment.SaveEarthquakeListener, AccelerationProviderObserver {
 
     // TODO: global enum for this?
     private static final int REQUEST_EARTHQUAKE_DATA = 0;
@@ -60,6 +63,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private TextView replayrunningLabel;
     private double replayProgress;
     private SimulationMode mode = SimulationMode.LIVE;
+    //Sensor Debug Views
+    private TextView tvSensorDataX;
+    private TextView tvSensorDataY;
+    private LinearLayout layoutSensorDebug;
+
     private int structureId;
     private String structureName;
     private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
@@ -75,19 +83,24 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onStartButtonClicked();
         }
     };
+    private long lastDebugSensorDataTimestamp;
 
     private void runReplay(String fileName) {
         FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
         try {
-            if (fileName.equals("SinCos.earthquake")) {
-                SinCosExcitation sinCosExcitation = new SinCosExcitation();
-                sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
-                startSimulation(sinCosExcitation);
-            } else if (fileName.equals("Sensors.earthquake")) {
-                onStartButtonClicked();
-            } else {
-                fileAccelerationProvider.load(openFileInput(fileName));
+            switch (fileName) {
+                case "SinCos.earthquake":
+                    SinCosExcitation sinCosExcitation = new SinCosExcitation();
+                    sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
+                    startSimulation(sinCosExcitation);
+                    break;
+                case "Sensors.earthquake":
+                    onStartButtonClicked();
+                    break;
+                default:
+                    fileAccelerationProvider.load(openFileInput(fileName));
+                    break;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,7 +117,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             toggleStartStopAvailability();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,8 +180,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.getEmpireState();
         } else if (structureId == 5) {
             structure = StructureFactory.getGoldenGate();
-        }
-        else {
+        } else if (structureId == 6) {
+            structure = StructureFactory.getWeirdBridge();
+        } else if (structureId == 7) {
+            structure = StructureFactory.getHousingBlock();
+        } else if (structureId == 8) {
+            structure = StructureFactory.getTrumpTower();
+        } else if (structureId == 9) {
+            structure = StructureFactory.getTVtower();
+        } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
 
@@ -207,6 +226,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structureId = getIntent().getExtras().getInt("id");
             structureName = getIntent().getExtras().getString("name");
         }
+        findSensorDataDebugViews();
 
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -218,6 +238,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 }
             });
         }
+    }
+
+    private void findSensorDataDebugViews() {
+        layoutSensorDebug = (LinearLayout) findViewById(R.id.sim_layout_sensor_debug);
+        tvSensorDataX = (TextView) findViewById(R.id.sim_tv_sensor_x);
+        tvSensorDataY = (TextView) findViewById(R.id.sim_tv_sensor_y);
+
+        int visibility = PreferenceReader.showRawSensorData() ? View.VISIBLE : View.GONE;
+        layoutSensorDebug.setVisibility(visibility);
     }
 
     @Override
@@ -248,17 +277,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
-        if (mCurrentAccelerationProvider != null) {
+        if (mCurrentAccelerationProvider != null){
+            mCurrentAccelerationProvider.removeObserver(this);
             mCurrentAccelerationProvider.setInactive();
         }
 
         mCurrentAccelerationProvider = accelerationProvider;
-
-        String msgString = "Simulation started";
-        if (mode == SimulationMode.LIVE) {
-            msgString += ". Start shaking!";
-        }
-        Snackbar.make(layout, msgString, Snackbar.LENGTH_SHORT).show();
+        mCurrentAccelerationProvider.addObserver(this);
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
@@ -273,10 +298,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStopButtonClicked() {
+        if (mode == SimulationMode.REPLAY) {
+            replaySeekBar.setVisibility(View.GONE);
+            replayrunningLabel.setVisibility(View.GONE);
+        }
         if (simulation == null) return;
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
+        mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
         try {
             mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
@@ -302,7 +332,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simFab.setOnClickListener(startSimulationListener);
                 simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
 
-                Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
+                slowSnackbar = null;
             }
         });
     }
@@ -310,34 +340,24 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onSimulationStateChanged(Simulation.SimulationState newSpeedState) {
 
-        String msg = "";
+        String msg;
 
-        switch (newSpeedState) {
-            case RUNNING_SLOW:
-                msg = "Simulation speed slow";
-                slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
-                slowSnackbar.show();
-                break;
-            case RUNNING_NORMAL:
-                msg = "Simulation speed normal";
-                if (slowSnackbar != null) slowSnackbar.dismiss();
-                break;
+        if (newSpeedState == Simulation.SimulationState.RUNNING_SLOW && slowSnackbar == null) {
+            msg = "Simulation speed might be slow...";
+            slowSnackbar = Snackbar.make(layout, msg, Snackbar.LENGTH_INDEFINITE);
+            slowSnackbar.setAction("DISMISS", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    slowSnackbar.dismiss();
+                }
+            });
+            slowSnackbar.show();
         }
 
-        Log.d("SimSpeed", msg);
+        Log.v("SimSpeed", newSpeedState.name());
 
     }
 
-    private void setReplayProgress(double progress) {
-        replayProgress = progress;
-        replaySeekBar.setProgress((int) Math.round(progress));
-        if (progress >= 100) {
-            replaySeekBar.setVisibility(View.GONE);
-            replayrunningLabel.setVisibility(View.GONE);
-            onStopButtonClicked();
-            mode = SimulationMode.LIVE;
-        }
-    }
 
     public void onNameChosen(String name) {
         FileOutputStream fileOutputStream = null;
@@ -375,6 +395,31 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     }
 
+    public void onNewAccelerationValue(AccelData data) {
+        long timestamp = System.currentTimeMillis();
+        if (timestamp - lastDebugSensorDataTimestamp  > 100) {
+            lastDebugSensorDataTimestamp = System.currentTimeMillis();
+            final String xData = String.format("x: %.2f %.2f", data.xAcceleration, data.xGravity);
+            final String yData = String.format("y: %.2f %.2f", data.yAcceleration, data.yGravity);
+            tvSensorDataX.post(new Runnable() {
+                @Override
+                public void run() {
+                    tvSensorDataX.setText(xData);
+                    tvSensorDataY.setText(yData);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onNewReplayPercent(double percent) {
+        replayProgress = percent;
+        replaySeekBar.setProgress((int) Math.round(percent));
+        if (percent >= 100) {
+            onStopButtonClicked();
+            mode = SimulationMode.LIVE;
+        }
+    }
 
     // TODO: should this be part of Simulation too?
     private enum SimulationMode {
