@@ -112,6 +112,65 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getLongFrame() {
+
+        double width = 8;
+        double height = 24;
+
+        boolean lumped = true;
+
+        Structure structure = new Structure();
+        structure.setLumped(lumped);
+        Material testMaterial = new Material();
+
+        //Kernel1 stuff
+
+        List<Integer> DOFnode1 = new LinkedList<>();
+        List<Integer> DOFnode2 = new LinkedList<>();
+        List<Integer> DOFnode3 = new LinkedList<>();
+        List<Integer> DOFnode4 = new LinkedList<>();
+
+
+        DOFnode1.add(0); //constraint
+        DOFnode1.add(1);//constraint
+        DOFnode1.add(2);//constraint
+
+        DOFnode2.add(3);//constraint
+        DOFnode2.add(4);//constraint
+        DOFnode2.add(5);//constraint
+
+        DOFnode3.add(6);
+        DOFnode3.add(7);
+        DOFnode3.add(8);
+        DOFnode4.add(9);
+        DOFnode4.add(10);
+        DOFnode4.add(11);
+
+
+        Node n1 = new Node(0, height, DOFnode1);
+        Node n2 = new Node(width, height, DOFnode2);
+        Node n3 = new Node(0, 0, DOFnode3);
+        Node n4 = new Node(width, 0, DOFnode4);
+
+        Beam b1 = new Beam(n1, n3, testMaterial,lumped);
+        Beam b2 = new Beam(n3, n4, testMaterial,lumped);
+        Beam b3 = new Beam(n4, n2, testMaterial,lumped);
+
+
+        structure.addNodes(n1, n2, n3, n4);
+        structure.addBeams(b1, b2, b3);
+
+        List<Integer> condof= new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            condof.add(i);
+        }
+
+        structure.setConDOF(condof);
+
+        return structure;
+
+    }
+
     public static Structure getCraneBottom() {
 
         double width = 8;
@@ -196,6 +255,7 @@ public class StructureFactory {
         return structure;
 
     }
+
 
     public static Structure getSimpleEiffelTower() {
         double width = 8;
