@@ -14,7 +14,7 @@ import de.ferienakademie.smartquake.BuildConfig;
 
 public class Beam {
 
-    private static Material stdMaterial = new Material();
+    private static Material stdMaterial = Material.STEEL;
 
     private Node startNode;
     private Node endNode;

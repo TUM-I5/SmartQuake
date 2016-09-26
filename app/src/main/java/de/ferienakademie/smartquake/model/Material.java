@@ -5,12 +5,10 @@ package de.ferienakademie.smartquake.model;
  */
 public class Material {
 
-    public static Material STEEL = new Material();
+    public static Material STEEL = new Material(0.1, 0.01, 2.1e8, 7.85, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005); // Source: Holzbau, wikipedia
     public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005); // Source: Betonbau, wikipedia
     public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005);
-    public static Material SOMETHING = new Material(); //TODO Add values and more materials!
-
 
     protected double YoungsModulus = 0;   //Young's modulus
     protected double AreaOfCrossSection = 0;   //cross section
@@ -40,10 +38,6 @@ public class Material {
         this.MassPerLength = Density * AreaOfCrossSection;
         this.DampingCoefficient =10;
 
-    }
-
-    public Material() {
-        this(0.1, 0.01, 2.1e8, 7.85, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     }
 
     public void setNewProperties(double b, double h) { //necessary, if BreadthOfBeam and HeightOfBeam are changed - changes all relevant properties

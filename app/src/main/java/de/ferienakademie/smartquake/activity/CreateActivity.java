@@ -52,7 +52,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     private double width, height;
 
-    private Material material = new Material();
+    private Material material = Material.STEEL;
     private boolean lumped = true;
 
     private int yOffset = 0;

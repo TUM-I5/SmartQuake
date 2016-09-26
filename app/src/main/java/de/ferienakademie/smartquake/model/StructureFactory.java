@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         Beam b = new Beam(bottom, up, testMaterial);
 
@@ -53,7 +54,7 @@ public class StructureFactory {
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
 
         Node n1 = new Node(0, height, true);
@@ -93,7 +94,7 @@ public class StructureFactory {
         boolean lumped = true;
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         //Kernel1 stuff
 
@@ -143,7 +144,7 @@ public class StructureFactory {
         boolean lumped = true;
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
         //Kernel1 stuff
 
@@ -231,7 +232,7 @@ public class StructureFactory {
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        Material testMaterial = new Material();
+        Material testMaterial = Material.STEEL;
 
 
         Node n1 = new Node(0.000000, 18.000000);
@@ -345,6 +346,23 @@ public class StructureFactory {
             fileInputStream = context.openFileInput(structureName);
 
             Structure structure = StructureIO.readStructure(fileInputStream);
+
+            List<Node> nodes = structure.getNodes();
+            List<Beam> beams = structure.getBeams();
+
+            HashSet<Node> nodeSet = new HashSet<>();
+
+            nodeSet.addAll(nodes);
+
+            for (int i = nodes.size() - 1; i >= 0; i--) {
+                if (nodes.get(i).getBeams().isEmpty()) nodes.remove(i);
+            }
+
+            for (int i = beams.size() - 1; i >= 0; i--) {
+                if (!nodeSet.contains(beams.get(i).getStartNode())
+                        || !nodeSet.contains(beams.get(i).getEndNode())) beams.remove(i);
+            }
+
             enumerateDOFs(structure);
             return structure;
 
