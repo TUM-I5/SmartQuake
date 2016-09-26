@@ -15,11 +15,11 @@
     <string name="create_button">create</string>
 
     <!-- Preference slider displacement magnification -->
-    <string name="slider_title">Displacement scaling</string>
-    <item name="slider_default" format="float" type="string">0.0</item>
-    <string name="slider_message">Test</string>
+    <string name="displacement_slider_title">Displacement scaling</string>
+    <item name="displacement_slider_default" format="float" type="string">0.0</item>
+    <string name="displacement_slider_message">Test</string>
 
-    <string-array name="slider_summaries">
+    <string-array name="displacement_slider_summaries">
         <item>1.0</item>
         <item>1.1</item>
         <item>1.2</item>
