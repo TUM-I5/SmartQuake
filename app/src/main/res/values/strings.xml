@@ -63,4 +63,7 @@
         <item>5.0</item>
     </string-array>
     <!-- End preference slider displacement magnification -->
+
+    <string name="replay_running">Replay running.</string>
+    <string name="replay">Replay</string>
 </resources>
