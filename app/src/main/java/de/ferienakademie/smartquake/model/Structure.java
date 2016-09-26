@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+
 /**
  * Class for the whole structure.
  */
 public class Structure {
 
+    private int numberOfDOF;
     private List<Node> nodes;
     private List<Beam> beams;
     // TODO: somebody plz initialize this array conDOF
+
     private List<Integer> conDOF ; //constraint dofs TODO: But how's the data structure?
 
     public double[] getBoundingBox() {
@@ -119,5 +123,13 @@ public class Structure {
 
     public void setLumped(boolean lumped) {
         this.lumped = lumped;
+    }
+
+    public int getNumberOfDOF() {
+        return numberOfDOF;
+    }
+
+    public void setNumberOfDOF(int numberOfDOF) {
+        this.numberOfDOF = numberOfDOF;
     }
 }

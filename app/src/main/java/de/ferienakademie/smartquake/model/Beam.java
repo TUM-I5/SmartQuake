@@ -23,7 +23,6 @@ public class Beam {
     private double cos_theta;
     private double theta;
 
-    private List<Double> localdisplacements;
     private double[] displacement;
 
 
@@ -75,10 +74,11 @@ public class Beam {
     }
 
     public void computeAll(boolean lumped) {
-        this.dofs = new int[]{
-                startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
-                endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
-        };
+        this.dofs = new int[6];
+        //this.dofs = new int[]{
+        //        startNode.getDOF().get(0), startNode.getDOF().get(1), startNode.getDOF().get(2),
+        //        endNode.getDOF().get(0), endNode.getDOF().get(1), endNode.getDOF().get(2)
+        //};
 
         double x1 = startNode.getInitialX(), y1 = startNode.getInitialY();
         double x2 = endNode.getInitialX(), y2 = endNode.getInitialY();

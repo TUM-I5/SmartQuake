@@ -20,27 +20,24 @@ public class StructureFactory {
         List<Integer> dofNode1 = new LinkedList<>();
         List<Integer> dofNode2 = new LinkedList<>();
 
-        dofNode1.add(0); //constraint
-        dofNode1.add(1);//constraint
-        dofNode1.add(2);//constraint
 
-        dofNode2.add(3);//constraint
-        dofNode2.add(4);//constraint
-        dofNode2.add(5);//constraint
-
-        Node bottom = new Node(4, 8, dofNode1);
-        Node up = new Node(4, 0, dofNode2);
+        Node bottom = new Node(4, 8);
+        Node up = new Node(4, 0);
 
         List<Integer> condof = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            condof.add(i);
-        }
+
+        bottom.setSingleConstraint(0,true);
+        bottom.setSingleConstraint(1,true);
+        bottom.setSingleConstraint(2,true);
+
 
         Material testMaterial = new Material();
 
-        Beam b = new Beam(bottom, up, testMaterial, true);
+        Beam b = new Beam(bottom, up, testMaterial, false);
 
-        return new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+        Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+        enumerateDOFs(structure);
+        return structure;
     }
 
     public static Structure getSimpleHouse() {
@@ -89,7 +86,7 @@ public class StructureFactory {
 
         n1.setConstraint(con);
         n2.setConstraint(con);
-
+        enumerateDOFs(structure);
         return structure;
     }
 
@@ -118,6 +115,7 @@ public class StructureFactory {
         structure.addBeams(BeamFactory.createTriangleShapedBeam(tri02, tri12, tri22));
 
         structure.addNodes(tri00, tri01, tri11, tri12, tri02, tri22);
+        enumerateDOFs(structure);
         return structure;
     }
 
@@ -129,15 +127,99 @@ public class StructureFactory {
         try {
             fileInputStream = context.openFileInput(structureName);
 
-            return StructureIO.readStructure(fileInputStream);
+            Structure structure = StructureIO.readStructure(fileInputStream);
+            enumerateDOFs(structure);
+            return structure;
 
         } catch (FileNotFoundException e) {
+            //TODO: handle exception in the calling function and make appropriate actions.
             Log.e(StructureFactory.class.toString(), "FileNotFound");
         } catch (IOException e) {
             Log.e(StructureFactory.class.toString(), "IOException");
         }
 
         return new Structure();
+    }
+
+
+    public static void enumerateDOFs(Structure structure){
+        int numberofDOF=0;
+        for (int i = 0; i < structure.getNodes().size(); i++) {
+            Node node = structure.getNodes().get(i);
+
+            List<Integer>  dofs = new ArrayList<>();
+
+            // dof for x direction
+            dofs.add(numberofDOF);
+            if (node.getConstraint(0)){
+                structure.addSingleConDOF(numberofDOF);
+            }
+            numberofDOF++;
+
+            // dof for y direction
+            dofs.add(numberofDOF);
+            if (node.getConstraint(1)){
+                structure.addSingleConDOF(numberofDOF);
+            }
+            numberofDOF++;
+
+            if (node.isHinge()){
+                List<Beam> beams = node.getBeams();
+                for (int j = 0; j < beams.size(); j++) {
+                    Beam beam = beams.get(i);
+
+                    // dof for rotation of this beam
+                    dofs.add(numberofDOF);
+
+                    if(beam.getStartNode()==node){
+                        beam.setSingleDof(0,dofs.get(0));
+                        beam.setSingleDof(1,dofs.get(1));
+                        beam.setSingleDof(2,numberofDOF);
+                    }
+                    else {
+                        beam.setSingleDof(3,dofs.get(0));
+                        beam.setSingleDof(4,dofs.get(1));
+                        beam.setSingleDof(5, numberofDOF);
+                    }
+                    numberofDOF++;
+
+                }
+            }
+            // rigid connection
+            else {
+                List<Beam> beams = node.getBeams();
+
+                // dof for rotation of all beams
+                dofs.add(numberofDOF);
+
+                if (node.getConstraint(2)){
+                    structure.addSingleConDOF(numberofDOF);
+                }
+
+                for (int j = 0; j < beams.size(); j++) {
+                    Beam beam = beams.get(i);
+
+                    if(beam.getStartNode()==node){
+                        beam.setSingleDof(0,dofs.get(0));
+                        beam.setSingleDof(1,dofs.get(1));
+                        beam.setSingleDof(2,numberofDOF);
+                    }
+                    else {
+                        beam.setSingleDof(3,dofs.get(0));
+                        beam.setSingleDof(4,dofs.get(1));
+                        beam.setSingleDof(5, numberofDOF);
+                    }
+
+                }
+                numberofDOF++;
+
+            }
+
+            // dofs am Knoten setzen
+            node.setDOF(dofs);
+            structure.setNumberOfDOF(numberofDOF);
+        }
+
     }
 
 }
