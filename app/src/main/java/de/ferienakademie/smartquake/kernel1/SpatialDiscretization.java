@@ -1,12 +1,8 @@
 package de.ferienakademie.smartquake.kernel1;
 
-import android.content.SharedPreferences;
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.eigenvalueProblems.GenEig;
@@ -15,7 +11,6 @@ import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.preferenceElements.SliderPreference;
 
 /**
  * Created by alex on 22.09.16.
@@ -216,7 +211,8 @@ public class SpatialDiscretization {
             for (int j = 0; j < dofsOfNode.size(); j++) {
                 node.setSingleDisplacement( j, displacementScale * displacementVector2.get( dofsOfNode.get(j) , 0));
             }
-            node.saveTimeStepData();
+            node.saveTimeStepGroundDisplacement(groundDisplacement);
+            node.saveTimeStepDisplacement();
         }
 
     }
@@ -333,15 +329,14 @@ public class SpatialDiscretization {
 
 
 
-    public void superimposeModalAnalyisSolutions(double[] modalSolutionvector){
+    public void superimposeModalAnalyisSolutions(double[] modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F();
         DisplacementVector.zero();
         for (int i = 0; i < numberofDOF; i++) {
             CommonOps.add(eigenvectors[i],modalSolutionvector[i],DisplacementVector);
         }
 
-        updateDisplacementsOfStructure(DisplacementVector);
-
+        updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
 
     }
 }

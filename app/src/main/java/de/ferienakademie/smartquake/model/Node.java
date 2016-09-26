@@ -16,9 +16,9 @@ public class Node {
 
     private List<Integer> DOF; //Degrees of freedom
     private List<Double> displacements; //List of all displacements at the node
-    private double[] groundDisplacement = new double[2];
 
     private List <List <Double>>  historyOfDisplacements;
+    private List <double[]> historyOfGroundDisplacement;
 
     private double radius = 0.1;
 
@@ -34,6 +34,7 @@ public class Node {
         this.initialY = y;
         displacements = new ArrayList<>();
         historyOfDisplacements = new ArrayList<>();
+        historyOfGroundDisplacement = new ArrayList<>();
     }
 
 
@@ -193,10 +194,14 @@ public class Node {
     }
 
 
-    public void saveTimeStepData() {
-
+    public void saveTimeStepDisplacement() {
         historyOfDisplacements.add(displacements);
+    }
 
+
+
+    public void saveTimeStepGroundDisplacement(double[] gD) {
+        historyOfGroundDisplacement.add(gD);
     }
 
 
