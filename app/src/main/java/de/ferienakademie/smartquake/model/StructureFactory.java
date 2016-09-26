@@ -70,15 +70,10 @@ public class StructureFactory {
         structure.addNodes(n1, n2, n3, n4, n5);
         structure.addBeams( b2, b3, b4, b5, b6);
 
-
         boolean[] con = new boolean[3];
         con[0]=true;
         con[1]=true;
         con[2]=true;
-
-        //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
-        //TODO just delete n1.isHinge(); it doesnt make sense here
-
 
         n1.setConstraint(con);
         n2.setConstraint(con);
