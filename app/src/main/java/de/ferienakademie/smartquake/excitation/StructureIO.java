@@ -28,8 +28,6 @@ import de.ferienakademie.smartquake.model.Structure;
 public class StructureIO {
 
     public static void writeStructure(OutputStream stream, Structure structure) throws IOException {
-        //NOTE: For now, I have removed some calls like writer.a().b().c() and so on, b/c it looked a bit inconsistent to have it and not to have it in some other place. But that's simply a personal preference. But I think the code is easier to read like that.
-
         JsonWriter writer = new JsonWriter(new OutputStreamWriter((new BufferedOutputStream(stream))));
         writer.beginObject();
         writer.name("nodes");
@@ -61,7 +59,6 @@ public class StructureIO {
         writer.endArray();
         writer.endObject();
         writer.flush();
-        //NO stream.close() here, please. There is the hypothetical case that someone else wants to write in it. (imagine f.ex. a TCP connection)
     }
 
     private static void writeNode(JsonWriter writer, Node node) throws IOException {
@@ -206,8 +203,6 @@ public class StructureIO {
             b.setThickness(0.1f);
             beams.add(b);
         }
-
-        //Again, no stream.close() here, please.
 
         return new Structure(nodes, beams, degreesOfFreedom); //? whatever...
     }
