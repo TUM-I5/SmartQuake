@@ -13,12 +13,6 @@ import de.ferienakademie.smartquake.activity.SimulationActivity;
  * Created by David Schneller on 25.09.2016.
  */
 public class FileAccelerationProvider extends StoredAccelerationProvider {
-    SimulationActivity activity;
-
-    public FileAccelerationProvider(SimulationActivity activity){
-        super();
-        this.activity = activity;
-    }
 
     /**
      * Load acceleration data from a file
