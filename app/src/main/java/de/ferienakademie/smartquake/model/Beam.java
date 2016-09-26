@@ -340,7 +340,7 @@ public class Beam {
         double h3 = 3 * xl2 - 2 * xl3;
         double h4 = (_x * xl) * (1 - xl);
 
-        return h1 * orthogonalDisplacementStartNode + h2 * rotationStartNode + h3 * orthogonalDisplacementEndNode + h4 * rotationEndNode;
+        return h1 * orthogonalDisplacementStartNode + h2 * (-rotationStartNode) + h3 * orthogonalDisplacementEndNode + h4 * (-rotationEndNode);
     }
 
     private double getAxialDisplacement(double _x) {
