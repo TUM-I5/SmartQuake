@@ -14,11 +14,12 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
 
-public class ChooseDataActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class ChooseDataActivity extends AppCompatActivity {
 
     private int mPosition = ListView.INVALID_POSITION;
 
@@ -31,7 +32,15 @@ public class ChooseDataActivity extends AppCompatActivity
 
         values = new ArrayList<>();
         values.add("Phone sensors");
-        values.add("Last");
+
+        String[] fileNames = getFilesDir().list();
+        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.earthquake");
+        Matcher matcher;
+
+        for (String str : fileNames) {
+            matcher = pattern.matcher(str);
+            if (matcher.matches()) values.add(str.substring(0, str.length() - 11));
+        }
 
         ListView lv = (ListView) findViewById(R.id.list_view_eq_data);
         lv.setAdapter(new ArrayAdapter<String>(this, R.layout.list_item_eq_data, R.id.list_item_eq_data_text, values));
@@ -39,7 +48,6 @@ public class ChooseDataActivity extends AppCompatActivity
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                //String  itemValue    = (String) mListView.getItemAtPosition(position);
                 onItemSelected(position);
                 mPosition = position;
             }
@@ -61,9 +69,6 @@ public class ChooseDataActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
@@ -72,21 +77,6 @@ public class ChooseDataActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_slideshow) {
-            //TODO What happens when you want to play recorded quake data
-
-        } else if (id == R.id.nav_manage) {
-            //TODO What happens when you want tools
-        }
-
-        return true;
     }
 
     public void onItemSelected(Integer dataSourceId) {
