@@ -57,8 +57,9 @@ public abstract class StoredAccelerationProvider implements AccelerationProvider
         outputStreamReader = new OutputStreamWriter(outputStream);
         bufferedWriter = new BufferedWriter(outputStreamReader);
         for (int i = 0; i < readings.size(); i++) {
-            readingString = String.format(Locale.ENGLISH, "%d %f %f\n", readings.get(i).timestamp,
-                    readings.get(i).xAcceleration, readings.get(i).yAcceleration);
+            readingString = String.format(Locale.ENGLISH, "%d;%20f;%20f;%20f;%20f\n", readings.get(i).timestamp,
+                    readings.get(i).xAcceleration, readings.get(i).yAcceleration,
+                    readings.get(i).xGravity, readings.get(i).yGravity);
             bufferedWriter.write(readingString);
         }
         bufferedWriter.flush();

@@ -127,8 +127,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             toggleStartStopAvailability();
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
-            ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_button);
-            replay.setEnabled(false);
+            // TODO need to start a new activity with a list of earthquakes
+//            SinCosExcitation sinCosExcitation = new SinCosExcitation();
+//            sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
+//            startSimulation(sinCosExcitation);
+            ActionMenuItemView loadEqDataButton = (ActionMenuItemView)findViewById(id);
+            if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
+            ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
+            if (replay != null) replay.setEnabled(false);
             startActivityForResult(new Intent(this, ChooseDataActivity.class), REQUEST_EARTHQUAKE_DATA);
         } else if (id == R.id.save_simulation) {
             if (simulation.isRunning()) {

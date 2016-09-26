@@ -1,6 +1,7 @@
 package de.ferienakademie.smartquake.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class Node {
     private double initialY;
     private List<Integer> DOF; //Degrees of freedom
 
-    private double radius = 0.1;
+    private double radius = 0.02;
 
     private boolean[] constraint = new boolean[3];
 
@@ -134,6 +135,28 @@ public class Node {
         Node node = (Node) obj;
 
         return node.currentX == currentX && node.currentY == currentY;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(currentX);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(currentY);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (currentRotations != null ? currentRotations.hashCode() : 0);
+        temp = Double.doubleToLongBits(initialX);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(initialY);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (DOF != null ? DOF.hashCode() : 0);
+        temp = Double.doubleToLongBits(radius);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + Arrays.hashCode(constraint);
+        result = 31 * result + (hinge ? 1 : 0);
+        result = 31 * result + beams.hashCode();
+        return result;
     }
 
     public boolean isHinge() {
