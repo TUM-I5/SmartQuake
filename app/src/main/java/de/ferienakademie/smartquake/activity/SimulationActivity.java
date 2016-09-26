@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 
 import java.io.IOException;
 
@@ -94,7 +95,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
 
             try {
-                fileAccelerationProvider.load(openFileInput("saveAcc.txt"));
+                fileAccelerationProvider.load(openFileInput("Last.earthquake"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -228,7 +229,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mCurrentAccelerationProvider.setInactive();
         try {
-            mCurrentAccelerationProvider.saveFile(openFileOutput("saveAcc.txt", MODE_PRIVATE));
+            mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
         } catch (IOException e) {
             e.printStackTrace();
         }
