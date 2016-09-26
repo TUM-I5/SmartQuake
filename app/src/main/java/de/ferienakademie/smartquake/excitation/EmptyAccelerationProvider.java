@@ -6,7 +6,7 @@ import java.io.OutputStream;
 /**
  * Created by David Schneller on 25.09.2016.
  */
-public class EmptyAccelerationProvider implements AccelerationProvider {
+public class EmptyAccelerationProvider extends AccelerationProvider {
     @Override
     public double[] getAcceleration() {
         return new double[] { Double.NaN, Double.NaN };
@@ -34,6 +34,16 @@ public class EmptyAccelerationProvider implements AccelerationProvider {
 
     @Override
     public void setInactive() {
+
+    }
+
+    @Override
+    public void addObserver(AccelerationProviderObserver observer) {
+
+    }
+
+    @Override
+    public void removeObserver(AccelerationProviderObserver observer) {
 
     }
 }

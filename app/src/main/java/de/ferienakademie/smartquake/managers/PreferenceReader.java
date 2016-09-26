@@ -30,4 +30,7 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_use_lumped", false);
     }
 
+    public static boolean showRawSensorData() {
+        return sharedPref.getBoolean("pref_show_raw_sensor_data", false);
+    }
 }

@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
-        android:key="pref_use_gravity"
-        android:title="@string/pref_gravity_title"
-        android:summary="@string/pref_gravity_summary"
-        android:defaultValue="false"
-        />
-    <de.ferienakademie.smartquake.preferenceElements.SliderPreference
-        android:defaultValue="@string/displacement_slider_default"
-        android:dialogMessage="@string/displacement_slider_message"
-        android:key="displacement_slider"
-        android:summary="@array/displacement_slider_summaries"
-        android:title="@string/displacement_slider_title" />
-    <de.ferienakademie.smartquake.preferenceElements.SliderPreference
-        android:defaultValue="@string/frequency_slider_default"
-        android:dialogMessage="@string/frequency_slider_message"
-        android:key="frequency_slider"
-        android:summary="@array/frequency_slider_summaries"
-        android:title="@string/frequency_slider_title" />
-    <SwitchPreference
-        android:key="pref_use_lumped"
-        android:title="@string/pref_lumped_title"
-        android:textOn="@string/pref_lumped_summary_On"
-        android:textOff="@string/pref_lumped_summary_Off"
-        android:defaultValue="false"
-        />
+
+    <PreferenceCategory
+        android:title="Simulation">
+        <SwitchPreference
+            android:key="pref_use_lumped"
+            android:title="@string/pref_lumped_title"
+            android:textOn="@string/pref_lumped_summary_On"
+            android:textOff="@string/pref_lumped_summary_Off"
+            android:defaultValue="false"
+            />
+        <de.ferienakademie.smartquake.preferenceElements.SliderPreference
+            android:defaultValue="@string/displacement_slider_default"
+            android:dialogMessage="@string/displacement_slider_message"
+            android:key="displacement_slider"
+            android:summary="@array/displacement_slider_summaries"
+            android:title="@string/displacement_slider_title" />
+        <de.ferienakademie.smartquake.preferenceElements.SliderPreference
+            android:defaultValue="@string/frequency_slider_default"
+            android:dialogMessage="@string/frequency_slider_message"
+            android:key="frequency_slider"
+            android:summary="@array/frequency_slider_summaries"
+            android:title="@string/frequency_slider_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Debug">
+
+        <SwitchPreference
+            android:key="pref_use_gravity"
+            android:title="@string/pref_gravity_title"
+            android:summary="@string/pref_gravity_summary"
+            android:defaultValue="false"
+            />
+
+        <SwitchPreference
+            android:key="pref_show_raw_sensor_data"
+            android:defaultValue="true"
+            android:title="@string/pref_show_raw_sensor_data_title"
+            android:summary="@string/pref_show_raw_sensor_data_summary"
+            />
+
+    </PreferenceCategory>
 </PreferenceScreen>
