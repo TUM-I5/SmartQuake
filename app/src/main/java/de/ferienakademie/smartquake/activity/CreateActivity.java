@@ -186,7 +186,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         double x = node.getCurrentX();
         double y = node.getCurrentY();
 
-        double[] modelSize = DrawHelper.boundingBox;
+        double[] modelSize = {8, 8};
 
         double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
 
