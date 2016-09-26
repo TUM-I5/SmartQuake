@@ -133,7 +133,6 @@ public class Beam {
     }
 
     void computelumpedMassMatrix() {
-        Log.i("Beam", "lumped mass matrix");
 
         elementMassMatrix = new DenseMatrix64F(6, 6);
         elementMassMatrix.zero();
@@ -150,7 +149,6 @@ public class Beam {
 
     }
     void computeconsistentMassMatrix() {
-        Log.i("Beam", "consistent mass matrix");
 
         elementMassMatrix = new DenseMatrix64F(6, 6);
         elementMassMatrix.zero();
