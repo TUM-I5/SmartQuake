@@ -16,6 +16,7 @@ public class Node {
 
     private List<Integer> DOF; //Degrees of freedom
     private List<Double> displacements; //List of all displacements at the node
+    private double[] groundDisplacement = new double[2];
 
     private List <List <Double>>  historyOfDisplacements;
 
