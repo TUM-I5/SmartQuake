@@ -18,9 +18,11 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     private Sensor accelerometer;
     private GravityProvider gravityProvider;
     private int sensorRate;
+    private boolean gravityActive;
 
     public SensorAccelerationProvider(SensorManager sensorManager)
     {
+        gravityActive = true;
         this.sensorManager = sensorManager;
         if(sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION).size() == 0){
            //gravity cannot be excluded from Sensor
@@ -54,7 +56,9 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public AccelData getAccelerationMeasurement(){
         AccelData data = super.getAccelerationMeasurement();
-        gravityProvider.getGravity(data);
+        if(gravityActive) {
+            gravityProvider.getGravity(data);
+        }
         return data;
     }
 
@@ -65,6 +69,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
 
     public void setActive()
     {
+        gravityProvider.setBaseTime(baseTime);
         sensorManager.registerListener(this, accelerometer, sensorRate);
         gravityProvider.setActive();
     }
@@ -73,5 +78,13 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         sensorManager.unregisterListener(this);
         gravityProvider.setInactive();
+    }
+
+    /**
+     *
+     * @param active activates gravity if true
+     */
+    public void setGravityActive(boolean active){
+            gravityActive = true;
     }
 }

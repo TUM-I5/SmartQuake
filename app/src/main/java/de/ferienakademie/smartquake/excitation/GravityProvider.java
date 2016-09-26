@@ -11,4 +11,6 @@ public abstract class GravityProvider {
     public abstract void setActive();
 
     public abstract void setInactive();
+
+    public abstract void setBaseTime(long baseTime);
 }
