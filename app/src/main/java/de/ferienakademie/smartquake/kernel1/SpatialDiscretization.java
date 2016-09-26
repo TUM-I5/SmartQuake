@@ -58,6 +58,7 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
+        calculateEigenvaluesAndVectors();
 
         displacementScale = 4.0 * PreferenceReader.getDisplacementScaling() + 1.0;
    }
@@ -239,8 +240,8 @@ public class SpatialDiscretization {
      * @param acceleration - view {@link AccelerationProvider} for details
      */
     public void updateLoadVector(double[] acceleration) {
-        CommonOps.scale(acceleration[0], influenceVectorX, influenceVectorX_temp);
-        CommonOps.scale(acceleration[1], influenceVectorY, influenceVectorY_temp);
+        CommonOps.scale(acceleration[0]-acceleration[2], influenceVectorX, influenceVectorX_temp);
+        CommonOps.scale(acceleration[1]-acceleration[3], influenceVectorY, influenceVectorY_temp);
         CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
         CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
     }
@@ -254,7 +255,9 @@ public class SpatialDiscretization {
     }
 
     public void calculateEigenvaluesAndVectors(){
-        GenEig eigen = new GenEig(StiffnessMatrix,MassMatrix); //solve GEN eigenvalues problem
+        DenseMatrix64F K =StiffnessMatrix.copy();
+        DenseMatrix64F M =MassMatrix.copy();
+        GenEig eigen = new GenEig(K,M); //solve GEN eigenvalues problem
         eigenvalues = eigen.getLambda();
         double[][] ev = eigen.getV();
         eigenvectorsmatrix = new DenseMatrix64F(ev);

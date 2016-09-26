@@ -61,7 +61,6 @@ public class StructureFactory {
         Node n4 = new Node(0, height - half);
         Node n5 = new Node(half, height - 2 * half);
 
-        Beam b1 = new Beam(n1, n2, testMaterial);
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);
         Beam b4 = new Beam(n4, n1, testMaterial);
@@ -69,7 +68,7 @@ public class StructureFactory {
         Beam b6 = new Beam(n5, n3, testMaterial);
 
         structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4, b5, b6);
+        structure.addBeams( b2, b3, b4, b5, b6);
 
 
         boolean[] con = new boolean[3];
@@ -78,7 +77,8 @@ public class StructureFactory {
         con[2]=true;
 
         //TODO: what does this do? Didn't you mean n1.setHinge(true); ?
-        n1.isHinge();
+        //TODO just delete n1.isHinge(); it doesnt make sense here
+
 
         n1.setConstraint(con);
         n2.setConstraint(con);
