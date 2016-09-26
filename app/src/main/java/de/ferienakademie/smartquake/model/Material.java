@@ -14,7 +14,7 @@ public class Material {
     public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005, "rectangular");
 
     public String shape;
-    shape = "rectangular"; // Can be changed for using other than rectangular cross-sections.
+    //shape = "rectangular" ;  // Can be changed for using other than rectangular cross-sections.
 
     protected double YoungsModulus = 0;   //Young's modulus
     protected double AreaOfCrossSection = 0;   //cross section
