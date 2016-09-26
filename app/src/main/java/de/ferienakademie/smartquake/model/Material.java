@@ -43,9 +43,8 @@ public class Material {
     }
 
     public Material() {
-        this(0.01, 0.01, 2.1e8, 7.85, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
+        this(0.1, 0.01, 2.1e8, 7.85, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     }
-
 
     public void setNewProperties(double b, double h) { //necessary, if BreadthOfBeam and HeightOfBeam are changed - changes all relevant properties
         this.BreadthOfBeam = b;

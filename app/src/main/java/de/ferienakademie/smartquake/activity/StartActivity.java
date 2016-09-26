@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +52,9 @@ public class StartActivity extends AppCompatActivity
         values = new ArrayList<>();
         values.add("Simple Beam");
         values.add("Simple House");
+        values.add("Crane");
+        values.add("Better Eiffel Tower");
+        values.add("Empire State Building");
 
         String[] structures = getFilesDir().list();
 

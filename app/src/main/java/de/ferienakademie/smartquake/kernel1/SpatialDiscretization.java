@@ -59,7 +59,7 @@ public class SpatialDiscretization {
         initializeMatrices();
         calculateInfluenceVector();
 
-        displacementScale = 4.0 * PreferenceReader.getDisplacementScaling() + 1.0;
+        displacementScale = PreferenceReader.getDisplacementScaling();
    }
 
     /**
