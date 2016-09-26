@@ -653,9 +653,12 @@ public class StructureFactory {
 
     public static Structure getSimpleElephant() {
 
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
         Structure structure = new Structure();
-        structure.setLumped(lumped);
-        Material testMaterial = new Material();
+      //  structure.setLumped(lumped);
+
+        Material testMaterial = Material.STEEL;
 
         Node n1 = new Node(1, 8);
         Node n2 = new Node(2, 8); //left foot
@@ -721,8 +724,24 @@ public class StructureFactory {
         Beam b23 = new Beam(n24, n25, testMaterial);
         Beam b24 = new Beam(n25, n8, testMaterial);
 
+        Beam b25 = new Beam(n5, n6, testMaterial);
+        Beam b26 = new Beam(n7, n8, testMaterial);
+
+        Beam b27 = new Beam(n18, n23, testMaterial);
+        Beam b28 = new Beam(n19, n22, testMaterial);
+        Beam b29 = new Beam(n18, n24, testMaterial);
+
+        Beam b30 = new Beam(n10, n5, testMaterial);
+        Beam b31 = new Beam(n10, n6, testMaterial);
+        Beam b32 = new Beam(n10, n7, testMaterial);
+        Beam b33 = new Beam(n10, n8, testMaterial);
+
+        Beam b34 = new Beam(n9, n16, testMaterial);
+        Beam b35 = new Beam(n14, n25, testMaterial);
+
+
         structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21,n22,n23,n24,n25);
-        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24);
+        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24,b25,b26,b27,b28,b29,b30,b31,b32,b33,b34,b35);
 
         boolean[] con = new boolean[3];
         con[0]=true;
