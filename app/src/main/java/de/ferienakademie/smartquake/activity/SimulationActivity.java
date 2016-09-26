@@ -143,8 +143,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
-            runReplay("SinCos.earthquake");
-            toggleStartStopAvailability();
+            runReplay("Last.earthquake");
+            if (simulation != null) toggleStartStopAvailability();
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
             ActionMenuItemView loadEqDataButton = (ActionMenuItemView)findViewById(id);
@@ -261,7 +261,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void toggleStartStopAvailability() {
-        if (simulation.isRunning()) {
+        if (simulation == null || simulation.isRunning()) {
             // started
             simFab.setImageResource(R.drawable.ic_pause_white_24dp);
             simFab.setOnClickListener(stopSimulationListener);

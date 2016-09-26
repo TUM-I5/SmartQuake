@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class AccelerationProvider {
 
-    private List<AccelerationProviderObserver> accelerationProviderObservers = new LinkedList<>();
+    List<AccelerationProviderObserver> accelerationProviderObservers = new LinkedList<>();
 
     /**
      * has to inform the listener
