@@ -172,7 +172,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         FileOutputStream fileOutputStream = null;
         try {
-            fileOutputStream = openFileOutput(name + ".json", Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput("Fun.structure", Context.MODE_PRIVATE);
             StructureIO.writeStructure(fileOutputStream, structure);
             fileOutputStream.close();
             Toast.makeText(this, "Structure saved", Toast.LENGTH_SHORT).show();
@@ -198,8 +198,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         y = (y - yOffset) / (displayScaling);
 
         double temp = (height - yOffset) / (displayScaling);
+        double deltaTemp = (DELTA - yOffset) / (displayScaling);
 
-        if (y >= temp)   y = temp;
+        if (y >= temp - deltaTemp / 2)   y = temp;
 
         node.setCurrentX(x);
         node.setCurrentY(y);
