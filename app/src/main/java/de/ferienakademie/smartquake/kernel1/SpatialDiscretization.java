@@ -368,13 +368,6 @@ public class SpatialDiscretization {
 
 
     }
-
-
-
-
-
-
-
     public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F();
         DisplacementVector.zero();
