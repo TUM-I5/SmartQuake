@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
@@ -33,7 +34,7 @@ public class NodeFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder bob = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder bob = new AlertDialog.Builder(getActivity());
         LayoutInflater i = getActivity().getLayoutInflater();
 
         final View view = i.inflate(R.layout.choose_node, null);
@@ -44,6 +45,15 @@ public class NodeFragment extends DialogFragment {
         final EditText massText = (EditText)view.findViewById(R.id.node_mass);
         massText.setHint(String.valueOf(node.getNodeMass()));
 
+        final CheckBox xConst = (CheckBox)view.findViewById(R.id.checkBox_x);
+        final CheckBox yConst = (CheckBox)view.findViewById(R.id.checkBox_y);
+        final CheckBox rConst = (CheckBox)view.findViewById(R.id.checkBox_rot);
+
+        xConst.setChecked(node.getConstraint(0));
+        yConst.setChecked(node.getConstraint(1));
+        rConst.setChecked(node.getConstraint(2));
+
+
         bob.setView(view)
                 .setMessage("Node parameters")
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
@@ -51,6 +61,8 @@ public class NodeFragment extends DialogFragment {
                         node.setHinge(isHingeButton.isChecked());
                         if (!massText.getText().toString().isEmpty())
                             node.setNodeMass(Double.parseDouble(massText.getText().toString()));
+                        boolean[] constraints = new boolean[] {xConst.isChecked(), yConst.isChecked(), rConst.isChecked()};
+                        node.setConstraint(constraints);
                         caller.onChangeNode();
                     }
                 })
