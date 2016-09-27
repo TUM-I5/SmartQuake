@@ -71,7 +71,8 @@ public class TimeIntegration {
         delta_t = 0.015;
 
         //give the class the time step
-        accelerationProvider.initTime(delta_t*1e9);
+        //USE timestep between FRAMES
+        accelerationProvider.initTime(2*delta_t*1e9);
 
 
         //if modal analysis is activated we can diagonalize the matrices
