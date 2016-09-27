@@ -347,6 +347,7 @@ public class SpatialDiscretization {
         int numberOfUnconstraintDOF = numberofDOF-structure.getConDOF().size();
         double[][] temporary = new double[numberOfUnconstraintDOF][numberOfUnconstraintDOF];
         // Throw away eigenector entries that belong to constraint dofs.
+
         for (int j = 0; j < numberOfUnconstraintDOF; j++) {
             int counter_k=0;
             for (int k = 0; k < numberofDOF; k++) {
@@ -358,7 +359,7 @@ public class SpatialDiscretization {
                     }
                 }
                 if (!isConstraint) {
-                    temporary[j][counter_k++]= Reducedeigenvectors[j].get(k, 0);
+                    temporary[j][counter_k++] = Reducedeigenvectors[j].get(k, 0);//TODO crashes for j=6 , counter_k=0 wtf ALEX
                 }
             }
         }
