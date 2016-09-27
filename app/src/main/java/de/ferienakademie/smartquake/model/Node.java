@@ -76,7 +76,9 @@ public class Node {
 
     }
 
-
+    public boolean[] getConstraints() {
+        return constraint;
+    }
 
 
     public double getSingleDisplacement(int i) {

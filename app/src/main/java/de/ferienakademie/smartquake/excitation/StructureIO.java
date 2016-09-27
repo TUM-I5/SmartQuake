@@ -51,12 +51,6 @@ public class StructureIO {
             writer.endObject();
         }
         writer.endArray();
-        writer.name("degreesOfFreedom");
-        writer.beginArray();
-        for (Integer i : structure.getConDOF()) {
-            writer.value(i);
-        }
-        writer.endArray();
         writer.endObject();
         writer.flush();
     }
@@ -70,9 +64,9 @@ public class StructureIO {
         writer.name("hinge");
         writer.value(node.isHinge());
 
-        writer.name("degreesOfFreedom");
+        writer.name("constraints");
         writer.beginArray();
-        for (Integer i : node.getDOF()) {
+        for (boolean i : node.getConstraints()) {
             writer.value(i);
         }
         writer.endArray();
@@ -83,7 +77,7 @@ public class StructureIO {
     private static Node parseNode(JsonReader reader) throws IOException {
         double x = Double.NaN, y = Double.NaN;
         boolean hinge = false;
-        LinkedList<Integer> DOF = null;
+        boolean[] constraints = new boolean[3];
         reader.beginObject();
         while (reader.peek() != JsonToken.END_OBJECT)
         {
@@ -96,12 +90,12 @@ public class StructureIO {
                 case "y":
                     y = reader.nextDouble();
                     break;
-                case "degreesOfFreedom":
+                case "constraints":
                     reader.beginArray();
-                    DOF = new LinkedList<>();
+                    int i = 0;
                     while(reader.peek() != JsonToken.END_ARRAY)
                     {
-                        DOF.add(reader.nextInt());
+                        constraints[i++] = reader.nextBoolean();
                     }
                     reader.endArray();
                     break;
@@ -112,13 +106,14 @@ public class StructureIO {
         }
         reader.endObject();
 
-        if (Double.isNaN(x) || Double.isNaN(y) || DOF == null)
+        if (Double.isNaN(x) || Double.isNaN(y))
         {
             throw new IOException("Malformed file format.");
         }
 
-        Node node = new Node(x, y, DOF);
+        Node node = new Node(x, y);
         node.setHinge(hinge);
+        node.setConstraint(constraints);
         return node;
     }
 
@@ -168,24 +163,12 @@ public class StructureIO {
         return beams;
     }
 
-    private static List<Integer> parseDegreesOfFreedom(JsonReader reader) throws IOException {
-        List<Integer> degreesOfFreedom = new ArrayList<Integer>();
-        reader.beginArray();
-        while (reader.peek() != JsonToken.END_ARRAY)
-        {
-            degreesOfFreedom.add(reader.nextInt());
-        }
-        reader.endArray();
-        return degreesOfFreedom;
-    }
-
     public static Structure readStructure(InputStream stream) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(stream));
         reader.beginObject();
 
         List<TemporaryBeam> tempBeams = null;
         List<Node> nodes = null;
-        List<Integer> degreesOfFreedom = null;
         while (reader.peek() != JsonToken.END_OBJECT) {
             String name = reader.nextName();
             switch (name) {
@@ -195,13 +178,10 @@ public class StructureIO {
                 case "beams":
                     tempBeams = parseBeams(reader);
                     break;
-                case "degreesOfFreedom":
-                    degreesOfFreedom = parseDegreesOfFreedom(reader);
-                    break;
             }
         }
 
-        if (tempBeams == null || nodes == null || degreesOfFreedom == null) {
+        if (tempBeams == null || nodes == null) {
             throw new IOException("Malformed file format.");
         }
 
@@ -212,7 +192,8 @@ public class StructureIO {
             beams.add(b);
         }
 
-        return new Structure(nodes, beams, degreesOfFreedom); //? whatever...
+        Structure structure = new Structure(nodes, beams);
+        return structure;
     }
 
     private static class TemporaryBeam {
