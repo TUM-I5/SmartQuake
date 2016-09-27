@@ -146,13 +146,13 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
 
         List<Integer> condof = new ArrayList<>();
-
+        /*
         int j = 0;
         for (int i = 0; i < nodes.size(); i++) {
             if (nodes.get(i).getCurrentY() >= height - DELTA / 2) {
                 nodes.get(i).setConstraint(new boolean[] {true, true, true});
             }
-        }
+        }*/
 
         for (Node node : nodes) {
             transformToMeters(node);
@@ -289,6 +289,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                         beam.setEndNode(connectedTwoNode);
                 }
 
+                popupGround(currBeam.getStartNode());
+                popupGround(currBeam.getEndNode());
             }
         }
 
@@ -406,6 +408,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                     }
                 }
 
+                popupGround(chosenNode);
+
                 chosenNode = null;
             }
 
@@ -454,6 +458,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         if (node1 != null && node1.getCurrentY() >= height - DELTA / 2) {
             node1.setInitialY(height);
+
         }
 
         if (node2 != null && node2.getCurrentY() >= height - DELTA / 2) {
@@ -544,14 +549,30 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             }
         }
         if (hingeNode != null) {
-            NodeFragment nodeFragment = new NodeFragment();
-            nodeFragment.setNode(hingeNode);
-            nodeFragment.setListener(this);
-            nodeFragment.show(getFragmentManager(), "paramaters");
-//            hingeNode.setHinge(!hingeNode.isHinge());
+            nodePopup(hingeNode);
             return true;
         }
         return false;
+    }
+
+    private void nodePopup(Node node) {
+        NodeFragment nodeFragment = new NodeFragment();
+        nodeFragment.setNode(node);
+        nodeFragment.setListener(this);
+        nodeFragment.show(getFragmentManager(), "paramaters");
+    }
+
+    private void popupGround(Node node) {
+        if (node.getInitialY() >= height - DELTA / 2) {
+            nodePopup(node);
+        }
+        boolean connected = false;
+        for (boolean flag : node.getConstraints()) {
+            if (flag) connected = true;
+        }
+        if (connected && node.getInitialY() <= height - DELTA / 2) {
+            nodePopup(node);
+        }
     }
 
     private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
