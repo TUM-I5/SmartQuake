@@ -111,17 +111,18 @@ public class TimeIntegration {
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
+                    long temp = System.nanoTime();
                     //reset time
                     t = 0;
 
-                    double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
+                    double[] currExcitation = accelerationProvider.getAcceleration();
 
                    // for(int i=0; i<currExcitation.length; i++){
                    //     currExcitation[i] =0;
                    // }
                     if(PreferenceReader.useModalAnalysis()) {
                         //update loadVector
-                        spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
+                        spatialDiscretization.updateLoadVectorModalAnalysis(currExcitation);
                         //get the loadVector for the whole calculation
                         loadVector = spatialDiscretization.getRedLoadVectorModalAnalysis().copy();
                     }
@@ -163,6 +164,7 @@ public class TimeIntegration {
                         spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
                     }
                     isRunning = false;
+                    Log.i("TimeIntegration", System.nanoTime()-temp+"");
                 }
             });
             return this;
