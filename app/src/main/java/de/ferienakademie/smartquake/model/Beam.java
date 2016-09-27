@@ -28,6 +28,8 @@ public class Beam {
 
     private double[] displacement;
 
+    private boolean hasBeenOverloaded = false;
+
 
     /**
      *array of degrees of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
@@ -470,10 +472,13 @@ public class Beam {
     public boolean isOverloaded()
     {
         double maximumStress = returnMaximumStress();
-        if(maximumStress > material.tensileStrength)
+        if(maximumStress > material.tensileStrength || hasBeenOverloaded) {
+            hasBeenOverloaded = true;
             return true;
-        else
+        }
+        else {
             return false;
+        }
     }
 
     public double getTensileStrength() {
