@@ -63,7 +63,6 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
-        //TODO: Fix eigenvalues with hinges
         calculateEigenvaluesAndVectors();
 
         dampingCoefficient = PreferenceReader.getDampingCoefficient();

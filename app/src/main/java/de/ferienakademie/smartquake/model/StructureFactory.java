@@ -745,10 +745,11 @@ public class StructureFactory {
         Node g2 = new Node(width/2, height);
         Node g3 = new Node(3*width/4, height);
         Node s1 = new Node(0, height/2);
-        Node s2 = new Node(width/4, height/2);
-        Node s3 = new Node(width/2, height/2);
-        Node s4 = new Node(3*width/4, height/2);
-        Node s5 = new Node(width, height/2);
+        Node s2 = new Node(width/5, height/2);
+        Node s3 = new Node(2*width/5, height/2);
+        Node s4 = new Node(3*width/5, height/2);
+        Node s5 = new Node(4*width/5, height/2);
+        Node s6 = new Node(width, height/2);
         Node t1 = new Node(width/4, 0, true); //hinge
         Node t2 = new Node(width/2, 0, true); //hinge
         Node t3 = new Node(3*width/4, 0, true); //hinge
@@ -760,12 +761,16 @@ public class StructureFactory {
         Beam sb2 = new Beam(s2, s3, testMaterial);
         Beam sb3 = new Beam(s3, s4, testMaterial);
         Beam sb4 = new Beam(s4, s5, testMaterial);
+        Beam sb5 = new Beam(s5, s6, testMaterial);
         Beam h1 = new Beam(t1, s2, testMaterial);
-        Beam h2 = new Beam(t2, s3, testMaterial);
-        Beam h3 = new Beam(t3, s4, testMaterial);
+        Beam h2 = new Beam(t1, s3, testMaterial);
+        Beam h3 = new Beam(t2, s3, testMaterial);
+        Beam h4 = new Beam(t2, s4, testMaterial);
+        Beam h5 = new Beam(t3, s4, testMaterial);
+        Beam h6 = new Beam(t3, s5, testMaterial);
 
-        structure.addNodes(g1,g2,g3,s1,s2,s3,s4,s5,t1,t2,t3);
-        structure.addBeams(c1,c2,c3,sb1,sb2,sb3,sb4,h1,h2,h3);
+        structure.addNodes(g1,g2,g3,s1,s2,s3,s4,s5,s6,t1,t2,t3);
+        structure.addBeams(c1,c2,c3,sb1,sb2,sb3,sb4,sb5,h1,h2,h3,h4,h5,h6);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -776,7 +781,6 @@ public class StructureFactory {
         g2.setConstraint(con);
         g3.setConstraint(con);
 
-        //TODO: fix hinges pls. why tf does this not work but HouseWithMassDamper does?
         //TODO: Make s2/s3/s4 hinges between h1 and the group sb1,sb2/between h2 and the group sb2,sb3/between h3 and the group sb3/sb4
         //In the current implementation of hinges, each beam makes up one group
         enumerateDOFs(structure);
