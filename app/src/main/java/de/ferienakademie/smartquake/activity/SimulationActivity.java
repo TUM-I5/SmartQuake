@@ -134,19 +134,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.sim_reset_button) {
-            if (mode != SimulationMode.LIVE) {
-                mode = SimulationMode.LIVE;
-            }
-
-            if (simulation.isRunning()) {
-                onStopButtonClicked();
-            }
-            createStructure(structureId, structureName);
-            DrawHelper.drawStructure(structure, canvasView);
-            return true;
-        }
-
         if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
             runReplay("Last.earthquake");
             if (simulation != null) toggleStartStopAvailability();
@@ -162,10 +149,23 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simulation.stop();
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
+        } else if (id == R.id.sim_reset_button){
+            if (mode != SimulationMode.LIVE) {
+                mode = SimulationMode.LIVE;
+            }
+
+            if (simulation.isRunning()) {
+                onStopButtonClicked();
+            }
+            tvSensorDataX.setText("");
+            tvSensorDataY.setText("");
+            createStructure(structureId, structureName);
+            DrawHelper.drawStructure(structure, canvasView);
+            return true;
         } else if (id == R.id.sim_replay_displacement) {
             replayDisplacement();
         }
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -201,7 +201,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.getHouseWithMassDamper();
         } else if (structureId == 12) {
             structure = StructureFactory.getOneWTC();
-        } else{
+        } else if (structureId == 13) {
+            structure = StructureFactory.getBurjKhalifa();
+        } else if (structureId == 14) {
+        structure = StructureFactory.getTunedMassExample1();
+        }else if (structureId == 15) {
+            structure = StructureFactory.getTunedMassExample2();
+        }
+        else{
             structure = StructureFactory.getStructure(this, structureName);
         }
 
@@ -413,8 +420,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         long timestamp = System.currentTimeMillis();
         if (timestamp - lastDebugSensorDataTimestamp  > 100) {
             lastDebugSensorDataTimestamp = System.currentTimeMillis();
-            final String xData = String.format("x: %f %.2f", data.xAcceleration, data.xGravity);
-            final String yData = String.format("y: %f %.2f", data.yAcceleration, data.yGravity);
+            final String xData = String.format("x: %.2f %.2f", data.xAcceleration, data.xGravity);
+            final String yData = String.format("y: %.2f %.2f", data.yAcceleration, data.yGravity);
             tvSensorDataX.post(new Runnable() {
                 @Override
                 public void run() {
