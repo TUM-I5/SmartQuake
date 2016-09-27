@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.Arrays;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 
@@ -114,6 +115,12 @@ public class CanvasView extends View {
 
     private void beamDeformationColor(Beam beam, Paint paint)
     {
+        if (!PreferenceReader.showColors())
+        {
+            paint.setColor(Color.BLACK);
+            return;
+        }
+
         double force = beam.calculateNormalForceOfBeam(); //Might still show some errors.
 
         //Please don't ask for a reason to take such a comparably const-high algo on a small list, I was just lazy.
@@ -148,7 +155,7 @@ public class CanvasView extends View {
 
     private void resetBeamColor(Paint paint)
     {
-        paint.setColor(Color.RED);
+        paint.setColor(Color.BLACK);
     }
 
     private void drawBeam(Beam beam, Canvas canvas) {
