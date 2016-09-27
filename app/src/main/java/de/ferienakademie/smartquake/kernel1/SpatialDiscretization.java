@@ -304,6 +304,7 @@ public class SpatialDiscretization {
         }
 
         CommonOps.mult(ReducedeigenvectorsMatrixTranspose, RedinfluenceVectorX_temp, redLoadVectorModalAnalysis);
+
     }
 
 
@@ -388,12 +389,24 @@ public class SpatialDiscretization {
 
     }
     public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
-        DenseMatrix64F DisplacementVector = new DenseMatrix64F();
+        DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberofUnconstraintDOF());
+        DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF);
         DisplacementVector.zero();
-        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            CommonOps.add(Reducedeigenvectors[i],modalSolutionvector.get(i,0),DisplacementVector);
+
+        for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
+            CommonOps.addEquals(Reducedeigenvectors[i],modalSolutionvector.get(i,0),solVecCopy);
         }
 
+        // Extend displacements by inserting zeros in the position of constraint dofs
+        for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
+            int disp = 0;
+            for (int k: structure.getConDOF()) {
+                if (k <= i) {
+                    disp++;
+                }
+            }
+            DisplacementVector.set(i+disp, 0, solVecCopy.get(i, 0));
+        }
         updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
 
     }
