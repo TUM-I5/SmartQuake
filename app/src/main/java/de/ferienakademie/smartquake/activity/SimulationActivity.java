@@ -454,9 +454,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
      */
     private void replayDisplacement() {
 
-
         //This tells us how many time steps were calculated
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -472,8 +470,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                         in.recallDisplacementOfStep(i);
 
                     }
-
-                    //wait (at least) 30 msec
+                    
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException ex) {
