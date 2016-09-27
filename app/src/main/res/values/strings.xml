@@ -209,7 +209,7 @@
 
     <!-- Preference slider damping coefficient -->
     <string name="damping_slider_title">Damping coefficient</string>
-    <item name="damping_slider_default" format="float" type="string">0.2</item>
+    <item name="damping_slider_default" format="float" type="string">0.1</item>
     <string name="damping_slider_message"></string>
 
     <string-array name="damping_slider_summaries">
