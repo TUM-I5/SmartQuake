@@ -163,7 +163,6 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-
         Node n1 = new Node(0, height);
         Node n2 = new Node(width, height);
         Node n3 = new Node(width, height/2);
@@ -171,7 +170,6 @@ public class StructureFactory {
         Node n5 = new Node(width/2, 0,true);
         Node n6 = new Node(width/2, height*1/4,10);
         n6.setNodeMass(10000000);
-
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);
         Beam b4 = new Beam(n4, n1, testMaterial);
@@ -746,8 +744,6 @@ public class StructureFactory {
         double width = 8;
         double height = 8;
 
-        boolean lumped = true; // Make it false for consistent mass matrices!
-
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
@@ -774,13 +770,6 @@ public class StructureFactory {
         Beam h2 = new Beam(t2, s3, testMaterial);
         Beam h3 = new Beam(t3, s4, testMaterial);
 
-        t1.addBeam(h1);
-        t1.addBeam(c1);
-        t2.addBeam(h2);
-        t2.addBeam(c2);
-        t3.addBeam(h3);
-        t3.addBeam(c3);
-
         structure.addNodes(g1,g2,g3,s1,s2,s3,s4,s5,t1,t2,t3);
         structure.addBeams(c1,c2,c3,sb1,sb2,sb3,sb4,h1,h2,h3);
 
@@ -793,7 +782,7 @@ public class StructureFactory {
         g2.setConstraint(con);
         g3.setConstraint(con);
 
-        //TODO: fix hinges pls
+        //TODO: fix hinges pls. why tf does this not work but HouseWithMassDamper does?
         //TODO: Make s2/s3/s4 hinges between h1 and the group sb1,sb2/between h2 and the group sb2,sb3/between h3 and the group sb3/sb4
         //In the current implementation of hinges, each beam makes up one group
         enumerateDOFs(structure);
