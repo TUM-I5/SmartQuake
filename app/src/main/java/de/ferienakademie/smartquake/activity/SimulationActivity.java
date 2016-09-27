@@ -460,7 +460,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+
+                createStructure(structureId, structureName);
+
                 //we loop over all frames
                 for (int i = 0; i < number_timeSteps; i++) {
 
