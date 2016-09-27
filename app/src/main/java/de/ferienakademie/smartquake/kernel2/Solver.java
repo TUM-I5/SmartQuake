@@ -105,7 +105,6 @@ public class Solver implements TimeIntegrationSolver {
      */
     public AccelerationProvider getAccelerationProvider() {
         return accelerationProvider;
-
     }
 
     /**
