@@ -43,7 +43,7 @@ public class Material {
     }
 
     public Material() {
-        this(0.00123, 0.00123, 210e9, 7.85, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
+        this(0.1, 0.1, 210e9, 7860, 0.005); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     }
 
 

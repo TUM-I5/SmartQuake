@@ -95,6 +95,8 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot_old);
 
+
+        Log.e("Unit Test Disp:",x.toString());
         //Calculate displacement
         CommonOps.addEquals(x,delta_t,xDot); //x = x + delta_t*xDot
         CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4

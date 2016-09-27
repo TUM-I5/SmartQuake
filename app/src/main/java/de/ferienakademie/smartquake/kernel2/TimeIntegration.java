@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
 
+import java.sql.Timestamp;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,6 +19,7 @@ public class TimeIntegration {
     SpatialDiscretization spatialDiscretization;
     AccelerationProvider accelerationProvider;
 
+
     // total computed time between every time step. This variable prevents computing more than GUI
     double t;
     // time step
@@ -27,6 +29,7 @@ public class TimeIntegration {
 
     // matrices of velocity
     DenseMatrix64F xDot;
+    DenseMatrix64F UnitLoadVector;
 
     // provides the numerical algorithm for calculating the displacement
     TimeIntegrationSolver solver;
@@ -44,6 +47,8 @@ public class TimeIntegration {
     public TimeIntegration(SpatialDiscretization spatialDiscretization, AccelerationProvider accelerationProvider) {
         this.spatialDiscretization = spatialDiscretization;
         this.accelerationProvider = accelerationProvider;
+        this.UnitLoadVector = new DenseMatrix64F(6,1);
+        UnitLoadVector.zero();
     }
 
 
@@ -88,11 +93,19 @@ public class TimeIntegration {
                 public void run() {
                     //reset time
                     t = 0;
-
+                    Log.e("Unit Test Time:", ""+globalTime);
                     //calculates time step
 
+                    //Unit Step Load Test
+                    /*if (globalTime>=0.2 || globalTime<=0.5){
+                        UnitLoadVector.set(3,0,1e5);
+                    }else{
+                        UnitLoadVector.zero();
+                    }*/
+                    //Log.e("Unit Test Load:", UnitLoadVector.toString());
+
                     //update loadVector
-                    spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
+                    spatialDiscretization.setLoadVector(UnitLoadVector);
 
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
@@ -104,7 +117,11 @@ public class TimeIntegration {
                         t += delta_t;
 
                     }
-
+                    if (globalTime>=0.1 && globalTime<=0.2){
+                    UnitLoadVector.set(3,0,1000);}
+                    else{
+                        UnitLoadVector.zero();
+                    }
                     //for the sensor team
                     globalTime += 0.03;
 

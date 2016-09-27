@@ -21,7 +21,7 @@ public class StructureFactory {
         List<Integer> dofNode2 = new LinkedList<>();
 
 
-        Node bottom = new Node(4, 8);
+        Node bottom = new Node(4, 10);
         Node up = new Node(4, 0);
 
         List<Integer> condof = new ArrayList<>();
