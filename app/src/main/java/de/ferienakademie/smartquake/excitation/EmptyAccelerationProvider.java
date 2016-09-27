@@ -13,7 +13,6 @@ public class EmptyAccelerationProvider extends AccelerationProvider {
         return new double[] { Double.NaN, Double.NaN };
     }
 
-
     @Override
     public double[] getAcceleration(double time) {return new double[]{ Double.NaN, Double.NaN };}
 

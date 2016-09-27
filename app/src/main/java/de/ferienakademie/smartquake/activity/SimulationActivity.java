@@ -41,6 +41,7 @@ import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -72,17 +73,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private int structureId;
     private String structureName;
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             onStartButtonClicked();
-        }
-    };
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
         }
     };
     private long lastDebugSensorDataTimestamp;
@@ -155,7 +156,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 mode = SimulationMode.LIVE;
             }
 
-            if (simulation.isRunning()) {
+            if (simulation != null && simulation.isRunning()) {
                 onStopButtonClicked();
             }
             tvSensorDataX.setText("");
@@ -450,8 +451,51 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     }
 
+    /**
+     * replays previous simulation without calculating again
+     */
     private void replayDisplacement() {
-        // todo add displacement replay
+
+        //This tells us how many time steps were calculated
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+
+                //we loop over all frames
+                for (int i = 0; i < number_timeSteps; i++) {
+
+                    //loop over all nodes to update positions
+                    for (Node in : structure.getNodes()) {
+
+                        in.recallDisplacementOfStep(i);
+
+                    }
+                    
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ex) {
+                        Log.e("replayDisplacement", ex.getMessage());
+                    }
+
+                    while(canvasView.isBeingDrawn) {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException ex) {
+                            Log.e("replayDisplacement", ex.getMessage());
+                        }
+                    }
+
+                    //draw frame
+                    DrawHelper.drawStructure(structure, canvasView);
+
+
+
+                }
+            }
+        }).start();
+
     }
 
     // TODO: should this be part of Simulation too?
