@@ -211,6 +211,9 @@
     <string name="damping_slider_title">Damping coefficient</string>
     <item name="damping_slider_default" format="float" type="string">0.1</item>
     <string name="damping_slider_message"></string>
+    <string name="act_settings_title">Settings</string>
+    <string name="act_choose_eq_data_title">Choose Earthquake Source</string>
+    <string name="act_create_building_title">Create A Building</string>
 
     <string-array name="damping_slider_summaries">
         <item> 0.00 </item>

@@ -18,9 +18,9 @@ public class Structure {
     private int numberOfDOF;
     private List<Node> nodes;
     private List<Beam> beams;
-    // TODO: somebody plz initialize this array conDOF
 
-    private List<Integer> conDOF = new ArrayList<>(); //constraint dofs TODO: But how's the data structure?
+    // list of the constained dofs, set in the function StructureFactory.enumerateDOFs()
+    private List<Integer> conDOF = new ArrayList<>();
 
     public double[] getBoundingBox() {
         return boundingBox;

@@ -54,24 +54,32 @@ public class Solver implements TimeIntegrationSolver {
         this.k1 = k1;
         this.accelerationProvider = accelerationProvider;
 
-        if(PreferenceReader.useModalAnalysis()){
-            this.M = k1.getMassMatrix();
-            this.K = k1.getStiffnessMatrix();
-            this.C = k1.getDampingMatrix();
-            this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
-        }
-        else {
-            this.M = k1.getMassMatrix();
-            this.K = k1.getStiffnessMatrix();
-            this.C = k1.getDampingMatrix();
-            this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
-        }
 
+        //x and xDot set
+        this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
         this.xDot = xDot;
 
         //fill xDotDot with zeros
         xDotDot = new DenseMatrix64F(k1.getNumberofDOF(), 1);
         xDotDot.zero();
+
+        //it depends on Modal analysis which matrices we have to use
+        if(PreferenceReader.useModalAnalysis()){
+            this.M = k1.getMassMatrixModalAnalysis();
+            this.K = k1.getStiffnessMatrixModalAnalysis();
+            this.C = k1.getDampingMatrixModalAnalysis();
+            x = new DenseMatrix64F(M.getNumRows(),1);
+            this.xDot = new DenseMatrix64F(M.getNumRows(),1);
+            xDotDot = new DenseMatrix64F(M.getNumRows(),1);
+
+        }
+        else {
+            this.M = k1.getMassMatrix();
+            this.K = k1.getStiffnessMatrix();
+            this.C = k1.getDampingMatrix();
+        }
+
+
 
         //create and fill fLoad vector with zeros
         fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);

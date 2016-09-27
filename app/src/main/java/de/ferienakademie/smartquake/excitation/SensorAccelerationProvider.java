@@ -54,6 +54,16 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     }
 
     @Override
+    public double[] getAcceleration(){
+        return AccelData.toArray(getAccelerationMeasurement());
+    }
+
+    @Override
+    public double[] getAcceleration(double time){
+        return AccelData.toArray(getAccelerationMeasurement(time));
+    }
+
+    @Override
     public AccelData getAccelerationMeasurement(){
         AccelData data = super.getAccelerationMeasurement();
         if(gravityActive) {
@@ -62,6 +72,17 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         notifyNewAccelData(data);
         return data;
     }
+
+    @Override
+    public AccelData getAccelerationMeasurement(double time){
+        AccelData data = super.getAccelerationMeasurement(time);
+        if(gravityActive) {
+            gravityProvider.getGravity(data);
+        }
+        notifyNewAccelData(data);
+        return data;
+    }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {

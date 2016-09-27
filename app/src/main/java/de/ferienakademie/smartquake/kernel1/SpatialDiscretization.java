@@ -389,9 +389,14 @@ public class SpatialDiscretization {
 
     }
     public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
+        DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF, 1);
+
+        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
+            CommonOps.add(Reducedeigenvectors[i], modalSolutionvector.get(i, 0), DisplacementVector);
+        }
+
         DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberofUnconstraintDOF());
-        DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF);
-        DisplacementVector.zero();
+
 
         for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
             CommonOps.addEquals(Reducedeigenvectors[i],modalSolutionvector.get(i,0),solVecCopy);
