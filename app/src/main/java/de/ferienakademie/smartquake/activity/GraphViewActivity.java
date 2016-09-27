@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +23,6 @@ import java.util.Random;
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
-import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
 
 public class GraphViewActivity extends AppCompatActivity {
@@ -33,10 +33,11 @@ public class GraphViewActivity extends AppCompatActivity {
     private Node selectedNode;
 
     private LineChart nodeDataChart;
-    private List<ILineDataSet> sets = new ArrayList<>();
-    // TODO: scroll graph view and actually use this
-    private int numShownDataPoints = 20;
+    private List<Pair<ILineDataSet, Boolean>> sets;
+    private List<String> graphXPoints;
 
+    // TODO: scroll graph view and actually use this... but seems to work as is
+    private int numShownDataPoints = 20;
 
     private CanvasView nodeView;
     private CanvasView modelView;
@@ -60,7 +61,8 @@ public class GraphViewActivity extends AppCompatActivity {
         nodeDataChart.setDescription("Node displacements");
         nodeDataChart.setPinchZoom(false);
 
-        List<String> graphXPoints = new ArrayList<>();
+        sets = new ArrayList<>();
+        graphXPoints = new ArrayList<>();
         List<Entry> xDisplacements = new ArrayList<>();
         List<Entry> yDisplacements = new ArrayList<>();
         List<List<Entry>> rotDisplacements = new ArrayList<>();
@@ -69,6 +71,7 @@ public class GraphViewActivity extends AppCompatActivity {
 
         for (int i = 0; i < historicDisplacements.size(); ++i) {
             graphXPoints.add(Integer.toString(i));
+            // minor Java WTF
             xDisplacements.add(new Entry((float) ((double) historicDisplacements.get(i).get(0)), i));
             yDisplacements.add(new Entry((float) ((double) historicDisplacements.get(i).get(1)), i));
             for (int j = 2; j < historicDisplacements.get(0).size(); ++j) {
@@ -79,15 +82,16 @@ public class GraphViewActivity extends AppCompatActivity {
             }
         }
 
-        // all displacements are selected by default
-        sets.add(new LineDataSet(xDisplacements, "Along X axis"));
-        sets.add(new LineDataSet(yDisplacements, "Along Y axis"));
+        // All displacements are selected by default.
+        // TODO: Make sure there is enough room for the labels
+        sets.add(new Pair<ILineDataSet, Boolean>(new LineDataSet(xDisplacements, "Along X axis"), true));
+        sets.add(new Pair<ILineDataSet, Boolean>(new LineDataSet(yDisplacements, "Along Y axis"), true));
         for (int i = 0; i < rotDisplacements.size(); ++i) {
-            sets.add(new LineDataSet(rotDisplacements.get(i), "Beam " + Integer.toString(i) + " rotation"));
+            sets.add(new Pair<ILineDataSet, Boolean>(new LineDataSet(rotDisplacements.get(i), "Beam " + Integer.toString(i + 1) + " rotation"), true));
         }
 
         for (int i = 0; i < sets.size(); ++i) {
-            LineDataSet set = (LineDataSet) sets.get(i);
+            LineDataSet set = (LineDataSet) sets.get(i).first;
             set.setAxisDependency(YAxis.AxisDependency.LEFT);
             if (i < graphColors.length) {
                 set.setColor(graphColors[i]);
@@ -105,8 +109,20 @@ public class GraphViewActivity extends AppCompatActivity {
             set.setHighLightColor(Color.rgb(244, 117, 117));
             set.setDrawCircleHole(false);
         }
-        LineData displacementData = new LineData(graphXPoints, sets);
+        updateDataItemVisibility();
+    }
+
+    private void updateDataItemVisibility() {
+        List<ILineDataSet> enabledSets = new ArrayList<>();
+        for (Pair<ILineDataSet, Boolean> p : sets) {
+            if (p.second) {
+                enabledSets.add(p.first);
+            }
+        }
+
+        LineData displacementData = new LineData(graphXPoints, enabledSets);
         nodeDataChart.setData(displacementData);
+        nodeDataChart.invalidate();
     }
 
     @Override
@@ -142,20 +158,38 @@ public class GraphViewActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.xDofCheckbox:
-            case R.id.yDofCheckbox:
                 // why is this necessary again?
-                if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                } else {
+                    item.setChecked(true);
+                }
+                // Pair is handy, but immutable
+                sets.set(0, new Pair<>(sets.get(0).first, !sets.get(0).second));
+                break;
+            case R.id.yDofCheckbox:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+
+                } else {
+                    item.setChecked(true);
+                }
+                sets.set(1, new Pair<>(sets.get(1).first, !sets.get(1).second));
                 break;
             default:
                 break;
         }
 
         if (0 <= id && id < selectedNode.getDOF().size() - 2) {
-            if (item.isChecked()) item.setChecked(false);
-            else item.setChecked(true);
+            if (item.isChecked()) {
+                item.setChecked(false);
+            } else {
+                item.setChecked(true);
+            }
+            sets.set(id + 2, new Pair<>(sets.get(id + 2).first, !sets.get(id + 2).second));
         }
 
+        updateDataItemVisibility();
         return super.onOptionsItemSelected(item);
     }
 }
