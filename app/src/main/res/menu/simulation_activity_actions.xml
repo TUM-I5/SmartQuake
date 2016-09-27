@@ -25,4 +25,9 @@
         android:title="Save simulation"
         app:showAsAction="never" />
 
+    <item android:id="@+id/sim_view_graphs_button"
+        android:icon="@drawable/ic_menu_gallery"
+        android:title="View displacement graphs"
+        app:showAsAction="never" />
+
 </menu>

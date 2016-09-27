@@ -140,9 +140,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             createStructure(structureId, structureName);
             DrawHelper.drawStructure(structure, canvasView);
             return true;
-        }
-
-        if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
+        } else if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
             runReplay("Last.earthquake");
             if (simulation != null) toggleStartStopAvailability();
             return true;
@@ -157,6 +155,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simulation.stop();
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
+        } else if (id == R.id.sim_view_graphs_button) {
+            startActivity(new Intent(this, GraphViewActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
