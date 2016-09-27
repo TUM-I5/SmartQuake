@@ -9,6 +9,7 @@ import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Created by Claudius, Lukas and John on 23/09/16.
@@ -90,7 +91,14 @@ public class Newmark extends ImplicitSolver {
         xDotDot_old = xDotDot.copy();
 
         //Get acceleration
-        getAcceleration();
+        //Modal analysis has diagonalized matrices. so getAcceleration isf faster
+        if(PreferenceReader.useModalAnalysis()){
+            getAccelerationModalAnalysis();
+        }
+        else{
+            //normal matrices
+            getAcceleration();
+        }
 
         //Calculate velocity
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
@@ -105,37 +113,8 @@ public class Newmark extends ImplicitSolver {
         //update fLoad_old
         fLoad_old = fLoad.copy();
         //diagonalizes everything
-
     }
 
-
-    /**
-     * @param t
-     *        global time since start in seconds
-     * @param delta_t
-     *        time step
-     */
-    public void nextStepLumped(double t, double delta_t) {
-
-        xDotDot_old = xDotDot.copy();
-
-        //Get acceleration
-        getAccelerationLumped();
-
-        //Calculate velocity
-        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
-        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot_old);
-
-        //Calculate displacement
-        CommonOps.addEquals(x,delta_t,xDot); //x = x + delta_t*xDot
-        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4
-        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old); // x = x + delta_t**2*xDotDot_old/4
-
-
-        //update fLoad_old
-        fLoad_old = fLoad.copy();
-
-    }
 
     /**
      * This method gets the acceleration. It will be written in place into xDotDot
@@ -156,7 +135,7 @@ public class Newmark extends ImplicitSolver {
     }
 
 
-    private void getAccelerationLumped(){
+    private void getAccelerationModalAnalysis(){
 
         //initialize right hand side
         RHS = fLoad.copy();
@@ -168,7 +147,7 @@ public class Newmark extends ImplicitSolver {
 
         //Solve to get xDotDot
         for(int i = 0; i<k1.getNumberofDOF(); i++){
-            xDotDot.set(i,0,RHS.get(i,0)/1.0);
+            xDotDot.set(i,0,RHS.get(i,0)/A.get(i,i));
         }
     }
 
