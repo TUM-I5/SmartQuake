@@ -99,10 +99,12 @@ public class SpatialDiscretization {
         StiffnessMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
         MassMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
         DampingMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
+        eigentransposemultMassmatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
         LoadVector = new DenseMatrix64F(getNumberofDOF(), 1);
 
         StiffnessMatrix.zero();
         MassMatrix.zero();
+        eigentransposemultMassmatrix.zero();
 
 
         calculateMassMatrix();
@@ -175,7 +177,7 @@ public class SpatialDiscretization {
         double omega2 = ReducedEigenvalues[1];
 
         double xi = 0.05;
-        double a0 = 2 * xi * omega1 * omega2 / (omega1 + omega2);
+        double a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
         double a1 = 2 * xi / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
