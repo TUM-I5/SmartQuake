@@ -121,7 +121,7 @@ public class TimeIntegration {
                    // }
                     if(PreferenceReader.useModalAnalysis()) {
                         //update loadVector
-                        spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
+                        spatialDiscretization.updateLoadVectorModalAnalysis(currExcitation);
                         //get the loadVector for the whole calculation
                         loadVector = spatialDiscretization.getRedLoadVectorModalAnalysis().copy();
                     }
