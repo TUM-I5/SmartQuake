@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.model;
 import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
 
 import java.util.List;
 
@@ -447,23 +448,34 @@ public class Beam {
         return elementMassMatrix_globalized;
     }
 
-    private double normalForce;
 
+    public double returnMaximumStress() {
+        DenseMatrix64F forces = new DenseMatrix64F(6, 1);
+        Displacements displacements = getLocalDisplacements();
+        DenseMatrix64F displacementsVector = new DenseMatrix64F(6, 1);
+        displacementsVector.set(0, 0, displacements.getAxialDisplacementStartNode());
+        displacementsVector.set(1, 0, displacements.getOrthogonalDisplacementStartNode());
+        displacementsVector.set(2, 0, displacements.getRotationStartNode());
+        displacementsVector.set(3, 0, displacements.getAxialDisplacementEndNode());
+        displacementsVector.set(4, 0, displacements.getOrthogonalDisplacementEndNode());
+        displacementsVector.set(5, 0, displacements.getRotationEndNode());
+        CommonOps.mult(elementStiffnessMatrix, displacementsVector, forces);
 
-    public double calculateNormalForceOfBeam() {
-        Displacements localDisplacements = this.getLocalDisplacements();
-
-        double axialDisplacementStartNode = localDisplacements.getAxialDisplacementStartNode();
-        double axialDisplacementEndNode = localDisplacements.getAxialDisplacementEndNode();
-
-        double delta_L = axialDisplacementEndNode - axialDisplacementStartNode;
-        double EA = material.getAxialStiffnessOfBar();
-
-        normalForce = EA*delta_L/length;
-        return normalForce;
+        double stressStartNode = Math.abs(forces.get(0, 0)) / material.getAreaOfCrossSection() + Math.abs(forces.get(2, 0)) * material.getHeightOfBeam() / (2 * material.getMomentOfInertia());
+        double stressEndeNode = Math.abs(forces.get(3, 0)) / material.getAreaOfCrossSection() + Math.abs(forces.get(5, 0)) * material.getHeightOfBeam() / (2 * material.getMomentOfInertia());
+        double maximumStress = Math.max(stressStartNode, stressEndeNode);
+        return maximumStress;
+    }
+    public boolean isOverloaded()
+    {
+        double maximumStress = returnMaximumStress();
+        if(maximumStress > material.tensileStrength)
+            return true;
+        else
+            return false;
     }
 
-    public double getNormalForce() {
-        return normalForce;
+    public double getTensileStrength() {
+        return material.tensileStrength;
     }
 }
