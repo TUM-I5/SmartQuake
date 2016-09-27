@@ -41,11 +41,16 @@ public class NodeFragment extends DialogFragment {
         final Switch isHingeButton = (Switch)view.findViewById(R.id.is_hinge);
         if (node.isHinge()) isHingeButton.toggle();
 
+        final EditText massText = (EditText)view.findViewById(R.id.node_mass);
+        massText.setHint(String.valueOf(node.getNodeMass()));
+
         bob.setView(view)
                 .setMessage("Node parameters")
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         node.setHinge(isHingeButton.isChecked());
+                        if (!massText.getText().toString().isEmpty())
+                            node.setNodeMass(Double.parseDouble(massText.getText().toString()));
                         caller.onChangeNode();
                     }
                 })
