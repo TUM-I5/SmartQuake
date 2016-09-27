@@ -165,8 +165,8 @@ public class SpatialDiscretization {
         double omega2 = eigenvalues[1];
 
         double xi = 0.05;
-        double a0 = 2 * xi * omega1 * omega2 / (omega1 + omega2);
-        double a1 = 2 * xi / (omega1 + omega2);
+        double a0 = 1; //2 * xi * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 1; //2 * xi / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
