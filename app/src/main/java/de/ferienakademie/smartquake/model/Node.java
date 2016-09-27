@@ -23,7 +23,7 @@ public class Node {
     private List <List <Double>>  historyOfDisplacements;
     private List <double[]> historyOfGroundDisplacement;
 
-    private double radius = 0.05;
+    private final static double MASSLESS_RADIUS = 0.05;
 
     private boolean hinge = false;
     private double nodeMass = 0;
@@ -134,11 +134,13 @@ public class Node {
 
 
     public double getRadius() {
-        return radius;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
+        //If you want to know "why this formula?"
+        //Well, there's no real reason for this one! Yep.
+        //But ok, let's go into detail: normally it is like r² ~ A, so we take the sqrt.
+        //Then some scaling b/c alone it would be probably too large. Then we simply add a logarithmic factor to reduce scaling even more.
+        //And finally, we add the 0.05 which every mass should have.
+        //And that's it. If you got questions or do not like this formula, call me.
+        return Math.log10(Math.sqrt(nodeMass) * .001 + 1) + 0.05;
     }
 
     public void clearBeams() {
@@ -168,7 +170,7 @@ public class Node {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (displacements != null ? displacements.hashCode() : 0);
         result = 31 * result + (DOF != null ? DOF.hashCode() : 0);
-        temp = Double.doubleToLongBits(radius);
+        temp = Double.doubleToLongBits(getRadius());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + Arrays.hashCode(constraint);
         result = 31 * result + (hinge ? 1 : 0);
