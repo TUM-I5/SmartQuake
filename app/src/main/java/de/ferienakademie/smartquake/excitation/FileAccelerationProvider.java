@@ -21,11 +21,9 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
     @Override
     public double[] getAcceleration() {
         double[] temp = super.getAcceleration();
-        for (AccelerationProviderObserver observer : accelerationProviderObservers) {
             double percentage = (readings.get(currentPosition).timestamp*100.0)/
                     readings.get(readings.size()-1).timestamp;
-            observer.onNewReplayPercent(percentage);
-        }
+            //super.notifyNewReplayPercent(percentage);
         return temp;
     }
 
