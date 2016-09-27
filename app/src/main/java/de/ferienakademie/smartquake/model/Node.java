@@ -183,7 +183,9 @@ public class Node {
 
 
     public void saveTimeStepDisplacement() {
-        historyOfDisplacements.add(displacements);
+        List<Double> newDisplacements = new ArrayList<>();
+        newDisplacements.addAll(displacements);
+        historyOfDisplacements.add(newDisplacements);
     }
 
 
