@@ -40,7 +40,6 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         }
 
         AccelData data = readings.get(currentPosition);
-        notifyNewAccelData(data);
         return new double[]{data.xAcceleration, data.yAcceleration};
     }
 
@@ -53,8 +52,7 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         }
         ++tick;
 
-        AccelData data = readings.get(currentPosition);
-        return data;
+        return readings.get(currentPosition);
     }
 
     /**

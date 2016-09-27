@@ -413,8 +413,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         long timestamp = System.currentTimeMillis();
         if (timestamp - lastDebugSensorDataTimestamp  > 100) {
             lastDebugSensorDataTimestamp = System.currentTimeMillis();
-            final String xData = String.format("x: %.2f %.2f", data.xAcceleration, data.xGravity);
-            final String yData = String.format("y: %.2f %.2f", data.yAcceleration, data.yGravity);
+            final String xData = String.format("x: %f %.2f", data.xAcceleration, data.xGravity);
+            final String yData = String.format("y: %f %.2f", data.yAcceleration, data.yGravity);
             tvSensorDataX.post(new Runnable() {
                 @Override
                 public void run() {
