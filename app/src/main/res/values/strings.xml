@@ -2,7 +2,7 @@
     <string name="app_name">SmartQuake</string>
     <string name="settings_button">Settings</string>
     <string name="replay_button">Replay excitation</string>
-    <string name="reset_button">Reset</string>
+    <string name="reset_button">Reset simulation</string>
     <string name="save_button">Save</string>
     <string name="load_data_button">Load excitation data</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -209,7 +209,7 @@
 
     <!-- Preference slider damping coefficient -->
     <string name="damping_slider_title">Damping coefficient</string>
-    <item name="damping_slider_default" format="float" type="string">0.2</item>
+    <item name="damping_slider_default" format="float" type="string">0.1</item>
     <string name="damping_slider_message"></string>
 
     <string-array name="damping_slider_summaries">

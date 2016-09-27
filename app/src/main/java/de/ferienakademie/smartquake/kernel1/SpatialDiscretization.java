@@ -27,6 +27,8 @@ public class SpatialDiscretization {
     private DenseMatrix64F influenceVectorY;
     //private DenseMatrix64F DisplacementVector;  //project manager advice
 
+    private double dampingCoefficient;
+
     //Modal Analysis part
     private DenseMatrix64F eigenvectorsmatrix;
     private DenseMatrix64F[] eigenvectors;
@@ -42,7 +44,8 @@ public class SpatialDiscretization {
     private DenseMatrix64F RedinfluenceVectorY;
     private DenseMatrix64F RedinfluenceVectorX_temp;
     private DenseMatrix64F RedinfluenceVectorY_temp;
-
+    double a0;
+    double a1;
     private int numberofDOF;
 
     Structure structure;
@@ -62,8 +65,10 @@ public class SpatialDiscretization {
         calculateInfluenceVector();
         //TODO: Fix eigenvalues with hinges
         calculateEigenvaluesAndVectors();
-        calculateDampingMatrix();
 
+        dampingCoefficient = PreferenceReader.getDampingCoefficient();
+
+        calculateDampingMatrix();
     }
 
     /**
@@ -166,9 +171,9 @@ public class SpatialDiscretization {
         DampingMatrix.zero();
         double omega1 = ReducedEigenvalues[0];
         double omega2 = ReducedEigenvalues[1];
-        double xi = 0.05;
-        double a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
-        double a1 = 2 * xi / (omega1 + omega2);
+
+        double a0 =  2 * dampingCoefficient * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 2 * dampingCoefficient / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
@@ -180,6 +185,16 @@ public class SpatialDiscretization {
         }
     }
 
+    public void calculateModalAnalysisDampingMatrix() {
+        DampingMatrix.zero();
+        double omega1 = ReducedEigenvalues[0];
+        double omega2 = ReducedEigenvalues[1];
+        double xi = 0.05;
+        a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
+        a1 = 2 * xi / (omega1 + omega2);
+        CommonOps.add(a0, MassMatrixModalAnalysis, a1, StiffnessMatrixModalAnalysis, DampingMatrixModalAnalysis);
+
+    }
 
     public int getNumberofDOF() {
         return numberofDOF;
@@ -353,25 +368,16 @@ public class SpatialDiscretization {
             StiffnessMatrixModalAnalysis.set(i,i,ReducedEigenvalues[i]);
             MassMatrixModalAnalysis.set(i,i,1.0);
         }
-        calculateDampingMatrix();
-        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-           DampingMatrixModalAnalysis.set(i,i,DampingMatrix.get(i,i));
-        }
+        calculateModalAnalysisDampingMatrix();
 
 
     }
-
-
-
-
-
-
-
-    public void superimposeModalAnalyisSolutions(double[] modalSolutionvector, double[] groundDisplacement){
+    public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F();
         DisplacementVector.zero();
+        modalSolutionvector.zero();
         for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            CommonOps.add(Reducedeigenvectors[i],modalSolutionvector[i],DisplacementVector);
+            CommonOps.add(Reducedeigenvectors[i],modalSolutionvector.get(i,0),DisplacementVector);
         }
 
         updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
