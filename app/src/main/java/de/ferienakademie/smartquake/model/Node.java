@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +36,6 @@ public class Node {
         this.initialX = x;
         this.initialY = y;
         displacements = new ArrayList<>();
-        displacements.add(0.0);
-        displacements.add(0.0);
         historyOfDisplacements = new ArrayList<>();
         historyOfGroundDisplacement = new ArrayList<>();
     }
@@ -202,12 +202,16 @@ public class Node {
 
 
     public void saveTimeStepDisplacement() {
-        historyOfDisplacements.add(displacements);
+        List<Double> temp = new ArrayList<>();
+        temp.addAll(displacements);
+        historyOfDisplacements.add(temp);
     }
 
 
     public void recallDisplacementOfStep(int i) {
-        displacements = historyOfDisplacements.get(i);
+
+        for (int j=0; j<displacements.size(); j++)
+          displacements.set(j, historyOfDisplacements.get(i).get(j));
 
         // include ground displacements according to settings
         if (PreferenceReader.groundDisplcements()) {

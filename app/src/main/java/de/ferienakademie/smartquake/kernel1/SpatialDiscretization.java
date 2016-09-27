@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
