@@ -5,6 +5,7 @@ import android.util.Log;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,14 +73,17 @@ public class TimeIntegration {
         //give the class the time step
         //accelerationProvider.initTime(delta_t*1e9);
 
-        //stores the numerical scheme
-        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
-        //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         //if modal analysis is activated we can diagonalize the matrices
         if(PreferenceReader.useModalAnalysis()) {
             spatialDiscretization.getModalAnalysisMatrices();
         }
+
+        //stores the numerical scheme
+        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+
+
 
         //for the parallel thread
         executorService = Executors.newSingleThreadExecutor();
@@ -111,6 +115,9 @@ public class TimeIntegration {
 
                     double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
 
+                   // for(int i=0; i<currExcitation.length; i++){
+                   //     currExcitation[i] =0;
+                   // }
                     if(PreferenceReader.useModalAnalysis()) {
                         //update loadVector
                         spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
@@ -127,7 +134,7 @@ public class TimeIntegration {
                     CommonOps.scale(loadVectorScaling, loadVector);
                     solver.setFLoad(loadVector);
 
-                    //long firstTime = System.nanoTime();
+                    long firstTime = System.nanoTime();
                     //this loop performs the calculation
                     //it calculates one frame then it stops
                     while(t < 0.03-0.000001 && isRunning) {
@@ -143,12 +150,17 @@ public class TimeIntegration {
                     globalTime += 0.03;
 
                     //for checking the calculation time
-                    //long secondTime = System.nanoTime();
-                    //Log.e("Timestamp",""+(secondTime-firstTime));
+                    long secondTime = System.nanoTime();
+                  //  Log.e("Timestamp",""+(secondTime-firstTime));
 
-                    //update the displacement in the node variables
-                    spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
-
+                    if(PreferenceReader.useModalAnalysis()){
+                        //update the displacement in the node variables using modal analysis
+                        spatialDiscretization.superimposeModalAnalyisSolutions(solver.getX(), solver.getGroundPosition());
+                    }
+                    else {
+                        //update the displacement in the node variables
+                        spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
+                    }
                     isRunning = false;
                 }
             });

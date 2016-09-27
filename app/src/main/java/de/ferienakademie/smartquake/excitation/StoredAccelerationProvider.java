@@ -70,17 +70,18 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
      */
     public void saveFile(OutputStream outputStream) throws IOException {
         String readingString;
-        OutputStreamWriter outputStreamReader;
-        BufferedWriter bufferedWriter;
-        outputStreamReader = new OutputStreamWriter(outputStream);
-        bufferedWriter = new BufferedWriter(outputStreamReader);
+        OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream);
+        BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
+
         for (int i = 0; i < readings.size(); i++) {
             readingString = String.format(Locale.ENGLISH, "%d;%20f;%20f;%20f;%20f\n", readings.get(i).timestamp,
                     readings.get(i).xAcceleration, readings.get(i).yAcceleration,
                     readings.get(i).xGravity, readings.get(i).yGravity);
             bufferedWriter.write(readingString);
         }
-        bufferedWriter.flush();
+        bufferedWriter.close();
+        outputStreamReader.close();
+        outputStream.close();
     }
 
     /**
