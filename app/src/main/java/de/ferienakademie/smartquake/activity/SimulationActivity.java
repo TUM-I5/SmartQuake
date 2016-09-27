@@ -454,9 +454,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
      */
     private void replayDisplacement() {
 
-
         //This tells us how many time steps were calculated
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -472,16 +470,25 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                         in.recallDisplacementOfStep(i);
 
                     }
-
-                    //draw frame
-                    DrawHelper.drawStructure(structure, canvasView);
-
-                    //wait 30 msec
+                    
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException ex) {
                         Log.e("replayDisplacement", ex.getMessage());
                     }
+
+                    while(canvasView.isBeingDrawn) {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException ex) {
+                            Log.e("replayDisplacement", ex.getMessage());
+                        }
+                    }
+
+                    //draw frame
+                    DrawHelper.drawStructure(structure, canvasView);
+
+
 
                 }
             }
