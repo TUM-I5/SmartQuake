@@ -1,13 +1,12 @@
 package de.ferienakademie.smartquake.excitation;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import de.ferienakademie.smartquake.Simulation;
-import de.ferienakademie.smartquake.activity.SimulationActivity;
 
 /**
  * Created by David Schneller on 25.09.2016.
@@ -47,12 +46,12 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         AccelData currentReading = new AccelData();
         String readingString;
         String[] readStringSplit;
-        InputStreamReader inputStreamReader;
-        BufferedReader bufferedReader;
-        inputStreamReader = new InputStreamReader(inputStream);
-        bufferedReader = new BufferedReader(inputStreamReader);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
         readingString = bufferedReader.readLine();
         while (readingString != null) {
+            Log.v("FILE_ACCEL", readingString);
             readStringSplit = readingString.split(";");
 
             currentReading.timestamp = Long.parseLong(readStringSplit[0]);
@@ -64,6 +63,9 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
             readings.add(new AccelData(currentReading));
             readingString = bufferedReader.readLine();
         }
+        bufferedReader.close();
+        inputStreamReader.close();
+        inputStream.close();
     }
 
     public void setActive() {
