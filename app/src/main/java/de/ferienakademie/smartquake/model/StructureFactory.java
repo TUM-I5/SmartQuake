@@ -1336,7 +1336,7 @@ public class StructureFactory {
 
             }
 
-            // dofs am Knoten setzen
+            // set the dofs at the node
             node.setDOF(dofs);
             structure.setNumberOfDOF(numberofDOF);
         }
