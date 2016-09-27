@@ -7,6 +7,8 @@ public class Material {
 
     public static Material STEEL = new Material(0.01, 0.01, 2.1e11, 7850, 0.005, "rectangular"); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
     public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005, "rectangular"); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL3 = new Material(0.2978, 0.2978, 2.1e11, 7850, 0.005, "rectangular"); // for cantilever beam !!! DO NOT CHANGE !!!
+
     public static Material STEEL_I_SHAPED = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "I-shaped beam");
     public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005, "rectangular");// Source: Holzbau, wikipedia
     public static Material WOOD_I_SHAPED = new Material(0.1,0.1,12e9,600,0.005, "I-shaped beam");
@@ -25,7 +27,6 @@ public class Material {
     protected double HeightOfBeam = 0;   //height of beam (input)
     protected double BreadthOfBeam = 0;   //width of beam (input)
     protected double MassPerLength = 0;
-    protected double DampingCoefficient = 0;
 
     protected double Density = 0;     //density of material
     protected double alpha = 0;   //alpha for mass matrix
@@ -43,7 +44,6 @@ public class Material {
         this.Density = Density;
         this.alpha = alpha;
         this.MassPerLength = Density * AreaOfCrossSection;
-        this.DampingCoefficient =10;
 
         if (shape.equals("I-shaped beam")) { // SI-Units
             this.BreadthOfBeam = 0.106;
@@ -81,7 +81,6 @@ public class Material {
     public double getBreadthOfBeam(){return BreadthOfBeam;}
     public double getHeightOfBeam(){return HeightOfBeam;}
     public double getAreaOfCrossSection(){return AreaOfCrossSection;}
-    public double getDampingCoefficient() {return DampingCoefficient;}
     public double getMassPerLength(){return MassPerLength;}
     public double getMomentOfInertia(){return MomentOfInertia;}
     public double getAxialStiffnessOfBar(){return AxialStiffnessOfBar;}

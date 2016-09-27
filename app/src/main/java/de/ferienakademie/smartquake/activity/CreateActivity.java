@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.StructureIO;
+import de.ferienakademie.smartquake.fragment.NodeFragment;
 import de.ferienakademie.smartquake.fragment.SaveDialogFragment;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Material;
@@ -31,11 +32,10 @@ import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.DrawCanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
-/**
- * Created by yuriy on 22/09/16.
- */
-public class CreateActivity extends AppCompatActivity implements SaveDialogFragment.SaveDialogListener {
-    private static double DELTA = 90;
+
+public class CreateActivity extends AppCompatActivity implements SaveDialogFragment.SaveDialogListener,
+        NodeFragment.NodeParametersListener {
+    private static double DELTA = 100;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -57,8 +57,20 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     private int yOffset = 0;
 
+    private static double distNodes(Node node1, Node node2) {
+        return Math.abs(node1.getCurrentX() - node2.getCurrentX()) + Math.abs(node1.getCurrentY() - node2.getCurrentY());
+    }
+
+    private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
+        return cosAlfa * node.getCurrentX() + sinAlfa * node.getCurrentY();
+    }
+
     public void onNameChosen(String s) {
         serializeStructure(s);
+    }
+
+    public void onChangeNode() {
+        DrawHelper.drawStructure(structure, canvasView);
     }
 
     @Override
@@ -73,7 +85,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
@@ -91,7 +105,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -105,13 +118,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch(id){
-            case R.id.action_settings: //TODO setteings activity
-                /***
-                 *Add here code for setting activity
-                 * startActivity(new Intent(this, SettingsActivity.class));
-                 return true;
-                 */
+        switch (id) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 break;
@@ -120,7 +127,11 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 DrawHelper.drawStructure(structure, canvasView);
                 break;
             case R.id.save_canvas:
-                new SaveDialogFragment().show(getFragmentManager(), "save");
+                if (!structure.getNodes().isEmpty() && !structure.getBeams().isEmpty()) {
+                    new SaveDialogFragment().show(getFragmentManager(), "save");
+                } else {
+                    Toast.makeText(CreateActivity.this, "Cannot save empty structure!", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
 
@@ -146,22 +157,13 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
 
         List<Integer> condof = new ArrayList<>();
-
+        /*
         int j = 0;
         for (int i = 0; i < nodes.size(); i++) {
-            List<Integer> tempList = new ArrayList<>();
-            tempList.add(j++);
-            tempList.add(j++);
-            tempList.add(j++);
-
-            nodes.get(i).setDOF(tempList);
-
-            if (nodes.get(i).getCurrentY() == height) {
-                for (Integer freedom : tempList) {
-                    condof.add(freedom);
-                }
+            if (nodes.get(i).getCurrentY() >= height - DELTA / 2) {
+                nodes.get(i).setConstraint(new boolean[] {true, true, true});
             }
-        }
+        }*/
 
         for (Node node : nodes) {
             transformToMeters(node);
@@ -176,10 +178,11 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         structure.setConDOF(condof);
 
         for (int i = 0; i < allBeams.size(); i++) {
-            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode())) allBeams.remove(i--);
+            if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode()))
+                allBeams.remove(i--);
         }
 
-        FileOutputStream fileOutputStream = null;
+        FileOutputStream fileOutputStream;
         try {
             fileOutputStream = openFileOutput(name + ".structure", Context.MODE_PRIVATE);
             StructureIO.writeStructure(fileOutputStream, structure);
@@ -210,7 +213,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         double temp = (height - yOffset) / (displayScaling);
         double deltaTemp = (DELTA - yOffset) / (displayScaling);
 
-        if (y >= temp - deltaTemp / 2)   y = temp;
+        if (y >= temp - deltaTemp / 2) y = temp;
 
         node.setInitialX(x);
         node.setInitialY(y);
@@ -238,8 +241,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 node1.addBeam(beam);
                 node2.addBeam(beam);
                 adding = false;
-            }
-            else if (event.getAction() == MotionEvent.ACTION_MOVE && !adding) {
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE && !adding) {
 
                 List<Node> nodes = structure.getNodes();
 
@@ -298,6 +300,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                         beam.setEndNode(connectedTwoNode);
                 }
 
+                popupGround(currBeam.getStartNode());
+                popupGround(currBeam.getEndNode());
             }
         }
 
@@ -389,7 +393,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                                     if (endNode == nodes.get(i)) {
                                         nodes.remove(i);
                                         removed = true;
-                                        if (beam.getEndNode().equals(beam.getEndNode())) {
+                                        if (beam.getStartNode().equals(beam.getEndNode())) { //TODO wtf? if(true)?, maybe fixed, double check pls
                                             boolean delete = true;
                                             for (Beam connectedBeam : beam.getStartNode().getBeams()) {
                                                 if (!connectedBeam.getStartNode().equals(connectedBeam.getEndNode()))
@@ -414,6 +418,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                         }
                     }
                 }
+
+                popupGround(chosenNode);
 
                 chosenNode = null;
             }
@@ -463,6 +469,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         if (node1 != null && node1.getCurrentY() >= height - DELTA / 2) {
             node1.setInitialY(height);
+
         }
 
         if (node2 != null && node2.getCurrentY() >= height - DELTA / 2) {
@@ -470,11 +477,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
 
     }
-
-    private static double distNodes(Node node1, Node node2) {
-        return Math.abs(node1.getCurrentX() - node2.getCurrentX()) + Math.abs(node1.getCurrentY() - node2.getCurrentY());
-    }
-
 
     public void deleteBeam(double x, double y) {
 
@@ -499,15 +501,14 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             y2 = y2 - y1;
             y1 = y - y1;
 
-            double cosAlfa = (x1*x2+y1*y2)/(Math.sqrt(y1*y1+x1*x1)*Math.sqrt(y2*y2+x2*x2));
-            double sinAlfa = Math.sqrt(1 - cosAlfa*cosAlfa);
+            double cosAlfa = (x1 * x2 + y1 * y2) / (Math.sqrt(y1 * y1 + x1 * x1) * Math.sqrt(y2 * y2 + x2 * x2));
+            double sinAlfa = Math.sqrt(1 - cosAlfa * cosAlfa);
 
-            double dist = sinAlfa * Math.sqrt(y1*y1+x1*x1);
+            double dist = sinAlfa * Math.sqrt(y1 * y1 + x1 * x1);
 
             if (dist <= minDist) {
-
-                sinAlfa = Math.abs(y2)/(Math.sqrt(y2*y2+x2*x2));
-                cosAlfa = Math.sqrt(1 - sinAlfa*sinAlfa);
+                sinAlfa = Math.abs(y2) / (Math.sqrt(y2 * y2 + x2 * x2));
+                cosAlfa = Math.sqrt(1 - sinAlfa * sinAlfa);
 
                 x1 = rotateX(node1, cosAlfa, sinAlfa);
                 x2 = rotateX(node2, cosAlfa, sinAlfa);
@@ -543,8 +544,41 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     }
 
-    private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
-        return cosAlfa*node.getCurrentX() + sinAlfa*node.getCurrentY();
+    public boolean setHinge(Node finger) {
+        List<Node> nodes = structure.getNodes();
+        double mindist = DELTA;
+        Node hingeNode = null;
+        for (Node node : nodes) {
+            if (distNodes(node, finger) <= mindist) {
+                mindist = distNodes(node, finger);
+                hingeNode = node;
+            }
+        }
+        if (hingeNode != null) {
+            nodePopup(hingeNode);
+            return true;
+        }
+        return false;
+    }
+
+    private void nodePopup(Node node) {
+        NodeFragment nodeFragment = new NodeFragment();
+        nodeFragment.setNode(node);
+        nodeFragment.setListener(this);
+        nodeFragment.show(getFragmentManager(), "paramaters");
+    }
+
+    private void popupGround(Node node) {
+        if (node.getInitialY() >= height - DELTA / 2) {
+            nodePopup(node);
+        }
+        boolean connected = false;
+        for (boolean flag : node.getConstraints()) {
+            if (flag) connected = true;
+        }
+        if (connected && node.getInitialY() <= height - DELTA / 2) {
+            nodePopup(node);
+        }
     }
 
     public class LongPressListener extends GestureDetector.SimpleOnGestureListener {
@@ -554,7 +588,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             Node n = new Node(e.getX(), e.getY() - yOffset);
 
-            deleteBeam(n.getCurrentX(), n.getCurrentY());
+            if (!setHinge(n)) deleteBeam(n.getCurrentX(), n.getCurrentY());
+
+            DrawHelper.drawStructure(structure, canvasView);
         }
 
         @Override

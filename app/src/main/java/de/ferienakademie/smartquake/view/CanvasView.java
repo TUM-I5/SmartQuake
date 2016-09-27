@@ -1,12 +1,17 @@
 package de.ferienakademie.smartquake.view;
 
+import android.accessibilityservice.GestureDescription;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.View;
+
+import java.util.Arrays;
 
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
@@ -18,8 +23,9 @@ public class CanvasView extends View {
     public static final double SIDE_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double TOP_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double BEAM_UNIT_SCREEN_FRACTION = 0.1;
-    private static final Paint BEAM_PAINT = new Paint();
-    private static final Paint RULER_PAINT = new Paint();
+    public static final Paint BEAM_PAINT = new Paint();
+    public static final Paint HINGE_PAINT = new Paint();
+    public static final Paint RULER_PAINT = new Paint();
 
     static {
         BEAM_PAINT.setColor(Color.RED);
@@ -28,6 +34,9 @@ public class CanvasView extends View {
 
         RULER_PAINT.setColor(Color.BLACK);
         RULER_PAINT.setAntiAlias(true);
+
+        HINGE_PAINT.setColor(Color.BLUE);
+        HINGE_PAINT.setAntiAlias(true);
     }
 
     // TODO: improve?
@@ -57,9 +66,89 @@ public class CanvasView extends View {
     }
 
     public void drawNode(Node node, Canvas canvas) {
+        Paint nodePaint;
+        if (node.isHinge()) nodePaint = HINGE_PAINT;
+        else nodePaint = BEAM_PAINT;
+
         canvas.drawCircle(internalToScreen(node.getCurrentX(), Axis.X),
                 internalToScreen(node.getCurrentY(), Axis.Y),
-                (float) (node.getRadius() * beamUnitSize), BEAM_PAINT);
+                (float) (node.getRadius() * beamUnitSize), nodePaint);
+    }
+
+    private static class InternalColorStop implements Comparable
+    {
+        int color;
+        double pos;
+
+        InternalColorStop(int color, double pos)
+        {
+            this.color = color;
+            this.pos = pos;
+        }
+
+
+        @Override
+        public int compareTo(Object o) {
+            return Double.compare(pos, ((InternalColorStop)o).pos);
+        }
+    }
+
+    private static final InternalColorStop[] colorStops =
+            {
+                    new InternalColorStop(Color.argb(255, 0, 0, 255), -250), //BLUE
+                    new InternalColorStop(Color.argb(255, 0, 0, 0), 0), //BLACK
+                    new InternalColorStop(Color.argb(255, 255, 0, 0), 250) //RED
+
+            };
+
+    private int lerp(int f, int s, double p)
+    {
+        //Standard linear interpolation.
+        return Color.argb(
+                (int)Math.round(Color.alpha(f) * (1 - p) + Color.alpha(s) * p),
+                (int)Math.round(Color.red(f) * (1 - p) + Color.red(s) * p),
+                (int)Math.round(Color.green(f) * (1 - p) + Color.green(s) * p),
+                (int)Math.round(Color.blue(f) * (1 - p) + Color.blue(s) * p)
+        );
+    }
+
+    private void beamDeformationColor(Beam beam, Paint paint)
+    {
+        double force = beam.calculateNormalForceOfBeam(); //Might still show some errors.
+
+        //Please don't ask for a reason to take such a comparably const-high algo on a small list, I was just lazy.
+        int idx = Arrays.binarySearch(colorStops, new InternalColorStop(0, force));
+
+        //The case why this is needed is explained very well in the documentation.
+        if (idx < 0) {
+            idx = -(idx + 1);
+        }
+        //Handling
+        if (idx <= 0)
+        {
+            paint.setColor(colorStops[0].color);
+        }
+        else if (idx >= colorStops.length)
+        {
+            paint.setColor(colorStops[colorStops.length - 1].color);
+        }
+        else
+        {
+            //We interpolate.
+            InternalColorStop thisStep = colorStops[idx];
+            InternalColorStop lastStep = colorStops[idx - 1];
+
+            double factor = (force - lastStep.pos) / (thisStep.pos - lastStep.pos);
+
+            int color = lerp(lastStep.color, thisStep.color, factor);
+
+            paint.setColor(color);
+        }
+    }
+
+    private void resetBeamColor(Paint paint)
+    {
+        paint.setColor(Color.RED);
     }
 
     private void drawBeam(Beam beam, Canvas canvas) {
@@ -85,7 +174,11 @@ public class CanvasView extends View {
         p.lineTo(internalToScreen(endNode.getCurrentXf(), Axis.X), internalToScreen(endNode.getCurrentYf(), Axis.Y));
 
         BEAM_PAINT.setStrokeWidth((float) (beam.getThickness() * beamUnitSize));
+
+        //Sorry for this code.
+        beamDeformationColor(beam, BEAM_PAINT);
         canvas.drawPath(p, BEAM_PAINT);
+        resetBeamColor(BEAM_PAINT);
     }
 
     @Override

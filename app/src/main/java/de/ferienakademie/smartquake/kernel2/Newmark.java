@@ -9,6 +9,7 @@ import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Created by Claudius, Lukas and John on 23/09/16.
@@ -67,13 +68,13 @@ public class Newmark extends ImplicitSolver {
         solver.setA(A);
 
         //initialise right side matrices: F_ext - K*xDot- B*xDotDot
-        B = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
+        B = new DenseMatrix64F(C.getNumRows(), C.getNumRows());
         CommonOps.addEquals(B,delta_t/2.0,C);
         CommonOps.addEquals(B,delta_t*delta_t/4.0,K);
         CommonOps.addEquals(B,-1,M);
 
         //initialize fLoad_old
-        fLoad_old = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        fLoad_old = new DenseMatrix64F(C.getNumRows(), 1);
 
     }
 
@@ -90,7 +91,14 @@ public class Newmark extends ImplicitSolver {
         xDotDot_old = xDotDot.copy();
 
         //Get acceleration
-        getAcceleration();
+        //Modal analysis has diagonalized matrices. so getAcceleration isf faster
+        if(PreferenceReader.useModalAnalysis()){
+            getAccelerationModalAnalysis();
+        }
+        else{
+            //normal matrices
+            getAcceleration();
+        }
 
         //Calculate velocity
         CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
@@ -105,37 +113,8 @@ public class Newmark extends ImplicitSolver {
         //update fLoad_old
         fLoad_old = fLoad.copy();
         //diagonalizes everything
-
     }
 
-
-    /**
-     * @param t
-     *        global time since start in seconds
-     * @param delta_t
-     *        time step
-     */
-    public void nextStepLumped(double t, double delta_t) {
-
-        xDotDot_old = xDotDot.copy();
-
-        //Get acceleration
-        getAccelerationLumped();
-
-        //Calculate velocity
-        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot);
-        CommonOps.addEquals(xDot,delta_t/2.0,xDotDot_old);
-
-        //Calculate displacement
-        CommonOps.addEquals(x,delta_t,xDot); //x = x + delta_t*xDot
-        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot); //x = delta_t**2*xDotDot/4
-        CommonOps.addEquals(x,delta_t*delta_t/4.0,xDotDot_old); // x = x + delta_t**2*xDotDot_old/4
-
-
-        //update fLoad_old
-        fLoad_old = fLoad.copy();
-
-    }
 
     /**
      * This method gets the acceleration. It will be written in place into xDotDot
@@ -156,7 +135,7 @@ public class Newmark extends ImplicitSolver {
     }
 
 
-    private void getAccelerationLumped(){
+    private void getAccelerationModalAnalysis(){
 
         //initialize right hand side
         RHS = fLoad.copy();
@@ -166,22 +145,22 @@ public class Newmark extends ImplicitSolver {
         multAddDiagMatrix(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
-        //Solve to get xDotDot
-        for(int i = 0; i<k1.getNumberofDOF(); i++){
-            xDotDot.set(i,0,RHS.get(i,0)/1.0);
+        //Solve to get xDotDot; A*xDotDot = RHS
+        for(int i = 0; i<RHS.getNumRows(); i++){
+            xDotDot.set(i,0,RHS.get(i,0)/A.get(i,i));
         }
     }
 
     /**
-     * result = result - skalar*matrix*vec
+     * result = result + skalar*matrix*vec
      * @param delta_t
      * @param matrix
      * @param vec
      * @param result
      */
     private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
-        for(int i = 0; i< k1.getNumberofDOF(); i++){
-            result.set(i,0,result.get(i)-delta_t*matrix.get(i,i)*vec.get(i,0));
+        for(int i = 0; i< k1.getNumberofUnconstraintDOF(); i++) {
+            result.set(i, 0, result.get(i) - delta_t * matrix.get(i, i) * vec.get(i, 0));
         }
     }
 

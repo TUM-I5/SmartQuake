@@ -18,9 +18,9 @@ public class Structure {
     private int numberOfDOF;
     private List<Node> nodes;
     private List<Beam> beams;
-    // TODO: somebody plz initialize this array conDOF
 
-    private List<Integer> conDOF ; //constraint dofs TODO: But how's the data structure?
+    // list of the constained dofs, set in the function StructureFactory.enumerateDOFs()
+    private List<Integer> conDOF = new ArrayList<>();
 
     public double[] getBoundingBox() {
         return boundingBox;
@@ -34,7 +34,10 @@ public class Structure {
 
     private boolean lumped = false;  // default value!
 
-
+    public Structure(List<Node> nodes, List<Beam> beams) {
+        this.nodes = nodes;
+        this.beams = beams;
+    }
 
     public Structure(List<Node> nodes, List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;

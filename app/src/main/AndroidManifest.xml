@@ -32,18 +32,22 @@
             android:screenOrientation="portrait"></activity>
 
         <activity
+            android:label="@string/act_create_building_title"
             android:name=".activity.CreateActivity"
             android:parentActivityName=".activity.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
+            android:label="@string/act_settings_title"
             android:name=".activity.SettingsActivity"
             android:parentActivityName=".activity.SimulationActivity"></activity>
 
         <activity
-            android:name=".activity.ChooseDataActivity"
+            android:label="@string/act_choose_eq_data_title"
+            android:name=".activity.ChooseEarthQuakeDataActivity"
             android:parentActivityName=".activity.SimulationActivity"></activity>
+
         <activity
             android:name=".activity.EarthquakeDataActivity"
             android:parentActivityName=".activity.StartActivity"></activity>

@@ -35,8 +35,20 @@ public class AccelData implements Comparable {
         yGravity = 0;
     }
 
+    public AccelData(double xAccel, double yAccel, double xGravity, double yGravity, long timestamp) {
+        this.xAcceleration = xAccel;
+        this.yAcceleration = yAccel;
+        this.xGravity = xGravity;
+        this.yGravity = yGravity;
+        this.timestamp = 0;
+    }
+
     @Override
     public int compareTo(Object o) {
         return Long.compare(timestamp, ((AccelData)o).timestamp);
+    }
+
+    public static double[] toArray(AccelData data){
+        return new double[]{data.xAcceleration, data.yAcceleration, data.xGravity, data.yGravity};
     }
 }

@@ -3,11 +3,9 @@ package de.ferienakademie.smartquake.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +22,7 @@ import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
 
-public class ChooseDataActivity extends AppCompatActivity {
+public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
     private int mPosition = ListView.INVALID_POSITION;
 
@@ -60,24 +58,6 @@ public class ChooseDataActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.start, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public void onItemSelected(Integer dataSourceId) {
         Intent sel = new Intent();
@@ -132,7 +112,7 @@ public class ChooseDataActivity extends AppCompatActivity {
     private void setUpValues() {
         values.clear();
         values.add("Sensors");
-        values.add("SinCos");
+        values.add("Sinusodial");
         String[] fileNames = getFilesDir().list();
         Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.earthquake");
         Matcher matcher;

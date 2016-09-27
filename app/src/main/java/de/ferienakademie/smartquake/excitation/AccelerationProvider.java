@@ -14,6 +14,8 @@ public abstract class AccelerationProvider {
     List<AccelerationProviderObserver> accelerationProviderObservers = new LinkedList<>();
 
     /**
+     * returns acceleration reading for the next frame timestep
+     * return = Fex(tp+dt), where tp - simulation time of last CALL of the function, dt - update rate of frames in nanosecs
      * has to inform the listener
      * @return first element acceleration in X axis, second element acceleration in Y axis
      *          third element gravity (acceleration) in X axis,
@@ -22,10 +24,25 @@ public abstract class AccelerationProvider {
     public abstract double[] getAcceleration();
 
     /**
+     * @param time in seconds in reference frame of simulation for which value are returned
+     * @return first element acceleration in X axis, second element acceleration in Y axis
+     *          third element gravity (acceleration) in X axis,
+     *          fourth element gravity (acceleration) in Y axis
+     */
+    public abstract double[] getAcceleration(double time);
+
+    /**
      * has to inform the listener
      * @return datastructure with timestamp, X axis acceleration, Y axis acceleration
      */
     public abstract AccelData getAccelerationMeasurement();
+
+    /**
+     * datastructure with timestamp, X axis acceleration, Y axis acceleration for arbitrary simulation time
+     * @param time
+     * @return
+     */
+    public abstract AccelData getAccelerationMeasurement(double time);
 
     /**
      *

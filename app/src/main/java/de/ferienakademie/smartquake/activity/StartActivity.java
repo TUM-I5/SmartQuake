@@ -72,11 +72,7 @@ public class StartActivity extends AppCompatActivity
                 R.layout.list_item_start_activity, R.id.list_item_date_textview, values);
 
         setUpValues();
-
-        PredefinedAdapter mPredefinedAdapter = new PredefinedAdapter(this, null, 0);
-        // Get a reference to the ListView, and attach this adapter to it.
         ListView mListView = (ListView) findViewById(R.id.listview_predefined);
-        //mListView.setAdapter(mPredefinedAdapter);
         registerForContextMenu( mListView );
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -168,7 +164,13 @@ public class StartActivity extends AppCompatActivity
         values.add("Housing Block");
         values.add("Trump tower");
         values.add("TV Tower");
-
+        values.add("Taipeh 101");
+        values.add("House with Mass Damper");
+        values.add("One World Trade Center");
+        values.add("Burj Khalifa");
+        values.add("TunedMassExample1");
+        values.add("TunedMassExample2");
+        values.add("Elephant");
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();
 

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,6 +41,7 @@ import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -94,36 +97,37 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private long lastDebugSensorDataTimestamp;
 
     private void runReplay(String fileName) {
-        FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
+
+        Log.d("REPLAYING", fileName);
 
         try {
             switch (fileName) {
-                case "SinCos.earthquake":
+                case "Sinusodial.earthquake":
                     SinCosExcitation sinCosExcitation = new SinCosExcitation();
                     sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
                     startSimulation(sinCosExcitation);
                     break;
                 case "Sensors.earthquake":
                     onStartButtonClicked();
-                    break;
+                    return;
                 default:
+                    FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
                     fileAccelerationProvider.load(openFileInput(fileName));
+                    if (!fileAccelerationProvider.isEmpty()) {
+                        replaySeekBar.setVisibility(View.VISIBLE);
+                        startSimulation(fileAccelerationProvider);
+                    } else {
+                        Snackbar.make(layout, "No past acceleration data", Snackbar.LENGTH_SHORT).show();
+                        return;
+                    }
                     break;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (fileAccelerationProvider.isEmpty()) {
-            Snackbar.make(layout, "Empty acceleration file", Snackbar.LENGTH_SHORT).show();
-        } else {
-            mode = SimulationMode.REPLAY;
-            Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-            replaySeekBar.setVisibility(View.VISIBLE);
-            replayrunningLabel.setVisibility(View.VISIBLE);
-            startSimulation(fileAccelerationProvider);
-            toggleStartStopAvailability();
-        }
+        mode = SimulationMode.REPLAY;
+        replayrunningLabel.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -137,18 +141,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.sim_reset_button) {
-            if (mode != SimulationMode.LIVE) {
-                mode = SimulationMode.LIVE;
-            }
-
-            if (simulation.isRunning()) {
-                onStopButtonClicked();
-            }
-            createStructure(structureId, structureName);
-            DrawHelper.drawStructure(structure, canvasView);
-            return true;
-        } else if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
+        if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
             runReplay("Last.earthquake");
             if (simulation != null) toggleStartStopAvailability();
             return true;
@@ -157,12 +150,27 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
             if (replay != null) replay.setEnabled(false);
-            startActivityForResult(new Intent(this, ChooseDataActivity.class), REQUEST_EARTHQUAKE_DATA);
+            startActivityForResult(new Intent(this, ChooseEarthQuakeDataActivity.class), REQUEST_EARTHQUAKE_DATA);
         } else if (id == R.id.save_simulation) {
             if (simulation.isRunning()) {
                 simulation.stop();
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
+        } else if (id == R.id.sim_reset_button){
+            if (mode != SimulationMode.LIVE) {
+                mode = SimulationMode.LIVE;
+            }
+
+            if (simulation != null && simulation.isRunning()) {
+                onStopButtonClicked();
+            }
+            tvSensorDataX.setText("");
+            tvSensorDataY.setText("");
+            createStructure(structureId, structureName);
+            DrawHelper.drawStructure(structure, canvasView);
+            return true;
+        } else if (id == R.id.sim_replay_displacement) {
+            replayDisplacement();
         } else if (id == R.id.sim_view_graphs_button) {
             Intent i = new Intent(this, GraphViewActivity.class);
             i.putExtra("initialNodeId", 4);
@@ -291,18 +299,20 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             replaySeekBar.setVisibility(View.GONE);
             replayrunningLabel.setVisibility(View.GONE);
         }
+
         if (simulation == null) return;
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
-        try {
-            mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (mode == SimulationMode.LIVE) {
+            try {
+                mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
+            } catch (IOException e) {
+                Log.e("ACCEL WRITE", "error writing", e);
+            }
         }
-
         mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
         ActionMenuItemView loadEQDataButton = (ActionMenuItemView) findViewById(R.id.sim_load_earthquake_data_button);
@@ -360,15 +370,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 fileOutputStream.write(bytes, 0, length);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e("ACCEL WRITE", "file not found", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("ACCEL WRITE", "error writing", e);
         } finally {
             try {
                 if (fileInputStream != null) fileInputStream.close();
                 if (fileOutputStream != null) fileOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("ACCEL WRITE", "error closing", e);
             }
         }
     }
@@ -405,9 +415,62 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         replayProgress = percent;
         replaySeekBar.setProgress((int) Math.round(percent));
         if (percent >= 100) {
-            onStopButtonClicked();
-            mode = SimulationMode.LIVE;
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    onStopButtonClicked();
+                    mode = SimulationMode.LIVE;
+                }
+            });
+
         }
+    }
+
+    /**
+     * replays previous simulation without calculating again
+     */
+    private void replayDisplacement() {
+
+        //This tells us how many time steps were calculated
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+
+                //we loop over all frames
+                for (int i = 0; i < number_timeSteps; i++) {
+
+                    //loop over all nodes to update positions
+                    for (Node in : structure.getNodes()) {
+
+                        in.recallDisplacementOfStep(i);
+
+                    }
+                    
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ex) {
+                        Log.e("replayDisplacement", ex.getMessage());
+                    }
+
+                    while(canvasView.isBeingDrawn) {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException ex) {
+                            Log.e("replayDisplacement", ex.getMessage());
+                        }
+                    }
+
+                    //draw frame
+                    DrawHelper.drawStructure(structure, canvasView);
+
+
+
+                }
+            }
+        }).start();
+
     }
 
     // TODO: should this be part of Simulation too?
