@@ -51,8 +51,6 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         AccelData currentAcceleration = new AccelData(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.timestamp-baseTime);
         // put new element to the queue of sensor measurements
         readings.add(currentAcceleration);
-
-        notifyNewAccelData(currentAcceleration);
     }
 
     @Override
@@ -61,6 +59,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         if(gravityActive) {
             gravityProvider.getGravity(data);
         }
+        notifyNewAccelData(data);
         return data;
     }
 
