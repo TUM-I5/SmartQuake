@@ -132,7 +132,7 @@ public class ChooseDataActivity extends AppCompatActivity {
     private void setUpValues() {
         values.clear();
         values.add("Sensors");
-        values.add("SinCos");
+        values.add("Sinusodial");
         String[] fileNames = getFilesDir().list();
         Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.earthquake");
         Matcher matcher;

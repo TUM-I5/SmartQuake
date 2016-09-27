@@ -46,8 +46,6 @@ public class SpatialDiscretization {
 
     private int numberofDOF;
 
-    private double displacementScale = 1.0;
-
     Structure structure;
     // temporary vectors that will be scaled by acceleration
     private DenseMatrix64F influenceVectorX_temp;
@@ -66,8 +64,7 @@ public class SpatialDiscretization {
         //TODO: Fix eigenvalues with hinges
         //calculateEigenvaluesAndVectors();
         calculateDampingMatrix();
-        //performModalAnalysis(); //test
-        displacementScale = PreferenceReader.getDisplacementScaling();
+
     }
 
     /**
@@ -220,7 +217,7 @@ public class SpatialDiscretization {
             List<Integer> dofsOfNode = node.getDOF();
 
             for (int j = 0; j < dofsOfNode.size(); j++) {
-                node.setSingleDisplacement(j, displacementScale * displacementVector2.get(dofsOfNode.get(j), 0));
+                node.setSingleDisplacement(j, displacementVector2.get(dofsOfNode.get(j), 0));
             }
             node.saveTimeStepGroundDisplacement(groundDisplacement);
             node.saveTimeStepDisplacement();

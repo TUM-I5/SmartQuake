@@ -106,12 +106,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch(id){
-            case R.id.action_settings: //TODO setteings activity
-                /***
-                 *Add here code for setting activity
-                 * startActivity(new Intent(this, SettingsActivity.class));
-                 return true;
-                 */
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 break;
@@ -505,7 +499,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             double dist = sinAlfa * Math.sqrt(y1*y1+x1*x1);
 
             if (dist <= minDist) {
-
                 sinAlfa = Math.abs(y2)/(Math.sqrt(y2*y2+x2*x2));
                 cosAlfa = Math.sqrt(1 - sinAlfa*sinAlfa);
 
@@ -571,7 +564,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             setHinge(n);
 
-//            deleteBeam(n.getCurrentX(), n.getCurrentY());
+            deleteBeam(n.getCurrentX(), n.getCurrentY());
 
             DrawHelper.drawStructure(structure, canvasView);
         }
