@@ -21,6 +21,7 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -92,7 +93,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         try {
             switch (fileName) {
-                case "SinCos.earthquake":
+                case "Sinusodial.earthquake":
                     SinCosExcitation sinCosExcitation = new SinCosExcitation();
                     sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
                     startSimulation(sinCosExcitation);
@@ -109,10 +110,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
 
         if (fileAccelerationProvider.isEmpty()) {
-            Snackbar.make(layout, "Empty acceleration file", Snackbar.LENGTH_SHORT).show();
+            //Snackbar.make(layout, "Empty acceleration file", Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),
+                    "Empty acceleration file", Toast.LENGTH_SHORT).show();
         } else {
             mode = SimulationMode.REPLAY;
-            Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
+            //Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
             replaySeekBar.setVisibility(View.VISIBLE);
             replayrunningLabel.setVisibility(View.VISIBLE);
             startSimulation(fileAccelerationProvider);

@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">SmartQuake</string>
     <string name="settings_button">Settings</string>
-    <string name="replay_button">Replay</string>
+    <string name="replay_button">Replay excitation</string>
     <string name="reset_button">Reset</string>
     <string name="save_button">Save</string>
-    <string name="load_data_button">Load earthquake data</string>
+    <string name="load_data_button">Load excitation data</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
@@ -139,12 +139,23 @@
 
     <!-- Preference slider displacement magnification -->
     <string name="loadVector_slider_title">Earth quake magnitude scale</string>
-    <item name="loadVector_slider_default" format="float" type="string">0.0</item>
+    <item name="loadVector_slider_default" format="float" type="string">0.2</item>
     <string name="loadVector_slider_message"></string>
     <string name="pref_show_raw_sensor_data_summary">Display raw sensor data while simulating.</string>
     <string name="pref_show_raw_sensor_data_title">Show raw sensor data</string>
+    <string name="save_excitation">Save excitation data</string>
 
     <string-array name="loadVector_slider_summaries">
+        <item>0.0</item>
+        <item>0.1</item>
+        <item>0.2</item>
+        <item>0.3</item>
+        <item>0.4</item>
+        <item>0.5</item>
+        <item>0.6</item>
+        <item>0.7</item>
+        <item>0.8</item>
+        <item>0.9</item>
         <item>1.0</item>
         <item>1.1</item>
         <item>1.2</item>

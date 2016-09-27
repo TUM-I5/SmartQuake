@@ -55,7 +55,6 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         ++tick;
 
         AccelData data = readings.get(currentPosition);
-        notifyNewAccelData(data);
         return data;
     }
 

@@ -22,7 +22,7 @@
     <item
         android:id="@+id/save_simulation"
         android:orderInCategory="100"
-        android:title="Save simulation"
+        android:title="@string/save_excitation"
         app:showAsAction="never" />
 
 </menu>
