@@ -57,6 +57,14 @@ public class SinCosExcitation extends AccelerationProvider {
         return accelData;
     }
 
+    @Override
+    public AccelData getAccelerationMeasurement(double time) {
+        AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * time), 0.0,
+                (long) (time * 1e9));
+        notifyNewAccelData(accelData);
+        return accelData;
+    }
+
     public void setFrequency(double frequency){
         this.frequency = frequency;
     }

@@ -55,6 +55,15 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         return readings.get(currentPosition);
     }
 
+    public AccelData getAccelerationMeasurement(double time){
+        while (readings.size() - 1 > currentPosition
+                && readings.get(currentPosition).timestamp < (long)(time * 1e9)) {
+            ++currentPosition;
+        }
+
+        return readings.get(currentPosition);
+    }
+
     /**
      * Store the data to a file
      * @param outputStream reference to a stream passing readings to internal storage

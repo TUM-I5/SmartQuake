@@ -38,6 +38,13 @@ public abstract class AccelerationProvider {
     public abstract AccelData getAccelerationMeasurement();
 
     /**
+     * datastructure with timestamp, X axis acceleration, Y axis acceleration for arbitrary simulation time
+     * @param time
+     * @return
+     */
+    public abstract AccelData getAccelerationMeasurement(double time);
+
+    /**
      *
      * @param timeStep timeStep of the simulation in nanoseconds
      */
