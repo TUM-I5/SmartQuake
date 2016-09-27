@@ -26,11 +26,6 @@ public class EmptyAccelerationProvider extends AccelerationProvider {
     }
 
     @Override
-    public AccelData getAccelerationMeasurement(double time) {
-        return null;
-    }
-
-    @Override
     public void initTime(double timeStep) {
 
     }

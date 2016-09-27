@@ -54,6 +54,16 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     }
 
     @Override
+    public double[] getAcceleration(){
+        return AccelData.toArray(getAccelerationMeasurement());
+    }
+
+    @Override
+    public double[] getAcceleration(double time){
+        return AccelData.toArray(getAccelerationMeasurement(time));
+    }
+
+    @Override
     public AccelData getAccelerationMeasurement(){
         AccelData data = super.getAccelerationMeasurement();
         if(gravityActive) {
