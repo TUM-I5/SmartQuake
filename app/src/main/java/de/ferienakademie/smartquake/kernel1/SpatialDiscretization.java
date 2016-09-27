@@ -256,8 +256,8 @@ public class SpatialDiscretization {
             List<Integer> DOF = node.getDOF();
             int DOFx = DOF.get(0);
             int DOFy = DOF.get(1);
-            influenceVectorX.add(DOFx, 0, -1); //add influence vector in x-dir
-            influenceVectorY.add(DOFy, 0, -1); //add influence vector in y-dir
+            influenceVectorX.add(DOFx, 0, 1); //add influence vector in x-dir
+            influenceVectorY.add(DOFy, 0, 1); //add influence vector in y-dir
         }
 
         influenceVectorX_temp = new DenseMatrix64F(influenceVectorX.getNumRows(), 1);
@@ -274,13 +274,13 @@ public class SpatialDiscretization {
     public void updateLoadVector(double[] acceleration) {
         if (PreferenceReader.includeGravity()) {
 
-            CommonOps.scale(acceleration[0] + acceleration[2], influenceVectorX, influenceVectorX_temp);
-            CommonOps.scale(acceleration[1] + acceleration[3], influenceVectorY, influenceVectorY_temp);
+            CommonOps.scale(-acceleration[0] - acceleration[2], influenceVectorX, influenceVectorX_temp);
+            CommonOps.scale(-acceleration[1] - acceleration[3], influenceVectorY, influenceVectorY_temp);
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
         } else {
-            CommonOps.scale(acceleration[0], influenceVectorX, influenceVectorX_temp);
-            CommonOps.scale(acceleration[1], influenceVectorY, influenceVectorY_temp);
+            CommonOps.scale(-acceleration[0], influenceVectorX, influenceVectorX_temp);
+            CommonOps.scale(-acceleration[1], influenceVectorY, influenceVectorY_temp);
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
         }
@@ -294,12 +294,12 @@ public class SpatialDiscretization {
         redLoadVectorModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
         if (PreferenceReader.includeGravity()) {
 
-            CommonOps.scale(acceleration[0], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
-            CommonOps.scale(acceleration[1], RedinfluenceVectorY, RedinfluenceVectorY_temp);
+            CommonOps.scale(-acceleration[0]- acceleration[2], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
+            CommonOps.scale(-acceleration[1]- acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
         } else {
-            CommonOps.scale(acceleration[0], RedinfluenceVectorX, RedinfluenceVectorX_temp);
-            CommonOps.scale(acceleration[1], RedinfluenceVectorY, RedinfluenceVectorY_temp);
+            CommonOps.scale(-acceleration[0], RedinfluenceVectorX, RedinfluenceVectorX_temp);
+            CommonOps.scale(-acceleration[1], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
         }
 
@@ -338,6 +338,7 @@ public class SpatialDiscretization {
                 ReducedEigenvalues[counter]=eigenvalues[i];
                 Reducedeigenvectors[counter] = eigenvectors[i];
                 RedinfluenceVectorX.set(counter,0,influenceVectorX.get(i,0));
+                RedinfluenceVectorY.set(counter,0,influenceVectorY.get(i,0));
                 RedinfluenceVectorY_temp.set(counter,0,influenceVectorY_temp.get(i,0));
                 RedinfluenceVectorX_temp.set(counter,0,influenceVectorX_temp.get(i,0));
                 counter++;
@@ -390,17 +391,10 @@ public class SpatialDiscretization {
     }
     public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF, 1);
+        DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberofUnconstraintDOF(), 1);
 
-        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            CommonOps.add(Reducedeigenvectors[i], modalSolutionvector.get(i, 0), DisplacementVector);
-        }
+        CommonOps.multTransA(1, ReducedeigenvectorsMatrixTranspose, modalSolutionvector, solVecCopy);
 
-        DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberofUnconstraintDOF());
-
-
-        for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
-            CommonOps.addEquals(Reducedeigenvectors[i],modalSolutionvector.get(i,0),solVecCopy);
-        }
 
         // Extend displacements by inserting zeros in the position of constraint dofs
         for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
