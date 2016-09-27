@@ -35,7 +35,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  * Created by yuriy on 22/09/16.
  */
 public class CreateActivity extends AppCompatActivity implements SaveDialogFragment.SaveDialogListener {
-    private static double DELTA = 90;
+    private static double DELTA = 100;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -143,17 +143,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         int j = 0;
         for (int i = 0; i < nodes.size(); i++) {
-            List<Integer> tempList = new ArrayList<>();
-            tempList.add(j++);
-            tempList.add(j++);
-            tempList.add(j++);
-
-            nodes.get(i).setDOF(tempList);
-
-            if (nodes.get(i).getCurrentY() == height) {
-                for (Integer freedom : tempList) {
-                    condof.add(freedom);
-                }
+            if (nodes.get(i).getCurrentY() >= height - DELTA / 2) {
+                nodes.get(i).setConstraint(new boolean[] {true, true, true});
             }
         }
 
@@ -536,7 +527,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     }
 
-    public void setHinge(Node finger) {
+    public boolean setHinge(Node finger) {
         List<Node> nodes = structure.getNodes();
         double mindist = DELTA;
         Node hingeNode = null;
@@ -548,7 +539,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
         if (hingeNode != null) {
             hingeNode.setHinge(!hingeNode.isHinge());
+            return true;
         }
+        return false;
     }
 
     private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
@@ -562,9 +555,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             Node n = new Node(e.getX(), e.getY() - yOffset);
 
-            setHinge(n);
-
-            deleteBeam(n.getCurrentX(), n.getCurrentY());
+            if (!setHinge(n)) deleteBeam(n.getCurrentX(), n.getCurrentY());
 
             DrawHelper.drawStructure(structure, canvasView);
         }

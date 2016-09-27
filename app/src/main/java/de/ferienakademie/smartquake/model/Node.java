@@ -67,6 +67,11 @@ public class Node {
         this.displacements.set(i,value );
     }
 
+    public boolean[] getConstraints() {
+        return constraint;
+    }
+
+
     public double getSingleDisplacement(int i) {
         return this.displacements.get(i);
     }

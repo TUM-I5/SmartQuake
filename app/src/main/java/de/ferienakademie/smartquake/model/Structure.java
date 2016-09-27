@@ -20,7 +20,7 @@ public class Structure {
     private List<Beam> beams;
     // TODO: somebody plz initialize this array conDOF
 
-    private List<Integer> conDOF ; //constraint dofs TODO: But how's the data structure?
+    private List<Integer> conDOF = new ArrayList<>(); //constraint dofs TODO: But how's the data structure?
 
     public double[] getBoundingBox() {
         return boundingBox;
@@ -34,7 +34,10 @@ public class Structure {
 
     private boolean lumped = false;  // default value!
 
-
+    public Structure(List<Node> nodes, List<Beam> beams) {
+        this.nodes = nodes;
+        this.beams = beams;
+    }
 
     public Structure(List<Node> nodes, List<Beam> beams, List<Integer> conDOF) {
         this.nodes = nodes;
