@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
+
 /**
  * Created by yuriy on 21/09/16.
  */
@@ -186,9 +188,11 @@ public class Node {
         return constraint[i];
     }
 
+
     public void setConstraint(boolean[] constraint) {
         this.constraint = constraint;
     }
+
 
     public void setSingleConstraint(int i, boolean constraint) {
         this.constraint[i] = constraint;
@@ -199,6 +203,17 @@ public class Node {
         historyOfDisplacements.add(displacements);
     }
 
+
+    public void recallDisplacementOfStep(int i) {
+        displacements = historyOfDisplacements.get(i);
+
+        // include ground displacements according to settings
+        if (PreferenceReader.groundDisplcements()) {
+            double[] groundDisplacements = historyOfGroundDisplacement.get(i);
+            displacements.set(0, displacements.get(0) + groundDisplacements[0]);
+            displacements.set(1, displacements.get(1) + groundDisplacements[1]);
+        }
+    }
 
 
     public void saveTimeStepGroundDisplacement(double[] gD) {

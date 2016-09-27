@@ -799,6 +799,67 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getOneWTC() {
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        Node n1 = new Node(0.000000, 32.000000);
+        Node n2 = new Node(3.000000, 32.000000);
+        Node n3 = new Node(6.000000, 32.000000);
+        Node n4 = new Node(0.000000, 28.000000);
+        Node n5 = new Node(3.000000, 28.000000);
+        Node n6 = new Node(6.000000, 28.000000);
+        Node n7 = new Node(1.000000, 8.000000);
+        Node n8 = new Node(1.500000, 8.000000);
+        Node n9 = new Node(4.500000, 8.000000);
+        Node n10 = new Node(5.000000, 8.000000);
+        Node n11 = new Node(1.500000, 7.500000);
+        Node n12 = new Node(2.500000, 7.500000);
+        Node n13 = new Node(3.500000, 7.500000);
+        Node n14 = new Node(4.500000, 7.500000);
+        Node n15 = new Node(3.000000, 0.000000);
+
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n4, n5, testMaterial);
+        Beam b4 = new Beam(n5, n6, testMaterial);
+        Beam b5 = new Beam(n7, n8, testMaterial);
+        Beam b6 = new Beam(n8, n9, testMaterial);
+        Beam b7 = new Beam(n9, n10, testMaterial);
+        Beam b8 = new Beam(n11, n12, testMaterial);
+        Beam b9 = new Beam(n12, n13, testMaterial);
+        Beam b10 = new Beam(n13, n14, testMaterial);
+        Beam b11 = new Beam(n1, n4, testMaterial);
+        Beam b12 = new Beam(n2, n5, testMaterial);
+        Beam b13 = new Beam(n3, n6, testMaterial);
+        Beam b14 = new Beam(n4, n7, testMaterial);
+        Beam b15 = new Beam(n5, n7, testMaterial);
+        Beam b16 = new Beam(n5, n10, testMaterial);
+        Beam b17 = new Beam(n6, n10, testMaterial);
+        Beam b18 = new Beam(n8, n11, testMaterial);
+        Beam b19 = new Beam(n9, n14, testMaterial);
+        Beam b20 = new Beam(n12, n15, testMaterial);
+        Beam b21 = new Beam(n13, n15, testMaterial);
+
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
+
+
     public static Structure getTrumpTower() {
         double width = 8;
         double xOffset = -4;
@@ -882,6 +943,96 @@ public class StructureFactory {
         n3.setConstraint(con);
         n4.setConstraint(con);
 
+        enumerateDOFs(structure);
+        return structure;
+    }
+
+    public static Structure getBurjKhalifa() {
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        Node n1 = new Node(0.000000, 35.000000);
+        Node n2 = new Node(5.000000, 35.000000);
+        Node n3 = new Node(0.000000, 32.000000);
+        Node n4 = new Node(5.000000, 32.000000);
+        Node n5 = new Node(4.500000, 30.000000);
+        Node n6 = new Node(5.000000, 30.000000);
+        Node n7 = new Node(0.000000, 29.000000);
+        Node n8 = new Node(0.500000, 29.000000);
+        Node n9 = new Node(0.500000, 27.000000);
+        Node n10 = new Node(4.500000, 27.000000);
+        Node n11 = new Node(4.000000, 25.000000);
+        Node n12 = new Node(4.500000, 25.000000);
+        Node n13 = new Node(0.500000, 23.000000);
+        Node n14 = new Node(1.000000, 23.000000);
+        Node n15 = new Node(1.000000, 21.000000);
+        Node n16 = new Node(4.000000, 21.000000);
+        Node n17 = new Node(3.500000, 19.000000);
+        Node n18 = new Node(4.000000, 19.000000);
+        Node n19 = new Node(1.000000, 17.000000);
+        Node n20 = new Node(1.500000, 17.000000);
+        Node n21 = new Node(1.500000, 15.000000);
+        Node n22 = new Node(3.500000, 15.000000);
+        Node n23 = new Node(3.000000, 22.000000);
+        Node n24 = new Node(3.500000, 22.000000);
+        Node n25 = new Node(1.500000, 21.000000);
+        Node n26 = new Node(2.000000, 21.000000);
+        Node n27 = new Node(2.000000, 6.000000);
+        Node n28 = new Node(2.500000, 6.000000);
+        Node n29 = new Node(2.500000, 3.000000);
+        Node n30 = new Node(3.000000, 3.000000);
+        Node n31 = new Node(3.000000, 0.000000);
+
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n3, n4, testMaterial);
+        Beam b3 = new Beam(n5, n6, testMaterial);
+        Beam b4 = new Beam(n7, n8, testMaterial);
+        Beam b5 = new Beam(n9, n10, testMaterial);
+        Beam b6 = new Beam(n11, n12, testMaterial);
+        Beam b7 = new Beam(n13, n14, testMaterial);
+        Beam b8 = new Beam(n15, n16, testMaterial);
+        Beam b9 = new Beam(n17, n18, testMaterial);
+        Beam b10 = new Beam(n19, n20, testMaterial);
+        Beam b11 = new Beam(n21, n22, testMaterial);
+        Beam b12 = new Beam(n23, n24, testMaterial);
+        Beam b13 = new Beam(n25, n26, testMaterial);
+        Beam b14 = new Beam(n27, n28, testMaterial);
+        Beam b15 = new Beam(n29, n30, testMaterial);
+        Beam b16 = new Beam(n1, n3, testMaterial);
+        Beam b17 = new Beam(n2, n4, testMaterial);
+        Beam b18 = new Beam(n3, n7, testMaterial);
+        Beam b19 = new Beam(n4, n6, testMaterial);
+        Beam b20 = new Beam(n5, n10, testMaterial);
+        Beam b21 = new Beam(n8, n9, testMaterial);
+        Beam b22 = new Beam(n9, n13, testMaterial);
+        Beam b23 = new Beam(n10, n12, testMaterial);
+        Beam b24 = new Beam(n11, n16, testMaterial);
+        Beam b25 = new Beam(n14, n15, testMaterial);
+        Beam b26 = new Beam(n15, n19, testMaterial);
+        Beam b27 = new Beam(n16, n18, testMaterial);
+        Beam b28 = new Beam(n17, n22, testMaterial);
+        Beam b29 = new Beam(n20, n21, testMaterial);
+        Beam b30 = new Beam(n21, n25, testMaterial);
+        Beam b31 = new Beam(n22, n24, testMaterial);
+        Beam b32 = new Beam(n23, n30, testMaterial);
+        Beam b33 = new Beam(n26, n27, testMaterial);
+        Beam b34 = new Beam(n28, n29, testMaterial);
+        Beam b35 = new Beam(n30, n31, testMaterial);
+
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28, n29, n30, n31);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, b34, b35);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n2.setConstraint(con);
         enumerateDOFs(structure);
         return structure;
     }
