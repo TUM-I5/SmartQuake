@@ -54,12 +54,11 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-
-        Node n1 = new Node(0, height, true);
-        Node n2 = new Node(width, height, true);
-        Node n3 = new Node(width, height - half, true);
-        Node n4 = new Node(0, height - half, true);
-        Node n5 = new Node(half, height - 2 * half, true);
+        Node n1 = new Node(0, height, false);
+        Node n2 = new Node(width, height, false);
+        Node n3 = new Node(width, height - half, false);
+        Node n4 = new Node(0, height - half, false);
+        Node n5 = new Node(half, height - 2 * half, false);
 
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);
