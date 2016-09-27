@@ -6,6 +6,7 @@ package de.ferienakademie.smartquake.excitation;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.acl.AclEntry;
 
 /**
  * Class for generating a "standard" earthquake
@@ -37,18 +38,21 @@ public class SinCosExcitation extends AccelerationProvider {
     @Override
     public double[] getAcceleration() {
         counter++;
-        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * (double)(counter * timestep * 1e-9)),
-                0.0, 0.0 , 0.0};
+        return AccelData.toArray(getAccelerationMeasurement());
     }
 
     @Override
     public double[] getAcceleration(double time) {
         counter++;
-        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * time),
-                0.0, 0.0, 0.0};
+        AccelData temp = getAccelerationMeasurement(time);
+
+        return AccelData.toArray(temp);
     }
 
     @Override
+    /**
+     * notifys the observer
+     */
     public AccelData getAccelerationMeasurement() {
         counter++;
         AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,

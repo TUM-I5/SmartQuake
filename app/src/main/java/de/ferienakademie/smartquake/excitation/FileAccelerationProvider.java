@@ -23,18 +23,19 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         AccelData temp = super.getAccelerationMeasurement();
             double percentage = (readings.get(currentPosition).timestamp*100.0)/
                     readings.get(readings.size()-1).timestamp;
-            super.notifyNewReplayPercent(percentage);
+        notifyNewReplayPercent(percentage);
         notifyNewAccelData(temp);
-        return new double[]{temp.xAcceleration, temp.yAcceleration, temp.xGravity, temp.yGravity};
+        return AccelData.toArray(temp);
     }
 
     @Override
     public double[] getAcceleration(double time) {
-        double[] temp = super.getAcceleration(time);
+        AccelData temp = getAccelerationMeasurement(time);
         double percentage = (readings.get(currentPosition).timestamp*100.0)/
                 readings.get(readings.size()-1).timestamp;
-        super.notifyNewReplayPercent(percentage);
-        return temp;
+        notifyNewAccelData(temp);
+        notifyNewReplayPercent(percentage);
+        return AccelData.toArray(temp);
     }
 
     /**
