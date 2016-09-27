@@ -207,8 +207,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         structure = StructureFactory.getTunedMassExample1();
         }else if (structureId == 15) {
             structure = StructureFactory.getTunedMassExample2();
-        }
-        else{
+        } else if (structureId == 16) {
+            structure = StructureFactory.getSimpleElephant();
+        } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
 
