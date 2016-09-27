@@ -95,23 +95,15 @@ public class CanvasView extends View {
 
     private static final InternalColorStop[] colorStops =
             {
-                    /*new InternalColorStop(Color.argb(255, 0, 0, 255), -200),
-                    new InternalColorStop(Color.argb(255, 0, 192, 192), -100),
-                    new InternalColorStop(Color.argb(255, 0, 127, 0), 0),
-                    new InternalColorStop(Color.argb(255, 192, 192, 0), 100),
-                    new InternalColorStop(Color.argb(255, 255, 0, 0), 200)*/
-                    //new InternalColorStop(Color.argb(255, 0, 127, 0), 0),
-                    //new InternalColorStop(Color.argb(255, 192, 192, 0), 10),
-                    new InternalColorStop(Color.argb(255, 0, 0, 255), -200),
-                    new InternalColorStop(Color.argb(255, 0, 0, 0), 0),
-                    new InternalColorStop(Color.argb(255, 255, 0, 0), 200)
-              /*new InternalColorStop(Color.argb(255, 255, 0, 0), 0),
-              new InternalColorStop(Color.argb(255, 192, 192, 0), 100),
-              new InternalColorStop(Color.argb(255, 0, 0, 0), 1000)*/
+                    new InternalColorStop(Color.argb(255, 0, 0, 255), -250), //BLUE
+                    new InternalColorStop(Color.argb(255, 0, 0, 0), 0), //BLACK
+                    new InternalColorStop(Color.argb(255, 255, 0, 0), 250) //RED
+
             };
 
     private int lerp(int f, int s, double p)
     {
+        //Standard linear interpolation.
         return Color.argb(
                 (int)Math.round(Color.alpha(f) * (1 - p) + Color.alpha(s) * p),
                 (int)Math.round(Color.red(f) * (1 - p) + Color.red(s) * p),
@@ -122,40 +114,41 @@ public class CanvasView extends View {
 
     private void beamDeformationColor(Beam beam, Paint paint)
     {
-        double force = beam.calculateNormalForceOfBeam(); //TODO
+        double force = beam.calculateNormalForceOfBeam(); //Might still show some errors.
 
         //Please don't ask for a reason to take such a comparably const-high algo on a small list, I was just lazy.
         int idx = Arrays.binarySearch(colorStops, new InternalColorStop(0, force));
-        if (idx < 0)
-        {
+
+        //The case why this is needed is explained very well in the documentation.
+        if (idx < 0) {
             idx = -(idx + 1);
-            if (idx == colorStops.length)
-            {
-                //Do something! Yes! Dashed lines! Simulate a broken beam or whatever!
-                paint.setColor(colorStops[colorStops.length - 1].color);
-                float rest = lerp(19, 10, (force - colorStops[colorStops.length - 1].pos) / 200.);
-                //paint.setPathEffect(new DashPathEffect(new float[] { rest, 20 - rest }, 0));
-            }
-            else if (idx <= 0)
-            {
-                paint.setColor(colorStops[0].color);
-            }
-            else
-            {
-                //#toolonglinetooboredtorefactor
-                paint.setColor(lerp(colorStops[idx - 1].color, colorStops[idx].color, (force - colorStops[idx - 1].pos) / (colorStops[idx].pos - colorStops[idx - 1].pos)));
-            }
+        }
+        //Handling
+        if (idx <= 0)
+        {
+            paint.setColor(colorStops[0].color);
+        }
+        else if (idx >= colorStops.length)
+        {
+            paint.setColor(colorStops[colorStops.length - 1].color);
         }
         else
         {
-            paint.setColor(colorStops[idx].color);
+            //We interpolate.
+            InternalColorStop thisStep = colorStops[idx];
+            InternalColorStop lastStep = colorStops[idx - 1];
+
+            double factor = (force - lastStep.pos) / (thisStep.pos - lastStep.pos);
+
+            int color = lerp(lastStep.color, thisStep.color, factor);
+
+            paint.setColor(color);
         }
     }
 
     private void resetBeamColor(Paint paint)
     {
         paint.setColor(Color.RED);
-        paint.setPathEffect(null);
     }
 
     private void drawBeam(Beam beam, Canvas canvas) {
