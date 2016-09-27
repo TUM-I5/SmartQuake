@@ -23,12 +23,9 @@ public class Node {
 
     private double radius = 0.05;
 
-
-
     private boolean hinge = false;
 
     private List<Beam> beams = new ArrayList<>();
-
 
     public Node(double x, double y) {
         this.initialX = x;
@@ -40,12 +37,10 @@ public class Node {
         historyOfGroundDisplacement = new ArrayList<>();
     }
 
-
     public Node(double x, double y, boolean hinged) {
         this(x, y);
         this.hinge = hinged;
     }
-
 
     public Node(double x, double y, List<Integer> DOF) {
         this(x, y);
@@ -114,22 +109,13 @@ public class Node {
         return radius;
     }
 
-
-
-
     public void setRadius(double radius) {
         this.radius = radius;
     }
 
-
-
-
     public void clearBeams() {
         beams.clear();
     }
-
-
-
 
     public List<Beam> getBeams() {
         return beams;
