@@ -53,9 +53,10 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
-        calculateEigenvaluesAndVectors();
+        //TODO: Fix eigenvalues with hinges
+        //calculateEigenvaluesAndVectors();
         calculateDampingMatrix();
-        performModalAnalysis(); //test
+        //performModalAnalysis(); //test
         displacementScale = PreferenceReader.getDisplacementScaling();
     }
 
@@ -161,8 +162,8 @@ public class SpatialDiscretization {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
         DampingMatrix.zero();
-        double omega1 = eigenvalues[0];
-        double omega2 = eigenvalues[1];
+        //double omega1 = eigenvalues[0];
+        //double omega2 = eigenvalues[1];
         //TODO: fix this shit
         double xi = 0.05;
         double a0 = 1; //2 * xi * omega1 * omega2 / (omega1 + omega2);
