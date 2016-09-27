@@ -23,7 +23,7 @@ public class PreferenceReader {
     }
 
     public static double getLoadVectorScaling() {
-        return (double) (4.0f * sharedPref.getFloat("loadVector_slider", 0.0f) + 1.0f);
+        return (double) (5.0f * sharedPref.getFloat("loadVector_slider", 0.2f));
     }
 
     public static double getExcitationFrequency() {
