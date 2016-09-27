@@ -450,7 +450,6 @@ public class Beam {
 
 
     public double returnMaximumStress() {
-        boolean isOverloaded = false;
         DenseMatrix64F forces = new DenseMatrix64F(6, 1);
         Displacements displacements = getLocalDisplacements();
         DenseMatrix64F displacementsVector = new DenseMatrix64F(6, 1);

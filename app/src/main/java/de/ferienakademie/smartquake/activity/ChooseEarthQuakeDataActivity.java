@@ -3,11 +3,9 @@ package de.ferienakademie.smartquake.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +22,7 @@ import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
 
-public class ChooseDataActivity extends AppCompatActivity {
+public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
     private int mPosition = ListView.INVALID_POSITION;
 

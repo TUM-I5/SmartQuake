@@ -21,13 +21,18 @@ public class EmptyAccelerationProvider extends AccelerationProvider {
     }
 
     @Override
+    public AccelData getAccelerationMeasurement(double time) {
+        return null;
+    }
+
+    @Override
     public void initTime(double timeStep) {
 
     }
 
     @Override
     public void saveFile(OutputStream outputStream) throws IOException {
-
+        outputStream.close();
     }
 
     @Override
