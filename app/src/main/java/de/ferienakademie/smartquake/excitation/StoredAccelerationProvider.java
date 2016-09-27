@@ -1,8 +1,9 @@
 package de.ferienakademie.smartquake.excitation;
 
+import android.content.Context;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -66,11 +67,10 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
 
     /**
      * Store the data to a file
-     * @param outputStream reference to a stream passing readings to internal storage
      */
-    public void saveFile(OutputStream outputStream) throws IOException {
+    public void saveFileIfDataPresent(Context c, String fileName) throws IOException {
         String readingString;
-        OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream);
+        OutputStreamWriter outputStreamReader = new OutputStreamWriter(c.openFileOutput("Last.earthquake", Context.MODE_PRIVATE));
         BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
 
         for (int i = 0; i < readings.size(); i++) {
@@ -81,7 +81,6 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         }
         bufferedWriter.close();
         outputStreamReader.close();
-        outputStream.close();
     }
 
     /**

@@ -94,14 +94,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         try {
             switch (fileName) {
                 case "Sinusodial.earthquake":
+                    mode = SimulationMode.LIVE;
                     SinCosExcitation sinCosExcitation = new SinCosExcitation();
                     sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
                     startSimulation(sinCosExcitation);
                     break;
                 case "Sensors.earthquake":
+                    mode = SimulationMode.REPLAY;
                     onStartButtonClicked();
                     return;
                 default:
+                    mode = SimulationMode.REPLAY;
                     FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
                     fileAccelerationProvider.load(openFileInput(fileName));
                     if (!fileAccelerationProvider.isEmpty()) {
@@ -317,6 +320,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStopButtonClicked() {
+        Log.d("STOPSIM STATE", mode.name());
         if (mode == SimulationMode.REPLAY) {
             replaySeekBar.setVisibility(View.GONE);
             replayrunningLabel.setVisibility(View.GONE);
@@ -324,21 +328,20 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         if (simulation == null) return;
         simulation.stop();
-        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
-        if (mode == SimulationMode.LIVE) {
-            try {
-                mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
-            } catch (IOException e) {
-                Log.e("ACCEL WRITE", "error writing", e);
-            }
+        try {
+            mCurrentAccelerationProvider.saveFileIfDataPresent(this, "Last.earthquake");
+        } catch (IOException e) {
+            Log.e("ACCEL WRITE", "error writing", e);
         }
+
         mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
         ActionMenuItemView loadEQDataButton = (ActionMenuItemView) findViewById(R.id.sim_load_earthquake_data_button);
         if (loadEQDataButton != null) loadEQDataButton.setEnabled(true);
+
         ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_button);
         if (replay != null) replay.setEnabled(true);
 
@@ -441,7 +444,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 @Override
                 public void run() {
                     onStopButtonClicked();
-                    mode = SimulationMode.LIVE;
                 }
             });
 
