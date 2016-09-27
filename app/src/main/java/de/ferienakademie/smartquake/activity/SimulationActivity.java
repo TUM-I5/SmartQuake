@@ -201,7 +201,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.getHouseWithMassDamper();
         } else if (structureId == 12) {
             structure = StructureFactory.getOneWTC();
-        } else{
+        } else if (structureId == 13) {
+            structure = StructureFactory.getBurjKhalifa();
+        }
+        else{
             structure = StructureFactory.getStructure(this, structureName);
         }
 
