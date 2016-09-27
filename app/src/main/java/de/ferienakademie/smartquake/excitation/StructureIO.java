@@ -64,7 +64,7 @@ public class StructureIO {
         writer.name("hinge");
         writer.value(node.isHinge());
         writer.name("mass");
-        writer.value(node.getMass());
+        writer.value(node.getNodeMass());
 
         writer.name("constraints");
         writer.beginArray();
@@ -118,7 +118,7 @@ public class StructureIO {
         Node node = new Node(x, y);
         node.setHinge(hinge);
         node.setConstraint(constraints);
-        node.setMass(mass);
+        node.setNodeMass(mass);
         return node;
     }
 
