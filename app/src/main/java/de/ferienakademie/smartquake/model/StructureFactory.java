@@ -1160,10 +1160,10 @@ public class StructureFactory {
         Node n20 = new Node(1.500000, 17.000000);
         Node n21 = new Node(1.500000, 15.000000);
         Node n22 = new Node(3.500000, 15.000000);
-        Node n23 = new Node(3.000000, 22.000000);
-        Node n24 = new Node(3.500000, 22.000000);
-        Node n25 = new Node(1.500000, 21.000000);
-        Node n26 = new Node(2.000000, 21.000000);
+        Node n23 = new Node(3.000000, 12.000000);
+        Node n24 = new Node(3.500000, 12.000000);
+        Node n25 = new Node(1.500000, 11.000000);
+        Node n26 = new Node(2.000000, 11.000000);
         Node n27 = new Node(2.000000, 6.000000);
         Node n28 = new Node(2.500000, 6.000000);
         Node n29 = new Node(2.500000, 3.000000);
