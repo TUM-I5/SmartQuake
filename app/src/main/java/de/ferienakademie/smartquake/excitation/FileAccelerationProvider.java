@@ -22,8 +22,8 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         AccelData temp = super.getAccelerationMeasurement();
             double percentage = (readings.get(currentPosition).timestamp*100.0)/
                     readings.get(readings.size()-1).timestamp;
-        notifyNewReplayPercent(percentage);
         notifyNewAccelData(temp);
+        notifyNewReplayPercent(percentage);
         return AccelData.toArray(temp);
     }
 

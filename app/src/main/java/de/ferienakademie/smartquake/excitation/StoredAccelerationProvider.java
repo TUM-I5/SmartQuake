@@ -1,5 +1,8 @@
 package de.ferienakademie.smartquake.excitation;
 
+import de.ferienakademie.smartquake.excitation.AccelData;
+import de.ferienakademie.smartquake.excitation.AccelerationProvider;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,8 +14,7 @@ import java.util.Locale;
  * Created by David Schneller on 25.09.2016.
  */
 public abstract class StoredAccelerationProvider extends AccelerationProvider {
-    //Sorry, setting protected is dirty, I know... But I do like getters/setters less.
-    protected ArrayList<AccelData> readings = new ArrayList<>();
+    protected ArrayList<AccelData> readings = new ArrayList<>(); //list of stored Eartquake data
     protected int currentPosition;
     protected int tick; //current simulation tick
     protected double timeStep; //in nanoseconds
@@ -23,24 +25,8 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
     @Override
     public void initTime(double timeStep) {
         this.timeStep = timeStep;
+        this.tick = 0;
         currentPosition = 0;
-    }
-
-    @Override
-    public double[] getAcceleration() {
-        AccelData temp = getAccelerationMeasurement();
-        return new double[]{temp.xAcceleration, temp.yAcceleration, temp.xGravity, temp.yGravity};
-    }
-
-    @Override
-    public double[] getAcceleration(double time) {
-        while (readings.size() - 1 > currentPosition
-                && readings.get(currentPosition).timestamp < (long)time*1e9) {
-            ++currentPosition;
-        }
-
-        AccelData data = readings.get(currentPosition);
-        return new double[]{data.xAcceleration, data.yAcceleration};
     }
 
     @Override
