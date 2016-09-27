@@ -799,6 +799,67 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getOneWTC() {
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        Node n1 = new Node(0.000000, 32.000000);
+        Node n2 = new Node(3.000000, 32.000000);
+        Node n3 = new Node(6.000000, 32.000000);
+        Node n4 = new Node(0.000000, 28.000000);
+        Node n5 = new Node(3.000000, 28.000000);
+        Node n6 = new Node(6.000000, 28.000000);
+        Node n7 = new Node(1.000000, 8.000000);
+        Node n8 = new Node(1.500000, 8.000000);
+        Node n9 = new Node(4.500000, 8.000000);
+        Node n10 = new Node(5.000000, 8.000000);
+        Node n11 = new Node(1.500000, 7.500000);
+        Node n12 = new Node(2.500000, 7.500000);
+        Node n13 = new Node(3.500000, 7.500000);
+        Node n14 = new Node(4.500000, 7.500000);
+        Node n15 = new Node(3.000000, 0.000000);
+
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n4, n5, testMaterial);
+        Beam b4 = new Beam(n5, n6, testMaterial);
+        Beam b5 = new Beam(n7, n8, testMaterial);
+        Beam b6 = new Beam(n8, n9, testMaterial);
+        Beam b7 = new Beam(n9, n10, testMaterial);
+        Beam b8 = new Beam(n11, n12, testMaterial);
+        Beam b9 = new Beam(n12, n13, testMaterial);
+        Beam b10 = new Beam(n13, n14, testMaterial);
+        Beam b11 = new Beam(n1, n4, testMaterial);
+        Beam b12 = new Beam(n2, n5, testMaterial);
+        Beam b13 = new Beam(n3, n6, testMaterial);
+        Beam b14 = new Beam(n4, n7, testMaterial);
+        Beam b15 = new Beam(n5, n7, testMaterial);
+        Beam b16 = new Beam(n5, n10, testMaterial);
+        Beam b17 = new Beam(n6, n10, testMaterial);
+        Beam b18 = new Beam(n8, n11, testMaterial);
+        Beam b19 = new Beam(n9, n14, testMaterial);
+        Beam b20 = new Beam(n12, n15, testMaterial);
+        Beam b21 = new Beam(n13, n15, testMaterial);
+
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
+
+
     public static Structure getTrumpTower() {
         double width = 8;
         double xOffset = -4;
