@@ -35,13 +35,11 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
     @Override
     public double[] getAcceleration(double time) {
         while (readings.size() - 1 > currentPosition
-                && readings.get(currentPosition).timestamp < time) {
+                && readings.get(currentPosition).timestamp < (long)time*1e9) {
             ++currentPosition;
         }
-        ++tick;
 
         AccelData data = readings.get(currentPosition);
-        notifyNewAccelData(data);
         return new double[]{data.xAcceleration, data.yAcceleration};
     }
 
@@ -54,8 +52,16 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         }
         ++tick;
 
-        AccelData data = readings.get(currentPosition);
-        return data;
+        return readings.get(currentPosition);
+    }
+
+    public AccelData getAccelerationMeasurement(double time){
+        while (readings.size() - 1 > currentPosition
+                && readings.get(currentPosition).timestamp < (long)(time * 1e9)) {
+            ++currentPosition;
+        }
+
+        return readings.get(currentPosition);
     }
 
     /**

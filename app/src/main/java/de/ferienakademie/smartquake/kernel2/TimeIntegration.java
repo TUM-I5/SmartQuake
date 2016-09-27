@@ -109,13 +109,13 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    double[] currExcitation = accelerationProvider.getAcceleration();
+                    double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
 
                     if(PreferenceReader.useModalAnalysis()) {
                         //update loadVector
                         spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
                         //get the loadVector for the whole calculation
-                        loadVector = spatialDiscretization.getLoadVector().copy();
+                        loadVector = spatialDiscretization.getRedLoadVectorModalAnalysis().copy();
                     }
                     else {
                         //update loadVector
