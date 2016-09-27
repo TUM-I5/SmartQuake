@@ -60,6 +60,8 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
             gravityProvider.getGravity(data);
         }
         notifyNewAccelData(data);
+        Log.i("SensorAccelProvider", data.xAcceleration + " " + data.yAcceleration + " "
+                +data.xGravity + " " + data.yGravity);
         return data;
     }
 
