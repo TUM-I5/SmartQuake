@@ -17,11 +17,11 @@ public class TimeIntegration {
     SpatialDiscretization spatialDiscretization;
     AccelerationProvider accelerationProvider;
 
-    // total computed time between every time step. This variable prevents computing more than GUI
+    // total computed time between every time step. This variable prevents computing more than GUI wants
     double t;
     // time step
     double delta_t;
-
+    //globale time since startSimulation
     double globalTime;
 
     // matrices of velocity
@@ -65,13 +65,13 @@ public class TimeIntegration {
         //stores the numerical scheme
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
-        //solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
 
+        //if modal analysis is activated we can diagonalize the matrices
         if(PreferenceReader.useModalAnalysis()) {
             spatialDiscretization.getModalAnalysisMatrices();
         }
 
-
+        //for the parallel thread
         executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -109,14 +109,8 @@ public class TimeIntegration {
                     //long firstTime = System.nanoTime();
                     while(t < 0.03-0.000001 && isRunning) {
                         //calculate new displacement
-                        if(PreferenceReader.useModalAnalysis()){
-                            solver.nextStepLumped(t, delta_t);
-                        }
-                        else {
-                            solver.nextStep(t, delta_t);
-                        }
-                       // solver.nextStepLumped(t, delta_t);
-
+                        solver.nextStep(t, delta_t);
+                        //add ground movement for recording
                         solver.setGroundPosition(delta_t);
                         t += delta_t;
 

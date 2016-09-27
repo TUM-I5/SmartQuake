@@ -24,10 +24,8 @@ public class StructureFactory {
         List<Integer> dofNode2 = new LinkedList<>();
 
 
-        Node bottom = new Node(4, 5);
-
-
-        Node up = new Node(4, 0);
+        Node bottom = new Node(4, 8);
+        Node up = new Node(4, 3);
 
         List<Integer> condof = new ArrayList<>();
 
@@ -36,7 +34,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = Material.STEEL;
+        Material testMaterial = Material.STEEL2;
 
         Beam b = new Beam(bottom, up, testMaterial);
 
@@ -56,12 +54,11 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-
-        Node n1 = new Node(0, height, true);
-        Node n2 = new Node(width, height, true);
-        Node n3 = new Node(width, height - half, true);
-        Node n4 = new Node(0, height - half, true);
-        Node n5 = new Node(half, height - 2 * half, true);
+        Node n1 = new Node(0, height, false);
+        Node n2 = new Node(width, height, false);
+        Node n3 = new Node(width, height - half, false);
+        Node n4 = new Node(0, height - half, false);
+        Node n5 = new Node(half, height - 2 * half, false);
 
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);

@@ -87,10 +87,12 @@ public class SpatialDiscretization {
         StiffnessMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
         MassMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
         DampingMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
+        eigentransposemultMassmatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
         LoadVector = new DenseMatrix64F(getNumberofDOF(), 1);
 
         StiffnessMatrix.zero();
         MassMatrix.zero();
+        eigentransposemultMassmatrix.zero();
 
 
         calculateMassMatrix();

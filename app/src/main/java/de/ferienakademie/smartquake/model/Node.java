@@ -21,7 +21,7 @@ public class Node {
     private List <List <Double>>  historyOfDisplacements;
     private List <double[]> historyOfGroundDisplacement;
 
-    private double radius = 0.02;
+    private double radius = 0.05;
 
 
 
@@ -34,6 +34,8 @@ public class Node {
         this.initialX = x;
         this.initialY = y;
         displacements = new ArrayList<>();
+        displacements.add(0.0);
+        displacements.add(0.0);
         historyOfDisplacements = new ArrayList<>();
         historyOfGroundDisplacement = new ArrayList<>();
     }
