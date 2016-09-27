@@ -14,11 +14,14 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.ferienakademie.smartquake.R;
 
 public class GraphViewActivity extends AppCompatActivity {
 
-      @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_graphs);
