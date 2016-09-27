@@ -15,7 +15,7 @@ public class PreferenceReader {
     }
 
     public static boolean includeGravity() {
-        return sharedPref.getBoolean("pref_gravity", false);
+        return sharedPref.getBoolean("pref_use_gravity", false);
     }
 
     public static boolean useModalAnalysis() {
