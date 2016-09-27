@@ -37,8 +37,15 @@ public class SinCosExcitation extends AccelerationProvider {
     @Override
     public double[] getAcceleration() {
         counter++;
-        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9),
-                0.0, 9.81, 0.0};
+        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * (double)(counter * timestep * 1e-9)),
+                0.0, 0.0 , 0.0};
+    }
+
+    @Override
+    public double[] getAcceleration(double time) {
+        counter++;
+        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * time),
+                0.0, 0.0, 0.0};
     }
 
     @Override
