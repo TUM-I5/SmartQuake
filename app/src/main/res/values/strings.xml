@@ -144,6 +144,7 @@
     <string name="pref_show_raw_sensor_data_summary">Display raw sensor data while simulating.</string>
     <string name="pref_show_raw_sensor_data_title">Show raw sensor data</string>
     <string name="save_excitation">Save excitation data</string>
+    <string name="replay_displacement_title">Replay simulation</string>
 
     <string-array name="loadVector_slider_summaries">
         <item>0.0</item>
