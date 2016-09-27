@@ -54,7 +54,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private FloatingActionButton simFab;
     private CanvasView canvasView;
     private TimeIntegration timeIntegration;
-    private Structure structure;
+
+
+    // probably not the best solution
+    protected static Structure getStructure() {
+        return structure;
+    }
+
+    private static Structure structure;
+
     private SpatialDiscretization spatialDiscretization;
     private Simulation simulation;
     private CoordinatorLayout layout;
@@ -156,7 +164,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
         } else if (id == R.id.sim_view_graphs_button) {
-            startActivity(new Intent(this, GraphViewActivity.class));
+            Intent i = new Intent(this, GraphViewActivity.class);
+            i.putExtra("initialNodeId", 4);
+            i.putExtra("structureName", structureName);
+            i.putExtra("structureId", structureId);
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -168,34 +180,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void createStructure(int structureId, String structureName) {
-        if (structureId == 0) {
-            structure = StructureFactory.cantileverBeam();
-        } else if (structureId == 1) {
-            structure = StructureFactory.getSimpleHouse();
-        } else if (structureId == 2) {
-            structure = StructureFactory.getCraneBottom();
-        } else if (structureId == 3) {
-            structure = StructureFactory.getBetterEiffelTower();
-        } else if (structureId == 4) {
-            structure = StructureFactory.getEmpireState();
-        } else if (structureId == 5) {
-            structure = StructureFactory.getGoldenGate();
-        } else if (structureId == 6) {
-            structure = StructureFactory.getWeirdBridge();
-        } else if (structureId == 7) {
-            structure = StructureFactory.getHousingBlock();
-        } else if (structureId == 8) {
-            structure = StructureFactory.getTrumpTower();
-        } else if (structureId == 9) {
-            structure = StructureFactory.getTVtower();
-        } else {
-            structure = StructureFactory.getStructure(this, structureName);
-        }
+        structure = StructureFactory.getStructure(this, structureId, structureName);
 
         for (Beam beam : structure.getBeams()) {
             beam.computeAll(structure.isLumped());
         }
-
     }
 
     @Override

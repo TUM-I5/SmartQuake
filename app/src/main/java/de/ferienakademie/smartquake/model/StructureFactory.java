@@ -731,7 +731,28 @@ public class StructureFactory {
 
 
 
-    public static Structure getStructure(Context context, String structureName) {
+    public static Structure getStructure(Context context, int structureId, String structureName) {
+        if (structureId == 0) {
+            return StructureFactory.cantileverBeam();
+        } else if (structureId == 1) {
+            return StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            return StructureFactory.getCraneBottom();
+        } else if (structureId == 3) {
+            return StructureFactory.getBetterEiffelTower();
+        } else if (structureId == 4) {
+            return StructureFactory.getEmpireState();
+        } else if (structureId == 5) {
+            return StructureFactory.getGoldenGate();
+        } else if (structureId == 6) {
+            return StructureFactory.getWeirdBridge();
+        } else if (structureId == 7) {
+            return StructureFactory.getHousingBlock();
+        } else if (structureId == 8) {
+            return StructureFactory.getTrumpTower();
+        } else if (structureId == 9) {
+            return StructureFactory.getTVtower();
+        }
 
         FileInputStream fileInputStream = null;
 

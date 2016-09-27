@@ -1,12 +1,13 @@
 package de.ferienakademie.smartquake.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by yuriy on 21/09/16.
- */
 public class Node {
 
     //Initial node position
@@ -17,18 +18,11 @@ public class Node {
 
     private List<Integer> DOF; //Degrees of freedom
     private List<Double> displacements; //List of all displacements at the node
-
-    private List <List <Double>>  historyOfDisplacements;
-    private List <double[]> historyOfGroundDisplacement;
-
+    private List<List<Double>> historyOfDisplacements;
+    private List<double[]> historyOfGroundDisplacement;
     private double radius = 0.02;
-
-
-
     private boolean hinge = false;
-
     private List<Beam> beams = new ArrayList<>();
-
 
     public Node(double x, double y) {
         this.initialX = x;
@@ -50,6 +44,9 @@ public class Node {
         this.DOF = DOF;
     }
 
+    public List<List<Double>> getHistoryOfDisplacements() {
+        return historyOfDisplacements;
+    }
 
     public double getInitialX() {
         return initialX;
@@ -60,39 +57,25 @@ public class Node {
     }
 
 
-
-
     public double getInitialY() {
         return initialY;
     }
 
-
-
-
-    public void setSingleDisplacement(int i, double value) {
-        this.displacements.set(i,value );
-
+    public void setInitialY(double initialY) {
+        this.initialY = initialY;
     }
 
+    public void setSingleDisplacement(int i, double value) {
+        this.displacements.set(i, value);
 
-
+    }
 
     public double getSingleDisplacement(int i) {
         return this.displacements.get(i);
     }
 
-
-
-
     public double getDisplacementForDof(int i) {
-        return this.displacements.get( DOF.indexOf(i) );
-    }
-
-
-
-
-    public void setInitialY(double initialY) {
-        this.initialY = initialY;
+        return this.displacements.get(DOF.indexOf(i));
     }
 
     public void addBeam(Beam beam) {
@@ -107,10 +90,9 @@ public class Node {
 
     public void setDOF(List<Integer> DOF) {
         this.DOF = DOF;
-        for (int i=0; i<DOF.size(); i++)
+        for (int i = 0; i < DOF.size(); i++)
             displacements.add(0.0);
     }
-
 
 
     public double getCurrentX() {
@@ -118,11 +100,9 @@ public class Node {
     }
 
 
-
     public float getCurrentXf() {
-        return (float)(initialX + displacements.get(0));
+        return (float) (initialX + displacements.get(0));
     }
-
 
 
     public double getCurrentY() {
@@ -130,12 +110,9 @@ public class Node {
     }
 
 
-
     public float getCurrentYf() {
-        return (float)(initialY + displacements.get(1));
+        return (float) (initialY + displacements.get(1));
     }
-
-
 
 
     public double getRadius() {
@@ -143,20 +120,14 @@ public class Node {
     }
 
 
-
-
     public void setRadius(double radius) {
         this.radius = radius;
     }
 
 
-
-
     public void clearBeams() {
         beams.clear();
     }
-
-
 
 
     public List<Beam> getBeams() {
@@ -216,13 +187,8 @@ public class Node {
     }
 
 
-
     public void saveTimeStepGroundDisplacement(double[] gD) {
         historyOfGroundDisplacement.add(gD);
     }
-
-
-
-
 }
 
