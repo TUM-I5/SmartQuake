@@ -32,11 +32,11 @@ public class SpatialDiscretization {
     private DenseMatrix64F eigenvectorsmatrix;
     private DenseMatrix64F[] eigenvectors;
     private double[] eigenvalues;
-    private double[] StiffnessVector;
-    private double[] MassVector;
-    private double[] DampingVector;
+    private DenseMatrix64F StiffnessVector;
+    private DenseMatrix64F MassVector;
+    private DenseMatrix64F DampingVector;
     private double[] ReducedEigenvalues;
-    private double[] RedLoadVector;
+    private DenseMatrix64F RedLoadVector;
     private  DenseMatrix64F[] Reducedeigenvectors;
     private DenseMatrix64F ReducedeigenvectorsMatrixTranspose;
     private DenseMatrix64F RedinfluenceVectorX;
@@ -62,7 +62,7 @@ public class SpatialDiscretization {
         initializeMatrices();
         calculateInfluenceVector();
         //TODO: Fix eigenvalues with hinges
-        //calculateEigenvaluesAndVectors();
+        calculateEigenvaluesAndVectors();
         calculateDampingMatrix();
 
     }
@@ -164,15 +164,12 @@ public class SpatialDiscretization {
     }
 
     public void calculateDampingMatrix() {
-        // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
-        //CommonOps.scale(10,MassMatrix,DampingMatrix);
         DampingMatrix.zero();
-        //double omega1 = ReducedEigenvalues[0];
-        //double omega2 = ReducedEigenvalues[1];
-        //TODO: fix this shit
+        double omega1 = ReducedEigenvalues[0];
+        double omega2 = ReducedEigenvalues[1];
         double xi = 0.05;
-        double a0 = 1; //2 * xi * omega1 * omega2 / (omega1 + omega2);
-        double a1 = 1; //2 * xi / (omega1 + omega2);
+        double a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 2 * xi / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
@@ -278,7 +275,7 @@ public class SpatialDiscretization {
 
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
 
-        RedLoadVector = new double[numberofDOF-structure.getConDOF().size()];
+        RedLoadVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
         if (PreferenceReader.includeGravity()) {
 
             CommonOps.scale(acceleration[0], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
@@ -289,7 +286,7 @@ public class SpatialDiscretization {
             CommonOps.scale(acceleration[1], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
         }
-        CommonOps.mult(ReducedeigenvectorsMatrixTranspose, influenceVectorX, DenseMatrix64F.wrap(RedLoadVector.length, 1,RedLoadVector));
+        CommonOps.mult(ReducedeigenvectorsMatrixTranspose, influenceVectorX, RedLoadVector);
     }
 
 
@@ -349,15 +346,19 @@ public class SpatialDiscretization {
 
     public void getModalAnalysisMatrices(){
         normaliseEigenvectors();
-        StiffnessVector = new double[numberofDOF-structure.getConDOF().size()];
-        MassVector = new double[numberofDOF-structure.getConDOF().size()];
-        DampingVector = new double[numberofDOF-structure.getConDOF().size()];
-        calculateDampingMatrix();
-        for (int i = 0; i < numberofDOF; i++) {
-            StiffnessVector[i] = eigenvalues[i];
-            MassVector[i] = 1.0;
-            DampingVector[i]=DampingMatrix.get(i,i);
+        StiffnessVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        MassVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        DampingVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+
+        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
+            StiffnessVector.set(i,0,ReducedEigenvalues[i]);
+            MassVector.set(i,0,1.0);
         }
+        calculateDampingMatrix();
+        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
+           DampingVector.set(i,0,DampingMatrix.get(i,i));
+        }
+
 
     }
 
@@ -378,35 +379,35 @@ public class SpatialDiscretization {
 
     }
 
-    public double[] getDampingVector() {
+    public DenseMatrix64F getDampingVector() {
         return DampingVector;
     }
 
-    public void setDampingVector(double[] dampingVector) {
+    public void setDampingVector(DenseMatrix64F dampingVector) {
         DampingVector = dampingVector;
     }
 
-    public double[] getStiffnessVector() {
-        return StiffnessVector;
-    }
-
-    public void setStiffnessVector(double[] stiffnessVector) {
-        StiffnessVector = stiffnessVector;
-    }
-
-    public double[] getMassVector() {
-        return MassVector;
-    }
-
-    public void setMassVector(double[] massVector) {
-        MassVector = massVector;
-    }
-
-    public double[] getRedLoadVector() {
+    public DenseMatrix64F getRedLoadVector() {
         return RedLoadVector;
     }
 
-    public void setRedLoadVector(double[] redLoadVector) {
+    public void setRedLoadVector(DenseMatrix64F redLoadVector) {
         RedLoadVector = redLoadVector;
+    }
+
+    public DenseMatrix64F getMassVector() {
+        return MassVector;
+    }
+
+    public void setMassVector(DenseMatrix64F massVector) {
+        MassVector = massVector;
+    }
+
+    public DenseMatrix64F getStiffnessVector() {
+        return StiffnessVector;
+    }
+
+    public void setStiffnessVector(DenseMatrix64F stiffnessVector) {
+        StiffnessVector = stiffnessVector;
     }
 }
