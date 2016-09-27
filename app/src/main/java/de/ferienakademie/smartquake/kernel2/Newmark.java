@@ -159,7 +159,6 @@ public class Newmark extends ImplicitSolver {
      * @param result
      */
     private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
-
         for(int i = 0; i< k1.getNumberofUnconstraintDOF(); i++) {
             result.set(i, 0, result.get(i) - delta_t * matrix.get(i, i) * vec.get(i, 0));
         }
