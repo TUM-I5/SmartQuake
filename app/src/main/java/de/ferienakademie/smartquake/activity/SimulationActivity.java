@@ -41,6 +41,7 @@ import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -72,17 +73,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private int structureId;
     private String structureName;
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             onStartButtonClicked();
-        }
-    };
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
         }
     };
     private long lastDebugSensorDataTimestamp;
@@ -94,14 +95,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         try {
             switch (fileName) {
                 case "Sinusodial.earthquake":
+                    mode = SimulationMode.LIVE;
                     SinCosExcitation sinCosExcitation = new SinCosExcitation();
                     sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
                     startSimulation(sinCosExcitation);
                     break;
                 case "Sensors.earthquake":
+                    mode = SimulationMode.REPLAY;
                     onStartButtonClicked();
                     return;
                 default:
+                    mode = SimulationMode.REPLAY;
                     FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
                     fileAccelerationProvider.load(openFileInput(fileName));
                     if (!fileAccelerationProvider.isEmpty()) {
@@ -152,7 +156,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 mode = SimulationMode.LIVE;
             }
 
-            if (simulation.isRunning()) {
+            if (simulation != null && simulation.isRunning()) {
                 onStopButtonClicked();
             }
             tvSensorDataX.setText("");
@@ -315,6 +319,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStopButtonClicked() {
+        Log.d("STOPSIM STATE", mode.name());
         if (mode == SimulationMode.REPLAY) {
             replaySeekBar.setVisibility(View.GONE);
             replayrunningLabel.setVisibility(View.GONE);
@@ -322,21 +327,20 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         if (simulation == null) return;
         simulation.stop();
-        Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
 
         mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
-        if (mode == SimulationMode.LIVE) {
-            try {
-                mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
-            } catch (IOException e) {
-                Log.e("ACCEL WRITE", "error writing", e);
-            }
+        try {
+            mCurrentAccelerationProvider.saveFileIfDataPresent(this, "Last.earthquake");
+        } catch (IOException e) {
+            Log.e("ACCEL WRITE", "error writing", e);
         }
+
         mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
         ActionMenuItemView loadEQDataButton = (ActionMenuItemView) findViewById(R.id.sim_load_earthquake_data_button);
         if (loadEQDataButton != null) loadEQDataButton.setEnabled(true);
+
         ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_button);
         if (replay != null) replay.setEnabled(true);
 
@@ -439,15 +443,57 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 @Override
                 public void run() {
                     onStopButtonClicked();
-                    mode = SimulationMode.LIVE;
                 }
             });
 
         }
     }
 
+    /**
+     * replays previous simulation without calculating again
+     */
     private void replayDisplacement() {
-        // todo add displacement replay
+
+        //This tells us how many time steps were calculated
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+
+                //we loop over all frames
+                for (int i = 0; i < number_timeSteps; i++) {
+
+                    //loop over all nodes to update positions
+                    for (Node in : structure.getNodes()) {
+
+                        in.recallDisplacementOfStep(i);
+
+                    }
+                    
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException ex) {
+                        Log.e("replayDisplacement", ex.getMessage());
+                    }
+
+                    while(canvasView.isBeingDrawn) {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException ex) {
+                            Log.e("replayDisplacement", ex.getMessage());
+                        }
+                    }
+
+                    //draw frame
+                    DrawHelper.drawStructure(structure, canvasView);
+
+
+
+                }
+            }
+        }).start();
+
     }
 
     // TODO: should this be part of Simulation too?

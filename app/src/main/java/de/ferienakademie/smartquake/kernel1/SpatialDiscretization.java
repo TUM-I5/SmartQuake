@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -274,7 +276,7 @@ public class SpatialDiscretization {
     public void updateLoadVector(double[] acceleration) {
         if (PreferenceReader.includeGravity()) {
 
-            CommonOps.scale(acceleration[0] - acceleration[2], influenceVectorX, influenceVectorX_temp);
+            CommonOps.scale(acceleration[0] + acceleration[2], influenceVectorX, influenceVectorX_temp);
             CommonOps.scale(acceleration[1] - acceleration[3], influenceVectorY, influenceVectorY_temp);
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
@@ -304,6 +306,7 @@ public class SpatialDiscretization {
         }
 
         CommonOps.mult(ReducedeigenvectorsMatrixTranspose, RedinfluenceVectorX_temp, redLoadVectorModalAnalysis);
+
     }
 
 
@@ -388,12 +391,29 @@ public class SpatialDiscretization {
 
     }
     public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
-        DenseMatrix64F DisplacementVector = new DenseMatrix64F();
-        DisplacementVector.zero();
+        DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF, 1);
+
         for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            CommonOps.add(Reducedeigenvectors[i],modalSolutionvector.get(i,0),DisplacementVector);
+            CommonOps.add(Reducedeigenvectors[i], modalSolutionvector.get(i, 0), DisplacementVector);
         }
 
+        DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberofUnconstraintDOF());
+
+
+        for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
+            CommonOps.addEquals(Reducedeigenvectors[i],modalSolutionvector.get(i,0),solVecCopy);
+        }
+
+        // Extend displacements by inserting zeros in the position of constraint dofs
+        for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
+            int disp = 0;
+            for (int k: structure.getConDOF()) {
+                if (k <= i) {
+                    disp++;
+                }
+            }
+            DisplacementVector.set(i+disp, 0, solVecCopy.get(i, 0));
+        }
         updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
 
     }

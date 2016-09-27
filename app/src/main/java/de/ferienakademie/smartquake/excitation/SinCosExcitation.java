@@ -4,8 +4,9 @@ package de.ferienakademie.smartquake.excitation;
  * Created by simon on 23.09.16.
  */
 
+import android.content.Context;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.acl.AclEntry;
 
 /**
@@ -55,7 +56,7 @@ public class SinCosExcitation extends AccelerationProvider {
      */
     public AccelData getAccelerationMeasurement() {
         counter++;
-        AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
+        AccelData accelData = new AccelData(amplitude * Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
                 (long) (counter * timestep));
         notifyNewAccelData(accelData);
         return accelData;
@@ -63,7 +64,7 @@ public class SinCosExcitation extends AccelerationProvider {
 
     @Override
     public AccelData getAccelerationMeasurement(double time) {
-        AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * time), 0.0,
+        AccelData accelData = new AccelData(amplitude * Math.sin(2 * Math.PI * frequency * time), 0.0,
                 (long) (time * 1e9));
         notifyNewAccelData(accelData);
         return accelData;
@@ -83,7 +84,7 @@ public class SinCosExcitation extends AccelerationProvider {
     }
 
     @Override
-    public void saveFile(OutputStream outputStream) throws IOException {
+    public void saveFileIfDataPresent(Context c, String fileName) throws IOException {
         //no.
     }
 
