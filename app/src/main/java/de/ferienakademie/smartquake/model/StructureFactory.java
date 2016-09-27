@@ -92,20 +92,18 @@ public class StructureFactory {
         Node n2 = new Node(width, height);
         Node n3 = new Node(width, height/2);
         Node n4 = new Node(0, height/2);
-        Node n5 = new Node(width/2, 0);
-        Node n6 = new Node(width/2,height/2,true);
-        Node n7 = new Node(width/2, height*3/4,50);
+        Node n5 = new Node(width/2, 0,true);
+        Node n6 = new Node(width/2, height*1/4,10);
 
         Beam b2 = new Beam(n2, n3, testMaterial);
-        Beam b3 = new Beam(n3, n6, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
         Beam b4 = new Beam(n4, n1, testMaterial);
         Beam b5 = new Beam(n4, n5, testMaterial);
         Beam b6 = new Beam(n5, n3, testMaterial);
-        Beam b7 = new Beam(n4, n6, testMaterial);
-        Beam b8 = new Beam(n6, n7, testMaterial);
+        Beam b7 = new Beam(n5, n6, testMaterial);
 
-        structure.addNodes(n1, n2, n3, n4, n5, n6, n7);
-        structure.addBeams( b2, b3, b4, b5, b6, b7, b8);
+        structure.addNodes(n1, n2, n3, n4, n5, n6);
+        structure.addBeams( b2, b3, b4, b5, b6, b7);
 
         boolean[] con = new boolean[3];
         con[0]=true;
