@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.kernel2;
 import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -97,6 +98,8 @@ public class TimeIntegration {
         //variable which can stop the simulation
         //it will be set to false if the calculation of the displacements takes longer than than
         boolean isRunning;
+        double loadVectorScaling = PreferenceReader.getLoadVectorScaling();
+        DenseMatrix64F loadVector;
 
         public SimulationStep execute() {
             isRunning = true;
@@ -110,7 +113,9 @@ public class TimeIntegration {
                     spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
 
                     //get the loadVector for the whole calculation
-                    solver.setFLoad(spatialDiscretization.getLoadVector());
+                    loadVector = spatialDiscretization.getLoadVector().copy();
+                    CommonOps.scale(loadVectorScaling, loadVector);
+                    solver.setFLoad(loadVector);
 
                     //long firstTime = System.nanoTime();
                     //this loop performs the calculation
