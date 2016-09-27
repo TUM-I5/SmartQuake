@@ -80,6 +80,43 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getHouseWithMassDamper() {
+        double width = 8;
+        double height = 8;
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width, height);
+        Node n3 = new Node(width, height/2);
+        Node n4 = new Node(0, height/2);
+        Node n5 = new Node(width/2, 0);
+        Node n6 = new Node(width/2,height/2,true);
+        Node n7 = new Node(width/2, height*3/4,50);
+
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n6, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
+        Beam b7 = new Beam(n4, n6, testMaterial);
+        Beam b8 = new Beam(n6, n7, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7);
+        structure.addBeams( b2, b3, b4, b5, b6, b7, b8);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
 
     public static Structure getCraneBottom() {
 
@@ -739,8 +776,6 @@ public class StructureFactory {
         enumerateDOFs(structure);
         return structure;
     }
-
-
 
     public static Structure getStructure(Context context, String structureName) {
 

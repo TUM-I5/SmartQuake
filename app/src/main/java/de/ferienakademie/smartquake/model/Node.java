@@ -24,6 +24,7 @@ public class Node {
     private double radius = 0.05;
 
     private boolean hinge = false;
+    private double nodeMass = 0;
 
     private List<Beam> beams = new ArrayList<>();
 
@@ -41,6 +42,17 @@ public class Node {
         this(x, y);
         this.hinge = hinged;
     }
+
+    public Node(double x, double y, double nodeMass) {
+        this(x, y);
+        this.nodeMass = nodeMass;
+    }
+
+    public Node(double x, double y, boolean hinged, double nodeMass) {
+        this(x, y, hinged);
+        this.nodeMass = nodeMass;
+    }
+
 
     public Node(double x, double y, List<Integer> DOF) {
         this(x, y);
@@ -109,6 +121,15 @@ public class Node {
     public float getCurrentYf() {
         return (float)(initialY + displacements.get(1));
     }
+
+    public double getNodeMass() {
+        return nodeMass;
+    }
+
+    public void setNodeMass(double nodeMass) {
+        this.nodeMass = nodeMass;
+    }
+
 
     public double getRadius() {
         return radius;
