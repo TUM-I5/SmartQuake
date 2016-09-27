@@ -53,7 +53,6 @@ public class SpatialDiscretization {
     private DenseMatrix64F influenceVectorX_temp;
     private DenseMatrix64F influenceVectorY_temp;
 
-
     public SpatialDiscretization(Structure structure) {
         this.structure = structure;
         //initialize displacement with zeros
@@ -64,7 +63,8 @@ public class SpatialDiscretization {
 
         initializeMatrices();
         calculateInfluenceVector();
-        calculateEigenvaluesAndVectors();
+        //TODO: Fix eigenvalues with hinges
+        //calculateEigenvaluesAndVectors();
         calculateDampingMatrix();
         //performModalAnalysis(); //test
         displacementScale = PreferenceReader.getDisplacementScaling();
@@ -170,12 +170,12 @@ public class SpatialDiscretization {
         // CommonOps.scale(material.getDampingCoefficient()/material.getMassPerLength(),MassMatrix,DampingMatrix);
         //CommonOps.scale(10,MassMatrix,DampingMatrix);
         DampingMatrix.zero();
-        double omega1 = ReducedEigenvalues[0];
-        double omega2 = ReducedEigenvalues[1];
-
+        //double omega1 = ReducedEigenvalues[0];
+        //double omega2 = ReducedEigenvalues[1];
+        //TODO: fix this shit
         double xi = 0.05;
-        double a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
-        double a1 = 2 * xi / (omega1 + omega2);
+        double a0 = 1; //2 * xi * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 1; //2 * xi / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
