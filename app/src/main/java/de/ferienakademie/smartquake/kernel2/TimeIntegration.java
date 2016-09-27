@@ -5,6 +5,7 @@ import android.util.Log;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,14 +73,17 @@ public class TimeIntegration {
         //give the class the time step
         accelerationProvider.initTime(delta_t*1e9);
 
-        //stores the numerical scheme
-        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
-        //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
         //if modal analysis is activated we can diagonalize the matrices
         if(PreferenceReader.useModalAnalysis()) {
             spatialDiscretization.getModalAnalysisMatrices();
         }
+
+        //stores the numerical scheme
+        solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
+        //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+
+
 
         //for the parallel thread
         executorService = Executors.newSingleThreadExecutor();
@@ -113,7 +117,7 @@ public class TimeIntegration {
                         //update loadVector
                         spatialDiscretization.updateLoadVectorModalAnalyis(accelerationProvider.getAcceleration());
                         //get the loadVector for the whole calculation
-                        loadVector = spatialDiscretization.getLoadVector().copy();
+                        loadVector = spatialDiscretization.getRedLoadVectorModalAnalysis().copy();
                     }
                     else {
                         //update loadVector
@@ -146,9 +150,14 @@ public class TimeIntegration {
                     //long secondTime = System.nanoTime();
                     //Log.e("Timestamp",""+(secondTime-firstTime));
 
-                    //update the displacement in the node variables
-                    spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
-
+                    if(PreferenceReader.useModalAnalysis()){
+                        //update the displacement in the node variables using modal analysis
+                        spatialDiscretization.superimposeModalAnalyisSolutions(solver.getX(), solver.getGroundPosition());
+                    }
+                    else {
+                        //update the displacement in the node variables
+                        spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
+                    }
                     isRunning = false;
                 }
             });

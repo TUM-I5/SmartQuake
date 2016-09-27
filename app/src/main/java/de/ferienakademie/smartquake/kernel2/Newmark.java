@@ -68,13 +68,13 @@ public class Newmark extends ImplicitSolver {
         solver.setA(A);
 
         //initialise right side matrices: F_ext - K*xDot- B*xDotDot
-        B = new DenseMatrix64F(k1.getNumberofDOF(),k1.getNumberofDOF());
+        B = new DenseMatrix64F(C.getNumRows(), C.getNumRows());
         CommonOps.addEquals(B,delta_t/2.0,C);
         CommonOps.addEquals(B,delta_t*delta_t/4.0,K);
         CommonOps.addEquals(B,-1,M);
 
         //initialize fLoad_old
-        fLoad_old = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        fLoad_old = new DenseMatrix64F(C.getNumRows(), 1);
 
     }
 
@@ -146,7 +146,7 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
         //Solve to get xDotDot
-        for(int i = 0; i<k1.getNumberofDOF(); i++){
+        for(int i = 0; i<RHS.getNumRows(); i++){
             xDotDot.set(i,0,RHS.get(i,0)/A.get(i,i));
         }
     }
@@ -159,7 +159,7 @@ public class Newmark extends ImplicitSolver {
      * @param result
      */
     private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
-        for(int i = 0; i< k1.getNumberofDOF(); i++){
+        for(int i = 0; i< matrix.getNumRows(); i++){
             result.set(i,0,result.get(i)-delta_t*matrix.get(i,i)*vec.get(i,0));
         }
     }
