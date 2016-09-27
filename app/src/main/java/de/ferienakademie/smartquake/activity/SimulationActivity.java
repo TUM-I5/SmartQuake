@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -70,17 +72,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private int structureId;
     private String structureName;
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
-        }
-    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             onStartButtonClicked();
+        }
+    };
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
         }
     };
     private long lastDebugSensorDataTimestamp;
@@ -308,12 +310,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
-        try {
-            mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (mode == SimulationMode.LIVE) {
+            try {
+                mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
         mCurrentAccelerationProvider = new EmptyAccelerationProvider();
 
         ActionMenuItemView loadEQDataButton = (ActionMenuItemView) findViewById(R.id.sim_load_earthquake_data_button);
@@ -416,8 +419,14 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         replayProgress = percent;
         replaySeekBar.setProgress((int) Math.round(percent));
         if (percent >= 100) {
-            onStopButtonClicked();
-            mode = SimulationMode.LIVE;
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    onStopButtonClicked();
+                    mode = SimulationMode.LIVE;
+                }
+            });
+
         }
     }
 

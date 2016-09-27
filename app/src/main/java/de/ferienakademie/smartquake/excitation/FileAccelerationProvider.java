@@ -23,7 +23,7 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
         double[] temp = super.getAcceleration();
             double percentage = (readings.get(currentPosition).timestamp*100.0)/
                     readings.get(readings.size()-1).timestamp;
-            //super.notifyNewReplayPercent(percentage);
+            super.notifyNewReplayPercent(percentage);
         return temp;
     }
 
