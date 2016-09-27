@@ -4,6 +4,7 @@ import org.ejml.data.DenseMatrix64F;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Created by Felix Wechsler on 23/09/16.
@@ -53,10 +54,18 @@ public class Solver implements TimeIntegrationSolver {
         this.k1 = k1;
         this.accelerationProvider = accelerationProvider;
 
-        this.M = k1.getMassMatrix();
-        this.K = k1.getStiffnessMatrix();
-        this.C = k1.getDampingMatrix();
-        this.x = new DenseMatrix64F(k1.getNumberofDOF(),1);
+        if(PreferenceReader.useModalAnalysis()){
+            this.M = k1.getMassMatrix();
+            this.K = k1.getStiffnessMatrix();
+            this.C = k1.getDampingMatrix();
+            this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        }
+        else {
+            this.M = k1.getMassMatrix();
+            this.K = k1.getStiffnessMatrix();
+            this.C = k1.getDampingMatrix();
+            this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        }
 
         this.xDot = xDot;
 
