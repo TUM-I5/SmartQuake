@@ -27,7 +27,7 @@ public class EmptyAccelerationProvider extends AccelerationProvider {
 
     @Override
     public void saveFile(OutputStream outputStream) throws IOException {
-
+        outputStream.close();
     }
 
     @Override

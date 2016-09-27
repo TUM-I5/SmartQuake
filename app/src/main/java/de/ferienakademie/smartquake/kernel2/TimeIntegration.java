@@ -113,7 +113,7 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    double[] currExcitation = accelerationProvider.getAcceleration();
+                    double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
 
                    // for(int i=0; i<currExcitation.length; i++){
                    //     currExcitation[i] =0;
