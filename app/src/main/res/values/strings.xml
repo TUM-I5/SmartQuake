@@ -15,6 +15,12 @@
     <string name="pref_lumped_summary_On">Using lumped mass matrices.</string>
     <string name="pref_lumped_summary_Off">Using consistent mass matrices.</string>
 
+
+    <string name="pref_show_ground_displacements">Ground Displacements</string>
+    <string name="pref_show_ground_displacements_summary_On">Show Ground Displacements on Replay.</string>
+    <string name="pref_show_ground_displacements_summary_Off">Don\'t Show Ground Displacements on Replay</string>
+
+
     <string name="clear_canvas">Clear canvas</string>
     <string name="save_canvas">Save canvas</string>
     <string name="create_button">create</string>
@@ -144,6 +150,7 @@
     <string name="pref_show_raw_sensor_data_summary">Display raw sensor data while simulating.</string>
     <string name="pref_show_raw_sensor_data_title">Show raw sensor data</string>
     <string name="save_excitation">Save excitation data</string>
+    <string name="replay_displacement_title">Replay simulation</string>
 
     <string-array name="loadVector_slider_summaries">
         <item>0.0</item>
@@ -199,5 +206,65 @@
         <item>5.0</item>
     </string-array>
     <!-- End preference slider displacement magnification -->
+
+    <!-- Preference slider damping coefficient -->
+    <string name="damping_slider_title">Damping coefficient</string>
+    <item name="damping_slider_default" format="float" type="string">0.2</item>
+    <string name="damping_slider_message"></string>
+
+    <string-array name="damping_slider_summaries">
+        <item> 0.00 </item>
+        <item> 0.01 </item>
+        <item> 0.02 </item>
+        <item> 0.03 </item>
+        <item> 0.04 </item>
+        <item> 0.05 </item>
+        <item> 0.06 </item>
+        <item> 0.07 </item>
+        <item> 0.08 </item>
+        <item> 0.09 </item>
+        <item> 0.10 </item>
+        <item> 0.11 </item>
+        <item> 0.12 </item>
+        <item> 0.13 </item>
+        <item> 0.14 </item>
+        <item> 0.15 </item>
+        <item> 0.16 </item>
+        <item> 0.17 </item>
+        <item> 0.18 </item>
+        <item> 0.19 </item>
+        <item> 0.20 </item>
+        <item> 0.21 </item>
+        <item> 0.22 </item>
+        <item> 0.23 </item>
+        <item> 0.24 </item>
+        <item> 0.25 </item>
+        <item> 0.26 </item>
+        <item> 0.27 </item>
+        <item> 0.28 </item>
+        <item> 0.29 </item>
+        <item> 0.30 </item>
+        <item> 0.31 </item>
+        <item> 0.32 </item>
+        <item> 0.33 </item>
+        <item> 0.34 </item>
+        <item> 0.35 </item>
+        <item> 0.36 </item>
+        <item> 0.37 </item>
+        <item> 0.38 </item>
+        <item> 0.39 </item>
+        <item> 0.40 </item>
+        <item> 0.41 </item>
+        <item> 0.42 </item>
+        <item> 0.43 </item>
+        <item> 0.44 </item>
+        <item> 0.45 </item>
+        <item> 0.46 </item>
+        <item> 0.47 </item>
+        <item> 0.48 </item>
+        <item> 0.49 </item>
+        <item> 0.50 </item>
+    </string-array>
+    <!-- End preference slider damping coefficient -->
 
 </resources>

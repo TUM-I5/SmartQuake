@@ -162,7 +162,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             createStructure(structureId, structureName);
             DrawHelper.drawStructure(structure, canvasView);
             return true;
-
+        } else if (id == R.id.sim_replay_displacement) {
+            replayDisplacement();
         }
             return super.onOptionsItemSelected(item);
     }
@@ -194,7 +195,16 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.getTrumpTower();
         } else if (structureId == 9) {
             structure = StructureFactory.getTVtower();
-        } else {
+        } else if (structureId == 10) {
+            structure = StructureFactory.getTaipeh();
+        } else if (structureId == 11) {
+            structure = StructureFactory.getHouseWithMassDamper();
+        } else if (structureId == 12) {
+            structure = StructureFactory.getOneWTC();
+        } else if (structureId == 13) {
+            structure = StructureFactory.getBurjKhalifa();
+        }
+        else{
             structure = StructureFactory.getStructure(this, structureName);
         }
 
@@ -432,6 +442,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             });
 
         }
+    }
+
+    private void replayDisplacement() {
+        // todo add displacement replay
     }
 
     // TODO: should this be part of Simulation too?
