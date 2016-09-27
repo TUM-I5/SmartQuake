@@ -80,6 +80,76 @@ public class StructureFactory {
         return structure;
     }
 
+    public static Structure getTunedMassExample1() {
+        double width = 8;
+        double height = 8;
+
+        double half = width * 0.5;
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        Node n1 = new Node(0, height, false);
+        Node n2 = new Node(width, height, false);
+        Node n3 = new Node(width, height - half, false);
+        Node n4 = new Node(0, height - half, false);
+        Node n5 = new Node(half, height - 2 * half, false);
+
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n4, testMaterial);
+        Beam b4 = new Beam(n4, n1, testMaterial);
+        Beam b5 = new Beam(n4, n5, testMaterial);
+        Beam b6 = new Beam(n5, n3, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5);
+        structure.addBeams( b2, b3, b4, b5, b6);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
+
+    public static Structure getTunedMassExample2() {
+        double width = 8;
+        double height = 8;
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL2;
+
+
+        Node n1 = new Node(0, height);
+        Node n2 = new Node(width, height);
+        Node n3 = new Node(width, height/2);
+        Node n4 = new Node(0, height/2);
+
+
+        Beam b2 = new Beam(n1, n4, testMaterial);
+        Beam b3 = new Beam(n4, n2, testMaterial);
+        Beam b4 = new Beam(n2, n3, testMaterial);
+      //  Beam b5 = new Beam(n4, n5, testMaterial);
+      //  Beam b6 = new Beam(n5, n3, testMaterial);
+       // Beam b7 = new Beam(n5, n6, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4);
+        structure.addBeams( b2, b3, b4);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
+
     public static Structure getHouseWithMassDamper() {
         double width = 8;
         double height = 8;
