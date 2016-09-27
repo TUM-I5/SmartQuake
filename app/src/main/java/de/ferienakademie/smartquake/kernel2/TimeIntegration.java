@@ -111,7 +111,6 @@ public class TimeIntegration {
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    long temp = System.nanoTime();
                     //reset time
                     t = 0;
 
@@ -164,7 +163,6 @@ public class TimeIntegration {
                         spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
                     }
                     isRunning = false;
-                    Log.i("TimeIntegration", System.nanoTime()-temp+"");
                 }
             });
             return this;
