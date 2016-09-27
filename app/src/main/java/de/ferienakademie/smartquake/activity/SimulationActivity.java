@@ -134,19 +134,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.sim_reset_button) {
-            if (mode != SimulationMode.LIVE) {
-                mode = SimulationMode.LIVE;
-            }
-
-            if (simulation.isRunning()) {
-                onStopButtonClicked();
-            }
-            createStructure(structureId, structureName);
-            DrawHelper.drawStructure(structure, canvasView);
-            return true;
-        }
-
         if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
             runReplay("Last.earthquake");
             if (simulation != null) toggleStartStopAvailability();
@@ -162,8 +149,22 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simulation.stop();
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
+        } else if (id == R.id.sim_reset_button){
+            if (mode != SimulationMode.LIVE) {
+                mode = SimulationMode.LIVE;
+            }
+
+            if (simulation.isRunning()) {
+                onStopButtonClicked();
+            }
+            tvSensorDataX.setText("");
+            tvSensorDataY.setText("");
+            createStructure(structureId, structureName);
+            DrawHelper.drawStructure(structure, canvasView);
+            return true;
+
         }
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
     }
 
     @Override

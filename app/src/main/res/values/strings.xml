@@ -2,7 +2,7 @@
     <string name="app_name">SmartQuake</string>
     <string name="settings_button">Settings</string>
     <string name="replay_button">Replay excitation</string>
-    <string name="reset_button">Reset</string>
+    <string name="reset_button">Reset simulation</string>
     <string name="save_button">Save</string>
     <string name="load_data_button">Load excitation data</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

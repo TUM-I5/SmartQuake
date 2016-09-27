@@ -2,12 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:smartquake="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/tools">
-
-    <item
-        android:id="@+id/sim_reset_button"
-        android:icon="@drawable/ic_replay_white_24dp"
-        android:title="@string/reset_button"
-        smartquake:showAsAction="ifRoom"/>
     <item
         android:id="@+id/sim_replay_button"
         android:icon="@drawable/ic_restore_white_24dp"
@@ -24,5 +18,10 @@
         android:orderInCategory="100"
         android:title="@string/save_excitation"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sim_reset_button"
+        android:orderInCategory="100"
+        android:title="@string/reset_button"
+        app:showAsAction="never"/>
 
 </menu>
