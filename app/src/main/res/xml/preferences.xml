@@ -11,6 +11,13 @@
             android:defaultValue="false"
             />
         <SwitchPreference
+            android:key="pref_show_ground_displacements"
+            android:title="@string/pref_show_ground_displacements"
+            android:summaryOn="@string/pref_show_ground_displacements_summary_On"
+            android:summaryOff="@string/pref_show_ground_displacements_summary_Off"
+            android:defaultValue="true"
+            />
+        <SwitchPreference
             android:key="pref_modal_analysis"
             android:title="@string/pref_modal_analysis_title"
             android:summaryOn="@string/pref_modal_analysis_summary_On"
@@ -23,6 +30,12 @@
             android:key="loadVector_slider"
             android:summary="@array/loadVector_slider_summaries"
             android:title="@string/loadVector_slider_title" />
+        <de.ferienakademie.smartquake.preferenceElements.SliderPreference
+            android:defaultValue="@string/damping_slider_default"
+            android:dialogMessage="@string/damping_slider_message"
+            android:key="damping_slider"
+            android:summary="@array/damping_slider_summaries"
+            android:title="@string/damping_slider_title" />
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/frequency_slider_default"
             android:dialogMessage="@string/frequency_slider_message"
