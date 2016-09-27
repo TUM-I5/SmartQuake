@@ -473,15 +473,25 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
                     }
 
-                    //draw frame
-                    DrawHelper.drawStructure(structure, canvasView);
-
-                    //wait 30 msec
+                    //wait (at least) 30 msec
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException ex) {
                         Log.e("replayDisplacement", ex.getMessage());
                     }
+
+                    while(canvasView.isBeingDrawn) {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException ex) {
+                            Log.e("replayDisplacement", ex.getMessage());
+                        }
+                    }
+
+                    //draw frame
+                    DrawHelper.drawStructure(structure, canvasView);
+
+
 
                 }
             }
