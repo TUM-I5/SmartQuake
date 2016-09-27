@@ -165,6 +165,7 @@ public class StartActivity extends AppCompatActivity
         values.add("Trump tower");
         values.add("TV Tower");
         values.add("Taipeh 101");
+        values.add("House with Mass Damper");
 
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();

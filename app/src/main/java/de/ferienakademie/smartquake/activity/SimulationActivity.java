@@ -162,6 +162,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simulation.stop();
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
+        } else if (id == R.id.sim_replay_displacement) {
+            replayDisplacement();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -195,7 +197,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.getTVtower();
         } else if (structureId == 10) {
             structure   = StructureFactory.getTaipeh();
-        } else {
+        } else if (structureId == 11){
+            structure = StructureFactory.getHouseWithMassDamper();
+        } else{
             structure = StructureFactory.getStructure(this, structureName);
         }
 
@@ -433,6 +437,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             });
 
         }
+    }
+
+    private void replayDisplacement() {
+        // todo add displacement replay
     }
 
     // TODO: should this be part of Simulation too?

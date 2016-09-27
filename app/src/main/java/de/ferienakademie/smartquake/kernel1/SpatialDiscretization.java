@@ -346,17 +346,17 @@ public class SpatialDiscretization {
 
     public void getModalAnalysisMatrices(){
         normaliseEigenvectors();
-        StiffnessVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        MassVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        DampingVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        StiffnessVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
+        MassVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
+        DampingVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
 
         for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            StiffnessVector.set(i,0,ReducedEigenvalues[i]);
-            MassVector.set(i,0,1.0);
+            StiffnessVector.set(i,i,ReducedEigenvalues[i]);
+            MassVector.set(i,i,1.0);
         }
         calculateDampingMatrix();
         for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-           DampingVector.set(i,0,DampingMatrix.get(i,i));
+           DampingVector.set(i,i,DampingMatrix.get(i,i));
         }
 
 
