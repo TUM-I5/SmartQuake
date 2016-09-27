@@ -98,7 +98,9 @@ public class TimeIntegration {
                     //calculates time step
 
                     //update loadVector
-                    spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
+                    double[] currExcitation = accelerationProvider.getAcceleration();
+
+                    spatialDiscretization.updateLoadVector(currExcitation);
 
                     //get the loadVector for the whole calculation
                     solver.setFLoad(spatialDiscretization.getLoadVector());
@@ -111,7 +113,7 @@ public class TimeIntegration {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         //add ground movement for recording
-                        solver.setGroundPosition(delta_t);
+                        solver.setGroundPosition(delta_t, currExcitation);
                         t += delta_t;
 
                     }
