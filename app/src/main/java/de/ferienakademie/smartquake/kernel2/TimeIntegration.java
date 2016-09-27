@@ -109,11 +109,20 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    //update loadVector
-                    spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
+                    if(PreferenceReader.useModalAnalysis()) {
+                        //update loadVector
+                        spatialDiscretization.updateLoadVectorModalAnalyis(accelerationProvider.getAcceleration());
+                        //get the loadVector for the whole calculation
+                        loadVector = spatialDiscretization.getRedLoadVector().copy();
+                    }
+                    else {
+                        //update loadVector
+                        spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
+                        //get the loadVector for the whole calculation
+                        loadVector = spatialDiscretization.getLoadVector().copy();
+                    }
 
-                    //get the loadVector for the whole calculation
-                    loadVector = spatialDiscretization.getLoadVector().copy();
+
                     CommonOps.scale(loadVectorScaling, loadVector);
                     solver.setFLoad(loadVector);
 
