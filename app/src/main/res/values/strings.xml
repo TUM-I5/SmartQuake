@@ -15,6 +15,12 @@
     <string name="pref_lumped_summary_On">Using lumped mass matrices.</string>
     <string name="pref_lumped_summary_Off">Using consistent mass matrices.</string>
 
+
+    <string name="pref_show_ground_displacements">Ground Displacements</string>
+    <string name="pref_show_ground_displacements_summary_On">Show Ground Displacements on Replay.</string>
+    <string name="pref_show_ground_displacements_summary_Off">Don\'t Show Ground Displacements on Replay</string>
+
+
     <string name="clear_canvas">Clear canvas</string>
     <string name="save_canvas">Save canvas</string>
     <string name="create_button">create</string>
@@ -144,6 +150,7 @@
     <string name="pref_show_raw_sensor_data_summary">Display raw sensor data while simulating.</string>
     <string name="pref_show_raw_sensor_data_title">Show raw sensor data</string>
     <string name="save_excitation">Save excitation data</string>
+    <string name="replay_displacement_title">Replay simulation</string>
 
     <string-array name="loadVector_slider_summaries">
         <item>0.0</item>

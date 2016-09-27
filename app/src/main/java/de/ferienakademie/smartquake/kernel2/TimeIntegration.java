@@ -70,7 +70,7 @@ public class TimeIntegration {
         delta_t = 0.015;
 
         //give the class the time step
-        accelerationProvider.initTime(delta_t*1e9);
+        //accelerationProvider.initTime(delta_t*1e9);
 
         //stores the numerical scheme
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
@@ -109,11 +109,22 @@ public class TimeIntegration {
                     //reset time
                     t = 0;
 
-                    //update loadVector
-                    spatialDiscretization.updateLoadVector(accelerationProvider.getAcceleration());
+                    double[] currExcitation = accelerationProvider.getAcceleration();
 
-                    //get the loadVector for the whole calculation
-                    loadVector = spatialDiscretization.getLoadVector().copy();
+                    if(PreferenceReader.useModalAnalysis()) {
+                        //update loadVector
+                        spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
+                        //get the loadVector for the whole calculation
+                        loadVector = spatialDiscretization.getRedLoadVectorModalAnalysis().copy();
+
+                    }
+                    else {
+                        //update loadVector
+                        spatialDiscretization.updateLoadVector(currExcitation);
+                        //get the loadVector for the whole calculation
+                        loadVector = spatialDiscretization.getLoadVector().copy();
+                    }
+
                     CommonOps.scale(loadVectorScaling, loadVector);
                     solver.setFLoad(loadVector);
 
@@ -124,8 +135,7 @@ public class TimeIntegration {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         //add ground movement for recording
-                        solver.setGroundPosition(delta_t);
-
+                        solver.setGroundPosition(delta_t, currExcitation);
                         t += delta_t;
 
                     }

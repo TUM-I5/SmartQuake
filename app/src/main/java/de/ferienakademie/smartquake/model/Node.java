@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
+
 /**
  * Created by yuriy on 21/09/16.
  */
@@ -24,6 +26,7 @@ public class Node {
     private double radius = 0.05;
 
     private boolean hinge = false;
+    private double nodeMass = 0;
 
     private List<Beam> beams = new ArrayList<>();
 
@@ -41,6 +44,17 @@ public class Node {
         this(x, y);
         this.hinge = hinged;
     }
+
+    public Node(double x, double y, double nodeMass) {
+        this(x, y);
+        this.nodeMass = nodeMass;
+    }
+
+    public Node(double x, double y, boolean hinged, double nodeMass) {
+        this(x, y, hinged);
+        this.nodeMass = nodeMass;
+    }
+
 
     public Node(double x, double y, List<Integer> DOF) {
         this(x, y);
@@ -110,6 +124,15 @@ public class Node {
         return (float)(initialY + displacements.get(1));
     }
 
+    public double getNodeMass() {
+        return nodeMass;
+    }
+
+    public void setNodeMass(double nodeMass) {
+        this.nodeMass = nodeMass;
+    }
+
+
     public double getRadius() {
         return radius;
     }
@@ -165,9 +188,11 @@ public class Node {
         return constraint[i];
     }
 
+
     public void setConstraint(boolean[] constraint) {
         this.constraint = constraint;
     }
+
 
     public void setSingleConstraint(int i, boolean constraint) {
         this.constraint[i] = constraint;
@@ -178,6 +203,17 @@ public class Node {
         historyOfDisplacements.add(displacements);
     }
 
+
+    public void recallDisplacementOfStep(int i) {
+        displacements = historyOfDisplacements.get(i);
+
+        // include ground displacements according to settings
+        if (PreferenceReader.groundDisplcements()) {
+            double[] groundDisplacements = historyOfGroundDisplacement.get(i);
+            displacements.set(0, displacements.get(0) + groundDisplacements[0]);
+            displacements.set(1, displacements.get(1) + groundDisplacements[1]);
+        }
+    }
 
 
     public void saveTimeStepGroundDisplacement(double[] gD) {

@@ -1,7 +1,6 @@
 package de.ferienakademie.smartquake.kernel1;
 
 import org.ejml.data.DenseMatrix64F;
-import org.ejml.interfaces.linsol.ReducedRowEchelonForm;
 import org.ejml.ops.CommonOps;
 
 import java.util.List;
@@ -34,11 +33,11 @@ public class SpatialDiscretization {
     private DenseMatrix64F eigenvectorsmatrix;
     private DenseMatrix64F[] eigenvectors;
     private double[] eigenvalues;
-    private DenseMatrix64F StiffnessVector;
-    private DenseMatrix64F MassVector;
-    private DenseMatrix64F DampingVector;
+    private DenseMatrix64F StiffnessMatrixModalAnalysis;
+    private DenseMatrix64F MassMatrixModalAnalysis;
+    private DenseMatrix64F DampingMatrixModalAnalysis;
     private double[] ReducedEigenvalues;
-    private DenseMatrix64F RedLoadVector;
+    private DenseMatrix64F redLoadVectorModalAnalysis;
     private  DenseMatrix64F[] Reducedeigenvectors;
     private DenseMatrix64F ReducedeigenvectorsMatrixTranspose;
     private DenseMatrix64F RedinfluenceVectorX;
@@ -278,7 +277,7 @@ public class SpatialDiscretization {
 
     public void updateLoadVectorModalAnalyis(double[] acceleration) {
 
-        RedLoadVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        redLoadVectorModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
         if (PreferenceReader.includeGravity()) {
 
             CommonOps.scale(acceleration[0], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
@@ -289,7 +288,7 @@ public class SpatialDiscretization {
             CommonOps.scale(acceleration[1], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
         }
-        CommonOps.mult(ReducedeigenvectorsMatrixTranspose, influenceVectorX, RedLoadVector);
+        CommonOps.mult(ReducedeigenvectorsMatrixTranspose, influenceVectorX, redLoadVectorModalAnalysis);
     }
 
 
@@ -349,17 +348,17 @@ public class SpatialDiscretization {
 
     public void getModalAnalysisMatrices(){
         normaliseEigenvectors();
-        StiffnessVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        MassVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        DampingVector = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        StiffnessMatrixModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
+        MassMatrixModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
+        DampingMatrixModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
 
         for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            StiffnessVector.set(i,0,ReducedEigenvalues[i]);
-            MassVector.set(i,0,1.0);
+            StiffnessMatrixModalAnalysis.set(i,i,ReducedEigenvalues[i]);
+            MassMatrixModalAnalysis.set(i,i,1.0);
         }
         calculateDampingMatrix();
         for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-           DampingVector.set(i,0,DampingMatrix.get(i,i));
+           DampingMatrixModalAnalysis.set(i,i,DampingMatrix.get(i,i));
         }
 
 
@@ -382,35 +381,24 @@ public class SpatialDiscretization {
 
     }
 
-    public DenseMatrix64F getDampingVector() {
-        return DampingVector;
+    public DenseMatrix64F getDampingMatrixModalAnalysis() {
+        return DampingMatrixModalAnalysis;
     }
 
-    public void setDampingVector(DenseMatrix64F dampingVector) {
-        DampingVector = dampingVector;
+
+
+    public DenseMatrix64F getRedLoadVectorModalAnalysis() {
+        return redLoadVectorModalAnalysis;
     }
 
-    public DenseMatrix64F getRedLoadVector() {
-        return RedLoadVector;
+
+    public DenseMatrix64F getMassMatrixModalAnalysis() {
+        return MassMatrixModalAnalysis;
     }
 
-    public void setRedLoadVector(DenseMatrix64F redLoadVector) {
-        RedLoadVector = redLoadVector;
+
+    public DenseMatrix64F getStiffnessMatrixModalAnalysis() {
+        return StiffnessMatrixModalAnalysis;
     }
 
-    public DenseMatrix64F getMassVector() {
-        return MassVector;
-    }
-
-    public void setMassVector(DenseMatrix64F massVector) {
-        MassVector = massVector;
-    }
-
-    public DenseMatrix64F getStiffnessVector() {
-        return StiffnessVector;
-    }
-
-    public void setStiffnessVector(DenseMatrix64F stiffnessVector) {
-        StiffnessVector = stiffnessVector;
-    }
 }
