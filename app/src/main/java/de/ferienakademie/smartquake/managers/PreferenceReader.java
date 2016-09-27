@@ -30,6 +30,10 @@ public class PreferenceReader {
         return (double) 10.0f * sharedPref.getFloat("frequency_slider", 0.1f);
     }
 
+    public static double getDampingCoefficient() {
+        return (double) .5f * sharedPref.getFloat("damping_slider", 0.1f);
+    }
+
     public static boolean massMatrices() {
         return sharedPref.getBoolean("pref_use_lumped", false);
     }
