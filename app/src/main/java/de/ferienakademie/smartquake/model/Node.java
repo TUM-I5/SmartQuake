@@ -21,7 +21,7 @@ public class Node {
     private List <List <Double>>  historyOfDisplacements;
     private List <double[]> historyOfGroundDisplacement;
 
-    private double radius = 0.02;
+    private double radius = 0.05;
 
 
 
