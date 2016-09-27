@@ -12,10 +12,6 @@ public class EmptyAccelerationProvider extends AccelerationProvider {
         return new double[] { Double.NaN, Double.NaN };
     }
 
-    @Override
-    public AccelData getAccelerationMeasurement(double time) {
-        return null;
-    }
 
     @Override
     public double[] getAcceleration(double time) {return new double[]{ Double.NaN, Double.NaN };}
