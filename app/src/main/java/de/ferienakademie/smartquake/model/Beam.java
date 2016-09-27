@@ -447,5 +447,23 @@ public class Beam {
         return elementMassMatrix_globalized;
     }
 
+    private double normalForce;
 
+
+    public double calculateNormalForceOfBeam() {
+        Displacements localDisplacements = this.getLocalDisplacements();
+
+        double axialDisplacementStartNode = localDisplacements.getAxialDisplacementStartNode();
+        double axialDisplacementEndNode = localDisplacements.getAxialDisplacementEndNode();
+
+        double delta_L = axialDisplacementEndNode - axialDisplacementStartNode;
+        double EA = material.getAxialStiffnessOfBar();
+
+        normalForce = EA*delta_L/length;
+        return normalForce;
+    }
+
+    public double getNormalForce() {
+        return normalForce;
+    }
 }

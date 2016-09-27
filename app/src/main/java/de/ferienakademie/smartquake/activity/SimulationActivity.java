@@ -21,7 +21,6 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -90,7 +89,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private long lastDebugSensorDataTimestamp;
 
     private void runReplay(String fileName) {
-        FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
+
+        Log.d("REPLAYING", fileName);
 
         try {
             switch (fileName) {
@@ -101,27 +101,25 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                     break;
                 case "Sensors.earthquake":
                     onStartButtonClicked();
-                    break;
+                    return;
                 default:
+                    FileAccelerationProvider fileAccelerationProvider = new FileAccelerationProvider();
                     fileAccelerationProvider.load(openFileInput(fileName));
+                    if (!fileAccelerationProvider.isEmpty()) {
+                        replaySeekBar.setVisibility(View.VISIBLE);
+                        startSimulation(fileAccelerationProvider);
+                    } else {
+                        Snackbar.make(layout, "No past acceleration data", Snackbar.LENGTH_SHORT).show();
+                        return;
+                    }
                     break;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (fileAccelerationProvider.isEmpty()) {
-            //Snackbar.make(layout, "Empty acceleration file", Snackbar.LENGTH_SHORT).show();
-            Toast.makeText(getApplicationContext(),
-                    "Empty acceleration file", Toast.LENGTH_SHORT).show();
-        } else {
-            mode = SimulationMode.REPLAY;
-            //Snackbar.make(layout, "Simulation started", Snackbar.LENGTH_SHORT).show();
-            replaySeekBar.setVisibility(View.VISIBLE);
-            replayrunningLabel.setVisibility(View.VISIBLE);
-            startSimulation(fileAccelerationProvider);
-            toggleStartStopAvailability();
-        }
+        mode = SimulationMode.REPLAY;
+        replayrunningLabel.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -144,7 +142,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
             if (replay != null) replay.setEnabled(false);
-            startActivityForResult(new Intent(this, ChooseDataActivity.class), REQUEST_EARTHQUAKE_DATA);
+            startActivityForResult(new Intent(this, ChooseEarthQuakeDataActivity.class), REQUEST_EARTHQUAKE_DATA);
         } else if (id == R.id.save_simulation) {
             if (simulation.isRunning()) {
                 simulation.stop();
@@ -208,8 +206,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         structure = StructureFactory.getTunedMassExample1();
         }else if (structureId == 15) {
             structure = StructureFactory.getTunedMassExample2();
-        }
-        else{
+        } else if (structureId == 16) {
+            structure = StructureFactory.getSimpleElephant();
+        } else {
             structure = StructureFactory.getStructure(this, structureName);
         }
 
@@ -323,6 +322,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             replaySeekBar.setVisibility(View.GONE);
             replayrunningLabel.setVisibility(View.GONE);
         }
+
         if (simulation == null) return;
         simulation.stop();
         Snackbar.make(layout, "Simulation stopped", Snackbar.LENGTH_SHORT).show();
@@ -333,7 +333,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             try {
                 mCurrentAccelerationProvider.saveFile(openFileOutput("Last.earthquake", MODE_PRIVATE));
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("ACCEL WRITE", "error writing", e);
             }
         }
         mCurrentAccelerationProvider = new EmptyAccelerationProvider();
@@ -393,15 +393,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 fileOutputStream.write(bytes, 0, length);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e("ACCEL WRITE", "file not found", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("ACCEL WRITE", "error writing", e);
         } finally {
             try {
                 if (fileInputStream != null) fileInputStream.close();
                 if (fileOutputStream != null) fileOutputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("ACCEL WRITE", "error closing", e);
             }
         }
     }
