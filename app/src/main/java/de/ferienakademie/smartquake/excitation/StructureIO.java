@@ -63,6 +63,8 @@ public class StructureIO {
         writer.value(node.getInitialY());
         writer.name("hinge");
         writer.value(node.isHinge());
+        writer.name("mass");
+        writer.value(node.getNodeMass());
 
         writer.name("constraints");
         writer.beginArray();
@@ -75,7 +77,7 @@ public class StructureIO {
     }
 
     private static Node parseNode(JsonReader reader) throws IOException {
-        double x = Double.NaN, y = Double.NaN;
+        double x = Double.NaN, y = Double.NaN; double mass = 0;
         boolean hinge = false;
         boolean[] constraints = new boolean[3];
         reader.beginObject();
@@ -102,6 +104,8 @@ public class StructureIO {
                 case "hinge":
                     hinge = reader.nextBoolean();
                     break;
+                case "mass":
+                    mass = reader.nextDouble();
             }
         }
         reader.endObject();
@@ -114,6 +118,7 @@ public class StructureIO {
         Node node = new Node(x, y);
         node.setHinge(hinge);
         node.setConstraint(constraints);
+        node.setNodeMass(mass);
         return node;
     }
 
