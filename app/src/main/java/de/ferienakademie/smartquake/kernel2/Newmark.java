@@ -145,14 +145,14 @@ public class Newmark extends ImplicitSolver {
         multAddDiagMatrix(-1,B,xDotDot,RHS); //RHS = RHS - B*xDotDot
         CommonOps.addEquals(RHS,-1,fLoad_old); //RHS = RHS - fLoad_old
 
-        //Solve to get xDotDot
+        //Solve to get xDotDot; A*xDotDot = RHS
         for(int i = 0; i<RHS.getNumRows(); i++){
             xDotDot.set(i,0,RHS.get(i,0)/A.get(i,i));
         }
     }
 
     /**
-     * result = result - skalar*matrix*vec
+     * result = result + skalar*matrix*vec
      * @param delta_t
      * @param matrix
      * @param vec
@@ -160,7 +160,7 @@ public class Newmark extends ImplicitSolver {
      */
     private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
         for(int i = 0; i< matrix.getNumRows(); i++){
-            result.set(i,0,result.get(i)-delta_t*matrix.get(i,i)*vec.get(i,0));
+            result.set(i,0,result.get(i)+delta_t*matrix.get(i,i)*vec.get(i,0));
         }
     }
 

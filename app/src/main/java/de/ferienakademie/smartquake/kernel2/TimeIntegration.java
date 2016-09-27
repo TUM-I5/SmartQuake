@@ -115,6 +115,9 @@ public class TimeIntegration {
 
                     double[] currExcitation = accelerationProvider.getAcceleration();
 
+                   // for(int i=0; i<currExcitation.length; i++){
+                   //     currExcitation[i] =0;
+                   // }
                     if(PreferenceReader.useModalAnalysis()) {
                         //update loadVector
                         spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
@@ -131,7 +134,7 @@ public class TimeIntegration {
                     CommonOps.scale(loadVectorScaling, loadVector);
                     solver.setFLoad(loadVector);
 
-                    //long firstTime = System.nanoTime();
+                    long firstTime = System.nanoTime();
                     //this loop performs the calculation
                     //it calculates one frame then it stops
                     while(t < 0.03-0.000001 && isRunning) {
@@ -147,8 +150,8 @@ public class TimeIntegration {
                     globalTime += 0.03;
 
                     //for checking the calculation time
-                    //long secondTime = System.nanoTime();
-                    //Log.e("Timestamp",""+(secondTime-firstTime));
+                    long secondTime = System.nanoTime();
+                  //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
