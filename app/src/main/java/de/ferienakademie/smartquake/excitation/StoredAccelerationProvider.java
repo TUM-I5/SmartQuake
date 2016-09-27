@@ -1,8 +1,8 @@
 package de.ferienakademie.smartquake.excitation;
+import android.content.Context;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -11,8 +11,7 @@ import java.util.Locale;
  * Created by David Schneller on 25.09.2016.
  */
 public abstract class StoredAccelerationProvider extends AccelerationProvider {
-    //Sorry, setting protected is dirty, I know... But I do like getters/setters less.
-    protected ArrayList<AccelData> readings = new ArrayList<>();
+    protected ArrayList<AccelData> readings = new ArrayList<>(); //list of stored Eartquake data
     protected int currentPosition;
     protected int tick; //current simulation tick
     protected double timeStep; //in nanoseconds
@@ -23,24 +22,8 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
     @Override
     public void initTime(double timeStep) {
         this.timeStep = timeStep;
+        this.tick = 0;
         currentPosition = 0;
-    }
-
-    @Override
-    public double[] getAcceleration() {
-        AccelData temp = getAccelerationMeasurement();
-        return new double[]{temp.xAcceleration, temp.yAcceleration, temp.xGravity, temp.yGravity};
-    }
-
-    @Override
-    public double[] getAcceleration(double time) {
-        while (readings.size() - 1 > currentPosition
-                && readings.get(currentPosition).timestamp < (long)time*1e9) {
-            ++currentPosition;
-        }
-
-        AccelData data = readings.get(currentPosition);
-        return new double[]{data.xAcceleration, data.yAcceleration};
     }
 
     @Override
@@ -66,11 +49,10 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
 
     /**
      * Store the data to a file
-     * @param outputStream reference to a stream passing readings to internal storage
      */
-    public void saveFile(OutputStream outputStream) throws IOException {
+    public void saveFileIfDataPresent(Context c, String fileName) throws IOException {
         String readingString;
-        OutputStreamWriter outputStreamReader = new OutputStreamWriter(outputStream);
+        OutputStreamWriter outputStreamReader = new OutputStreamWriter(c.openFileOutput("Last.earthquake", Context.MODE_PRIVATE));
         BufferedWriter bufferedWriter = new BufferedWriter(outputStreamReader);
 
         for (int i = 0; i < readings.size(); i++) {
@@ -81,7 +63,6 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         }
         bufferedWriter.close();
         outputStreamReader.close();
-        outputStream.close();
     }
 
     /**

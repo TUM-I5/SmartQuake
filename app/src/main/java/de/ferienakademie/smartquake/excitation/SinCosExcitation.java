@@ -4,8 +4,9 @@ package de.ferienakademie.smartquake.excitation;
  * Created by simon on 23.09.16.
  */
 
+import android.content.Context;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.acl.AclEntry;
 
 /**
@@ -83,7 +84,7 @@ public class SinCosExcitation extends AccelerationProvider {
     }
 
     @Override
-    public void saveFile(OutputStream outputStream) throws IOException {
+    public void saveFileIfDataPresent(Context c, String fileName) throws IOException {
         //no.
     }
 
