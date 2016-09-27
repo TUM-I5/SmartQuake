@@ -35,10 +35,9 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
     @Override
     public double[] getAcceleration(double time) {
         while (readings.size() - 1 > currentPosition
-                && readings.get(currentPosition).timestamp < time) {
+                && readings.get(currentPosition).timestamp < (long)time*1e9) {
             ++currentPosition;
         }
-        ++tick;
 
         AccelData data = readings.get(currentPosition);
         notifyNewAccelData(data);
