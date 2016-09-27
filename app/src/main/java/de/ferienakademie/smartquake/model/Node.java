@@ -218,6 +218,11 @@ public class Node {
     }
 
 
+    public int getLengthofHistory() {
+        return historyOfDisplacements.size();
+    }
+
+
     public void saveTimeStepGroundDisplacement(double[] gD) {
         historyOfGroundDisplacement.add(gD);
     }
