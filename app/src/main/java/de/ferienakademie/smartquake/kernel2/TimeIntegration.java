@@ -115,7 +115,7 @@ public class TimeIntegration {
                         //update loadVector
                         spatialDiscretization.updateLoadVectorModalAnalyis(currExcitation);
                         //get the loadVector for the whole calculation
-                        loadVector = spatialDiscretization.getRedLoadVector().copy();
+                        loadVector = spatialDiscretization.getLoadVector().copy();
                     }
                     else {
                         //update loadVector
