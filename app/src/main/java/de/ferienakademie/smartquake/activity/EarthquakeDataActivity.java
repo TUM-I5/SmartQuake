@@ -63,7 +63,7 @@ public class EarthquakeDataActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    @Override
+    /**@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.start, menu);
@@ -82,7 +82,7 @@ public class EarthquakeDataActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-   /** public void onItemSelected(Integer dataSourceId) {
+    public void onItemSelected(Integer dataSourceId) {
         Intent sel = new Intent();
         sel.putExtra("eqDataFile", values.get(dataSourceId));
         setResult(Activity.RESULT_OK, sel);
