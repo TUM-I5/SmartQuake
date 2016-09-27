@@ -72,11 +72,7 @@ public class StartActivity extends AppCompatActivity
                 R.layout.list_item_start_activity, R.id.list_item_date_textview, values);
 
         setUpValues();
-
-        PredefinedAdapter mPredefinedAdapter = new PredefinedAdapter(this, null, 0);
-        // Get a reference to the ListView, and attach this adapter to it.
         ListView mListView = (ListView) findViewById(R.id.listview_predefined);
-        //mListView.setAdapter(mPredefinedAdapter);
         registerForContextMenu( mListView );
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

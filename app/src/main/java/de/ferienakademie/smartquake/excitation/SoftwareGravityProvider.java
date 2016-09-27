@@ -28,8 +28,9 @@ public class SoftwareGravityProvider extends GravityProvider{
     }
 
     @Override
-    public void init(double timestep) {
-
+    public void init(double timestep, long baseTime) {
+        lastYGravity = 9.81;
+        lastXGravity = 0;
     }
 
     @Override
@@ -40,10 +41,5 @@ public class SoftwareGravityProvider extends GravityProvider{
     @Override
     public void setInactive() {
         //noop
-    }
-
-    @Override
-    public void setBaseTime(long baseTime) {
-
     }
 }

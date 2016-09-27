@@ -21,24 +21,22 @@ public class Node {
     private List <List <Double>>  historyOfDisplacements;
     private List <double[]> historyOfGroundDisplacement;
 
-    private double radius = 0.02;
-
-
+    private double radius = 0.05;
 
     private boolean hinge = false;
     private double nodeMass = 0;
 
     private List<Beam> beams = new ArrayList<>();
 
-
     public Node(double x, double y) {
         this.initialX = x;
         this.initialY = y;
         displacements = new ArrayList<>();
+        displacements.add(0.0);
+        displacements.add(0.0);
         historyOfDisplacements = new ArrayList<>();
         historyOfGroundDisplacement = new ArrayList<>();
     }
-
 
     public Node(double x, double y, boolean hinged) {
         this(x, y);
@@ -61,7 +59,6 @@ public class Node {
         this.DOF = DOF;
     }
 
-
     public double getInitialX() {
         return initialX;
     }
@@ -74,44 +71,34 @@ public class Node {
         return initialY;
     }
 
-
-
+    public void setInitialY(double initialY) {
+        this.initialY = initialY;
+    }
 
     public void setSingleDisplacement(int i, double value) {
         this.displacements.set(i,value );
-
     }
 
-
+    public boolean[] getConstraints() {
+        return constraint;
+    }
 
 
     public double getSingleDisplacement(int i) {
         return this.displacements.get(i);
     }
 
-
-
-
     public double getDisplacementForDof(int i) {
         return this.displacements.get( DOF.indexOf(i) );
-    }
-
-
-
-
-    public void setInitialY(double initialY) {
-        this.initialY = initialY;
     }
 
     public void addBeam(Beam beam) {
         beams.add(beam);
     }
 
-
     public List<Integer> getDOF() {
         return DOF;
     }
-
 
     public void setDOF(List<Integer> DOF) {
         this.DOF = DOF;
@@ -119,25 +106,17 @@ public class Node {
             displacements.add(0.0);
     }
 
-
-
     public double getCurrentX() {
         return initialX + displacements.get(0);
     }
-
-
 
     public float getCurrentXf() {
         return (float)(initialX + displacements.get(0));
     }
 
-
-
     public double getCurrentY() {
         return initialY + displacements.get(1);
     }
-
-
 
     public float getCurrentYf() {
         return (float)(initialY + displacements.get(1));
@@ -156,22 +135,13 @@ public class Node {
         return radius;
     }
 
-
-
-
     public void setRadius(double radius) {
         this.radius = radius;
     }
 
-
-
-
     public void clearBeams() {
         beams.clear();
     }
-
-
-
 
     public List<Beam> getBeams() {
         return beams;

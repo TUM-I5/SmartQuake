@@ -35,7 +35,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  * Created by yuriy on 22/09/16.
  */
 public class CreateActivity extends AppCompatActivity implements SaveDialogFragment.SaveDialogListener {
-    private static double DELTA = 90;
+    private static double DELTA = 100;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -106,12 +106,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch(id){
-            case R.id.action_settings: //TODO setteings activity
-                /***
-                 *Add here code for setting activity
-                 * startActivity(new Intent(this, SettingsActivity.class));
-                 return true;
-                 */
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 break;
@@ -149,17 +143,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         int j = 0;
         for (int i = 0; i < nodes.size(); i++) {
-            List<Integer> tempList = new ArrayList<>();
-            tempList.add(j++);
-            tempList.add(j++);
-            tempList.add(j++);
-
-            nodes.get(i).setDOF(tempList);
-
-            if (nodes.get(i).getCurrentY() == height) {
-                for (Integer freedom : tempList) {
-                    condof.add(freedom);
-                }
+            if (nodes.get(i).getCurrentY() >= height - DELTA / 2) {
+                nodes.get(i).setConstraint(new boolean[] {true, true, true});
             }
         }
 
@@ -505,7 +490,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             double dist = sinAlfa * Math.sqrt(y1*y1+x1*x1);
 
             if (dist <= minDist) {
-
                 sinAlfa = Math.abs(y2)/(Math.sqrt(y2*y2+x2*x2));
                 cosAlfa = Math.sqrt(1 - sinAlfa*sinAlfa);
 
@@ -543,6 +527,23 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     }
 
+    public boolean setHinge(Node finger) {
+        List<Node> nodes = structure.getNodes();
+        double mindist = DELTA;
+        Node hingeNode = null;
+        for (Node node : nodes) {
+            if (distNodes(node, finger) <= mindist) {
+                mindist = distNodes(node, finger);
+                hingeNode = node;
+            }
+        }
+        if (hingeNode != null) {
+            hingeNode.setHinge(!hingeNode.isHinge());
+            return true;
+        }
+        return false;
+    }
+
     private static double rotateX(Node node, double cosAlfa, double sinAlfa) {
         return cosAlfa*node.getCurrentX() + sinAlfa*node.getCurrentY();
     }
@@ -554,7 +555,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             Node n = new Node(e.getX(), e.getY() - yOffset);
 
-            deleteBeam(n.getCurrentX(), n.getCurrentY());
+            if (!setHinge(n)) deleteBeam(n.getCurrentX(), n.getCurrentY());
+
+            DrawHelper.drawStructure(structure, canvasView);
         }
 
         @Override

@@ -4,6 +4,7 @@
 from obspy.clients.fdsn import Client
 from obspy import UTCDateTime
 from csv import writer
+from eqh import *
 import sys
 
 # Basic outline:
@@ -12,18 +13,6 @@ import sys
 # * we query the wave data
 # * we transform the wave data (derive, if necessary, and scale it)
 # * we finally output the data
-
-# Help methods
-def printStatus(msg):
-    print(msg, file=sys.stderr)
-
-def printError(msg):
-    printStatus(msg)
-    sys.exit(1)
-
-def assertError(cond, msg):
-    if not cond:
-        printError(msg)
 
 # Guard for wrong option count.
 assertError(len(sys.argv) == 5 or len(sys.argv) == 4, 'Usage: python eq-dump.py <network>.<station>.<location>.<channel> <start time> <end time> [host]')
