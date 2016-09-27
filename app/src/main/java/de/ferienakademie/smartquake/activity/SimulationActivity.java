@@ -315,8 +315,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
 
-        accelerationProvider.setActive();
-        accelerationProvider.initTime(30_000_000);
         simulation.start();
         simulation.setListener(this);
 
