@@ -72,17 +72,17 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private int structureId;
     private String structureName;
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             onStartButtonClicked();
-        }
-    };
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
         }
     };
     private long lastDebugSensorDataTimestamp;
@@ -152,7 +152,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 mode = SimulationMode.LIVE;
             }
 
-            if (simulation.isRunning()) {
+            if (simulation != null && simulation.isRunning()) {
                 onStopButtonClicked();
             }
             tvSensorDataX.setText("");
