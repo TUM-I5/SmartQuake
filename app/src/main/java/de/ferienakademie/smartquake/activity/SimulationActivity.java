@@ -90,7 +90,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         try {
             switch (fileName) {
-                case "SinCos.earthquake":
+                case "Sinusodial.earthquake":
                     SinCosExcitation sinCosExcitation = new SinCosExcitation();
                     sinCosExcitation.setFrequency(PreferenceReader.getExcitationFrequency());
                     startSimulation(sinCosExcitation);
