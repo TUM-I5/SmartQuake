@@ -570,6 +570,7 @@ public class StructureFactory {
         g2.setConstraint(con);
         g3.setConstraint(con);
 
+        //TODO: fix hinges pls
         //TODO: Make s2/s3/s4 hinges between h1 and the group sb1,sb2/between h2 and the group sb2,sb3/between h3 and the group sb3/sb4
         //In the current implementation of hinges, each beam makes up one group
         enumerateDOFs(structure);
@@ -654,6 +655,7 @@ public class StructureFactory {
 
     public static Structure getTrumpTower() {
         double width = 8;
+        double xOffset = -4;
         double height = 8;
         double height2 = 2; //shouldn't be bigger than 4
         double height3 = 1; //shoudln't be bigger than 4
@@ -664,32 +666,34 @@ public class StructureFactory {
         Material testMaterial = Material.STEEL;
 
         //Ground
-        Node n1 = new Node(width/3, height);
-        Node n2 = new Node(4*width/9, height);
-        Node n3 = new Node(5*width/9, height);
-        Node n4 = new Node(2*width/3, height);
+        Node n1 = new Node(width/3+xOffset, height);
+        Node n2 = new Node(4*width/9+xOffset, height);
+        Node n3 = new Node(5*width/9+xOffset, height);
+        Node n4 = new Node(2*width/3+xOffset, height);
         //Left thing
-        Node n5 = new Node(8*width/27, height-height2/3);
-        Node n6 = new Node(8*width/27, height-2*height2/3);
-        Node n7 = new Node(10*width/27, height-height2);
-        Node n8 = new Node(4*width/9, height-2*height2/3);
+        Node n5 = new Node(8*width/27+xOffset, height-height2/3);
+        Node n6 = new Node(8*width/27+xOffset, height-2*height2/3);
+        Node n7 = new Node(10*width/27+xOffset, height-height2);
+        Node n8 = new Node(4*width/9+xOffset, height-2*height2/3);
         //Right thing
-        Node n9 = new Node(19*width/27, height-height2/3);
-        Node n10 = new Node(19*width/27, height-2*height2/3);
-        Node n11 = new Node(17*width/27, height-height2);
-        Node n12 = new Node(5*width/9, height-2*height2/3);
+        Node n9 = new Node(19*width/27+xOffset, height-height2/3);
+        Node n10 = new Node(19*width/27+xOffset, height-2*height2/3);
+        Node n11 = new Node(17*width/27+xOffset, height-height2);
+        Node n12 = new Node(5*width/9+xOffset, height-2*height2/3);
         //Middle thing
-        Node n13 = new Node(4*width/9, height/2);
-        Node n14 = new Node(5*width/9, height/2);
-        Node n15 = new Node(4*width/9, height3);
-        Node n16 = new Node(5*width/9, height3);
-        Node n17 = new Node(11*width/27, height3);
-        Node n18 = new Node(16*width/27, height3);
-
-
-        Node n19 = new Node(12.25*width/27, height3/3);
-        Node n20 = new Node(width/2, 0);
-        Node n21 = new Node(14.75*width/27, height3/3);
+        Node n13 = new Node(4*width/9+xOffset, height/2);
+        Node n14 = new Node(5*width/9+xOffset, height/2);
+        Node n15 = new Node(4*width/9+xOffset, height3);
+        Node n16 = new Node(5*width/9+xOffset, height3);
+        Node n17 = new Node(11*width/27+xOffset, height3);
+        Node n18 = new Node(16*width/27+xOffset, height3);
+        Node n19 = new Node(12*width/27+xOffset, height3/3);
+        Node n20 = new Node(width/2+xOffset, 0);
+        Node n21 = new Node(15*width/27+xOffset, height3/3);
+        Node n22 = new Node(4*width/9+xOffset, height3/2+height/4);
+        Node n23 = new Node(5*width/9+xOffset, height3/2+height/4);
+        Node n24 = new Node(4*width/9+xOffset, 3*height/4-height2/3);
+        Node n25 = new Node(5*width/9+xOffset, 3*height/4-height2/3);
 
         //Left thing
         Beam b1 = new Beam(n1, n5, testMaterial);
@@ -704,19 +708,23 @@ public class StructureFactory {
         Beam b9 = new Beam(n11, n12, testMaterial);
         Beam b10 = new Beam(n12, n3, testMaterial);
         //Middle thing
-        Beam b11 = new Beam(n8, n13, testMaterial);
-        Beam b12 = new Beam(n12, n14, testMaterial);
-        Beam b13 = new Beam(n13, n15, testMaterial);
-        Beam b14 = new Beam(n14, n16, testMaterial);
-        Beam b15 = new Beam(n15, n17, testMaterial);
-        Beam b16 = new Beam(n16, n18, testMaterial);
-        Beam b17 = new Beam(n17, n19, testMaterial);
-        Beam b18 = new Beam(n18, n21, testMaterial);
-        Beam b19 = new Beam(n19, n20, testMaterial);
-        Beam b20 = new Beam(n20, n21, testMaterial);
+        Beam b11 = new Beam(n8, n24, testMaterial);
+        Beam b12 = new Beam(n24, n13, testMaterial);
+        Beam b13 = new Beam(n12, n25, testMaterial);
+        Beam b14 = new Beam(n25, n14, testMaterial);
+        Beam b15 = new Beam(n13, n22, testMaterial);
+        Beam b16 = new Beam(n22, n15, testMaterial);
+        Beam b17 = new Beam(n14, n23, testMaterial);
+        Beam b18 = new Beam(n23, n16, testMaterial);
+        Beam b19 = new Beam(n15, n17, testMaterial);
+        Beam b20 = new Beam(n16, n18, testMaterial);
+        Beam b21 = new Beam(n17, n19, testMaterial);
+        Beam b22 = new Beam(n18, n21, testMaterial);
+        Beam b23 = new Beam(n19, n20, testMaterial);
+        Beam b24 = new Beam(n20, n21, testMaterial);
 
-        structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21);
-        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20);
+        structure.addNodes(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20,n21,n22,n23,n24,n25);
+        structure.addBeams(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24);
 
         boolean[] con = new boolean[3];
         con[0]=true;

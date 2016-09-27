@@ -163,7 +163,7 @@ public class SpatialDiscretization {
         DampingMatrix.zero();
         double omega1 = eigenvalues[0];
         double omega2 = eigenvalues[1];
-
+        //TODO: fix this shit
         double xi = 0.05;
         double a0 = 1; //2 * xi * omega1 * omega2 / (omega1 + omega2);
         double a1 = 1; //2 * xi / (omega1 + omega2);
