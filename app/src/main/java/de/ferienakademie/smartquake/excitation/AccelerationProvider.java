@@ -22,6 +22,12 @@ public abstract class AccelerationProvider {
     public abstract double[] getAcceleration();
 
     /**
+     * @param time
+     * @return
+     */
+    public abstract double[] getAcceleration(double time);
+
+    /**
      * has to inform the listener
      * @return datastructure with timestamp, X axis acceleration, Y axis acceleration
      */

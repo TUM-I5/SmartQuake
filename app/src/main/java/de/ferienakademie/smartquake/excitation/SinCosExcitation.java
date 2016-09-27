@@ -6,8 +6,6 @@ package de.ferienakademie.smartquake.excitation;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Class for generating a "standard" earthquake
@@ -18,21 +16,18 @@ public class SinCosExcitation extends AccelerationProvider {
     double frequency;
     private double timestep;
     long counter;
-    private List<AccelData> data;
 
     public SinCosExcitation(double amplitude, double frequency) {
         this.amplitude = amplitude;
         this.frequency = frequency;
-        this.timestep = 10;
+        this.timestep = 30_000_000;
         this.counter = 0;
-        data = new LinkedList<>();
     }
 
     public SinCosExcitation() {
-        this.amplitude = 100;
+        this.amplitude = 10;
         this.frequency = 1;
-        this.timestep = 10;
-        data = new LinkedList<>();
+        this.timestep = 30_000_000;
     }
 
     /**
@@ -41,9 +36,16 @@ public class SinCosExcitation extends AccelerationProvider {
      */
     @Override
     public double[] getAcceleration() {
-        AccelData temp = getAccelerationMeasurement();
-        return new double[]{temp.xAcceleration,
-                temp.yAcceleration, temp.xGravity, temp.yGravity};
+        counter++;
+        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * (double)(counter * timestep * 1e-9)),
+                0.0, 0.0 , 0.0};
+    }
+
+    @Override
+    public double[] getAcceleration(double time) {
+        counter++;
+        return new double[]{amplitude * Math.sin(2 * Math.PI * frequency * time),
+                0.0, 0.0, 0.0};
     }
 
     @Override
@@ -51,8 +53,6 @@ public class SinCosExcitation extends AccelerationProvider {
         counter++;
         AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
                 (long) (counter * timestep));
-        accelData.yGravity = 9.81;
-        data.add(accelData);
         notifyNewAccelData(accelData);
         return accelData;
     }
@@ -68,7 +68,6 @@ public class SinCosExcitation extends AccelerationProvider {
     @Override
     public void initTime(double timeStep) {
         this.timestep = timeStep;
-        data = new LinkedList<>();
     }
 
     @Override

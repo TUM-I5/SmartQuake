@@ -152,10 +152,9 @@ public class Solver implements TimeIntegrationSolver {
      * Updates ground position
      * @param delta_t
      */
-    public void setGroundPosition(double delta_t){
+    public void setGroundPosition(double delta_t, double[] acc_new){
 
         //Initialize new acceleration and save old velocity
-        double[] acc_new = accelerationProvider.getAcceleration();
         double[] velo_old = groundVelocity.clone();
 
         //Get new velocity

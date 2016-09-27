@@ -11,6 +11,13 @@
             android:defaultValue="false"
             />
         <SwitchPreference
+            android:key="pref_show_ground_displacements"
+            android:title="@string/pref_show_ground_displacements"
+            android:summaryOn="@string/pref_show_ground_displacements_summary_On"
+            android:summaryOff="@string/pref_show_ground_displacements_summary_Off"
+            android:defaultValue="true"
+            />
+        <SwitchPreference
             android:key="pref_modal_analysis"
             android:title="@string/pref_modal_analysis_title"
             android:summaryOn="@string/pref_modal_analysis_summary_On"
