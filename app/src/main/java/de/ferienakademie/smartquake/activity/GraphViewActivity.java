@@ -3,6 +3,7 @@ package de.ferienakademie.smartquake.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.IntegerRes;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -32,12 +33,10 @@ public class GraphViewActivity extends AppCompatActivity {
     private Structure structure;
     private Node selectedNode;
 
-    private LineChart nodeDataChart;
+    private LineChart nodeDataChart; // can do just about anything
     private List<Pair<ILineDataSet, Boolean>> sets;
+    // LineData requires strings for some reason
     private List<String> graphXPoints;
-
-    // TODO: scroll graph view and actually use this... but seems to work as is
-    private int numShownDataPoints = 20;
 
     private CanvasView nodeView;
     private CanvasView modelView;
@@ -71,13 +70,14 @@ public class GraphViewActivity extends AppCompatActivity {
 
         for (int i = 0; i < historicDisplacements.size(); ++i) {
             graphXPoints.add(Integer.toString(i));
-            // minor Java WTF
+            // Minor Java WTF. Also, Y before X in the library...
             xDisplacements.add(new Entry((float) ((double) historicDisplacements.get(i).get(0)), i));
             yDisplacements.add(new Entry((float) ((double) historicDisplacements.get(i).get(1)), i));
             for (int j = 2; j < historicDisplacements.get(0).size(); ++j) {
                 if (rotDisplacements.size() <= j - 2) {
                     rotDisplacements.add(new ArrayList<Entry>());
                 }
+                // TODO: Scale rotational displacements?
                 rotDisplacements.get(j - 2).add(new Entry((float) ((double) historicDisplacements.get(i).get(j)), i));
             }
         }
@@ -119,8 +119,8 @@ public class GraphViewActivity extends AppCompatActivity {
                 enabledSets.add(p.first);
             }
         }
-
         LineData displacementData = new LineData(graphXPoints, enabledSets);
+        int numGraphXPoints = graphXPoints.size();
         nodeDataChart.setData(displacementData);
         nodeDataChart.invalidate();
     }

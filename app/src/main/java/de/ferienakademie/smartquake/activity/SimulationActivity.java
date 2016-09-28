@@ -58,13 +58,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private CanvasView canvasView;
     private TimeIntegration timeIntegration;
 
-
     // probably not the best solution
     protected static Structure getStructure() {
         return structure;
     }
 
     private static Structure structure;
+    private static int selectedNodeId;
 
     private SpatialDiscretization spatialDiscretization;
     private Simulation simulation;
@@ -173,9 +173,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             replayDisplacement();
         } else if (id == R.id.sim_view_graphs_button) {
             Intent i = new Intent(this, GraphViewActivity.class);
-            i.putExtra("initialNodeId", 4);
-            i.putExtra("structureName", structureName);
-            i.putExtra("structureId", structureId);
+            i.putExtra("initialNodeId", selectedNodeId);
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);
@@ -223,6 +221,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structureId = getIntent().getExtras().getInt("id");
             structureName = getIntent().getExtras().getString("name");
         }
+
+        selectedNodeId = 1;
         findSensorDataDebugViews();
 
         if (viewTreeObserver.isAlive()) {
