@@ -15,6 +15,10 @@
     <string name="pref_lumped_summary_On">Using lumped mass matrices.</string>
     <string name="pref_lumped_summary_Off">Using consistent mass matrices.</string>
 
+    <string name="pref_show_colors">Color stressed beams</string>
+    <string name="pref_show_colors_on">Stressed and broken beams have a different color than non-stressed ones.</string>
+    <string name="pref_show_colors_off">All beams have the same color.</string>
+
 
     <string name="pref_show_ground_displacements">Ground Displacements</string>
     <string name="pref_show_ground_displacements_summary_On">Show Ground Displacements on Replay.</string>

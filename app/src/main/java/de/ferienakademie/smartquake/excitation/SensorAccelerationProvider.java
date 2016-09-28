@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Created by David Schneller on 25.09.2016.
+ * Acceleration provider that is used whenever shaking from phone is applied
  */
 public class SensorAccelerationProvider extends StoredAccelerationProvider implements SensorEventListener {
     private long baseTime; //in nanoseconds

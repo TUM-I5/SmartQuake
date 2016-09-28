@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel1;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -58,8 +60,8 @@ public class SpatialDiscretization {
         //initialize displacement with zeros
         numberofDOF = structure.getNumberOfDOF();
 
-        influenceVectorX = new DenseMatrix64F(getNumberofDOF(), 1);
-        influenceVectorY = new DenseMatrix64F(getNumberofDOF(), 1);
+        influenceVectorX = new DenseMatrix64F(getNumberOfDOF(), 1);
+        influenceVectorY = new DenseMatrix64F(getNumberOfDOF(), 1);
 
         initializeMatrices();
         calculateInfluenceVector();
@@ -95,10 +97,10 @@ public class SpatialDiscretization {
      * Calculate the stiffness, mass and damping matrices.
      */
     public void initializeMatrices() {
-        StiffnessMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
-        MassMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
-        DampingMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
-        LoadVector = new DenseMatrix64F(getNumberofDOF(), 1);
+        StiffnessMatrix = new DenseMatrix64F(getNumberOfDOF(), getNumberOfDOF());
+        MassMatrix = new DenseMatrix64F(getNumberOfDOF(), getNumberOfDOF());
+        DampingMatrix = new DenseMatrix64F(getNumberOfDOF(), getNumberOfDOF());
+        LoadVector = new DenseMatrix64F(getNumberOfDOF(), 1);
 
         StiffnessMatrix.zero();
         MassMatrix.zero();
@@ -122,7 +124,7 @@ public class SpatialDiscretization {
         }
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < getNumberofDOF(); k++) {
+            for (int k = 0; k < getNumberOfDOF(); k++) {
                 StiffnessMatrix.set(j, k, 0.0);
                 StiffnessMatrix.set(k, j, 0.0);
             }
@@ -142,7 +144,7 @@ public class SpatialDiscretization {
         }
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < getNumberofDOF(); k++) {
+            for (int k = 0; k < getNumberOfDOF(); k++) {
                 MassMatrix.set(j, k, 0.0);
                 MassMatrix.set(k, j, 0.0);
             }
@@ -150,19 +152,19 @@ public class SpatialDiscretization {
         }
     }
 
-    public void calculateinverseMassMatrix() {
+    public void calculateInverseMassMatrix() {
         if (!structure.isLumped()) {
             throw new RuntimeException("No diagonal mass matrix!");
         }
-        InverseMassMatrix = new DenseMatrix64F(getNumberofDOF(), getNumberofDOF());
+        InverseMassMatrix = new DenseMatrix64F(getNumberOfDOF(), getNumberOfDOF());
         InverseMassMatrix.zero();
-        for (int e = 0; e < getNumberofDOF(); e++) {
+        for (int e = 0; e < getNumberOfDOF(); e++) {
             InverseMassMatrix.add(e, e, 1. / MassMatrix.get(e, e));
         }
     }
 
     public DenseMatrix64F getInverseMassMatrix() { // Only call for lumped cases.
-        calculateinverseMassMatrix();
+        calculateInverseMassMatrix();
         return InverseMassMatrix;
     }
 
@@ -176,7 +178,7 @@ public class SpatialDiscretization {
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
-            for (int k = 0; k < getNumberofDOF(); k++) {
+            for (int k = 0; k < getNumberOfDOF(); k++) {
                 DampingMatrix.set(j, k, 0.0);
                 DampingMatrix.set(k, j, 0.0);
             }
@@ -195,12 +197,12 @@ public class SpatialDiscretization {
 
     }
 
-    public int getNumberofDOF() {
+    public int getNumberOfDOF() {
         return numberofDOF;
     }
 
-    public int getNumberofUnconstraintDOF() {
-        return getNumberofDOF() - structure.getConDOF().size();
+    public int getNumberOfUnconstraintDOF() {
+        return getNumberOfDOF() - structure.getConDOF().size();
     }
 
     public Structure getStructure() {
@@ -273,7 +275,6 @@ public class SpatialDiscretization {
      */
     public void updateLoadVector(double[] acceleration) {
         if (PreferenceReader.includeGravity()) {
-
             CommonOps.scale(-acceleration[0] - acceleration[2], influenceVectorX, influenceVectorX_temp);
             CommonOps.scale(-acceleration[1] - acceleration[3], influenceVectorY, influenceVectorY_temp);
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
@@ -291,7 +292,7 @@ public class SpatialDiscretization {
 
     public void updateLoadVectorModalAnalysis(double[] acceleration) {
 
-        redLoadVectorModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        redLoadVectorModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
         if (PreferenceReader.includeGravity()) {
 
             CommonOps.scale(-acceleration[0]- acceleration[2], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
@@ -315,18 +316,18 @@ public class SpatialDiscretization {
         eigenvectorsmatrix = new DenseMatrix64F(ev);
         CommonOps.transpose(eigenvectorsmatrix, eigenvectorsmatrix); //transpose due to constructor of DenseMatrix64F in which rows and column are switched
         eigenvectors = CommonOps.columnsToVector(eigenvectorsmatrix, null);
-        ReducedEigenvalues = new double[numberofDOF-structure.getConDOF().size()];
+        ReducedEigenvalues = new double[getNumberOfUnconstraintDOF()];
 
-        Reducedeigenvectors = new DenseMatrix64F[numberofDOF-structure.getConDOF().size()];
+        Reducedeigenvectors = new DenseMatrix64F[getNumberOfUnconstraintDOF()];
 
-        RedinfluenceVectorX = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        RedinfluenceVectorY = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        RedinfluenceVectorX_temp  = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
-        RedinfluenceVectorY_temp  = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),1);
+        RedinfluenceVectorX = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
+        RedinfluenceVectorY = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
+        RedinfluenceVectorX_temp  = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
+        RedinfluenceVectorY_temp  = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
 
 
-        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
-            Reducedeigenvectors[i]=new DenseMatrix64F(numberofDOF-structure.getConDOF().size());
+        for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
+            Reducedeigenvectors[i]=new DenseMatrix64F(getNumberOfUnconstraintDOF());
         }
         int counter =0;
         // Throw away eigenvectors that belong to constraint frequencies
@@ -344,11 +345,10 @@ public class SpatialDiscretization {
                 counter++;
             }
         }
-        int numberOfUnconstraintDOF = numberofDOF-structure.getConDOF().size();
-        double[][] temporary = new double[numberOfUnconstraintDOF][numberOfUnconstraintDOF];
+        double[][] temporary = new double[getNumberOfUnconstraintDOF()][getNumberOfUnconstraintDOF()];
         // Throw away eigenvector entries that belong to constraint dofs.
 
-        for (int j = 0; j < numberOfUnconstraintDOF; j++) {
+        for (int j = 0; j < getNumberOfUnconstraintDOF(); j++) {
             int counter_k=0;
             for (int k = 0; k < numberofDOF; k++) {
                 boolean isConstraint = false;
@@ -369,20 +369,20 @@ public class SpatialDiscretization {
 
     //Normalise eigenvectors
     public void normaliseEigenvectors() {
-        for (int i = 0; i < getNumberofDOF(); i++) {
+        for (int i = 0; i < getNumberOfDOF(); i++) {
             CommonOps.scale(1 / Math.sqrt(MassMatrix.get(i, i)), eigenvectors[i]);
         }
     }
 
 
 
-    public void getModalAnalysisMatrices(){
+    public void calculateModalAnalysisMatrices(){
         normaliseEigenvectors();
-        StiffnessMatrixModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
-        MassMatrixModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
-        DampingMatrixModalAnalysis = new DenseMatrix64F(numberofDOF-structure.getConDOF().size(),numberofDOF-structure.getConDOF().size());
+        StiffnessMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        MassMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        DampingMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
 
-        for (int i = 0; i < numberofDOF-structure.getConDOF().size(); i++) {
+        for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
             StiffnessMatrixModalAnalysis.set(i,i,ReducedEigenvalues[i]);
             MassMatrixModalAnalysis.set(i,i,1.0);
         }
@@ -390,15 +390,15 @@ public class SpatialDiscretization {
 
 
     }
-    public void superimposeModalAnalyisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
+    public void superimposeModalAnalysisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF, 1);
-        DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberofUnconstraintDOF(), 1);
+        DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberOfUnconstraintDOF(), 1);
 
         CommonOps.multTransA(1, ReducedeigenvectorsMatrixTranspose, modalSolutionvector, solVecCopy);
 
 
         // Extend displacements by inserting zeros in the position of constraint dofs
-        for (int i = 0; i < getNumberofUnconstraintDOF(); i++) {
+        for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
             int disp = 0;
             for (int k: structure.getConDOF()) {
                 if (k <= i) {

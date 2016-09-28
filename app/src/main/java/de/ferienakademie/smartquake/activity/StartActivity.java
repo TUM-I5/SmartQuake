@@ -172,6 +172,7 @@ public class StartActivity extends AppCompatActivity
         values.add("TunedMassExample2");
         values.add("Elephant");
         values.add("Eierlaufen");
+        values.add("DemoTMD");
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();
 
