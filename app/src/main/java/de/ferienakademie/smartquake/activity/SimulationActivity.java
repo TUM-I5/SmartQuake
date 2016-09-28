@@ -65,11 +65,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private ProgressBar replaySeekBar;
     private TextView replayrunningLabel;
     private double replayProgress;
-    private SimulationMode mode = SimulationMode.LIVE;
+    private SimulationMode mode = SimulationMode.READY;
     //Sensor Debug Views
     private TextView tvSensorDataX;
     private TextView tvSensorDataY;
     private LinearLayout layoutSensorDebug;
+    private ReplayDisplacementRunnable replayDisplacementRunnable;
 
     private int structureId;
     private String structureName;
@@ -300,7 +301,18 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         }
     }
 
+    private void setStopButton() {
+        simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+        simFab.setOnClickListener(stopSimulationListener);
+    }
+
+    private  void setStartButton() {
+        simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        simFab.setOnClickListener(startSimulationListener);
+    }
+
     private void onStartButtonClicked() {
+        mode = SimulationMode.LIVE;
         startSimulation(new SensorAccelerationProvider(mSensorManager));
     }
 
@@ -325,6 +337,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private void onStopButtonClicked() {
         Log.d("STOPSIM STATE", mode.name());
+
+        mode = SimulationMode.READY;
+
+        if (replayDisplacementRunnable != null && replayDisplacementRunnable.isRunning) {
+            replayDisplacementRunnable.isRunning = false;
+        }
 
         replaySeekBar.setVisibility(View.GONE);
         replayrunningLabel.setVisibility(View.GONE);
@@ -460,7 +478,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
      */
     private void replayDisplacement() {
 
-        if (mode == SimulationMode.REPLAY) {
+        if (mode == SimulationMode.REPLAY || mode == SimulationMode.LIVE) {
             return;
         }
 
@@ -470,56 +488,66 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             replaySeekBar.setVisibility(View.VISIBLE);
         }
 
+        setStopButton();
+
         //This tells us how many time steps were calculated
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        replayDisplacementRunnable = new ReplayDisplacementRunnable();
 
-                int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+        new Thread(replayDisplacementRunnable).start();
+    }
 
-                //we loop over all frames
-                for (int i = 0; i < number_timeSteps; i++) {
+    // TODO: should this be part of Simulation too?
+    private enum SimulationMode {
+        READY,
+        LIVE,
+        REPLAY
+    }
 
-                    //loop over all nodes to update positions
-                    for (Node in : structure.getNodes()) {
+    private class ReplayDisplacementRunnable implements Runnable {
+        public boolean isRunning = true;
 
-                        in.recallDisplacementOfStep(i);
+        @Override
+        public void run() {
 
-                    }
-                    
+            int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+
+            //we loop over all frames
+            for (int i = 0; i < number_timeSteps; i++) {
+
+                if (!isRunning) break;
+
+                //loop over all nodes to update positions
+                for (Node in : structure.getNodes()) {
+
+                    in.recallDisplacementOfStep(i);
+
+                }
+
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException ex) {
+                    Log.e("replayDisplacement", ex.getMessage());
+                }
+
+                while(canvasView.isBeingDrawn) {
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException ex) {
                         Log.e("replayDisplacement", ex.getMessage());
                     }
-
-                    while(canvasView.isBeingDrawn) {
-                        try {
-                            Thread.sleep(30);
-                        } catch (InterruptedException ex) {
-                            Log.e("replayDisplacement", ex.getMessage());
-                        }
-                    }
-
-                    //draw frame
-                    DrawHelper.drawStructure(structure, canvasView);
-
-                    double percentage = ((double)i/number_timeSteps)*100;
-
-                    onNewReplayPercent(percentage);
                 }
 
-                onNewReplayPercent(100);
-                mode = SimulationMode.LIVE;
+                //draw frame
+                DrawHelper.drawStructure(structure, canvasView);
+
+                double percentage = ((double)i/number_timeSteps)*100;
+
+                onNewReplayPercent(percentage);
             }
-        }).start();
 
-    }
-
-    // TODO: should this be part of Simulation too?
-    private enum SimulationMode {
-        LIVE,
-        REPLAY
+            onNewReplayPercent(100);
+            mode = SimulationMode.LIVE;
+        }
     }
 
 }
