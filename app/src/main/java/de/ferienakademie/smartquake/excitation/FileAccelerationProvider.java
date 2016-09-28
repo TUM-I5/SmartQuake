@@ -52,7 +52,7 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
 
         readingString = bufferedReader.readLine();
         while (readingString != null) {
-            Log.v("FILE_ACCEL", readingString);
+//            Log.v("FILE_ACCEL", readingString);
             readStringSplit = readingString.split(";");
 
             currentReading.timestamp = Long.parseLong(readStringSplit[0]);
