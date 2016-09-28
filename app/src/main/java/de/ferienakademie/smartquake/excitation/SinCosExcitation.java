@@ -55,7 +55,7 @@ public class SinCosExcitation extends AccelerationProvider {
      */
     public AccelData getAccelerationMeasurement() {
         counter++;
-        AccelData accelData = new AccelData(Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
+        AccelData accelData = new AccelData(amplitude*Math.sin(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
                 (long) (counter * timestep));
         notifyNewAccelData(accelData);
         return accelData;
