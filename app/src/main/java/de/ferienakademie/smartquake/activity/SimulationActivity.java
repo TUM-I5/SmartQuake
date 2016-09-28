@@ -349,6 +349,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_button);
         if (replay != null) replay.setEnabled(true);
 
+        if (slowSnackbar != null && slowSnackbar.isShown()) slowSnackbar.dismiss();
+
         toggleStartStopAvailability();
     }
 
