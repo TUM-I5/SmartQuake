@@ -1,12 +1,14 @@
 package de.ferienakademie.smartquake.excitation;
 
+import android.content.Context;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by user on 21.09.2016.
+ * Superclass for all objects able to return senseor measurements
  */
 
 public abstract class AccelerationProvider {
@@ -50,7 +52,7 @@ public abstract class AccelerationProvider {
      */
     public abstract void initTime(double timeStep);
 
-    public abstract void saveFile(OutputStream outputStream) throws IOException;
+    public abstract void saveFileIfDataPresent(Context c, String fileName) throws IOException;
 
     public abstract void setActive();
 

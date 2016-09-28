@@ -30,10 +30,19 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
 
+    private int structureId;
+    private String structureName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_data);
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            structureId = bundle.getInt("id");
+            structureName = bundle.getString("name");
+        }
 
         values = new ArrayList<>();
 
@@ -55,7 +64,12 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent sel = new Intent();
+        sel.putExtra("eqDataFile", values.get(0));
+        sel.putExtra("id", structureId);
+        sel.putExtra("name", structureName);
+        setResult(Activity.RESULT_OK, sel);
+        finish();
     }
 
 
@@ -64,6 +78,17 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
         sel.putExtra("eqDataFile", values.get(dataSourceId));
         setResult(Activity.RESULT_OK, sel);
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

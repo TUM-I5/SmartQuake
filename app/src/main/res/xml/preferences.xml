@@ -2,6 +2,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:title="Display">
+        <SwitchPreference
+            android:key="pref_show_colors"
+            android:title="@string/pref_show_colors"
+            android:summaryOn="@string/pref_show_colors_on"
+            android:summaryOff="@string/pref_show_colors_off"
+            android:defaultValue="true"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="Simulation">
         <SwitchPreference
             android:key="pref_use_lumped"

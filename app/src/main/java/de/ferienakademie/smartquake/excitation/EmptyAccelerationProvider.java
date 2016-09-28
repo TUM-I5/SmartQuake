@@ -1,7 +1,8 @@
 package de.ferienakademie.smartquake.excitation;
 
+import android.content.Context;
+
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Created by David Schneller on 25.09.2016.
@@ -31,8 +32,8 @@ public class EmptyAccelerationProvider extends AccelerationProvider {
     }
 
     @Override
-    public void saveFile(OutputStream outputStream) throws IOException {
-        outputStream.close();
+    public void saveFileIfDataPresent(Context c, String fileName) throws IOException {
+
     }
 
     @Override

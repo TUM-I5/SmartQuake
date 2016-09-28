@@ -34,7 +34,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = Material.STEEL2;
+        Material testMaterial = Material.STEEL4;
 
         Beam b = new Beam(bottom, up, testMaterial);
 
@@ -189,6 +189,89 @@ public class StructureFactory {
         n2.setConstraint(con);
         enumerateDOFs(structure);
         return structure;
+    }
+
+    public static Structure getDemo() {
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        double w = 4; //width
+        double h = 3; //height
+
+        Node n1 = new Node(0, 3*h);
+        Node n2 = new Node(w, 3*h);
+        Node n3 = new Node(0, 2*h);
+        Node n4 = new Node(w, 2*h);
+        Node n5 = new Node(0, h);
+        Node n6 = new Node(w, h);
+        Node n7 = new Node(0, 0);
+        Node n8 = new Node(w, 0);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n3, n4, testMaterial);
+        Beam b3 = new Beam(n5, n6, testMaterial);
+        Beam b4 = new Beam(n7, n8, testMaterial);
+        Beam b5 = new Beam(n1, n3, testMaterial);
+        Beam b6 = new Beam(n2, n4, testMaterial);
+        Beam b7 = new Beam(n3, n5, testMaterial);
+        Beam b8 = new Beam(n4, n6, testMaterial);
+        Beam b9 = new Beam(n5, n7, testMaterial);
+        Beam b10 = new Beam(n6, n8, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    public static Structure getDemoTMD() {
+
+        double f = 1; //Hz
+        double M = 2364160.95165*1/(f*f); //kg, for l1=1.5m, 12=2m and STEEL
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        double w = 4; //width
+        double h = 3; //height
+
+        Node n1 = new Node(0, 0);
+        Node n2 = new Node(0.5*w, 0);
+        Node n3 = new Node(w, 0);
+        Node n4 = new Node(0.5*w, 1.5, M);
+        Node n5 = new Node(w, 4);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n2, n4, testMaterial);
+        Beam b4 = new Beam(n5, n3, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5);
+        structure.addBeams(b1, b2, b3, b4);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n3.setConstraint(con);
+        n5.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+
     }
 
     public static Structure getCraneBottom() {
@@ -1219,6 +1302,29 @@ public class StructureFactory {
         enumerateDOFs(structure);
         return structure;
     }
+    public static Structure getEierlaufen() {
+        double width = 8;
+        double height = 8;
+
+        double half = width * 0.5;
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        Node n1 = new Node(5, 2, false);
+        Node n2 = new Node(3, 1, false);
+        Node n3 = new Node(3, 4, false);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n1, testMaterial);
+
+        structure.addNodes(n1, n2, n3);
+        structure.addBeams(b1, b2, b3);
+
+        enumerateDOFs(structure);
+        return structure;
+    }
 
     public static Structure getStructure(Context context, int structureId, String structureName) {
         if (structureId == 0) {
@@ -1241,6 +1347,24 @@ public class StructureFactory {
             return StructureFactory.getTrumpTower();
         } else if (structureId == 9) {
             return StructureFactory.getTVtower();
+        } else if (structureId == 10) {
+            return StructureFactory.getTaipeh();
+        } else if (structureId == 11) {
+            return StructureFactory.getHouseWithMassDamper();
+        } else if (structureId == 12) {
+            return StructureFactory.getOneWTC();
+        } else if (structureId == 13) {
+            return StructureFactory.getBurjKhalifa();
+        } else if (structureId == 14) {
+            return StructureFactory.getTunedMassExample1();
+        }else if (structureId == 15) {
+            return StructureFactory.getTunedMassExample2();
+        } else if (structureId == 16) {
+            return StructureFactory.getSimpleElephant();
+        }   else if (structureId == 17) {
+            return StructureFactory.getEierlaufen();
+        } else if (structureId == 18) {
+            return StructureFactory.getDemoTMD();
         }
 
         FileInputStream fileInputStream = null;

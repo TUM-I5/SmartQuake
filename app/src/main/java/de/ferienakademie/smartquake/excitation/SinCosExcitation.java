@@ -4,13 +4,15 @@ package de.ferienakademie.smartquake.excitation;
  * Created by simon on 23.09.16.
  */
 
+import android.content.Context;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.acl.AclEntry;
 
 /**
  * Class for generating a "standard" earthquake
- * For now only uses sin-function default amplitude 5 and default frequency of one Hertz
+ * used whenever sinusoidal excitation is used
+ * For now only uses sin-function default amplitude 10 m/s^2 and default frequency of 1 Hz
  */
 public class SinCosExcitation extends AccelerationProvider {
     double amplitude;
@@ -33,7 +35,7 @@ public class SinCosExcitation extends AccelerationProvider {
 
     /**
      * produces harmonic acceleration along X axis a=sin(2*pi*f*t)
-     * @return 4d vector with accelerations along X,Y axis and gravitation vector (-9.81,0)
+     * @return 4d vector with accelerations along X,Y axis and zero gravitation vector
      */
     @Override
     public double[] getAcceleration() {
@@ -43,7 +45,7 @@ public class SinCosExcitation extends AccelerationProvider {
 
     @Override
     public double[] getAcceleration(double time) {
-        counter++;
+        //counter++;
         AccelData temp = getAccelerationMeasurement(time);
 
         return AccelData.toArray(temp);
@@ -83,7 +85,7 @@ public class SinCosExcitation extends AccelerationProvider {
     }
 
     @Override
-    public void saveFile(OutputStream outputStream) throws IOException {
+    public void saveFileIfDataPresent(Context c, String fileName) throws IOException {
         //no.
     }
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 /**
  * uses the gravity sensor to get gravity
+ * Gravitation readings provider that is used when phone has linear accelerometer
  */
 public class SensorGravityProvider extends GravityProvider implements SensorEventListener {
     SensorManager manager;
@@ -32,6 +33,10 @@ public class SensorGravityProvider extends GravityProvider implements SensorEven
         baseTime = 0;
     }
 
+    /**
+     * fills in gravitation components of acceleration vector with values of reading closest to the timestep of the data parameter
+     * @param  data 4d acceleeation vecotor mesurement
+     */
     public void getGravity(AccelData data) {
         while (readings.size() - 1 > currentPosition
                 && reading_ts.get(currentPosition) < data.timestamp) {

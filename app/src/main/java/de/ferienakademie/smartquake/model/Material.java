@@ -5,16 +5,17 @@ package de.ferienakademie.smartquake.model;
  */
 public class Material {
 
-    public static Material STEEL = new Material(0.01, 0.01, 2.1e11, 7850, 0.005, "rectangular"); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
-    public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005, "rectangular"); // for cantilever beam !!! DO NOT CHANGE !!!
-    public static Material STEEL3 = new Material(0.2978, 0.2978, 2.1e11, 7850, 0.005, "rectangular"); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL = new Material(0.01, 0.01, 2.1e11, 7850, 0.005, "rectangular", 400e6); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
+    public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL3 = new Material(0.2978, 0.2978, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL4 = new Material(0.05956, 0.05956, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
 
-    public static Material STEEL_I_SHAPED = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "I-shaped beam");
-    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005, "rectangular");// Source: Holzbau, wikipedia
-    public static Material WOOD_I_SHAPED = new Material(0.1,0.1,12e9,600,0.005, "I-shaped beam");
-    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005, "rectangular");// Source: Betonbau, wikipedia
-    public static Material CONCRETE_I_SHAPED = new Material(0.1,0.1,32e9,2400,0.005, "I-shaped beam");
-    public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005, "rectangular");
+    public static Material STEEL_I_SHAPED = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "I-shaped beam", 400e6);
+    public static Material WOOD = new Material(0.1,0.1,12e9,600,0.005, "rectangular", 60);// Source: Holzbau, wikipedia
+    public static Material WOOD_I_SHAPED = new Material(0.1,0.1,12e9,600,0.005, "I-shaped beam", 60);
+    public static Material CONCRETE = new Material(0.1,0.1,32e9,2400,0.005, "rectangular", 20);// Source: Betonbau, wikipedia
+    public static Material CONCRETE_I_SHAPED = new Material(0.1,0.1,32e9,2400,0.005, "I-shaped beam", 20);
+    public static Material BAMBOO = new Material(0.1,0.1,19e9,1000,0.005, "rectangular", 350);
 
     public String shape;
     //shape = "rectangular" ;  // Can be changed for using other than rectangular cross-sections.
@@ -27,13 +28,14 @@ public class Material {
     protected double HeightOfBeam = 0;   //height of beam (input)
     protected double BreadthOfBeam = 0;   //width of beam (input)
     protected double MassPerLength = 0;
+    protected double tensileStrength = 0; //stress when beam breaks: Steel: 400 N/m²; Wood: 60 N/m²; Concrete: 20 N/m²; Bamboo 350 N/m²
 
     protected double Density = 0;     //density of material
     protected double alpha = 0;   //alpha for mass matrix
     //may have to change zeroes
 
     //constructor - The I-shaped beam only uses the 240 profile from DIN 1025; source: https://www.bauforumstahl.de/upload/documents/profile/querschnittswerte/I.pdf
-    public Material(double BreadthOfBeam, double HeightOfBeam, double YoungsModulus, double Density, double alpha, String shape){
+    public Material(double BreadthOfBeam, double HeightOfBeam, double YoungsModulus, double Density, double alpha, String shape, double tensileStrenght){
         this.BreadthOfBeam = BreadthOfBeam;
         this.HeightOfBeam = HeightOfBeam;
         this.YoungsModulus = YoungsModulus;
@@ -44,6 +46,7 @@ public class Material {
         this.Density = Density;
         this.alpha = alpha;
         this.MassPerLength = Density * AreaOfCrossSection;
+        this.tensileStrength = tensileStrenght;
 
         if (shape.equals("I-shaped beam")) { // SI-Units
             this.BreadthOfBeam = 0.106;

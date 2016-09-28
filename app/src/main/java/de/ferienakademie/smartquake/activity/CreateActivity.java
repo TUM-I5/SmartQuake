@@ -42,6 +42,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     private Node chosenNode = null;
 
 
+    // stuff to detect gestures, specifically long press
     private GestureDetectorCompat mGestureDetector;
     private LongPressListener longPressListener;
 
@@ -51,9 +52,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     private ActionBar actionBar;
 
     private double width, height;
-
-    private Material material = Material.STEEL;
-    private boolean lumped = true;
 
     private int yOffset = 0;
 
@@ -65,10 +63,12 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         return cosAlfa * node.getCurrentX() + sinAlfa * node.getCurrentY();
     }
 
+    // is called, when the structure is saved
     public void onNameChosen(String s) {
         serializeStructure(s);
     }
 
+    // is called, when nodes parameters are changed
     public void onChangeNode() {
         DrawHelper.drawStructure(structure, canvasView);
     }
@@ -101,6 +101,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             });
         }
 
+        // toolbar offset from the up of the screen
         yOffset = actionBar.getHeight() + 40;
 
     }
@@ -156,15 +157,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             }
         }
 
-        List<Integer> condof = new ArrayList<>();
-        /*
-        int j = 0;
-        for (int i = 0; i < nodes.size(); i++) {
-            if (nodes.get(i).getCurrentY() >= height - DELTA / 2) {
-                nodes.get(i).setConstraint(new boolean[] {true, true, true});
-            }
-        }*/
-
         for (Node node : nodes) {
             transformToMeters(node);
         }
@@ -174,8 +166,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 nodes.remove(i);
             }
         }
-
-        structure.setConDOF(condof);
 
         for (int i = 0; i < allBeams.size(); i++) {
             if (allBeams.get(i).getStartNode().equals(allBeams.get(i).getEndNode()))
@@ -196,6 +186,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
     }
 
+    // transform pixels to meters, standard modelsize for drawing is 8x8
     public void transformToMeters(Node node) {
         double x = node.getCurrentX();
         double y = node.getCurrentY();
@@ -262,7 +253,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 structure.getBeams().set(structure.getBeams().size() - 1, beam);
 
                 magneticConnect();
-
             }
 
             if (event.getAction() == MotionEvent.ACTION_POINTER_UP
@@ -432,6 +422,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         return super.onTouchEvent(event);
     }
 
+    // looks if while moving any nodes should be connected to the other one
     private void magneticConnect() {
         List<Node> nodes = structure.getNodes();
 
@@ -565,7 +556,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         NodeFragment nodeFragment = new NodeFragment();
         nodeFragment.setNode(node);
         nodeFragment.setListener(this);
-        nodeFragment.show(getFragmentManager(), "paramaters");
+        nodeFragment.show(getFragmentManager(), "parameters");
     }
 
     private void popupGround(Node node) {
