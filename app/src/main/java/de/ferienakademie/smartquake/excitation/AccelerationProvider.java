@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Created by user on 21.09.2016.
+ * Superclass for all objects able to return senseor measurements
  */
 
 public abstract class AccelerationProvider {

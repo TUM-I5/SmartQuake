@@ -147,8 +147,8 @@ public class TimeIntegration {
 
                     }
 
-                    //for the sensor team the global time since beginnig
-                    globalTime += 0.03;
+                    //for the sensor team the global time since begining
+                    globalTime += (double)3e-2;
 
                     //for checking the calculation time
                     long secondTime = System.nanoTime();

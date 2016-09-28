@@ -9,6 +9,7 @@ import java.util.Locale;
 
 /**
  * Created by David Schneller on 25.09.2016.
+ * Super class for all acceleration providers that could be saved in the file after simulation: NO sinusoidal acceleration
  */
 public abstract class StoredAccelerationProvider extends AccelerationProvider {
     protected ArrayList<AccelData> readings = new ArrayList<>(); //list of stored Eartquake data
@@ -38,6 +39,11 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
         return readings.get(currentPosition);
     }
 
+    /**
+     *
+     * @param time of simulation in seconds for which external simulationto be retrieved
+     * @return first 4d accelerations vector reading after the time point of interest
+     */
     public AccelData getAccelerationMeasurement(double time){
         while (readings.size() - 1 > currentPosition
                 && readings.get(currentPosition).timestamp < (long)(time * 1e9)) {
