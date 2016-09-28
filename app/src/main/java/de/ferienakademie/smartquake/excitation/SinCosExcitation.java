@@ -11,7 +11,8 @@ import java.security.acl.AclEntry;
 
 /**
  * Class for generating a "standard" earthquake
- * For now only uses sin-function default amplitude 5 and default frequency of one Hertz
+ * used whenever sinusoidal excitation is used
+ * For now only uses sin-function default amplitude 10 m/s^2 and default frequency of 1 Hz
  */
 public class SinCosExcitation extends AccelerationProvider {
     double amplitude;
