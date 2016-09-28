@@ -34,7 +34,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = Material.STEEL2;
+        Material testMaterial = Material.STEEL4;
 
         Beam b = new Beam(bottom, up, testMaterial);
 

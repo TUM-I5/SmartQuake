@@ -114,7 +114,7 @@ public class CanvasView extends View {
 
     private void beamDeformationColor(Beam beam, Paint paint)
     {
-        double force = beam.calculateNormalForceOfBeam(); //Might still show some errors.
+        double force = 0.0; //Might still show some errors.
 
         //Please don't ask for a reason to take such a comparably const-high algo on a small list, I was just lazy.
         int idx = Arrays.binarySearch(colorStops, new InternalColorStop(0, force));
