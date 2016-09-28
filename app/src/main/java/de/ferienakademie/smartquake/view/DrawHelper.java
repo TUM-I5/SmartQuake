@@ -29,6 +29,7 @@ public class DrawHelper {
             DrawCanvasView view = (DrawCanvasView)view1;
             view.isBeingDrawn = true;
         }
+
         view1.postInvalidate();
     }
 

@@ -28,6 +28,8 @@ public class Beam {
 
     private double[] displacement;
 
+    private boolean hasBeenOverloaded = false;
+
 
     /**
      *array of degrees of freedom in format [x1, y1, rotation1, x2, y2, rotation2]
@@ -450,6 +452,7 @@ public class Beam {
 
 
     public double returnMaximumStress() {
+        boolean isOverloaded = false;
         DenseMatrix64F forces = new DenseMatrix64F(6, 1);
         Displacements displacements = getLocalDisplacements();
         DenseMatrix64F displacementsVector = new DenseMatrix64F(6, 1);
@@ -466,13 +469,16 @@ public class Beam {
         double maximumStress = Math.max(stressStartNode, stressEndeNode);
         return maximumStress;
     }
-    public boolean isOverloaded()
-    {
+
+    public boolean isOverloaded() {
         double maximumStress = returnMaximumStress();
-        if(maximumStress > material.tensileStrength)
+        if(maximumStress > material.tensileStrength || hasBeenOverloaded) {
+            hasBeenOverloaded = true;
             return true;
-        else
+        }
+        else {
             return false;
+        }
     }
 
     public double getTensileStrength() {

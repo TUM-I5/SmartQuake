@@ -71,7 +71,6 @@ public class TimeIntegration {
 
         //give the class the time step
         //USE timestep between FRAMES
-        accelerationProvider.initTime(2*delta_t*1e9);
 
 
         //if modal analysis is activated we can diagonalize the matrices
@@ -85,7 +84,8 @@ public class TimeIntegration {
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
 
-
+        accelerationProvider.setActive();
+        accelerationProvider.initTime(2*delta_t*1e9);
         //for the parallel thread
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -111,11 +111,10 @@ public class TimeIntegration {
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    long temp = System.nanoTime();
                     //reset time
                     t = 0;
 
-                    double[] currExcitation = accelerationProvider.getAcceleration();
+                    double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
 
                    // for(int i=0; i<currExcitation.length; i++){
                    //     currExcitation[i] =0;
@@ -164,7 +163,6 @@ public class TimeIntegration {
                         spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
                     }
                     isRunning = false;
-                    Log.i("TimeIntegration", System.nanoTime()-temp+"");
                 }
             });
             return this;
