@@ -470,6 +470,8 @@ public class Beam {
         return maximumStress;
     }
 
+
+
     public boolean isOverloaded() {
         double maximumStress = returnMaximumStress();
         if(maximumStress > material.tensileStrength || hasBeenOverloaded) {
@@ -480,6 +482,16 @@ public class Beam {
             return false;
         }
     }
+
+
+
+    public void resetBeam() {
+        hasBeenOverloaded = false;
+        for (int i=0; i<6; i++)
+            displacement[i] = 0.0;
+    }
+
+
 
     public double getTensileStrength() {
         return material.tensileStrength;

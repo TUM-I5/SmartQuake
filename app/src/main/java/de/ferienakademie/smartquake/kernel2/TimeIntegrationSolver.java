@@ -32,8 +32,8 @@ public interface TimeIntegrationSolver {
 
     DenseMatrix64F getXDot();
 
-    void setGroundPosition(double delta_t, double[] currExcitation);
+    void setGroundDisplacement(double delta_t, double[] currExcitation);
 
-    public double[] getGroundPosition();
+    public double[] getGroundDisplacement();
 
     }

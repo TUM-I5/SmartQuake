@@ -1,13 +1,9 @@
 package de.ferienakademie.smartquake.model;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
@@ -88,6 +84,32 @@ public class Structure {
         }
         this.nodes.add(node);
     }
+
+
+
+    public void resetHistoryOfNodes() {
+        for (Node in : getNodes()) {
+            in.resetHistory();
+        }
+    }
+
+
+
+    public void resetBeams() {
+        for (Beam in : getBeams()) {
+            in.resetBeam();
+        }
+    }
+
+
+
+    public void recallDisplacementOfStep(int i) {
+        for (Node in : getNodes()) {
+            in.recallDisplacementOfStep(i);
+        }
+    }
+
+
 
 
     public List<Integer> getConDOF() {

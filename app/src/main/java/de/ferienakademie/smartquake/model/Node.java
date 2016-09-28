@@ -210,6 +210,14 @@ public class Node {
     }
 
 
+
+    public void resetHistory() {
+        historyOfDisplacements.clear();
+        historyOfGroundDisplacement.clear();
+    }
+
+
+
     public void recallDisplacementOfStep(int i) {
 
         for (int j=0; j<displacements.size(); j++)
@@ -224,16 +232,19 @@ public class Node {
     }
 
 
-    public int getLengthofHistory() {
+
+    public int getLengthOfHistory() {
         return historyOfDisplacements.size();
     }
 
 
+
     public void saveTimeStepGroundDisplacement(double[] gD) {
-        historyOfGroundDisplacement.add(gD);
+        double[] groundDisplacements = new double[2];
+        groundDisplacements[0] = gD[0];
+        groundDisplacements[1] = gD[1];
+        historyOfGroundDisplacement.add(groundDisplacements);
     }
-
-
 
 
 }
