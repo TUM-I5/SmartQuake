@@ -5,7 +5,6 @@ import android.util.Log;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -63,7 +62,7 @@ public class TimeIntegration {
     public void prepareSimulation(){
 
         //initial condition for the velocity.
-        xDot = new DenseMatrix64F(spatialDiscretization.getNumberofDOF(),1);
+        xDot = new DenseMatrix64F(spatialDiscretization.getNumberOfDOF(),1);
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
@@ -76,10 +75,11 @@ public class TimeIntegration {
 
         //if modal analysis is activated we can diagonalize the matrices
         if(PreferenceReader.useModalAnalysis()) {
-            spatialDiscretization.getModalAnalysisMatrices();
+            spatialDiscretization.calculateModalAnalysisMatrices();
         }
 
         //stores the numerical scheme
+        //TODO: why do we instantiate xDot here if it is used only in the solver class?
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
@@ -147,8 +147,8 @@ public class TimeIntegration {
 
                     }
 
-                    //for the sensor team the global time since beginnig
-                    globalTime += 0.03;
+                    //for the sensor team the global time since begining
+                    globalTime += (double)3e-2;
 
                     //for checking the calculation time
                     long secondTime = System.nanoTime();
@@ -156,7 +156,7 @@ public class TimeIntegration {
 
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
-                        spatialDiscretization.superimposeModalAnalyisSolutions(solver.getX(), solver.getGroundPosition());
+                        spatialDiscretization.superimposeModalAnalysisSolutions(solver.getX(), solver.getGroundPosition());
                     }
                     else {
                         //update the displacement in the node variables

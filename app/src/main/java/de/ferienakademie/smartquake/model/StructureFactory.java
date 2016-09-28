@@ -34,7 +34,7 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
-        Material testMaterial = Material.STEEL2;
+        Material testMaterial = Material.STEEL4;
 
         Beam b = new Beam(bottom, up, testMaterial);
 
@@ -1299,6 +1299,29 @@ public class StructureFactory {
         con[2]=true;
         n1.setConstraint(con);
         n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+    }
+    public static Structure getEierlaufen() {
+        double width = 8;
+        double height = 8;
+
+        double half = width * 0.5;
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        Node n1 = new Node(5, 2, false);
+        Node n2 = new Node(3, 1, false);
+        Node n3 = new Node(3, 4, false);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n3, n1, testMaterial);
+
+        structure.addNodes(n1, n2, n3);
+        structure.addBeams(b1, b2, b3);
+
         enumerateDOFs(structure);
         return structure;
     }

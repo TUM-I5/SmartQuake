@@ -469,8 +469,8 @@ public class Beam {
         double maximumStress = Math.max(stressStartNode, stressEndeNode);
         return maximumStress;
     }
-    public boolean isOverloaded()
-    {
+
+    public boolean isOverloaded() {
         double maximumStress = returnMaximumStress();
         if(maximumStress > material.tensileStrength || hasBeenOverloaded) {
             hasBeenOverloaded = true;

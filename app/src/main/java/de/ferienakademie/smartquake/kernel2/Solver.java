@@ -54,13 +54,12 @@ public class Solver implements TimeIntegrationSolver {
         this.k1 = k1;
         this.accelerationProvider = accelerationProvider;
 
-
         //x and xDot set
-        this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        this.x = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         this.xDot = xDot;
 
         //fill xDotDot with zeros
-        xDotDot = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        xDotDot = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         xDotDot.zero();
 
         //it depends on Modal analysis which matrices we have to use
@@ -68,21 +67,20 @@ public class Solver implements TimeIntegrationSolver {
             this.M = k1.getMassMatrixModalAnalysis();
             this.K = k1.getStiffnessMatrixModalAnalysis();
             this.C = k1.getDampingMatrixModalAnalysis();
+            //TODO: this looks really strange. In modal analysis xDot will be filled with zeros, in normal case
+            //TODO: the given vector is used. WTF?
             x = new DenseMatrix64F(M.getNumRows(),1);
             this.xDot = new DenseMatrix64F(M.getNumRows(),1);
             xDotDot = new DenseMatrix64F(M.getNumRows(),1);
-
-        }
-        else {
+        } else {
             this.M = k1.getMassMatrix();
             this.K = k1.getStiffnessMatrix();
             this.C = k1.getDampingMatrix();
         }
 
-
-
         //create and fill fLoad vector with zeros
-        fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);
+        //TODO: in modal analysis case fLoad should have other dimensions, right?
+        fLoad = new DenseMatrix64F(k1.getNumberOfDOF(),1);
 
         //create ground position, velocity and acceleration
         groundPosition = new double[2];

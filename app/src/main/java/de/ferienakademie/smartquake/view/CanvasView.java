@@ -112,8 +112,8 @@ public class CanvasView extends View {
         );
     }
 
-    private void beamDeformationColor(Beam beam, Paint paint)
-    {
+    private void beamDeformationColor(Beam beam, Paint paint) {
+        //Handling
         if (!PreferenceReader.showColors())
         {
             paint.setColor(Color.BLACK);

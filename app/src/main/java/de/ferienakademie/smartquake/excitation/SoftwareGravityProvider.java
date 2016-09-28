@@ -6,6 +6,7 @@ package de.ferienakademie.smartquake.excitation;
 
 /**
  * uses only software emulation to get the current gravity-values
+ * used when phone has NO linear accelerometer
  */
 public class SoftwareGravityProvider extends GravityProvider{
     private double lastXGravity = 0;
