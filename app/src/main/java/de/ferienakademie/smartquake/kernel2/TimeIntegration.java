@@ -5,7 +5,6 @@ import android.util.Log;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -63,7 +62,7 @@ public class TimeIntegration {
     public void prepareSimulation(){
 
         //initial condition for the velocity.
-        xDot = new DenseMatrix64F(spatialDiscretization.getNumberofDOF(),1);
+        xDot = new DenseMatrix64F(spatialDiscretization.getNumberOfDOF(),1);
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
@@ -157,7 +156,7 @@ public class TimeIntegration {
 
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
-                        spatialDiscretization.superimposeModalAnalyisSolutions(solver.getX(), solver.getGroundPosition());
+                        spatialDiscretization.superimposeModalAnalysisSolutions(solver.getX(), solver.getGroundPosition());
                     }
                     else {
                         //update the displacement in the node variables

@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
@@ -31,20 +29,20 @@ public class ExplicitSolver extends Solver {
         super(k1, accelerationProvider, xDot);
 
         //sets up fast linear solver
-        linearSolverM = LinearSolverFactory.chol(k1.getNumberofDOF());
-//        for(int i = 0; i<k1.getNumberofDOF(); i++){
+        linearSolverM = LinearSolverFactory.chol(k1.getNumberOfDOF());
+//        for(int i = 0; i<k1.getNumberOfDOF(); i++){
 //            M.set(i,i,0.0001);
 //        }
         linearSolverM.setA(M);
 
-        tempVector = new DenseMatrix64F(k1.getNumberofDOF(),1);
-        tempVector2 = new DenseMatrix64F(k1.getNumberofDOF(),1);
+        tempVector = new DenseMatrix64F(k1.getNumberOfDOF(),1);
+        tempVector2 = new DenseMatrix64F(k1.getNumberOfDOF(),1);
 
 
         C = k1.getDampingMatrix();
         K = k1.getStiffnessMatrix();
 
-       // for(int i=0; i<k1.getNumberofDOF(); i++){
+       // for(int i=0; i<k1.getNumberOfDOF(); i++){
        //     K.set(i,i,K.get(i,i)*0.000000001);
        // }
         //M is inverse at the moment
@@ -75,7 +73,7 @@ public class ExplicitSolver extends Solver {
         CommonOps.multAdd(-1, K,x,tempVector2);
 
         xDotDot = tempVector2;
-        for( int i =0; i<k1.getNumberofDOF(); i++){
+        for(int i = 0; i<k1.getNumberOfDOF(); i++){
             xDotDot.set(i,0, M.get(i,i)*xDotDot.get(i,0));
         }
 

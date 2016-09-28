@@ -4,7 +4,6 @@ import android.util.Log;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
-import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
@@ -59,12 +58,12 @@ public class Static extends ImplicitSolver {
 
 
         //LU solver
-        solver = LinearSolverFactory.lu(k1.getNumberofDOF());
+        solver = LinearSolverFactory.lu(k1.getNumberOfDOF());
         solver.setA(A);
 
 
         //initialize fLoad_old
-        fLoad = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        fLoad = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         fLoad.zero();
     }
 

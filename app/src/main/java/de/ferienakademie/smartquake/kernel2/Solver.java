@@ -56,11 +56,11 @@ public class Solver implements TimeIntegrationSolver {
 
 
         //x and xDot set
-        this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        this.x = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         this.xDot = xDot;
 
         //fill xDotDot with zeros
-        xDotDot = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        xDotDot = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         xDotDot.zero();
 
         //it depends on Modal analysis which matrices we have to use
@@ -72,8 +72,7 @@ public class Solver implements TimeIntegrationSolver {
             this.xDot = new DenseMatrix64F(M.getNumRows(),1);
             xDotDot = new DenseMatrix64F(M.getNumRows(),1);
 
-        }
-        else {
+        } else {
             this.M = k1.getMassMatrix();
             this.K = k1.getStiffnessMatrix();
             this.C = k1.getDampingMatrix();
@@ -82,7 +81,7 @@ public class Solver implements TimeIntegrationSolver {
 
 
         //create and fill fLoad vector with zeros
-        fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);
+        fLoad = new DenseMatrix64F(k1.getNumberOfDOF(),1);
 
         //create ground position, velocity and acceleration
         groundPosition = new double[2];

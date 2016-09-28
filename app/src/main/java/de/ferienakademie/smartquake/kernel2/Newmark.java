@@ -1,10 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.LinearSolverFactory;
-import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
@@ -64,7 +61,7 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
 
         //LU solver
-        solver = LinearSolverFactory.lu(k1.getNumberofDOF());
+        solver = LinearSolverFactory.lu(k1.getNumberOfDOF());
         solver.setA(A);
 
         //initialise right side matrices: F_ext - K*xDot- B*xDotDot
@@ -159,7 +156,7 @@ public class Newmark extends ImplicitSolver {
      * @param result
      */
     private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
-        for(int i = 0; i< k1.getNumberofUnconstraintDOF(); i++) {
+        for(int i = 0; i< k1.getNumberOfUnconstraintDOF(); i++) {
             result.set(i, 0, result.get(i) - delta_t * matrix.get(i, i) * vec.get(i, 0));
         }
     }
