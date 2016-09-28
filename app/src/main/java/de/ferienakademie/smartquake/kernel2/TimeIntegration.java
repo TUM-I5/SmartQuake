@@ -76,10 +76,11 @@ public class TimeIntegration {
 
         //if modal analysis is activated we can diagonalize the matrices
         if(PreferenceReader.useModalAnalysis()) {
-            spatialDiscretization.getModalAnalysisMatrices();
+            spatialDiscretization.calculateModalAnalysisMatrices();
         }
 
         //stores the numerical scheme
+        //TODO: why do we instantiate xDot here if it is used only in the solver class?
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 

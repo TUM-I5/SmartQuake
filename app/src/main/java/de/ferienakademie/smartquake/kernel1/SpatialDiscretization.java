@@ -150,7 +150,7 @@ public class SpatialDiscretization {
         }
     }
 
-    public void calculateinverseMassMatrix() {
+    public void calculateInverseMassMatrix() {
         if (!structure.isLumped()) {
             throw new RuntimeException("No diagonal mass matrix!");
         }
@@ -162,7 +162,7 @@ public class SpatialDiscretization {
     }
 
     public DenseMatrix64F getInverseMassMatrix() { // Only call for lumped cases.
-        calculateinverseMassMatrix();
+        calculateInverseMassMatrix();
         return InverseMassMatrix;
     }
 
@@ -375,7 +375,7 @@ public class SpatialDiscretization {
 
 
 
-    public void getModalAnalysisMatrices(){
+    public void calculateModalAnalysisMatrices(){
         normaliseEigenvectors();
         StiffnessMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
         MassMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());

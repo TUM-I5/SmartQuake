@@ -61,6 +61,7 @@ public class Newmark extends ImplicitSolver {
         CommonOps.addEquals(A,delta_t*delta_t/4.0,K); //A = A + delta_t**2*K/4
 
         //LU solver
+        //TODO: number of rows for modal analysis case is k1.getNumberOfUnconstraintDOF
         solver = LinearSolverFactory.lu(k1.getNumberOfDOF());
         solver.setA(A);
 
@@ -156,6 +157,9 @@ public class Newmark extends ImplicitSolver {
      * @param result
      */
     private void multAddDiagMatrix(double delta_t, DenseMatrix64F matrix, DenseMatrix64F vec, DenseMatrix64F result){
+        if (matrix.getNumCols() != vec.getNumRows() || result.getNumRows() != matrix.getNumRows()) {
+            throw new AssertionError("Try to multiply and add matrices of uncompatible size.");
+        }
         for(int i = 0; i< k1.getNumberOfUnconstraintDOF(); i++) {
             result.set(i, 0, result.get(i) - delta_t * matrix.get(i, i) * vec.get(i, 0));
         }
