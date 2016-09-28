@@ -136,8 +136,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
+        if (id == android.R.id.home) {
+            onStopButtonClicked();
+            onBackPressed();
+            return true;
+        } else if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
             runReplay("Last.earthquake");
             if (simulation != null) toggleStartStopAvailability();
             return true;
@@ -146,7 +149,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
             if (replay != null) replay.setEnabled(false);
-            startActivityForResult(new Intent(this, ChooseEarthQuakeDataActivity.class), REQUEST_EARTHQUAKE_DATA);
+            Intent chooseEqIntent = new Intent(this, ChooseEarthQuakeDataActivity.class);
+            chooseEqIntent.putExtra("id", structureId);
+            chooseEqIntent.putExtra("name", structureName);
+            startActivityForResult(chooseEqIntent, REQUEST_EARTHQUAKE_DATA);
         } else if (id == R.id.save_simulation) {
             if (simulation.isRunning()) {
                 simulation.stop();
@@ -438,8 +444,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 String fileName = data.getExtras().getString("eqDataFile") + ".earthquake";
                 runReplay(fileName);
             }
+            if (data.getExtras().containsKey("id"))
+                structureId = data.getExtras().getInt("id");
+            if (data.getExtras().containsKey("name"))
+                structureName = data.getExtras().getString("name");
         }
-
     }
 
     public void onNewAccelerationValue(AccelData data) {
