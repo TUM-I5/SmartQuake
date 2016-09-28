@@ -325,10 +325,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     private void onStopButtonClicked() {
         Log.d("STOPSIM STATE", mode.name());
-        if (mode == SimulationMode.REPLAY) {
-            replaySeekBar.setVisibility(View.GONE);
-            replayrunningLabel.setVisibility(View.GONE);
-        }
+
+        replaySeekBar.setVisibility(View.GONE);
+        replayrunningLabel.setVisibility(View.GONE);
 
         if (simulation == null) return;
         simulation.stop();
@@ -445,7 +444,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     public void onNewReplayPercent(double percent) {
         replayProgress = percent;
         replaySeekBar.setProgress((int) Math.round(percent));
-        if (percent >= 99) {
+        if (percent >= 100) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -461,9 +460,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
      */
     private void replayDisplacement() {
 
-        replaySeekBar.setVisibility(View.VISIBLE);
-        mode = SimulationMode.REPLAY;
-        replayrunningLabel.setVisibility(View.VISIBLE);
+        if (mode == SimulationMode.REPLAY) {
+            return;
+        }
+
+        if (simulation != null) {
+            mode = SimulationMode.REPLAY;
+            replayrunningLabel.setVisibility(View.VISIBLE);
+            replaySeekBar.setVisibility(View.VISIBLE);
+        }
 
         //This tells us how many time steps were calculated
         new Thread(new Runnable() {
@@ -502,8 +507,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                     double percentage = ((double)i/number_timeSteps)*100;
 
                     onNewReplayPercent(percentage);
-
                 }
+
+                onNewReplayPercent(100);
+                mode = SimulationMode.LIVE;
             }
         }).start();
 
