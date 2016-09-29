@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ public class EarthquakeDataStartActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //onItemSelected(position);
                 if(!values.get(position).equals("Sensors") && !values.get(position).equals("Sinusodial") && !values.get(position).equals("Last")){
-                Intent intent = new Intent(EarthquakeDataActivity.this, AccelerationDataActivity.class);
+                Intent intent = new Intent(EarthquakeDataStartActivity.this, AccelerationDataActivity.class);
                 intent.putExtra("eqDataFile", values.get(position));
                 //setResult(Activity.RESULT_OK, intent);
                 //finish();
