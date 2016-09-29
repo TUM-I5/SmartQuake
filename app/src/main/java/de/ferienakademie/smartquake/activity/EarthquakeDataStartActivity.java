@@ -26,7 +26,7 @@ import de.ferienakademie.smartquake.R;
 /**
  * Created by root on 26.09.16.
  */
-public class EarthquakeDataActivity extends AppCompatActivity {
+public class EarthquakeDataStartActivity extends AppCompatActivity {
 
     private int mPosition = ListView.INVALID_POSITION;
 

@@ -2,7 +2,6 @@ package de.ferienakademie.smartquake.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PatternMatcher;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,7 +22,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -133,7 +131,7 @@ public class StartActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            startActivity(new Intent(this, EarthquakeDataActivity.class));
+            startActivity(new Intent(this, EarthquakeDataStartActivity.class));
             return true;
 
         } else if (id == R.id.nav_manage) {
