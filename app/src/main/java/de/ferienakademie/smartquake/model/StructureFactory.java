@@ -169,7 +169,7 @@ public class StructureFactory {
         Node n4 = new Node(0, height/2);
         Node n5 = new Node(width/2, 0,true);
         Node n6 = new Node(width/2, height*1/4,10);
-        n6.setNodeMass(10000000);
+        n6.setNodeMass(10000);
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);
         Beam b4 = new Beam(n4, n1, testMaterial);
