@@ -151,6 +151,12 @@ public class SpatialDiscretization {
             }
 
         }
+
+        for (int k = 0; k < structure.getNodes().size() ; k++) {
+            MassMatrix.add(3*k,3*k,structure.getNodes().get(k).getNodeMass());
+            MassMatrix.add(3*k+1,3*k+1,structure.getNodes().get(k).getNodeMass());
+        }
+
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
             for (int k = 0; k < getNumberOfDOF(); k++) {

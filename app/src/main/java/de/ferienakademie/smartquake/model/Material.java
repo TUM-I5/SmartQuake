@@ -44,8 +44,7 @@ public class Material {
         this.YoungsModulus = YoungsModulus;
         this.AreaOfCrossSection = BreadthOfBeam * HeightOfBeam;
         this.MomentOfInertia = BreadthOfBeam * HeightOfBeam * HeightOfBeam * HeightOfBeam /12.;
-        this.AxialStiffnessOfBar = YoungsModulus * AreaOfCrossSection;
-        this.BendingStiffnessOfBeam = YoungsModulus * MomentOfInertia;
+
         this.Density = Density;
         this.alpha = alpha;
         this.MassPerLength = Density * AreaOfCrossSection;
@@ -58,6 +57,8 @@ public class Material {
             this.MomentOfInertia = 4250 * 0.00000001;
         }
 
+        this.AxialStiffnessOfBar = YoungsModulus * AreaOfCrossSection;
+        this.BendingStiffnessOfBeam = YoungsModulus * MomentOfInertia;
     }
 
     public void setNewProperties(double b, double h) { //necessary, if BreadthOfBeam and HeightOfBeam are changed - changes all relevant properties - only useful for rectangular cross-sections.

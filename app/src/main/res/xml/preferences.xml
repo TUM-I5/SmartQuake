@@ -35,6 +35,13 @@
             android:summaryOff="@string/pref_modal_analysis_summary_Off"
             android:defaultValue="false"
             />
+        <SwitchPreference
+            android:key="pref_y_excitation"
+            android:title="@string/pref_y_excitation_title"
+            android:summaryOn="@string/pref_y_excitation_summary_On"
+            android:summaryOff="@string/pref_y_excitation_summary_Off"
+            android:defaultValue="true"
+            />
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/loadVector_slider_default"
             android:dialogMessage="@string/loadVector_slider_message"
@@ -47,12 +54,19 @@
             android:key="damping_slider"
             android:summary="@array/damping_slider_summaries"
             android:title="@string/damping_slider_title" />
+        <!--
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/frequency_slider_default"
             android:dialogMessage="@string/frequency_slider_message"
             android:key="frequency_slider"
             android:summary="@array/frequency_slider_summaries"
             android:title="@string/frequency_slider_title" />
+            -->
+        <EditTextPreference
+            android:key="pref_excitation_frequency"
+            android:numeric="decimal"
+            android:title="@string/pref_excitation_frequency_title"
+            android:defaultValue="1.0"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -61,7 +75,8 @@
         <SwitchPreference
             android:key="pref_use_gravity"
             android:title="@string/pref_gravity_title"
-            android:summary="@string/pref_gravity_summary"
+            android:summaryOn="@string/pref_gravity_summaryOn"
+            android:summaryOff="@string/pref_gravity_summaryOff"
             android:defaultValue="false"
             />
 
