@@ -62,10 +62,12 @@ public class AccelerationDataActivity extends AppCompatActivity {
                 Log.v("IVANA:ACCELERATION", "i riched this");
                 for (AccelData currentReading : list)  {
                     time = currentReading.timestamp;
-                    xAcceleration = currentReading.xAcceleration;
-                    yAcceleration = currentReading.yAcceleration;
-                    series_x.appendData(new DataPoint(time, xAcceleration), true, 100);
-                    series_y.appendData(new DataPoint(time, yAcceleration), true, 100);
+                    if(time>0) {
+                        xAcceleration = currentReading.xAcceleration;
+                        yAcceleration = currentReading.yAcceleration;
+                        series_x.appendData(new DataPoint(time, xAcceleration), true, 100);
+                        series_y.appendData(new DataPoint(time, yAcceleration), true, 100);
+                    }
                     }
                 Viewport viewport = graph.getViewport();
                 //viewport.setYAxisBoundsManual(true);
