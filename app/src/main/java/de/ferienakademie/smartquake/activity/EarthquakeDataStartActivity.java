@@ -1,32 +1,23 @@
 package de.ferienakademie.smartquake.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.util.FileMatching;
 
 /**
  * Created by root on 26.09.16.
  */
-public class EarthquakeDataActivity extends AppCompatActivity {
+public class EarthquakeDataStartActivity extends AppCompatActivity {
 
     private int mPosition = ListView.INVALID_POSITION;
 
@@ -77,12 +68,9 @@ public class EarthquakeDataActivity extends AppCompatActivity {
         values.add("Sensors");
         values.add("Sinusodial");
         String[] fileNames = getFilesDir().list();
-        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.earthquake");
-        Matcher matcher;
 
         for (String str : fileNames) {
-            matcher = pattern.matcher(str);
-            if (matcher.matches()) values.add(str.substring(0, str.length() - 11));
+            if (FileMatching.matchesEarthQuakeFileName(str)) values.add(str.substring(0, str.length() - 11));
         }
 
         adapter.notifyDataSetChanged();

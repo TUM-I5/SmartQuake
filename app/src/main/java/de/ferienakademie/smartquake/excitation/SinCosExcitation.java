@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
-import java.security.acl.AclEntry;
 
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 
@@ -29,11 +28,8 @@ public class SinCosExcitation extends AccelerationProvider {
         this.timestep = 30_000_000;
         this.counter = 0;
     }
-
-    public SinCosExcitation() {
-        this.amplitude = 10;
-        this.frequency = 1;
-        this.timestep = 30_000_000;
+    public SinCosExcitation(double frequency) {
+        this(10, frequency);
     }
 
     /**
