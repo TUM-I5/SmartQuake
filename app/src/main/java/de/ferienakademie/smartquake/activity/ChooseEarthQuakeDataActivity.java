@@ -24,8 +24,6 @@ import de.ferienakademie.smartquake.R;
 
 public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
-    private int mPosition = ListView.INVALID_POSITION;
-
     private List<String> values = null;
 
     private ArrayAdapter<String> adapter;
@@ -56,7 +54,6 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 onItemSelected(position);
-                mPosition = position;
             }
         });
 
@@ -139,7 +136,7 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
         values.add("Sensors");
         values.add("Sinusodial");
         String[] fileNames = getFilesDir().list();
-        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.earthquake");
+        Pattern pattern = Pattern.compile("[ _A-Za-z0-9-]+\\.earthquake");
         Matcher matcher;
 
         for (String str : fileNames) {
