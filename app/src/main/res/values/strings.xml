@@ -44,8 +44,21 @@
     <string name="pref_modal_analysis_summary_Off">Use normal scheme.</string>
     <string name="pref_modal_analysis_summary_On">Use modal analysis.</string>
 
+
+    <!-- Preference modal analysis -->
+    <string name="pref_modal_reduction_title">Modal Reduction</string>
+    <string name="pref_modal_reduction_summary_Off">Use all eigen modes for modal analysis.</string>
+    <string name="pref_modal_reduction_summary_On">Use given number of modes for modal analysis.</string>
+
+
+    <!-- Preference  -->
+    <string name="modes_slider_title">Number of Modes</string>
+
+
     <!-- Preference excitation frequency -->
     <string name="pref_excitation_frequency_title">Excitation frequency (in Hz)</string>
+
+
 
     <!-- Preference y excitation -->
     <string name="pref_y_excitation_title">Earth quake in vertical direction</string>

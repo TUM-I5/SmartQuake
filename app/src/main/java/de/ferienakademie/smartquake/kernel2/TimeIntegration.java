@@ -117,6 +117,7 @@ public class TimeIntegration {
 
                     double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
 
+                    currExcitation = accelerationProvider.getAcceleration();
                    // for(int i=0; i<currExcitation.length; i++){
                    //     currExcitation[i] =0;
                    // }
@@ -153,8 +154,8 @@ public class TimeIntegration {
                     globalTime += (double)3e-2;
 
                     //for checking the calculation time
-                    long secondTime = System.nanoTime();
-
+                    long secondTime = System.nanoTime()-firstTime;
+                    //Log.e("time", ""+secondTime);
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
                         spatialDiscretization.superimposeModalAnalysisSolutions(solver.getX(), solver.getGroundDisplacement());

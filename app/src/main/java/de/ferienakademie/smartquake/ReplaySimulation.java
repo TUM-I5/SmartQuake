@@ -65,6 +65,6 @@ public class ReplaySimulation extends Simulation {
 
     @Override
     protected Structure getStructure() {
-        return null;
+        return structure;
     }
 }
