@@ -155,7 +155,7 @@ public class StartActivity extends AppCompatActivity
     private void setUpValues() {
         values.clear();
         values.add("Simple Beam");
-        values.add("Simple House");
+        /*values.add("Simple House");
         values.add("Crane");
         values.add("Better Eiffel Tower");
         values.add("Empire State Building");
@@ -172,6 +172,9 @@ public class StartActivity extends AppCompatActivity
         values.add("TunedMassExample2");
         values.add("Elephant");
         values.add("Eierlaufen");
+        values.add("DemoTMD");
+        */
+        values.add("Presentation Demo 1");
         values.add("DemoTMD");
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();

@@ -274,6 +274,46 @@ public class StructureFactory {
 
     }
 
+    public static Structure getPresOne() {
+
+        double f = 1; //Hz
+        double l1 = 1;
+        double l2 = 1;
+        double M1 = 2;
+        double M2 = 1;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material demoMaterial = Material.STEELDEMO;
+
+        Node n1 = new Node(0, 0);
+        Node n2 = new Node(l1, 0, M1);
+        //Node n3 = new Node(l2+l1, 0);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial);
+        //Beam b2 = new Beam(n2, n3, demoMaterial);
+
+        structure.addNodes(n1, n2);
+        structure.addBeams(b1);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+        n1.setConstraint(con1);
+        n2.setConstraint(con2);
+        //n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+
     public static Structure getCraneBottom() {
 
         double width = 8;
