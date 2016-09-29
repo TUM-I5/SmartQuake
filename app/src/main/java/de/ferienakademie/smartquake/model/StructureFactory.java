@@ -1324,7 +1324,46 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getStructure(Context context, String structureName) {
+    public static Structure getStructure(Context context, int structureId, String structureName) {
+        if (structureId == 0) {
+            return StructureFactory.cantileverBeam();
+        } else if (structureId == 1) {
+            return StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            return StructureFactory.getCraneBottom();
+        } else if (structureId == 3) {
+            return StructureFactory.getBetterEiffelTower();
+        } else if (structureId == 4) {
+            return StructureFactory.getEmpireState();
+        } else if (structureId == 5) {
+            return StructureFactory.getGoldenGate();
+        } else if (structureId == 6) {
+            return StructureFactory.getWeirdBridge();
+        } else if (structureId == 7) {
+            return StructureFactory.getHousingBlock();
+        } else if (structureId == 8) {
+            return StructureFactory.getTrumpTower();
+        } else if (structureId == 9) {
+            return StructureFactory.getTVtower();
+        } else if (structureId == 10) {
+            return StructureFactory.getTaipeh();
+        } else if (structureId == 11) {
+            return StructureFactory.getHouseWithMassDamper();
+        } else if (structureId == 12) {
+            return StructureFactory.getOneWTC();
+        } else if (structureId == 13) {
+            return StructureFactory.getBurjKhalifa();
+        } else if (structureId == 14) {
+            return StructureFactory.getTunedMassExample1();
+        }else if (structureId == 15) {
+            return StructureFactory.getTunedMassExample2();
+        } else if (structureId == 16) {
+            return StructureFactory.getSimpleElephant();
+        }   else if (structureId == 17) {
+            return StructureFactory.getEierlaufen();
+        } else if (structureId == 18) {
+            return StructureFactory.getDemoTMD();
+        }
 
         FileInputStream fileInputStream = null;
 
