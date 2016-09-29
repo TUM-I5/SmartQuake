@@ -9,7 +9,10 @@ public class Material {
     public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL3 = new Material(0.2978, 0.2978, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL4 = new Material(0.05956, 0.05956, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
-    public static Material STEELDEMO = new Material(1.371103e-05, 1.371103e-05, 2.1e11, 0.00000001, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
+
+    // This material will be used for demonstration purposes.
+    // Its area is optimised so that an oscillating mass that satisfies M*l=1 will have 1Hz as an eigenfrequency
+    public static Material STEELDEMO = new Material(1.371103e-05, 1.371103e-05, 2.1e11, 0.00000001, 0.005, "rectangular", 400e6);
 
 
     public static Material STEEL_I_SHAPED = new Material(0.001, 0.001, 2.1e11, 7850, 0.005, "I-shaped beam", 400e6);

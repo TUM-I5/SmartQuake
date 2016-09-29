@@ -274,12 +274,17 @@ public class StructureFactory {
 
     }
 
+    /**
+     * This structure is meant to be the first demo of an oscillating mass.
+     * Choose Material STEELDEMO so that the relationship M*l=1/f holds true
+     * @return
+     */
     public static Structure getPresOne() {
 
         double f = 1; //Hz
         double l1 = 1;
         double l2 = 1;
-        double M1 = 2;
+        double M1 = 1/(f*l1);
         double M2 = 1;
 
         boolean lumped = true; // Make it false for consistent mass matrices!
