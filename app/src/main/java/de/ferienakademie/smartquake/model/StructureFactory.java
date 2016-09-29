@@ -25,7 +25,8 @@ public class StructureFactory {
 
 
         Node bottom = new Node(4, 8);
-        Node up = new Node(4, 3);
+        Node up = new Node(4, 3,41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220);
+        Material zeroDensity = Material.STEEL7;
 
         List<Integer> condof = new ArrayList<>();
 
@@ -36,9 +37,9 @@ public class StructureFactory {
 
         Material testMaterial = Material.STEEL4;
 
-        Beam b = new Beam(bottom, up, testMaterial);
-
+        Beam b = new Beam(bottom, up, zeroDensity);
         Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+        structure.setLumped(true);
         enumerateDOFs(structure);
         return structure;
     }
@@ -87,8 +88,8 @@ public class StructureFactory {
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL5;
-        Material zeroDensity = Material.STEEL6;
+        Material testMaterial = Material.STEEL8;
+        Material zeroDensity = Material.STEEL7;
 
 
         Node n1 = new Node(0, height, false);
@@ -96,7 +97,7 @@ public class StructureFactory {
         Node n3 = new Node(width, height - 2*half, false);
         Node n4 = new Node(0, height - 2*half, false);
         Node n5 = new Node(width/2, height - 2*half, false);
-        Node n6 = new Node(width/2, height + half, false);
+        Node n6 = new Node(width/2, height - half+1, 41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220);
 
 
         Beam b2 = new Beam(n2, n3, testMaterial);
@@ -106,8 +107,8 @@ public class StructureFactory {
         Beam b6 = new Beam(n5, n6, zeroDensity);
 
 
-        structure.addNodes(n1, n2, n3, n4,n5);
-        structure.addBeams( b2, b3, b4,b5);
+        structure.addNodes(n1, n2, n3, n4,n5,n6);
+        structure.addBeams( b2, b3, b4,b5,b6);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -127,7 +128,7 @@ public class StructureFactory {
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL5;
+        Material testMaterial = Material.STEEL8;
 
         Node n1 = new Node(0, height, false);
         Node n2 = new Node(width, height, false);
@@ -150,9 +151,45 @@ public class StructureFactory {
 
         n1.setConstraint(con);
         n2.setConstraint(con);
+        structure.setLumped(true);
         enumerateDOFs(structure);
         return structure;
     }
+
+//conserved example
+//         public static Structure getTunedMassExample2() {
+//    double width = 8;
+//    double height = 8;
+//
+//    double half = width * 0.5;
+//
+//    Structure structure = new Structure();
+//    Material testMaterial = Material.STEEL5;
+//
+//    Node n1 = new Node(0, height, false);
+//    Node n2 = new Node(width, height, false);
+//    Node n3 = new Node(width, height - 2*half, false);
+//    Node n4 = new Node(0, height - 2*half, false);
+//    Node n5 = new Node(width/2, height - 2*half, false);
+//
+//    Beam b2 = new Beam(n2, n3, testMaterial);
+//    Beam b3 = new Beam(n3, n5, testMaterial);
+//    Beam b4 = new Beam(n5, n4, testMaterial);
+//    Beam b5 = new Beam(n4, n1, testMaterial);
+//
+//    structure.addNodes(n1, n2, n3, n4,n5);
+//    structure.addBeams( b2, b3, b4,b5);
+//
+//    boolean[] con = new boolean[3];
+//    con[0]=true;
+//    con[1]=true;
+//    con[2]=true;
+//
+//    n1.setConstraint(con);
+//    n2.setConstraint(con);
+//    enumerateDOFs(structure);
+//    return structure;
+//}
 
     public static Structure getHouseWithMassDamper() {
         double width = 8;
