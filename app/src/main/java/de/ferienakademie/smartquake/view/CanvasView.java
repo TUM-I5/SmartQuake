@@ -247,9 +247,15 @@ public class CanvasView extends View {
         RULER_PAINT.setStrokeWidth(canvas.getWidth() / 144);
         RULER_PAINT.setTextSize(canvas.getHeight() / 38);
 
-        Structure s = structureProvider.getStructure();
+        Structure s = null;
+        double[] boundingBox;
+        if (structureProvider != null) {
+            s = structureProvider.getStructure();
+            boundingBox = s.getBoundingBox();
+        } else {
+            boundingBox = DrawHelper.boundingBox;
+        }
 
-        double[] boundingBox = s.getBoundingBox();
         double modelXSize = boundingBox[1] - boundingBox[0];
         double modelYSize = boundingBox[3] - boundingBox[2];
         // special case for single beam
@@ -292,19 +298,38 @@ public class CanvasView extends View {
         }
 
         BEAM_PAINT.setStyle(Paint.Style.STROKE);
-        for (Beam beam : s.getBeams()) {
-            drawBeam(beam, canvas);
-        }
-        BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
-        boolean nodeSelected = false;
-        for (int i = 0; i < s.getNodes().size(); ++i) {
-            if (selectedNodeId != null && selectedNodeId == i) {
-                nodeSelected = true;
-            }
-            drawNode(s.getNodes().get(i), canvas, nodeSelected);
 
-            if(nodeSelected) {
-                nodeSelected = false;
+        if (s != null) {
+            for (Beam beam : s.getBeams()) {
+                drawBeam(beam, canvas);
+            }
+            BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+            boolean nodeSelected = false;
+            for (int i = 0; i < s.getNodes().size(); ++i) {
+                if (selectedNodeId != null && selectedNodeId == i) {
+                    nodeSelected = true;
+                }
+                drawNode(s.getNodes().get(i), canvas, nodeSelected);
+
+                if (nodeSelected) {
+                    nodeSelected = false;
+                }
+            }
+        } else {
+            for (Beam beam : DrawHelper.snapBeams) {
+                drawBeam(beam, canvas);
+            }
+            BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+            boolean nodeSelected = false;
+            for (int i = 0; i < DrawHelper.snapNodes.size(); ++i) {
+                if (selectedNodeId != null && selectedNodeId == i) {
+                    nodeSelected = true;
+                }
+                drawNode(DrawHelper.snapNodes.get(i), canvas, nodeSelected);
+
+                if (nodeSelected) {
+                    nodeSelected = false;
+                }
             }
         }
 

@@ -60,7 +60,7 @@ public class Simulation {
                         Log.e("Simulation", ex.getMessage());
                         continue;
                     }
-                    // TODO: completely remove dependency on the View for clean MVC
+
                     while(view.isBeingDrawn) {
                         try {
                             Thread.sleep(30);

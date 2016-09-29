@@ -516,12 +516,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         if (newStructure != structure) {
             structure = newStructure;
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                canvasView.invalidate();
-            }
-        });
+        DrawHelper.drawStructure(structure, canvasView, selectedNodeId);
     }
 
     // TODO: should this be part of Simulation too?
