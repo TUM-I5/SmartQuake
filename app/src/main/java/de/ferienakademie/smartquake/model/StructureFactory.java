@@ -326,7 +326,7 @@ public class StructureFactory {
         double height = 16 * a;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL;
+        Material testMaterial = Material.STEEL_I_SHAPED;
 
 
         Node n1 = new Node(0, height);
