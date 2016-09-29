@@ -22,6 +22,10 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_modal_analysis", false);
     }
 
+    public static boolean excitationVerticalDirection() {
+        return sharedPref.getBoolean("pref_y_excitation", true);
+    }
+
     public static double getLoadVectorScaling() {
         return (double) (5.0f * sharedPref.getFloat("loadVector_slider", 0.2f));
     }
