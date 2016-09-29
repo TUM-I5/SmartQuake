@@ -136,13 +136,10 @@ public class Node {
 
 
     public double getRadius() {
-        //If you want to know "why this formula?"
-        //Well, there's no real reason for this one! Yep.
-        //But ok, let's go into detail: normally it is like r² ~ A, so we take the sqrt.
-        //Then some scaling b/c alone it would be probably too large. Then we simply add a logarithmic factor to reduce scaling even more.
-        //And finally, we add the 0.05 which every mass should have.
-        //And that's it. If you got questions or do not like this formula, call me.
-        return Math.log10(Math.sqrt(nodeMass) * .001 + 1) + 0.05;
+        //Let's go into detail: normally it is like r² ~ A, so we take the sqrt.
+        //Then some scaling b/c alone it would be probably too large. After that we simply add a logarithmic factor to reduce scaling even more.
+        //And finally, we add the 0.05 which the zero mass had before. And that's it!
+        return Math.log10(Math.sqrt(nodeMass) * .1 + 1) + 0.05;
     }
 
     public void clearBeams() {
