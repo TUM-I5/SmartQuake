@@ -175,7 +175,8 @@ public class StartActivity extends AppCompatActivity
         values.add("DemoTMD");
         */
         values.add("Presentation Demo 1");
-        values.add("DemoTMD");
+        values.add("Presentation Demo 2");
+        //values.add("DemoTMD");
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();
 

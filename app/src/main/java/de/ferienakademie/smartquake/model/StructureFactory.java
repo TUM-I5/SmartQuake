@@ -318,6 +318,52 @@ public class StructureFactory {
 
     }
 
+    /**
+     * This structure is meant to be the second demo of an oscillating mass.
+     * Choose Material STEELDEMO so that the relationship M*l=1/f holds true.
+     * Added a tuned mass damper
+     * @return
+     */
+    public static Structure getPresTwo() {
+
+        double f = 1; //Hz
+        double l1 = 1;
+        double l2 = 2;
+        double M1 = 1/(f*l1);
+        double M2 = 1/(f*l2);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material demoMaterial = Material.STEELDEMO;
+
+        Node n1 = new Node(0, 0);
+        Node n2 = new Node(l1, 0, M1);
+        Node n3 = new Node(l2+l1, 0, M2);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial);
+        Beam b2 = new Beam(n2, n3, demoMaterial);
+
+        structure.addNodes(n1, n2, n3);
+        structure.addBeams(b1, b2);
+
+        n1.setConstraint(con1);
+        n2.setConstraint(con2);
+        n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
 
     public static Structure getCraneBottom() {
 
