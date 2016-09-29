@@ -183,21 +183,30 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 allBeams.remove(i--);
         }
 
-        double[] boundingBox=structure.getBoundingBox();
+        double[] boundingBox=new double[4];
         for (Node node:structure.getNodes()) {
                 if (node.getInitialX() < boundingBox[0]) {
-                    boundingBox[0] = node.getInitialX();
+                    if(node.getInitialX()<0){
+                        boundingBox[0]+=-1*node.getInitialX();
+                    }else {
+                        boundingBox[1] = node.getInitialX();
+                    }
                 }
                 if (node.getInitialX() > boundingBox[1]) {
                     boundingBox[1] = node.getInitialX();
                 }
                 if (node.getInitialY() < boundingBox[2]) {
-                    boundingBox[2] = node.getInitialY();
+                    if(node.getInitialY()<0){
+                        boundingBox[3]+=-1*node.getInitialY();
+                    }else {
+                        boundingBox[2] = node.getInitialY();
+                    }
                 }
                 if (node.getInitialY() > boundingBox[3]) {
                     boundingBox[3] = node.getInitialY();
                 }
             }
+        structure.setBoundingBox(boundingBox);
 
 
 
@@ -227,7 +236,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
             modelSize = new double[]{8.0, 8.0};
         }
 
-        double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
+        double displayScaling = Math.min(width / modelSize[0], height / modelSize[1]);
 
         double xOffset = 0.5 * (width - modelSize[0] * displayScaling);
         double yOffset = height - modelSize[1] * displayScaling;
