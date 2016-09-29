@@ -18,37 +18,31 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.activity.earthquakeselect.EarthQuakeAssetListEntry;
+import de.ferienakademie.smartquake.activity.earthquakeselect.EarthQuakeListEntry;
+import de.ferienakademie.smartquake.activity.earthquakeselect.EarthQuakeFileListEntry;
+import de.ferienakademie.smartquake.activity.earthquakeselect.EarthQuakeSensorListEntry;
+import de.ferienakademie.smartquake.activity.earthquakeselect.EarthQuakeSinusoidalListEntry;
 import de.ferienakademie.smartquake.util.FileMatching;
 
 public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
-    private List<String> values = null;
+    private List<EarthQuakeListEntry> values;
 
-    private ArrayAdapter<String> adapter;
-
-    private int structureId;
-    private String structureName;
-    private Pattern earthquakeFileNamePattern;
+    private ArrayAdapter<EarthQuakeListEntry> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_data);
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            structureId = bundle.getInt("id");
-            structureName = bundle.getString("name");
-        }
-
         values = new ArrayList<>();
 
         ListView lv = (ListView) findViewById(R.id.list_view_eq_data);
         registerForContextMenu( lv);
-        adapter = new ArrayAdapter<String>(this, R.layout.list_item_eq_data, R.id.list_item_eq_data_text, values);
+        adapter = new ArrayAdapter<>(this, R.layout.list_item_eq_data, R.id.list_item_eq_data_text, values);
         setUpValues();
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -64,17 +58,14 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent sel = new Intent();
-        sel.putExtra("eqDataFile", values.get(0));
-        sel.putExtra("id", structureId);
-        sel.putExtra("name", structureName);
-        setResult(Activity.RESULT_OK, sel);
+        setResult(Activity.RESULT_CANCELED, sel);
         finish();
     }
 
 
     public void onItemSelected(Integer dataSourceId) {
         Intent sel = new Intent();
-        sel.putExtra("eqDataFile", values.get(dataSourceId));
+        sel.putExtra("eqDataEntry", values.get(dataSourceId));
         setResult(Activity.RESULT_OK, sel);
         finish();
     }
@@ -135,26 +126,28 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
     private void setUpValues() {
         values.clear();
-        values.add("Sensors");
-        values.add("Sinusodial");
+        values.add(new EarthQuakeSensorListEntry());
+        values.add(new EarthQuakeSinusoidalListEntry());
+
         String[] fileNames = getFilesDir().list();
 
-        for (String str : fileNames) {
-            if (FileMatching.matchesEarthQuakeFileName(str)) {
-                values.add(str.substring(0, str.length() - 11));
+        for (String fileName : fileNames) {
+            if (FileMatching.matchesEarthQuakeFileName(fileName)) {
+                values.add(new EarthQuakeFileListEntry(fileName));
             }
         }
 
-
+        try {
+            String[] assetFiles = getAssets().list("");
+            for (String assetFilename : assetFiles) {
+                if (FileMatching.matchesEarthQuakeFileName(assetFilename)) {
+                    values.add(new EarthQuakeAssetListEntry(assetFilename));
+                }
+            }
+        } catch (IOException e) {
+            Log.e("CHOOSE EQ ASSETS", "could not load assets", e);
+        }
 
         adapter.notifyDataSetChanged();
-    }
-
-    private String[] getEarthquakeFilesFromAssets() throws IOException {
-        String[] assetFiles = getAssets().list("");
-
-        // todo filter
-
-        return assetFiles;
     }
 }
