@@ -535,7 +535,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     }
 
-    public boolean setHinge(Node finger) {
+    private boolean setHinge(Node finger) {
         List<Node> nodes = structure.getNodes();
         double mindist = DELTA;
         Node hingeNode = null;
@@ -552,6 +552,22 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         return false;
     }
 
+/*
+    private void snapToGrid(Beam beam) {
+
+        Node startNode = beam.getStartNode();
+        Node endNode = beam.getEndNode();
+
+        if (startNode.getInitialX() > endNode.getInitialX()) {
+            Node tempNode = startNode;
+            startNode = endNode;
+            endNode = tempNode;
+        }
+
+
+
+    }
+*/
     private void nodePopup(Node node) {
         NodeFragment nodeFragment = new NodeFragment();
         nodeFragment.setNode(node);

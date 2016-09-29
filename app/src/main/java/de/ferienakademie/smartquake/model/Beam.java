@@ -26,7 +26,8 @@ public class Beam {
     private double cos_theta;
     private double theta;
 
-    private double[] displacement;
+    // DO NOT DELETE - PLZ YURIY
+    private double[] displacement = new double[6];
 
     private boolean hasBeenOverloaded = false;
 
