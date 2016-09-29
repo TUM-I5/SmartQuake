@@ -165,8 +165,8 @@ public class StartActivity extends AppCompatActivity
         values.add("House with Mass Damper");
         values.add("One World Trade Center");
         values.add("Burj Khalifa");
-        values.add("TunedMassExample1");
-        values.add("TunedMassExample2");
+        values.add("Presentation Example 1 with TMD");
+        values.add("Presentation Example 2 without TMD");
         values.add("Elephant");
         values.add("Eierlaufen");
         values.add("DemoTMD");
