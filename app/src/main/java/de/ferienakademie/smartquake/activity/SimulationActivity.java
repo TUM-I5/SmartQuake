@@ -140,7 +140,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onBackPressed();
             return true;
         } else if (id == R.id.sim_replay_button && (simulation == null || !simulation.isRunning()) && mode != SimulationMode.REPLAY) {
-            runReplay("Last Recorded Simulation.earthquake");
+            runReplay("Last.earthquake");
             if (simulation != null) toggleStartStopAvailability();
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
@@ -364,7 +364,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mCurrentAccelerationProvider.removeObserver(this);
         mCurrentAccelerationProvider.setInactive();
         try {
-            mCurrentAccelerationProvider.saveFileIfDataPresent(this, "Last Recorded Simulation.earthquake");
+            mCurrentAccelerationProvider.saveFileIfDataPresent(this, "Last.earthquake");
         } catch (IOException e) {
             Log.e("ACCEL WRITE", "error writing", e);
         }
@@ -422,7 +422,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         FileInputStream fileInputStream = null;
         try {
             fileOutputStream = openFileOutput(name + ".earthquake", Context.MODE_PRIVATE);
-            fileInputStream = openFileInput("Last Recorded Simulation.earthquake");
+            fileInputStream = openFileInput("Last.earthquake");
             byte[] bytes = new byte[1024];
             int length;
             while ((length = fileInputStream.read(bytes)) > 0) {
