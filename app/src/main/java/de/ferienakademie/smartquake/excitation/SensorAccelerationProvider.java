@@ -74,6 +74,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public AccelData getAccelerationMeasurement(){
         AccelData data = readings.get(readings.size()-1);
+        gravityProvider.getGravity(data);
         modifyData(data);
         notifyNewAccelData(data);
         return data;
