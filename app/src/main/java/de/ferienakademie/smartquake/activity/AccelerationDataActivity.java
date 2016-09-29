@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,14 +13,18 @@ import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.excitation.AccelData;
 import de.ferienakademie.smartquake.excitation.FileAccelerationProvider;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.Viewport;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /**
@@ -32,6 +37,7 @@ public class AccelerationDataActivity extends AppCompatActivity {
     private ArrayList<AccelData> list;
     //AccelData currentReading;
     private Long time;
+    private Integer time_int;
     private Double xAcceleration;
     private Double yAcceleration;
 
@@ -73,10 +79,24 @@ public class AccelerationDataActivity extends AppCompatActivity {
                 //viewport.setYAxisBoundsManual(true);
                 //viewport.setMinY(0);
                 //viewport.setMaxY(10);
-                viewport.setScrollable(true);
-                graph.setTitle(equationData);
+                //viewport.setScrollable(true);
+                graph.setTitle(equationData.substring(0, equationData.length() - 11));
+                graph.setTitleTextSize(30);
+                graph.setBackgroundColor(Color.WHITE);
+                graph.getLegendRenderer().setVisible(true);
+                graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.BOTTOM);
+                graph.getLegendRenderer().setBackgroundColor(Color.WHITE);
+                series_x.setColor(Color.GREEN);
+                series_y.setColor(Color.RED);
+                series_x.setThickness(5);
+                series_y.setThickness(5);
+                series_x.setTitle("X Acce");
+                series_y.setTitle("Y Acce");
                 graph.addSeries(series_x);
                 graph.addSeries(series_y);
+                StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+                staticLabelsFormatter.setHorizontalLabels(new String[] {"0","End"});
+                graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
                 }
 
              else {
