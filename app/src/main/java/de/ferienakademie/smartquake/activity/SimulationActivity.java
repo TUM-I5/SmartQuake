@@ -171,6 +171,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             DrawHelper.drawStructure(structure, canvasView);
             return true;
         } else if (id == R.id.sim_replay_displacement) {
+            if (simulation != null && simulation.isRunning()) {
+                onStopButtonClicked();
+            }
             replayDisplacement();
         }
             return super.onOptionsItemSelected(item);
@@ -524,6 +527,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         public void run() {
 
             int number_timeSteps = structure.getNodes().get(0).getLengthOfHistory();
+
+            for (Beam beam : structure.getBeams())
+            {
+                beam.resetBeam();
+            }
 
             //we loop over all frames
             for (int i = 0; i < number_timeSteps; i++) {

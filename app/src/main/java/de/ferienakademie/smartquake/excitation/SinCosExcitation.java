@@ -61,9 +61,8 @@ public class SinCosExcitation extends AccelerationProvider {
         counter++;
         AccelData accelData = new AccelData(amplitude * Math.cos(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
                 (long) (counter * timestep));
-        if(PreferenceReader.includeGravity()){
-            accelData.yGravity = 9.81;
-        }
+        accelData.yGravity = 9.81;
+        modifyData(accelData);
         notifyNewAccelData(accelData);
         return accelData;
     }
@@ -72,9 +71,8 @@ public class SinCosExcitation extends AccelerationProvider {
     public AccelData getAccelerationMeasurement(double time) {
         AccelData accelData = new AccelData(amplitude * Math.cos(2 * Math.PI * frequency * time), 0.0,
                 (long) (time * 1e9));
-        if(PreferenceReader.includeGravity()){
-            accelData.yGravity = 9.81;
-        }
+        accelData.yGravity = 9.81;
+        modifyData(accelData);
         notifyNewAccelData(accelData);
         return accelData;
     }
