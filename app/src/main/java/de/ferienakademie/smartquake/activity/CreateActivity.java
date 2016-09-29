@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
@@ -29,6 +30,8 @@ import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
+import de.ferienakademie.smartquake.model.StructureFactory;
+import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawCanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
@@ -41,6 +44,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     private Node node2 = null;
     private Node chosenNode = null;
 
+    private double[] loadedBoundingBox;
 
     // stuff to detect gestures, specifically long press
     private GestureDetectorCompat mGestureDetector;
@@ -78,8 +82,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
         canvasView = (DrawCanvasView) findViewById(R.id.crtCanvasView);
-        DrawHelper.clearCanvas(canvasView);
-        structure = new Structure();
         longPressListener = new LongPressListener();
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
@@ -97,6 +99,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 public void onGlobalLayout() {
                     width = canvasView.getWidth();
                     height = canvasView.getHeight();
+                    if(structure==null) { // only on first launch
+                        setStructureWithIntents();
+                    }
                 }
             });
         }
@@ -129,7 +134,11 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 break;
             case R.id.save_canvas:
                 if (!structure.getNodes().isEmpty() && !structure.getBeams().isEmpty()) {
-                    new SaveDialogFragment().show(getFragmentManager(), "save");
+                    SaveDialogFragment save = new SaveDialogFragment();
+                    if(getIntent().getExtras()!=null){
+                        save.setNameSuggestion(getIntent().getExtras().getString("name"));
+                    }
+                    save.show(getFragmentManager(), "save");
                 } else {
                     Toast.makeText(CreateActivity.this, "Cannot save empty structure!", Toast.LENGTH_SHORT).show();
                 }
@@ -142,6 +151,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     private void serializeStructure(String name) {
         List<Node> nodes = structure.getNodes();
         List<Beam> allBeams = structure.getBeams();
+
+
 
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
@@ -172,6 +183,24 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 allBeams.remove(i--);
         }
 
+        double[] boundingBox=structure.getBoundingBox();
+        for (Node node:structure.getNodes()) {
+                if (node.getInitialX() < boundingBox[0]) {
+                    boundingBox[0] = node.getInitialX();
+                }
+                if (node.getInitialX() > boundingBox[1]) {
+                    boundingBox[1] = node.getInitialX();
+                }
+                if (node.getInitialY() < boundingBox[2]) {
+                    boundingBox[2] = node.getInitialY();
+                }
+                if (node.getInitialY() > boundingBox[3]) {
+                    boundingBox[3] = node.getInitialY();
+                }
+            }
+
+
+
         FileOutputStream fileOutputStream;
         try {
             fileOutputStream = openFileOutput(name + ".structure", Context.MODE_PRIVATE);
@@ -191,7 +220,12 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         double x = node.getCurrentX();
         double y = node.getCurrentY();
 
-        double[] modelSize = {8, 8};
+        double[] modelSize;
+        if(loadedBoundingBox!=null){
+            modelSize = new double[]{loadedBoundingBox[1]-loadedBoundingBox[0], loadedBoundingBox[3]-loadedBoundingBox[2]};
+        }else{
+            modelSize = new double[]{8.0, 8.0};
+        }
 
         double displayScaling = Math.min(0.75 * width / modelSize[0], 0.75 * height / modelSize[1]);
 
@@ -206,6 +240,57 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         if (y >= temp - deltaTemp / 2) y = temp;
 
+        node.setInitialX(x);
+        node.setInitialY(y);
+    }
+
+
+    // transform meters to pixels, standard modelsize for drawing is 8x8
+    public void transformtoPixels(Node node) {
+        double x = node.getCurrentX();
+        double y = node.getCurrentY();
+        double modelScaling;
+        double[] boundingBox = structure.getBoundingBox();
+
+        double modelXSize = boundingBox[1] - boundingBox[0];
+        double modelYSize = boundingBox[3] - boundingBox[2];
+        // special case for single beam
+        if (modelXSize == 0){
+            modelXSize = 8;
+        }
+        if (modelYSize == 0) {
+            modelYSize = 8;
+        }
+
+        double widthFitScaling = (1 - 2 * CanvasView.SIDE_MARGIN_SCREEN_FRACTION) * width / modelXSize;
+        double heightFitScaling = (1 - CanvasView.TOP_MARGIN_SCREEN_FRACTION) * height / modelYSize;
+
+        if (widthFitScaling < heightFitScaling) {
+            modelScaling = widthFitScaling;
+        } else {
+            modelScaling = heightFitScaling;
+        }
+        double[] negativeMinCorrections=new double[2];
+        double[] screenCenteringOffsets=new double[2];
+        screenCenteringOffsets[0] = 0.5 * (width - modelXSize * modelScaling);
+        screenCenteringOffsets[1] = height - modelYSize * modelScaling;
+
+        if (boundingBox[0] < 0) {
+            negativeMinCorrections[0] = -boundingBox[0];
+        } else {
+            negativeMinCorrections[0] = 0;
+        }
+
+        if (boundingBox[2] < 0) {
+            negativeMinCorrections[1] = -boundingBox[1];
+        } else {
+            negativeMinCorrections[1] = 0;
+        }
+
+
+
+        x=((x + negativeMinCorrections[0]) * modelScaling + screenCenteringOffsets[0]);
+        y=((y + negativeMinCorrections[1]) * modelScaling + screenCenteringOffsets[1]);
         node.setInitialX(x);
         node.setInitialY(y);
     }
@@ -569,6 +654,74 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
         if (connected && node.getInitialY() <= height - DELTA / 2) {
             nodePopup(node);
+        }
+    }
+
+    private void setStructureWithIntents(){
+        if (getIntent().getExtras() != null) {
+            int structureId = getIntent().getExtras().getInt("id");
+            String  structureName = getIntent().getExtras().getString("name");
+            if (structureId == 0) {
+                structure = StructureFactory.cantileverBeam();
+            } else if (structureId == 1) {
+                structure = StructureFactory.getSimpleHouse();
+            } else if (structureId == 2) {
+                structure = StructureFactory.getCraneBottom();
+            } else if (structureId == 3) {
+                structure = StructureFactory.getBetterEiffelTower();
+            } else if (structureId == 4) {
+                structure = StructureFactory.getEmpireState();
+            } else if (structureId == 5) {
+                structure = StructureFactory.getGoldenGate();
+            } else if (structureId == 6) {
+                structure = StructureFactory.getWeirdBridge();
+            } else if (structureId == 7) {
+                structure = StructureFactory.getHousingBlock();
+            } else if (structureId == 8) {
+                structure = StructureFactory.getTrumpTower();
+            } else if (structureId == 9) {
+                structure = StructureFactory.getTVtower();
+            } else if (structureId == 10) {
+                structure = StructureFactory.getTaipeh();
+            } else if (structureId == 11) {
+                structure = StructureFactory.getHouseWithMassDamper();
+            } else if (structureId == 12) {
+                structure = StructureFactory.getOneWTC();
+            } else if (structureId == 13) {
+                structure = StructureFactory.getBurjKhalifa();
+            } else if (structureId == 14) {
+                structure = StructureFactory.getTunedMassExample1();
+            }else if (structureId == 15) {
+                structure = StructureFactory.getTunedMassExample2();
+            } else if (structureId == 16) {
+                structure = StructureFactory.getSimpleElephant();
+            }   else if (structureId == 17) {
+                structure = StructureFactory.getEierlaufen();
+            } else if (structureId == 18) {
+                structure = StructureFactory.getDemoTMD();
+            }
+            else {
+                structure = StructureFactory.getStructure(this, structureName);
+            }
+
+            for (Beam beam : structure.getBeams()) {
+                beam.computeAll(structure.isLumped());
+            }
+            loadedBoundingBox=new double[4];
+            System.arraycopy(structure.getBoundingBox(),0,loadedBoundingBox,0,4);
+            convertStructurefromMetertoPixels();
+            DrawHelper.clearCanvas(canvasView);
+            DrawHelper.drawStructure(structure, canvasView);
+        }else{
+            DrawHelper.clearCanvas(canvasView);
+            structure = new Structure();
+        }
+
+    }
+
+    private void convertStructurefromMetertoPixels(){
+        for(Node node:structure.getNodes()){
+            transformtoPixels(node);
         }
     }
 

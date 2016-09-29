@@ -51,6 +51,12 @@ public class StructureIO {
             writer.endObject();
         }
         writer.endArray();
+        writer.name("boundingBox");
+        writer.beginArray();
+        for (int i = 0; i < structure.getBoundingBox().length; i++) {
+            writer.value(structure.getBoundingBox()[i]);
+        }
+        writer.endArray();
         writer.endObject();
         writer.flush();
     }
@@ -171,7 +177,7 @@ public class StructureIO {
     public static Structure readStructure(InputStream stream) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(stream));
         reader.beginObject();
-
+        double[] boundingBox=new double[4];
         List<TemporaryBeam> tempBeams = null;
         List<Node> nodes = null;
         while (reader.peek() != JsonToken.END_OBJECT) {
@@ -182,6 +188,9 @@ public class StructureIO {
                     break;
                 case "beams":
                     tempBeams = parseBeams(reader);
+                    break;
+                case "boundingBox":
+                    boundingBox = parseBoundingBox(reader);
                     break;
             }
         }
@@ -198,6 +207,7 @@ public class StructureIO {
         }
 
         Structure structure = new Structure(nodes, beams);
+        structure.setBoundingBox(boundingBox);
         return structure;
     }
 
@@ -210,5 +220,16 @@ public class StructureIO {
             this.start = start;
             this.end = end;
         }
+    }
+    private static double[] parseBoundingBox(JsonReader reader)throws IOException{
+        double[] arr=new double[4];
+        reader.beginArray();
+        int i=0;
+        while (reader.peek() != JsonToken.END_ARRAY){
+            arr[i]=reader.nextDouble();
+            i++;
+        }
+        reader.endArray();
+        return arr;
     }
 }

@@ -21,7 +21,7 @@ public class Structure {
     public double[] getBoundingBox() {
         return boundingBox;
     }
-
+    public void setBoundingBox(double [] boundingBox){this.boundingBox=boundingBox;}
 
     // X, Y
     private double[] modelSize = {8, 8};

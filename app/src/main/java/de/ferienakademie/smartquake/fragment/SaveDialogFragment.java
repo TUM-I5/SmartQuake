@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,13 @@ import android.widget.EditText;
 import de.ferienakademie.smartquake.R;
 
 public class SaveDialogFragment extends DialogFragment {
-public interface SaveDialogListener {
+    private String nameSuggestion;
+
+    public void setNameSuggestion(String nameSuggestion) {
+        this.nameSuggestion = nameSuggestion;
+    }
+
+    public interface SaveDialogListener {
     public void onNameChosen(String s);
 }
 
@@ -25,7 +32,16 @@ public interface SaveDialogListener {
         LayoutInflater i = getActivity().getLayoutInflater();
 
         final View view = i.inflate(R.layout.dialog_save, null);
+        EditText t = (EditText) view.findViewById(R.id.fileNameEditor);
+        if(nameSuggestion!=null) {
+            try{
+                t.setText(nameSuggestion.substring(0,nameSuggestion.length()-10));
+            }catch (IndexOutOfBoundsException e){
+                Log.e("SaveDialogFragment", "IndexOutOfBoundsException");
+                //do nothing
+            }
 
+        }
 //        ((EditText)view.findViewById(R.id.fileNameEditor));
 
         bob.setView(view)

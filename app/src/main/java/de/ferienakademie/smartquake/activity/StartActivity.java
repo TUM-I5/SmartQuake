@@ -214,7 +214,10 @@ public class StartActivity extends AppCompatActivity
                 delete_action(position);
                 return true;
             case R.id.edit:
-                onItemSelected(position);
+                Intent intent = new Intent(this, CreateActivity.class);
+                intent.putExtra("id", position);
+                intent.putExtra("name", values.get(position) + ".structure");
+                startActivity(intent);
                 return true;
             default:
                 return super.onContextItemSelected(item);
