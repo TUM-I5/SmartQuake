@@ -42,7 +42,7 @@ public class EarthquakeDataActivity extends AppCompatActivity {
         values = new ArrayList<>();
 
         ListView lv = (ListView) findViewById(R.id.list_view_eq_data);
-        registerForContextMenu( lv);
+        registerForContextMenu(lv);
         adapter = new ArrayAdapter<String>(this, R.layout.list_item_eq_data, R.id.list_item_eq_data_text, values);
         setUpValues();
         lv.setAdapter(adapter);
@@ -51,7 +51,11 @@ public class EarthquakeDataActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //onItemSelected(position);
-                Log.v("Adapter","Just do nothing");
+                Intent intent = new Intent(EarthquakeDataActivity.this, AccelerationDataActivity.class);
+                intent.putExtra("eqDataFile", values.get(position));
+                //setResult(Activity.RESULT_OK, intent);
+                //finish();
+                startActivity(intent);
                 mPosition = position;
             }
         });

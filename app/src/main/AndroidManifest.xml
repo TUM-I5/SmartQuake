@@ -51,6 +51,9 @@
         <activity
             android:name=".activity.EarthquakeDataActivity"
             android:parentActivityName=".activity.StartActivity"></activity>
+        <activity
+            android:name=".activity.AccelerationDataActivity"
+            android:parentActivityName=".activity.EarthquakeDataActivity"></activity>
 
 
     </application>
