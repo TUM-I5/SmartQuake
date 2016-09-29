@@ -70,9 +70,7 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public AccelData getAccelerationMeasurement(){
         AccelData data = readings.get(readings.size()-1);
-        if(PreferenceReader.includeGravity()) {
-            gravityProvider.getGravity(data);
-        }
+        modifyData(data);
         notifyNewAccelData(data);
         return data;
     }
@@ -80,9 +78,8 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public AccelData getAccelerationMeasurement(double time){
         AccelData data = super.getAccelerationMeasurement(time);
-        if(PreferenceReader.includeGravity()) {
-            gravityProvider.getGravity(data);
-        }
+        gravityProvider.getGravity(data);
+        modifyData(data);
         notifyNewAccelData(data);
         return data;
     }
@@ -103,13 +100,5 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         sensorManager.unregisterListener(this);
         gravityProvider.setInactive();
-    }
-
-    /**
-     *
-     * @param active activates gravity if true
-     */
-    public void setGravityActive(boolean active){
-            gravityActive = true;
     }
 }
