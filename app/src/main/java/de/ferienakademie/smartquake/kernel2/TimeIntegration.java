@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
+import de.ferienakademie.smartquake.view.DrawHelper;
 
 /**
  * This is the main class for the simulation.
@@ -88,8 +89,8 @@ public class TimeIntegration {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public SimulationStep performSimulationStep() {
-        return new SimulationStep().execute();
+    public SimulationStep performSimulationStep(SimulationStepListener lstnr) {
+        return new SimulationStep(lstnr).execute();
     }
 
     /**
@@ -103,6 +104,11 @@ public class TimeIntegration {
         boolean isRunning;
         double loadVectorScaling = PreferenceReader.getLoadVectorScaling();
         DenseMatrix64F loadVector;
+        SimulationStepListener lstnr;
+
+        public SimulationStep(SimulationStepListener lstnr){
+            this.lstnr = lstnr;
+        }
 
         public SimulationStep execute() {
             isRunning = true;
@@ -142,7 +148,6 @@ public class TimeIntegration {
                         //add ground movement for recording
                         solver.setGroundDisplacement(delta_t, currExcitation);
                         t += delta_t;
-
                     }
 
                     //for the sensor team the global time since begining
@@ -161,6 +166,7 @@ public class TimeIntegration {
                         spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundDisplacement());
                     }
                     isRunning = false;
+                    lstnr.stepDone();
                 }
             });
             return this;

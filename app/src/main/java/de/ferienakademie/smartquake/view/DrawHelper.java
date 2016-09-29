@@ -18,7 +18,7 @@ public class DrawHelper {
     public static List<Beam> snapBeams = new ArrayList<>();
     public static double[] boundingBox = new double[4];
 
-    public static void drawStructure(Structure structure, View view1) {
+    public static synchronized void drawStructure(Structure structure, View view1) {
         snapShot(structure.getNodes(), structure.getBeams());
         boundingBox = structure.getBoundingBox();
         if (view1 instanceof CanvasView) {

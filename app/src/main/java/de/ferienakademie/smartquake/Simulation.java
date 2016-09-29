@@ -2,7 +2,11 @@ package de.ferienakademie.smartquake;
 
 import android.util.Log;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
+import de.ferienakademie.smartquake.kernel2.SimulationStepListener;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
@@ -11,9 +15,14 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  * Class that wires everything together.
  * TODO on first run an event is thrown for slow simulation.
  */
-public class Simulation {
+public class Simulation implements SimulationStepListener{
 
     private int slowStateCount = 0;
+
+    @Override
+    public void stepDone() {
+        DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
+    }
 
     public enum SimulationState {
         RUNNING_NORMAL,
@@ -27,6 +36,7 @@ public class Simulation {
     TimeIntegration kernel2;
     CanvasView view;
     SimulationProgressListener listener;
+    Timer timer;
     public boolean isRunning() {
         return state != SimulationState.STOPPED;
     }
@@ -38,23 +48,33 @@ public class Simulation {
         this.kernel2 = kernel2;
         this.view = view;
         state = SimulationState.STOPPED;
+        timer = new Timer();
     }
 
     public void start() {
         state = SimulationState.RUNNING_NORMAL;
+        final Simulation thisSim = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 kernel2.prepareSimulation();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        TimeIntegration.SimulationStep currentStep = kernel2.performSimulationStep(thisSim);
+                        }
+                }, 0, 29);
+                /*
                 TimeIntegration.SimulationStep currentStep;
                 while(true) {
                     if (!isRunning()) {
                         break;
                     }
+
                     currentStep = kernel2.performSimulationStep();
                     try {
                         //TODO: think about dynamic frame rate
-                        Thread.sleep(30);
+                        Thread.sleep(29);
                     } catch (InterruptedException ex) {
                         Log.e("Simulation", ex.getMessage());
                         continue;
@@ -82,10 +102,11 @@ public class Simulation {
                 }
                 if (listener != null) {
                     listener.onSimulationFinished();
-                }
+                }*/
             }
 
         }).start();
+
     }
 
     /**
@@ -93,6 +114,11 @@ public class Simulation {
      */
     public void stop() {
         state = SimulationState.STOPPED;
+        timer.cancel();
+        timer = new Timer();
+        if (listener != null) {
+            listener.onSimulationFinished();
+        }
     }
 
     public void setListener(SimulationProgressListener listener) {
