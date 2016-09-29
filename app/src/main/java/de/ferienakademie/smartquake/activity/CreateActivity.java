@@ -304,7 +304,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                     if (beam.getEndNode().equals(connectedTwoNode))
                         beam.setEndNode(connectedTwoNode);
                 }
-
                 popupGround(currBeam.getStartNode());
                 popupGround(currBeam.getEndNode());
             }
@@ -464,6 +463,15 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
         }
 
+        if (node1 != null && node1.getCurrentY() >= height - DELTA / 2) {
+            node1.setInitialY(height);
+
+        }
+
+        if (node2 != null && node2.getCurrentY() >= height - DELTA / 2) {
+            node2.setInitialY(height);
+        }
+
         if (attach1) {
             node1.setInitialX(node1Attach.getCurrentX());
             node1.setInitialY(node1Attach.getCurrentY());
@@ -472,15 +480,6 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         if (attach2) {
             node2.setInitialX(node2Attach.getCurrentX());
             node2.setInitialY(node2Attach.getCurrentY());
-        }
-
-        if (node1 != null && node1.getCurrentY() >= height - DELTA / 2) {
-            node1.setInitialY(height);
-
-        }
-
-        if (node2 != null && node2.getCurrentY() >= height - DELTA / 2) {
-            node2.setInitialY(height);
         }
 
     }
@@ -678,14 +677,16 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     }
 
     private void popupGround(Node node) {
-        if (node.getInitialY() >= height - DELTA / 2) {
-            nodePopup(node);
-        }
         boolean connected = false;
         for (boolean flag : node.getConstraints()) {
             if (flag) connected = true;
         }
+        if (!connected && node.getInitialY() >= height - DELTA / 2) {
+            node.setConstraint(new boolean[]{true, true, true});
+            nodePopup(node);
+        }
         if (connected && node.getInitialY() <= height - DELTA / 2) {
+            node.setConstraint(new boolean[]{false, false, false});
             nodePopup(node);
         }
     }
