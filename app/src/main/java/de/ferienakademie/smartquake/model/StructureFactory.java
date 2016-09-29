@@ -87,27 +87,27 @@ public class StructureFactory {
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL3;
+        Material testMaterial = Material.STEEL5;
+        Material zeroDensity = Material.STEEL6;
+
 
         Node n1 = new Node(0, height, false);
         Node n2 = new Node(width, height, false);
         Node n3 = new Node(width, height - 2*half, false);
         Node n4 = new Node(0, height - 2*half, false);
         Node n5 = new Node(width/2, height - 2*half, false);
-        Node n6 = new Node(width/2, height - half, 50);
-
-
-
+        Node n6 = new Node(width/2, height + half, false);
 
 
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n5, testMaterial);
         Beam b4 = new Beam(n5, n4, testMaterial);
         Beam b5 = new Beam(n4, n1, testMaterial);
-        Beam b6 = new Beam(n5, n6, testMaterial);
+        Beam b6 = new Beam(n5, n6, zeroDensity);
 
-        structure.addNodes(n1, n2, n3, n4,n5,n6);
-        structure.addBeams( b2, b3, b4,b5,b6);
+
+        structure.addNodes(n1, n2, n3, n4,n5);
+        structure.addBeams( b2, b3, b4,b5);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -116,7 +116,6 @@ public class StructureFactory {
 
         n1.setConstraint(con);
         n2.setConstraint(con);
-        n5.setHinge(true    );
         enumerateDOFs(structure);
         return structure;
     }
@@ -128,7 +127,7 @@ public class StructureFactory {
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL3;
+        Material testMaterial = Material.STEEL5;
 
         Node n1 = new Node(0, height, false);
         Node n2 = new Node(width, height, false);
@@ -151,7 +150,6 @@ public class StructureFactory {
 
         n1.setConstraint(con);
         n2.setConstraint(con);
-        n5.setHinge(true    );
         enumerateDOFs(structure);
         return structure;
     }

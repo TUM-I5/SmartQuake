@@ -164,10 +164,10 @@ public class Beam {
         elementMassMatrix = new DenseMatrix64F(6,6);
         elementMassMatrix.zero();
         //row 1
-        elementMassMatrix.set(0,0,140*massperlength* length /420+ startNode.getNodeMass());
+        elementMassMatrix.set(0,0,140*massperlength* length /420);
         elementMassMatrix.set(0,3,70*massperlength* length /420);
         //row 2
-        elementMassMatrix.set(1,1,156*massperlength* length /420+ startNode.getNodeMass());
+        elementMassMatrix.set(1,1,156*massperlength* length /420);
         elementMassMatrix.set(1,2,-22* length *massperlength* length /420);
         elementMassMatrix.set(1,4,54*massperlength* length /420);
         elementMassMatrix.set(1,5,13* length *massperlength* length /420);
@@ -178,11 +178,11 @@ public class Beam {
         elementMassMatrix.set(2,5,-3* length * length *massperlength* length /420);
         //row 4
         elementMassMatrix.set(3,0,70*massperlength* length /420);
-        elementMassMatrix.set(3,3,140*massperlength* length /420 + endNode.getNodeMass());
+        elementMassMatrix.set(3,3,140*massperlength* length /420);
         //row 5
         elementMassMatrix.set(4,1,54*massperlength* length /420);
         elementMassMatrix.set(4,2,-13* length *massperlength* length /420);
-        elementMassMatrix.set(4,4,156*massperlength* length /420 + endNode.getNodeMass());
+        elementMassMatrix.set(4,4,156*massperlength* length /420);
         elementMassMatrix.set(4,5,22* length *massperlength* length /420);
         //row 6
         elementMassMatrix.set(5,1,13* length *massperlength* length /420);
