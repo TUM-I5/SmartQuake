@@ -265,17 +265,15 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private void toggleStartStopAvailability() {
         if (simulation == null || simulation.isRunning()) {
             // started
-            simFab.setImageResource(R.drawable.ic_pause_white_24dp);
-            simFab.setOnClickListener(stopSimulationListener);
+            setStopButton();
         } else {
             // stopped
-            simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
-            simFab.setOnClickListener(startSimulationListener);
+            setStartButton();
         }
     }
 
     private void setStopButton() {
-        simFab.setImageResource(R.drawable.ic_pause_white_24dp);
+        simFab.setImageResource(R.drawable.ic_stop_white_24dp);
         simFab.setOnClickListener(stopSimulationListener);
     }
 
