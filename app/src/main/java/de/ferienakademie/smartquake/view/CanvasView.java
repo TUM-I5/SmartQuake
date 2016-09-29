@@ -122,7 +122,8 @@ public class CanvasView extends View {
 
         if (beam.isOverloaded())
         {
-            paint.setColor(Color.argb(255, 255, 0, 255));
+            paint.setColor(Color.argb(127, 255, 0, 0));
+            paint.setPathEffect(new DashPathEffect(new float[] {10, 10}, 0));
         }
         else {
 
@@ -157,6 +158,7 @@ public class CanvasView extends View {
     private void resetBeamColor(Paint paint)
     {
         paint.setColor(Color.BLACK);
+        paint.setPathEffect(null);
     }
 
     private void drawBeam(Beam beam, Canvas canvas) {

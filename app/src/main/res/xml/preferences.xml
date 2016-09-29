@@ -68,7 +68,8 @@
         <SwitchPreference
             android:key="pref_use_gravity"
             android:title="@string/pref_gravity_title"
-            android:summary="@string/pref_gravity_summary"
+            android:summaryOn="@string/pref_gravity_summaryOn"
+            android:summaryOff="@string/pref_gravity_summaryOff"
             android:defaultValue="false"
             />
 
