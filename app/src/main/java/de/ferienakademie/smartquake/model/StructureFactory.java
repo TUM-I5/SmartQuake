@@ -83,7 +83,7 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getTunedMassExample1() {
+    public static Structure getPresentation_EX_w_TMD() {
         double width = 8;
         double height = 8;
 
@@ -127,7 +127,7 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getTunedMassExample2() {    //Where's the Node Mass in this example?
+    public static Structure getPresentation_EX_wo_TMD() {    //Where's the Node Mass in this example?
         double width = 8;
         double height = 8;
 
@@ -1356,9 +1356,9 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-        Node n1 = new Node(5, 2, false);
-        Node n2 = new Node(3, 1, false);
-        Node n3 = new Node(3, 4, false);
+        Node n1 = new Node(1, 2.0, false);
+        Node n2 = new Node(0.0, 4.0, false);
+        Node n3 = new Node(3.0, 4.0, false);
 
         Beam b1 = new Beam(n1, n2, testMaterial);
         Beam b2 = new Beam(n2, n3, testMaterial);
