@@ -229,6 +229,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         else if (structureId == 2) {
             structure = StructureFactory.getPresTwo();
         }
+        else if (structureId == 3) {
+            structure = StructureFactory.getPresThree();
+        }
+        else if (structureId == 4) {
+            structure = StructureFactory.getPresFour();
+        }
         else {
             structure = StructureFactory.getStructure(this, structureName);
         }
