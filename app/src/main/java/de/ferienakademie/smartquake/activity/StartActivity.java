@@ -169,7 +169,13 @@ public class StartActivity extends AppCompatActivity
         values.add("Presentation Example 2 without TMD");
         values.add("Elephant");
         values.add("Eierlaufen");
-        values.add("DemoTMD");
+        values.add("Presentation Demo 1");
+        values.add("Presentation Demo 2");
+        values.add("Presentation Demo 3");
+        values.add("Presentation Demo 4");
+        values.add("Presentation Demo 5");
+        values.add("Presentation Demo 6");
+        //values.add("DemoTMD");
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();
 

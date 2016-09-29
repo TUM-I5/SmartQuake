@@ -4,50 +4,50 @@ The following historical commit information, by author, was found in the
 repository:
 
 Author                     Commits    Insertions      Deletions    % of changes
-Alex Melkonyan                  38           716            527            5.59
-Alexander Mueller               61          1942           1009           13.27
-Claudius                        11           240             41            1.26
-DEXIS                            2            96              1            0.44
-David Schneller                 28           906            425            5.99
-Felix Wechsler                  77          1104            533            7.36
-Ivana                            8           562             55            2.77
-JohnH                           17          1064            476            6.93
-Lukas Koenig                     3            52            153            0.92
-Maximilian Berger               32           935            356            5.81
-Michael Zintl                    5           156             65            0.99
-Nepomuk Ritz                    18           473             64            2.42
+Alex Melkonyan                  38           716            527            5.49
+Alexander Mueller               61          1942           1009           13.02
+Claudius                        11           240             41            1.24
+DEXIS                            2            96              1            0.43
+David Schneller                 31          1068            510            6.96
+Felix Wechsler                  77          1104            533            7.22
+Ivana                            8           562             55            2.72
+JohnH                           17          1064            476            6.80
+Lukas Koenig                     3            52            153            0.90
+Maximilian Berger               32           935            356            5.70
+Michael Zintl                    5           156             65            0.98
+Nepomuk Ritz                    18           473             64            2.37
 Patrick                          2            40              5            0.20
-Paul                            25           540            163            3.16
-Simon                           48          1191            852            9.19
-Vincent Stimper                 24           608             79            3.09
-Yehor Yudin                     49           542            167            3.19
-Zan                             16           726            598            5.95
-amelie                           7           369             88            2.06
-geldnens                        25           712            430            5.14
-vonscheven                      16           383            179            2.53
-yuriyarabskyy                   78          2052            561           11.75
+Paul                            25           540            163            3.10
+Simon                           48          1191            852            9.02
+Vincent Stimper                 26           640             79            3.17
+Yehor Yudin                     49           542            167            3.13
+Zan                             16           726            598            5.84
+amelie                           7           369             88            2.02
+geldnens                        25           712            430            5.04
+vonscheven                      16           383            179            2.48
+yuriyarabskyy                   80          2176            582           12.17
 
 Below are the number of rows from each author that have survived and are still
 intact in the current revision:
 
 Author                     Rows      Stability          Age       % in comments
-Alex Melkonyan              330           46.1          0.2               12.12
-Alexander Mueller           660           34.0          0.1                3.48
-Claudius                    105           43.8          0.1               25.71
-David Schneller             696           76.8          0.1               10.34
-Felix Wechsler              543           49.2          0.2               37.57
+Alex Melkonyan              311           43.4          0.2               12.86
+Alexander Mueller           609           31.4          0.1                3.28
+Claudius                     87           36.2          0.1               28.74
+David Schneller             832           77.9          0.1                9.62
+Felix Wechsler              540           48.9          0.2               37.59
 Ivana                       431           76.7          0.1               21.11
 JohnH                       744           69.9          0.1                0.13
 Lukas Koenig                 12           23.1          0.2               58.33
-Maximilian Berger           642           68.7          0.2                4.05
+Maximilian Berger           636           68.0          0.2                3.93
 Michael Zintl                62           39.7          0.1                1.61
-Nepomuk Ritz                 74           15.6          0.1                8.11
+Nepomuk Ritz                 73           15.4          0.1                8.22
 Paul                        227           42.0          0.1                3.96
 Simon                       363           30.5          0.1               11.29
-Vincent Stimper             524           86.2          0.2               16.79
-Yehor Yudin                 151           27.9          0.1               34.44
-Zan                         356           49.0          0.1                7.02
+Vincent Stimper             556           86.9          0.2               17.27
+Yehor Yudin                 157           29.0          0.1               36.31
+Zan                         349           48.1          0.1                7.16
 amelie                      157           42.5          0.1                1.91
-geldnens                    335           47.1          0.1                2.99
-vonscheven                  347           90.6          0.1               14.70
-yuriyarabskyy              1450           70.7          0.1                2.83
+geldnens                    330           46.3          0.1                3.03
+vonscheven                  454          118.5          0.1               15.20
+yuriyarabskyy              1435           65.9          0.1                2.86
