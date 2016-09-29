@@ -55,7 +55,9 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
 
         setContentView(R.layout.activity_graph_view);
         modelSnapshotView = (CanvasView) findViewById(R.id.modelSnapshotView);
+        modelSnapshotView.includeRuler = false;
         nodeSnapshotView = (CanvasView) findViewById(R.id.nodeSnapshotView);
+        nodeSnapshotView.includeRuler = false;
         setUpChart();
     }
 

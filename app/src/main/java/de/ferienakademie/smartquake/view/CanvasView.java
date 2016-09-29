@@ -44,6 +44,8 @@ public class CanvasView extends View {
     private GestureDetectorCompat mGestureDetector;
     private Integer selectedNodeId;
 
+    public boolean includeRuler = true;
+
     static {
         BEAM_PAINT.setColor(Color.RED);
         BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -245,10 +247,14 @@ public class CanvasView extends View {
 
         if (widthFitScaling < heightFitScaling) {
             modelScaling = widthFitScaling;
-            drawRuler(modelXSize, canvas);
+            if (includeRuler) {
+                drawRuler(modelXSize, canvas);
+            }
         } else {
             modelScaling = heightFitScaling;
-            drawRuler(modelYSize, canvas);
+            if (includeRuler) {
+                drawRuler(modelYSize, canvas);
+            }
         }
 
         screenCenteringOffsets[0] = 0.5 * (canvas.getWidth() - modelXSize * modelScaling);
