@@ -1,5 +1,7 @@
 package de.ferienakademie.smartquake.kernel2;
 
+import android.util.Log;
+
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -80,6 +82,7 @@ public class TimeIntegration {
         //TODO: why do we instantiate xDot here if it is used only in the solver class?
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
+        //solver = new Static(spatialDiscretization, accelerationProvider, xDot,delta_t);
 
 
         accelerationProvider.setActive();
@@ -132,6 +135,10 @@ public class TimeIntegration {
 
                     CommonOps.scale(loadVectorScaling, loadVector);
                     solver.setFLoad(loadVector);
+                    Log.i("Newmark Load:", ""+loadVector.toString() );
+
+                    // TODO MALTE DEBUG
+                    //solver.nextStep(t, delta_t);
 
                     long firstTime = System.nanoTime();
                     //this loop performs the calculation
@@ -158,6 +165,7 @@ public class TimeIntegration {
                     }
                     else {
                         //update the displacement in the node variables
+                        Log.i("Newmark Disp:", ""+solver.getX().toString());
                         spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundDisplacement());
                     }
                     isRunning = false;

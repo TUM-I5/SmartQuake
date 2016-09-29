@@ -5,6 +5,7 @@ package de.ferienakademie.smartquake.excitation;
  */
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.IOException;
 import java.security.acl.AclEntry;
@@ -28,7 +29,7 @@ public class SinCosExcitation extends AccelerationProvider {
     }
 
     public SinCosExcitation() {
-        this.amplitude = 10;
+        this.amplitude = 1000;
         this.frequency = 1;
         this.timestep = 30_000_000;
     }
