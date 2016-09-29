@@ -326,6 +326,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
+        if (simulation != null)
+        {
+            simulation.stop();
+        }
+
         if (mCurrentAccelerationProvider != null){
             mCurrentAccelerationProvider.removeObserver(this);
             mCurrentAccelerationProvider.setInactive();
@@ -509,8 +514,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         simulation.start();
         simulation.setListener(this);
-
-        toggleStartStopAvailability();
     }
 
     // TODO: should this be part of Simulation too?
