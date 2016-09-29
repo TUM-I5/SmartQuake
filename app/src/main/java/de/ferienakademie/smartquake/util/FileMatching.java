@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
  * Created by Maximilian Berger on 9/29/16.
  */
 public class FileMatching {
-    private static Pattern earthquakeFileNamePattern = Pattern.compile("[ _A-Za-z0-9-]+\\.earthquake");
-    private static Pattern structureFileNamePattern = Pattern.compile("[ _A-Za-z0-9-]+\\.structure");
+    private static Pattern earthquakeFileNamePattern = Pattern.compile("[ _A-Za-z0-9.-]+\\.earthquake");
+    private static Pattern structureFileNamePattern = Pattern.compile("[ _A-Za-z0-9.-]+\\.structure");
 
     public static boolean matchesEarthQuakeFileName(String filename) {
         Matcher matcher = earthquakeFileNamePattern.matcher(filename);
