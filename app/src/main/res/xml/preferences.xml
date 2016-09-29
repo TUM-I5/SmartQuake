@@ -36,6 +36,21 @@
             android:defaultValue="false"
             />
         <SwitchPreference
+            android:key="pref_modal_reduction"
+            android:title="@string/pref_modal_reduction_title"
+            android:summaryOn="@string/pref_modal_reduction_summary_On"
+            android:summaryOff="@string/pref_modal_reduction_summary_Off"
+            android:defaultValue="false"
+            />
+        <de.ferienakademie.smartquake.preferenceElements.EditTextPreferenceInt
+            android:key="pref_numberOfModes"
+            android:numeric="integer"
+            android:title="@string/modes_slider_title"
+            android:dependency="pref_modal_reduction"
+            android:defaultValue="10" />
+
+
+        <SwitchPreference
             android:key="pref_y_excitation"
             android:title="@string/pref_y_excitation_title"
             android:summaryOn="@string/pref_y_excitation_summary_On"

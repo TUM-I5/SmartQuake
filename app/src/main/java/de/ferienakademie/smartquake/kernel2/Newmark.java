@@ -160,7 +160,7 @@ public class Newmark extends ImplicitSolver {
         if (matrix.getNumCols() != vec.getNumRows() || result.getNumRows() != matrix.getNumRows()) {
             throw new AssertionError("Try to multiply and add matrices of uncompatible size.");
         }
-        for(int i = 0; i< k1.getNumberOfUnconstraintDOF(); i++) {
+        for(int i = 0; i< k1.getNumberOfModes(); i++) {
             result.set(i, 0, result.get(i, 0) + delta_t * matrix.get(i, i) * vec.get(i, 0));
         }
     }
