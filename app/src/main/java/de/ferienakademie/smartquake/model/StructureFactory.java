@@ -163,7 +163,7 @@ public class StructureFactory {
         Node n2 = new Node(width, height,false);
         Node n3 = new Node(width, height/2,false);
         Node n4 = new Node(0, height/2,false);
-        Node n5 = new Node(width/2, 0,true);
+        Node n5 = new Node(width/2, 0,false);
         Node n6 = new Node(width/2, height*1/4,100);
 
         Beam b2 = new Beam(n2, n3, testMaterial);
