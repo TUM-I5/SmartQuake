@@ -1400,10 +1400,6 @@ public class StructureFactory {
             return StructureFactory.getOneWTC();
         } else if (structureId == 13) {
             return StructureFactory.getBurjKhalifa();
-        } else if (structureId == 14) {
-            return StructureFactory.getTunedMassExample1();
-        }else if (structureId == 15) {
-            return StructureFactory.getTunedMassExample2();
         } else if (structureId == 16) {
             return StructureFactory.getSimpleElephant();
         }   else if (structureId == 17) {
