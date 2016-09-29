@@ -15,7 +15,8 @@ public class EditTextPreferenceInt extends android.preference.EditTextPreference
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
-        int val = Integer.parseInt(this.getText());
+        CharSequence text = getSummary();
+        int val = Integer.parseInt((String) text);
         int maxVal = 1000;
         int minVal = 2;
         if (val > maxVal) {
@@ -25,7 +26,7 @@ public class EditTextPreferenceInt extends android.preference.EditTextPreference
         } else {
                 setText(Integer.toString(val));
         }
-        setSummary(getSummary());
+        setSummary(text);
     }
 
     @Override
