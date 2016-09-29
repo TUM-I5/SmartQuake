@@ -94,9 +94,9 @@ public class AccelerationDataActivity extends AppCompatActivity {
                 series_y.setTitle("Y Acce");
                 graph.addSeries(series_x);
                 graph.addSeries(series_y);
-                StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-                staticLabelsFormatter.setHorizontalLabels(new String[] {"0","End"});
-                graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+                //StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
+                //staticLabelsFormatter.setHorizontalLabels(new String[] {"0","End"});
+                //graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
                 }
 
              else {
