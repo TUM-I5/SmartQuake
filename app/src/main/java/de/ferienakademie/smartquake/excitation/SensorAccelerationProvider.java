@@ -57,6 +57,10 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
         readings.add(currentAcceleration);
     }
 
+    /**
+     * not used in current code
+     * @return
+     */
     @Override
     public double[] getAcceleration(){
         return AccelData.toArray(getAccelerationMeasurement());
