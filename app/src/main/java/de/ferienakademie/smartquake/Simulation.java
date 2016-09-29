@@ -4,6 +4,7 @@ import android.util.Log;
 
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
@@ -25,7 +26,9 @@ public abstract class Simulation {
 
 
     CanvasView view;
-    SimulationProgressListener listener;
+    SimulationProgressListener simulationProgressListener;
+    StructureUpdateListener structureUpdateListener;
+
     public boolean isRunning() {
         return state != SimulationState.STOPPED;
     }
@@ -41,6 +44,7 @@ public abstract class Simulation {
     protected  abstract  void updateTick();
     protected  abstract  void drawTick();
     protected  abstract  void shutdown();
+    protected abstract Structure getStructure();
 
     public void start() {
         state = SimulationState.RUNNING_NORMAL;
@@ -63,6 +67,7 @@ public abstract class Simulation {
                         Log.e("Simulation", ex.getMessage());
                         continue;
                     }
+
                     while(view.isBeingDrawn) {
                         try {
                             Thread.sleep(10);
@@ -71,10 +76,13 @@ public abstract class Simulation {
                         }
                     }
                     drawTick();
+                    if (structureUpdateListener != null) {
+                        structureUpdateListener.onStructureUpdate(getStructure());
+                    }
                 }
                 shutdown();
-                if (listener != null) {
-                    listener.onSimulationFinished();
+                if (simulationProgressListener != null) {
+                    simulationProgressListener.onSimulationFinished();
                 }
             }
 
@@ -88,8 +96,8 @@ public abstract class Simulation {
         state = SimulationState.STOPPED;
     }
 
-    public void setListener(SimulationProgressListener listener) {
-        this.listener = listener;
+    public void setSimulationProgressListener(SimulationProgressListener simulationProgressListener) {
+        this.simulationProgressListener = simulationProgressListener;
     }
 
     public interface SimulationProgressListener {
@@ -104,5 +112,14 @@ public abstract class Simulation {
          */
         void onSimulationStateChanged(SimulationState newSpeedState);
     }
+
+    public void setStructureUpdateListener(StructureUpdateListener structureUpdateListener) {
+        this.structureUpdateListener = structureUpdateListener;
+    }
+
+    public interface StructureUpdateListener {
+        void onStructureUpdate(Structure s);
+    }
+
 
 }
