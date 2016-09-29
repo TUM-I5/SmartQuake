@@ -186,21 +186,13 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         double[] boundingBox=new double[4];
         for (Node node:structure.getNodes()) {
                 if (node.getInitialX() < boundingBox[0]) {
-                    if(node.getInitialX()<0){
-                        boundingBox[0]+=-1*node.getInitialX();
-                    }else {
-                        boundingBox[1] = node.getInitialX();
-                    }
+                        boundingBox[0] = node.getInitialX();
                 }
                 if (node.getInitialX() > boundingBox[1]) {
                     boundingBox[1] = node.getInitialX();
                 }
                 if (node.getInitialY() < boundingBox[2]) {
-                    if(node.getInitialY()<0){
-                        boundingBox[3]+=-1*node.getInitialY();
-                    }else {
                         boundingBox[2] = node.getInitialY();
-                    }
                 }
                 if (node.getInitialY() > boundingBox[3]) {
                     boundingBox[3] = node.getInitialY();
@@ -255,48 +247,9 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
 
     // transform meters to pixels, standard modelsize for drawing is 8x8
-    public void transformtoPixels(Node node) {
-        double x = node.getCurrentX();
-        double y = node.getCurrentY();
-        double modelScaling;
-        double[] boundingBox = structure.getBoundingBox();
-
-        double modelXSize = boundingBox[1] - boundingBox[0];
-        double modelYSize = boundingBox[3] - boundingBox[2];
-        // special case for single beam
-        if (modelXSize == 0){
-            modelXSize = 8;
-        }
-        if (modelYSize == 0) {
-            modelYSize = 8;
-        }
-
-        double widthFitScaling = (1 - 2 * CanvasView.SIDE_MARGIN_SCREEN_FRACTION) * width / modelXSize;
-        double heightFitScaling = (1 - CanvasView.TOP_MARGIN_SCREEN_FRACTION) * height / modelYSize;
-
-        if (widthFitScaling < heightFitScaling) {
-            modelScaling = widthFitScaling;
-        } else {
-            modelScaling = heightFitScaling;
-        }
-        double[] negativeMinCorrections=new double[2];
-        double[] screenCenteringOffsets=new double[2];
-        screenCenteringOffsets[0] = 0.5 * (width - modelXSize * modelScaling);
-        screenCenteringOffsets[1] = height - modelYSize * modelScaling;
-
-        if (boundingBox[0] < 0) {
-            negativeMinCorrections[0] = -boundingBox[0];
-        } else {
-            negativeMinCorrections[0] = 0;
-        }
-
-        if (boundingBox[2] < 0) {
-            negativeMinCorrections[1] = -boundingBox[1];
-        } else {
-            negativeMinCorrections[1] = 0;
-        }
-
-
+    public void transformtoPixels(Node node, double modelScaling, double[] negativeMinCorrections, double[] screenCenteringOffsets) {
+        double x= node.getInitialX();
+        double y = node.getInitialY();
 
         x=((x + negativeMinCorrections[0]) * modelScaling + screenCenteringOffsets[0]);
         y=((y + negativeMinCorrections[1]) * modelScaling + screenCenteringOffsets[1]);
@@ -729,8 +682,56 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     }
 
     private void convertStructurefromMetertoPixels(){
+
+
+        double modelScaling;
+        double[] boundingBox = structure.getBoundingBox();
+
+        double modelXSize = boundingBox[1] - boundingBox[0];
+        double modelYSize = boundingBox[3] - boundingBox[2];
+        // special case for single beam
+        if (modelXSize == 0){
+            modelXSize = 8;
+        }
+        if (modelYSize == 0) {
+            modelYSize = 8;
+        }
+
+        double widthFitScaling = (1 - 2 * CanvasView.SIDE_MARGIN_SCREEN_FRACTION) * width / (modelXSize / 0.75);
+        double heightFitScaling = (1 - CanvasView.TOP_MARGIN_SCREEN_FRACTION) * height / (modelYSize / 0.875);
+
+        if (widthFitScaling < heightFitScaling) {
+            modelScaling = widthFitScaling;
+            boundingBox[0]/=0.75;
+            boundingBox[1]/=0.75;
+        } else {
+            modelScaling = heightFitScaling;
+            boundingBox[2]/=0.875;
+            boundingBox[3]/=0.875;
+        }
+
+
+        double[] negativeMinCorrections=new double[2];
+        double[] screenCenteringOffsets=new double[2];
+        screenCenteringOffsets[0] = 0.5 * (width - modelXSize * modelScaling);
+        screenCenteringOffsets[1] = height - modelYSize * modelScaling;
+
+        if (boundingBox[0] < 0) {
+            negativeMinCorrections[0] = -boundingBox[0];
+        } else {
+            negativeMinCorrections[0] = 0;
+        }
+
+        if (boundingBox[2] < 0) {
+            negativeMinCorrections[1] = -boundingBox[1];
+        } else {
+            negativeMinCorrections[1] = 0;
+        }
+        structure.setBoundingBox(boundingBox);
+        loadedBoundingBox=boundingBox;
+
         for(Node node:structure.getNodes()){
-            transformtoPixels(node);
+            transformtoPixels(node, modelScaling, negativeMinCorrections, screenCenteringOffsets);
         }
     }
 
