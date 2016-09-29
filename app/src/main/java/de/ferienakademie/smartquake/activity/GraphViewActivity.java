@@ -72,6 +72,7 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
 
         nodeSnapshotView = (CanvasView) findViewById(R.id.nodeSnapshotView);
         nodeSnapshotView.includeRuler = false;
+        nodeSnapshotView.centerOnFirstNode = true;
         nodeSnapshotView.setSelectedNodeId(0);
         nodeSnapshotView.setStructureProvider(new CanvasView.StructureProvider() {
             @Override
@@ -88,6 +89,7 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
         nodeDataChart.setDescription("Node displacements");
         nodeDataChart.setPinchZoom(false);
         nodeDataChart.setOnChartValueSelectedListener(this);
+        nodeDataChart.setScaleYEnabled(true);
 
         sets = new ArrayList<>();
         graphXPoints = new ArrayList<>();

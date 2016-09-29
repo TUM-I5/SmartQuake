@@ -20,48 +20,22 @@ import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 
 public class CanvasView extends View {
-    public void setSelectedNodeId(Integer selectedNodeId) {
-        this.selectedNodeId = selectedNodeId;
-    }
-
-    public Integer getSelectedNodeId() {
-        return selectedNodeId;
-    }
-    // for future reference: 1 dpi = 100 / 2.54 pixels per meter
-    // get dpi with context.getResources().getDisplayMetrics().xdpi
-
-    public interface NodePositionChoiceListener {
-        void onNodePositionChosen(double internalX, double internalY, double scale);
-    }
-
-    public interface StructureProvider {
-        Structure getStructure();
-    }
 
     public static final double SIDE_MARGIN_SCREEN_FRACTION = 0.125;
     public static final double TOP_MARGIN_SCREEN_FRACTION = 0.125;
+    // for future reference: 1 dpi = 100 / 2.54 pixels per meter
+    // get dpi with context.getResources().getDisplayMetrics().xdpi
     public static final double BEAM_UNIT_SCREEN_FRACTION = 0.1;
     public static final Paint BEAM_PAINT = new Paint();
     public static final Paint HINGE_PAINT = new Paint();
     public static final Paint RULER_PAINT = new Paint();
     public static final Paint SELECTION_PAINT = new Paint();
+    private static final InternalColorStop[] colorStops =
+            {
+                    new InternalColorStop(Color.argb(255, 0, 0, 0), 0), //BLACK
+                    new InternalColorStop(Color.argb(255, 255, 0, 0), 1) //RED
 
-    public void setNodePositionChoiceListener(NodePositionChoiceListener listener) {
-        this.nodePositionChoiceListener = listener;
-    }
-
-    private NodePositionChoiceListener nodePositionChoiceListener;
-    private GestureDetectorCompat mGestureDetector;
-
-    public void setStructureProvider(StructureProvider structureProvider) {
-        this.structureProvider = structureProvider;
-    }
-
-    private StructureProvider structureProvider;
-
-    private Integer selectedNodeId;
-
-    public boolean includeRuler = true;
+            };
 
     static {
         BEAM_PAINT.setColor(Color.RED);
@@ -79,11 +53,16 @@ public class CanvasView extends View {
         SELECTION_PAINT.setAntiAlias(true);
     }
 
+    public boolean includeRuler = true;
+    public boolean centerOnFirstNode = false;
     // TODO: improve?
     public boolean isBeingDrawn = false;
+    private NodePositionChoiceListener nodePositionChoiceListener;
+    private GestureDetectorCompat mGestureDetector;
+    private StructureProvider structureProvider;
+    private Integer selectedNodeId;
     private double[] screenCenteringOffsets = new double[2];
     private double[] negativeMinCorrections = new double[2];
-
     private double modelScaling, beamUnitSize;
 
     public CanvasView(Context context) {
@@ -94,13 +73,27 @@ public class CanvasView extends View {
         super(context, attrs);
         mGestureDetector = new GestureDetectorCompat(getContext(), new CanvasViewLongPressListener());
     }
-
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
     public CanvasView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public Integer getSelectedNodeId() {
+        return selectedNodeId;
+    }
+
+    public void setSelectedNodeId(Integer selectedNodeId) {
+        this.selectedNodeId = selectedNodeId;
+    }
+
+    public void setNodePositionChoiceListener(NodePositionChoiceListener listener) {
+        this.nodePositionChoiceListener = listener;
+    }
+
+    public void setStructureProvider(StructureProvider structureProvider) {
+        this.structureProvider = structureProvider;
     }
 
     private float internalToScreen(double internalValue, Axis axis) {
@@ -111,56 +104,27 @@ public class CanvasView extends View {
         return (float) ((screenValue - screenCenteringOffsets[axis.ordinal()]) / modelScaling - negativeMinCorrections[axis.ordinal()]);
     }
 
-    private static class InternalColorStop implements Comparable
-    {
-        int color;
-        double pos;
-
-        InternalColorStop(int color, double pos)
-        {
-            this.color = color;
-            this.pos = pos;
-        }
-
-
-        @Override
-        public int compareTo(Object o) {
-            return Double.compare(pos, ((InternalColorStop)o).pos);
-        }
-    }
-
-    private static final InternalColorStop[] colorStops =
-            {
-                    new InternalColorStop(Color.argb(255, 0, 0, 0), 0), //BLACK
-                    new InternalColorStop(Color.argb(255, 255, 0, 0), 1) //RED
-
-            };
-
-    private int lerp(int f, int s, double p)
-    {
+    private int lerp(int f, int s, double p) {
         //Standard linear interpolation.
         return Color.argb(
-                (int)Math.round(Color.alpha(f) * (1 - p) + Color.alpha(s) * p),
-                (int)Math.round(Color.red(f) * (1 - p) + Color.red(s) * p),
-                (int)Math.round(Color.green(f) * (1 - p) + Color.green(s) * p),
-                (int)Math.round(Color.blue(f) * (1 - p) + Color.blue(s) * p)
+                (int) Math.round(Color.alpha(f) * (1 - p) + Color.alpha(s) * p),
+                (int) Math.round(Color.red(f) * (1 - p) + Color.red(s) * p),
+                (int) Math.round(Color.green(f) * (1 - p) + Color.green(s) * p),
+                (int) Math.round(Color.blue(f) * (1 - p) + Color.blue(s) * p)
         );
     }
 
     private void beamDeformationColor(Beam beam, Paint paint) {
         //Handling
-        if (!PreferenceReader.showColors())
-        {
+        if (!PreferenceReader.showColors()) {
             paint.setColor(Color.BLACK);
             return;
         }
 
-        if (beam.isOverloaded())
-        {
+        if (beam.isOverloaded()) {
             paint.setColor(Color.argb(127, 255, 0, 0));
-            paint.setPathEffect(new DashPathEffect(new float[] {10, 10}, 0));
-        }
-        else {
+            paint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
+        } else {
 
             double force = beam.returnMaximumStress() / beam.getTensileStrength(); //Might still show some errors.
 
@@ -190,8 +154,7 @@ public class CanvasView extends View {
         }
     }
 
-    private void resetBeamColor(Paint paint)
-    {
+    private void resetBeamColor(Paint paint) {
         paint.setColor(Color.BLACK);
         paint.setPathEffect(null);
     }
@@ -201,13 +164,22 @@ public class CanvasView extends View {
         if (node.isHinge()) nodePaint = HINGE_PAINT;
         else nodePaint = BEAM_PAINT;
 
-        canvas.drawCircle(internalToScreen(node.getCurrentX(), Axis.X),
-                internalToScreen(node.getCurrentY(), Axis.Y),
+        float xCoord = internalToScreen(node.getCurrentX(), Axis.X);
+        float yCoord = internalToScreen(node.getCurrentY(), Axis.Y);
+        float xCorrection = 0;
+        float yCorrection = 0;
+
+        if (centerOnFirstNode) {
+            xCorrection = canvas.getWidth() * 0.5f - internalToScreen(structureProvider.getStructure().getNodes().get(selectedNodeId).getCurrentX(), Axis.X);
+            yCorrection = canvas.getWidth() * 0.5f - internalToScreen(structureProvider.getStructure().getNodes().get(selectedNodeId).getCurrentY(), Axis.Y);
+        }
+        canvas.drawCircle(xCoord + xCorrection,
+                yCoord + yCorrection,
                 (float) (node.getRadius() * beamUnitSize), nodePaint);
 
         if (nodeSelected) {
-            canvas.drawCircle(internalToScreen(node.getCurrentX(), Axis.X),
-                    internalToScreen(node.getCurrentY(), Axis.Y),
+            canvas.drawCircle(xCoord + xCorrection,
+                    yCoord + yCorrection,
                     (float) (node.getRadius() * beamUnitSize * 0.95), SELECTION_PAINT);
         }
     }
@@ -217,7 +189,15 @@ public class CanvasView extends View {
         Node endNode = beam.getEndNode();
         Path p = new Path();
 
-        p.moveTo(internalToScreen(startNode.getCurrentXf(), Axis.X), internalToScreen(startNode.getCurrentYf(), Axis.Y));
+        float xCorrection = 0;
+        float yCorrection = 0;
+
+        if (centerOnFirstNode) {
+            xCorrection = canvas.getWidth() * 0.5f - internalToScreen(structureProvider.getStructure().getNodes().get(selectedNodeId).getCurrentX(), Axis.X);
+            yCorrection = canvas.getWidth() * 0.5f - internalToScreen(structureProvider.getStructure().getNodes().get(selectedNodeId).getCurrentY(), Axis.Y);
+        }
+
+        p.moveTo(internalToScreen(startNode.getCurrentX(), Axis.X) + xCorrection, internalToScreen(startNode.getCurrentY(), Axis.Y) + yCorrection);
 
         int numberOfSegments = 20;
         double singleSegmentLength = beam.getLength() / numberOfSegments;
@@ -227,12 +207,12 @@ public class CanvasView extends View {
             double py = (endNode.getInitialY() - startNode.getInitialY()) / beam.getLength() * x + startNode.getInitialY();
 
             float[] intermediateDisplacement = beam.getGlobalDisplacementAt(x);
-            intermediateDisplacement[0] = internalToScreen(intermediateDisplacement[0] + px, Axis.X);
-            intermediateDisplacement[1] = internalToScreen(intermediateDisplacement[1] + py, Axis.Y);
+            intermediateDisplacement[0] = internalToScreen(intermediateDisplacement[0] + px, Axis.X) + xCorrection;
+            intermediateDisplacement[1] = internalToScreen(intermediateDisplacement[1] + py, Axis.Y) + yCorrection;
             p.lineTo(intermediateDisplacement[0], intermediateDisplacement[1]);
         }
 
-        p.lineTo(internalToScreen(endNode.getCurrentXf(), Axis.X), internalToScreen(endNode.getCurrentYf(), Axis.Y));
+        p.lineTo(internalToScreen(endNode.getCurrentXf(), Axis.X) + xCorrection, internalToScreen(endNode.getCurrentYf(), Axis.Y) + yCorrection);
 
         BEAM_PAINT.setStrokeWidth((float) (beam.getThickness() * beamUnitSize));
 
@@ -262,7 +242,7 @@ public class CanvasView extends View {
         double modelXSize = boundingBox[1] - boundingBox[0];
         double modelYSize = boundingBox[3] - boundingBox[2];
         // special case for single beam
-        if (modelXSize == 0){
+        if (modelXSize == 0) {
             modelXSize = 8;
         }
         if (modelYSize == 0) {
@@ -354,15 +334,39 @@ public class CanvasView extends View {
                 (float) ((TOP_MARGIN_SCREEN_FRACTION - 0.025) * canvas.getHeight()), RULER_PAINT);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mGestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
     public enum Axis {
         X,
         Y
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        mGestureDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
+    public interface NodePositionChoiceListener {
+        void onNodePositionChosen(double internalX, double internalY, double scale);
+    }
+
+    public interface StructureProvider {
+        Structure getStructure();
+    }
+
+    private static class InternalColorStop implements Comparable {
+        int color;
+        double pos;
+
+        InternalColorStop(int color, double pos) {
+            this.color = color;
+            this.pos = pos;
+        }
+
+
+        @Override
+        public int compareTo(Object o) {
+            return Double.compare(pos, ((InternalColorStop) o).pos);
+        }
     }
 
     public class CanvasViewLongPressListener extends GestureDetector.SimpleOnGestureListener {
