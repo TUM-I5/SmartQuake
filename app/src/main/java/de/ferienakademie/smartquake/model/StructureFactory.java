@@ -25,7 +25,7 @@ public class StructureFactory {
 
 
         Node bottom = new Node(4, 8);
-        Node up = new Node(4, 3,41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220);
+        Node up = new Node(4, 3,41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220*0.39806080e-1);
         Material zeroDensity = Material.STEEL7;
 
         List<Integer> condof = new ArrayList<>();
@@ -35,10 +35,12 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
+
         Material testMaterial = Material.STEEL4;
 
         Beam b = new Beam(bottom, up, zeroDensity);
         Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+
         structure.setLumped(true);
         enumerateDOFs(structure);
         return structure;
@@ -98,7 +100,7 @@ public class StructureFactory {
         Node n4 = new Node(0, height - 2*half, false);
         Node n5 = new Node(width/2, height - 2*half, false);
 
-        Node n6 = new Node(width/2, height - half+1, 41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220);
+        Node n6 = new Node(width/2, height - half+1, 41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220*0.39806080e-1);
 
 
         //Master original Node n6 = new Node(width/2, height - half, 50);
@@ -119,7 +121,6 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
-        //n5.setHinge(true);  //This crashes the example
         n1.setConstraint(con);
         n2.setConstraint(con);
         enumerateDOFs(structure);

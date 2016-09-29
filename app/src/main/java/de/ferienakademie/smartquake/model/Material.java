@@ -12,7 +12,7 @@ public class Material {
     public static Material STEEL5 = new Material(0.03347, 0.03347, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL6 = new Material(0.03347, 0.03347, 2.1e11, 0.00001, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL7 = new Material(0.03347, 0.03347, 2.1e11, 0.00001, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
-    public static Material STEEL8 = new Material(0.03347/1.1087781250/0.8134102690, 0.03347/1.1087781250/0.8134102690, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL8 = new Material(0.03347/0.39806080e-1/9.0112327300/0.9962406530, 0.03347/0.39806080e-1/9.0112327300/0.9962406530, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
 
 
 
