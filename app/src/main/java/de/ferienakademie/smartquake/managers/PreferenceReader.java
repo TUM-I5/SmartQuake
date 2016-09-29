@@ -22,6 +22,16 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_modal_analysis", false);
     }
 
+
+    public static boolean useModalReduction() {
+        return sharedPref.getBoolean("pref_modal_reduction", false);
+    }
+
+    public static int getNumberOfModes() {
+        return Integer.parseInt(sharedPref.getString("pref_numberOfModes", "10"));
+
+    }
+
     public static boolean excitationVerticalDirection() {
         return sharedPref.getBoolean("pref_y_excitation", true);
     }
