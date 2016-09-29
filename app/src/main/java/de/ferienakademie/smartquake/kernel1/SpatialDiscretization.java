@@ -314,7 +314,7 @@ public class SpatialDiscretization {
         if (PreferenceReader.includeGravity()) {
 
             CommonOps.scale(-acceleration[0]- acceleration[2], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
-            CommonOps.scale(-acceleration[1]- acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
+            CommonOps.scale(-acceleration[1]+ acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
             CommonOps.mult(massRed, RedinfluenceVectorX_temp, LoadVectorRed);
 

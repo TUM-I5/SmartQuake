@@ -4,6 +4,7 @@ import android.util.Log;
 
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
@@ -41,18 +42,22 @@ public class LiveSimulation extends Simulation {
             slowStateCount++;
 
             // If the last speed state was normal and now we're slow, notify the listener
-            if (listener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 5) {
+            if (simulationProgressListener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 5) {
                 state = SimulationState.RUNNING_SLOW;
-                listener.onSimulationStateChanged(state);
+                simulationProgressListener.onSimulationStateChanged(state);
             }
             currentStep.stop();
         }
-        DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
     }
 
     @Override
     protected void shutdown() {
 
+    }
+
+    @Override
+    protected Structure getStructure() {
+        return spatialDiscretization.getStructure();
     }
 }
 

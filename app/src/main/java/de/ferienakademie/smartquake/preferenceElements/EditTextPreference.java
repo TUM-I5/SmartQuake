@@ -15,7 +15,13 @@ public class EditTextPreference extends android.preference.EditTextPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
-
+        double val = Double.parseDouble(this.getText());
+        double maxVal = 10;
+        if (val > maxVal) {
+            setText(Double.toString(maxVal));
+        } else {
+            setText(Double.toString(val));
+        }
         setSummary(getSummary());
     }
 

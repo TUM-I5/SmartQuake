@@ -50,8 +50,8 @@ public class ReplaySimulation extends Simulation {
 
     @Override
     protected void drawTick() {
-        //draw frame
-        DrawHelper.drawStructure(structure, view);
+        //draw frame, later
+//        DrawHelper.drawStructure(structure, view);
 
         double percentage = ((double)i/number_timeSteps)*100;
 
@@ -61,5 +61,10 @@ public class ReplaySimulation extends Simulation {
     @Override
     protected void shutdown() {
         activity.onNewReplayPercent(100);
+    }
+
+    @Override
+    protected Structure getStructure() {
+        return structure;
     }
 }

@@ -25,7 +25,8 @@ public class StructureFactory {
 
 
         Node bottom = new Node(4, 8);
-        Node up = new Node(4, 3);
+        Node up = new Node(4, 3,6.6754785010);
+        Material zeroDensity = Material.STEEL7;
 
         List<Integer> condof = new ArrayList<>();
 
@@ -34,11 +35,13 @@ public class StructureFactory {
         bottom.setSingleConstraint(2,true);
 
 
+
         Material testMaterial = Material.STEEL4;
 
-        Beam b = new Beam(bottom, up, testMaterial);
-
+        Beam b = new Beam(bottom, up, zeroDensity);
         Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
+
+        structure.setLumped(true);
         enumerateDOFs(structure);
         return structure;
     }
@@ -80,15 +83,15 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getTunedMassExample1() {
+    public static Structure getPresentation_EX_w_TMD() {
         double width = 8;
         double height = 8;
 
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL5;
-        Material zeroDensity = Material.STEEL6;
+        Material testMaterial = Material.STEEL8;
+        Material zeroDensity = Material.STEEL7;
 
 
         Node n1 = new Node(0, height, false);
@@ -96,7 +99,12 @@ public class StructureFactory {
         Node n3 = new Node(width, height - 2*half, false);
         Node n4 = new Node(0, height - 2*half, false);
         Node n5 = new Node(width/2, height - 2*half, false);
-        Node n6 = new Node(width/2, height - half, 50);
+
+
+        Node n6 = new Node(width/2, height - half+1, 6.6754785010);
+
+
+
 
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n5, testMaterial);
@@ -105,29 +113,28 @@ public class StructureFactory {
         Beam b6 = new Beam(n5, n6, zeroDensity);
 
 
-        structure.addNodes(n1, n2, n3, n4,n5);
-        structure.addBeams( b2, b3, b4,b5);
+        structure.addNodes(n1, n2, n3, n4,n5,n6);
+        structure.addBeams( b2, b3, b4,b5,b6);
 
         boolean[] con = new boolean[3];
         con[0]=true;
         con[1]=true;
         con[2]=true;
 
-        //n5.setHinge(true);  //This crashes the example
         n1.setConstraint(con);
         n2.setConstraint(con);
         enumerateDOFs(structure);
         return structure;
     }
 
-    public static Structure getTunedMassExample2() {    //Where's the Node Mass in this example?
+    public static Structure getPresentation_EX_wo_TMD() {    //Where's the Node Mass in this example?
         double width = 8;
         double height = 8;
 
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL5;
+        Material testMaterial = Material.STEEL8;
 
         Node n1 = new Node(0, height, false);
         Node n2 = new Node(width, height, false);
@@ -150,11 +157,47 @@ public class StructureFactory {
 
         n1.setConstraint(con);
         n2.setConstraint(con);
-        n5.setHinge(true);
+
+        structure.setLumped(true);
 
         enumerateDOFs(structure);
         return structure;
     }
+
+//conserved example
+//         public static Structure getTunedMassExample2() {
+//    double width = 8;
+//    double height = 8;
+//
+//    double half = width * 0.5;
+//
+//    Structure structure = new Structure();
+//    Material testMaterial = Material.STEEL5;
+//
+//    Node n1 = new Node(0, height, false);
+//    Node n2 = new Node(width, height, false);
+//    Node n3 = new Node(width, height - 2*half, false);
+//    Node n4 = new Node(0, height - 2*half, false);
+//    Node n5 = new Node(width/2, height - 2*half, false);
+//
+//    Beam b2 = new Beam(n2, n3, testMaterial);
+//    Beam b3 = new Beam(n3, n5, testMaterial);
+//    Beam b4 = new Beam(n5, n4, testMaterial);
+//    Beam b5 = new Beam(n4, n1, testMaterial);
+//
+//    structure.addNodes(n1, n2, n3, n4,n5);
+//    structure.addBeams( b2, b3, b4,b5);
+//
+//    boolean[] con = new boolean[3];
+//    con[0]=true;
+//    con[1]=true;
+//    con[2]=true;
+//
+//    n1.setConstraint(con);
+//    n2.setConstraint(con);
+//    enumerateDOFs(structure);
+//    return structure;
+//}
 
     public static Structure getHouseWithMassDamper() {
         double width = 8;
@@ -193,7 +236,239 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getDemo() {
+    public static Structure getDemoTMD() {
+
+        double f = 1; //Hz
+        double M = 2364160.95165*1/(f*f); //kg, for l1=1.5m, 12=2m and STEEL
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        double w = 4; //width
+        double h = 3; //height
+
+        Node n1 = new Node(0, 0);
+        Node n2 = new Node(0.5*w, 0);
+        Node n3 = new Node(w, 0);
+        Node n4 = new Node(0.5*w, 1.5, M);
+        Node n5 = new Node(w, 4);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n2, n3, testMaterial);
+        Beam b3 = new Beam(n2, n4, testMaterial);
+        Beam b4 = new Beam(n5, n3, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5);
+        structure.addBeams(b1, b2, b3, b4);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n3.setConstraint(con);
+        n5.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    /**
+     * This structure is meant to be the first demo of an oscillating mass.
+     * Choose Material STEELDEMO so that the relationship M*l=1/f^2 holds true
+     * @return
+     */
+    public static Structure getPresOne() {
+
+        double f = 1; //Hz
+        double l1 = 1;
+        double l2 = 1;
+        double M1 = 1/(f*f*l1);
+        double M2 = 1;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material demoMaterial = Material.STEELDEMO;
+
+        Node n1 = new Node(0, 0);
+        Node n2 = new Node(l1, 0, M1);
+        //Node n3 = new Node(l2+l1, 0);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial);
+        //Beam b2 = new Beam(n2, n3, demoMaterial);
+
+        structure.addNodes(n1, n2);
+        structure.addBeams(b1);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+        n1.setConstraint(con1);
+        n2.setConstraint(con2);
+        //n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    /**
+     * This structure is meant to be the second demo of an oscillating mass.
+     * Choose Material STEELDEMO so that the relationship M*l=1/f^2 holds true.
+     * Added a tuned mass damper
+     * @return
+     */
+    public static Structure getPresTwo() {
+
+        double f = 1; //Hz
+        double l1 = 1;
+        double l2 = 2;
+        double M1 = 1/(f*f*l1); //for length oscillation
+        double M2 = 1/(f*f*l2);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material demoMaterial = Material.STEELDEMO;
+
+        Node n1 = new Node(0, 0);
+        Node n2 = new Node(l1, 0, M1);
+        Node n3 = new Node(l2+l1, 0, M2);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial);
+        Beam b2 = new Beam(n2, n3, demoMaterial);
+
+        structure.addNodes(n1, n2, n3);
+        structure.addBeams(b1, b2);
+
+        n1.setConstraint(con1);
+        n2.setConstraint(con2);
+        n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    /**
+     * This structure is meant to be the fourth demo of an oscillating mass.
+     * Choose Material STEELDEMO so that the relationship M2*l2=1/f^2 holds true.
+     * Material STEELDEMO2 is chosen so that the relationship M1*l1^3=1/f^2 holds true.
+     * @return
+     */
+    public static Structure getPresThree() {
+
+        double f = 1; //Hz
+        double l1 = 2;
+        //double l2 = 1;
+        double M1 = 1/(f*f*l1*l1*l1);
+        //double M2 = 1/(f*f*l2);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        //Material demoMaterial = Material.STEELDEMO;
+        Material demoMaterial2 = Material.STEELDEMO2;
+
+
+
+
+        Node n1 = new Node(0, l1);
+        Node n2 = new Node(0, 0, M1);
+        //Node n3 = new Node(l2, 0, M2);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial2);
+        //Beam b2 = new Beam(n2, n3, demoMaterial);
+
+        structure.addNodes(n1, n2);
+        structure.addBeams(b1);
+
+        n1.setConstraint(con1);
+        n2.setConstraint(con2);
+        //n2.setHinge(true);
+        //n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    /**
+     * This structure is meant to be the fourth demo of an oscillating mass.
+     * Choose Material STEELDEMO so that the relationship M2*l2=1/f^2 holds true.
+     * Material STEELDEMO2 is chosen so that the relationship M1*l1^3=1/f^2 holds true.
+     * Added a tuned mass damper
+     * @return
+     */
+    public static Structure getPresFour() {
+
+        double f = 1; //Hz
+        double l1 = 2;
+        double l2 = 1;
+        double M1 = 1/(f*f*l1*l1*l1); //for bending oscillation
+        double M2 = 1/(f*f*l1*l1*l1);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material demoMaterial = Material.STEELDEMO;
+        Material demoMaterial2 = Material.STEELDEMO2;
+
+
+
+
+        Node n1 = new Node(0, l1);
+        Node n2 = new Node(0, 0, M1);
+        Node n3 = new Node(0, l2, M2);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial2);
+        Beam b2 = new Beam(n2, n3, demoMaterial2);
+
+        structure.addNodes(n1, n2, n3);
+        structure.addBeams(b1, b2);
+
+        n1.setConstraint(con1);
+        //n2.setConstraint(con2);
+        //n2.setHinge(true);
+        n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    public static Structure getPresFive() {
 
         boolean lumped = true; // Make it false for consistent mass matrices!
 
@@ -237,10 +512,7 @@ public class StructureFactory {
 
     }
 
-    public static Structure getDemoTMD() {
-
-        double f = 1; //Hz
-        double M = 2364160.95165*1/(f*f); //kg, for l1=1.5m, 12=2m and STEEL
+    public static Structure getPresSix() {
 
         boolean lumped = true; // Make it false for consistent mass matrices!
 
@@ -250,27 +522,35 @@ public class StructureFactory {
         double w = 4; //width
         double h = 3; //height
 
-        Node n1 = new Node(0, 0);
-        Node n2 = new Node(0.5*w, 0);
-        Node n3 = new Node(w, 0);
-        Node n4 = new Node(0.5*w, 1.5, M);
-        Node n5 = new Node(w, 4);
+        Node n1 = new Node(0, 3*h);
+        Node n2 = new Node(w, 3*h);
+        Node n3 = new Node(0, 2*h);
+        Node n4 = new Node(w, 2*h);
+        Node n5 = new Node(0, h);
+        Node n6 = new Node(w, h);
+        Node n7 = new Node(0, 0);
+        Node n8 = new Node(w, 0);
 
         Beam b1 = new Beam(n1, n2, testMaterial);
-        Beam b2 = new Beam(n2, n3, testMaterial);
-        Beam b3 = new Beam(n2, n4, testMaterial);
-        Beam b4 = new Beam(n5, n3, testMaterial);
+        Beam b2 = new Beam(n3, n4, testMaterial);
+        Beam b3 = new Beam(n5, n6, testMaterial);
+        Beam b4 = new Beam(n7, n8, testMaterial);
+        Beam b5 = new Beam(n1, n3, testMaterial);
+        Beam b6 = new Beam(n2, n4, testMaterial);
+        Beam b7 = new Beam(n3, n5, testMaterial);
+        Beam b8 = new Beam(n4, n6, testMaterial);
+        Beam b9 = new Beam(n5, n7, testMaterial);
+        Beam b10 = new Beam(n6, n8, testMaterial);
 
-        structure.addNodes(n1, n2, n3, n4, n5);
-        structure.addBeams(b1, b2, b3, b4);
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10);
 
         boolean[] con = new boolean[3];
         con[0]=true;
         con[1]=true;
         con[2]=true;
         n1.setConstraint(con);
-        n3.setConstraint(con);
-        n5.setConstraint(con);
+        n2.setConstraint(con);
         enumerateDOFs(structure);
         return structure;
 
@@ -1313,9 +1593,9 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-        Node n1 = new Node(5, 2, false);
-        Node n2 = new Node(3, 1, false);
-        Node n3 = new Node(3, 4, false);
+        Node n1 = new Node(1, 2.0, false);
+        Node n2 = new Node(0.0, 4.0, false);
+        Node n3 = new Node(3.0, 4.0, false);
 
         Beam b1 = new Beam(n1, n2, testMaterial);
         Beam b2 = new Beam(n2, n3, testMaterial);
@@ -1328,7 +1608,46 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getStructure(Context context, String structureName) {
+    public static Structure getStructure(Context context, int structureId, String structureName) {
+        if (structureId == 0) {
+            return StructureFactory.cantileverBeam();
+        } else if (structureId == 1) {
+            return StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            return StructureFactory.getCraneBottom();
+        } else if (structureId == 3) {
+            return StructureFactory.getBetterEiffelTower();
+        } else if (structureId == 4) {
+            return StructureFactory.getEmpireState();
+        } else if (structureId == 5) {
+            return StructureFactory.getGoldenGate();
+        } else if (structureId == 6) {
+            return StructureFactory.getWeirdBridge();
+        } else if (structureId == 7) {
+            return StructureFactory.getHousingBlock();
+        } else if (structureId == 8) {
+            return StructureFactory.getTrumpTower();
+        } else if (structureId == 9) {
+            return StructureFactory.getTVtower();
+        } else if (structureId == 10) {
+            return StructureFactory.getTaipeh();
+        } else if (structureId == 11) {
+            return StructureFactory.getHouseWithMassDamper();
+        } else if (structureId == 12) {
+            return StructureFactory.getOneWTC();
+        } else if (structureId == 13) {
+            return StructureFactory.getBurjKhalifa();
+        }  else if (structureId == 14) {
+            return StructureFactory.getPresentation_EX_w_TMD();
+        } else if (structureId == 15) {
+            return StructureFactory.getPresentation_EX_wo_TMD();
+        } else if (structureId == 16) {
+            return StructureFactory.getSimpleElephant();
+        }   else if (structureId == 17) {
+            return StructureFactory.getEierlaufen();
+        } else if (structureId == 18) {
+            return StructureFactory.getDemoTMD();
+        }
 
         FileInputStream fileInputStream = null;
 
