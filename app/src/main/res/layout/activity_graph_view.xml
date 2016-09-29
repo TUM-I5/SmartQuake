@@ -18,13 +18,13 @@
         <de.ferienakademie.smartquake.view.CanvasView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/nodeVisualizationView"
+            android:id="@+id/nodeSnapshotView"
             android:layout_weight="3" />
 
         <de.ferienakademie.smartquake.view.CanvasView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/modelNodeChoiceView"
+            android:id="@+id/modelSnapshotView"
             android:layout_weight="2" />
 
     </LinearLayout>

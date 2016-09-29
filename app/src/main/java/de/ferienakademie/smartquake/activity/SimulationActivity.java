@@ -289,6 +289,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void onStartButtonClicked() {
+        // TODO: currently resets the model somehow
         mode = SimulationMode.LIVE;
         startSimulation(new SensorAccelerationProvider(mSensorManager));
     }
@@ -479,7 +480,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onNodePositionChosen(double internalX, double internalY, double scale) {
         List<Node> nodes = structure.getNodes();
-        double minDist = 100 / scale;
+        double minDist = 50 / scale;
 
         for (int i = 0; i < nodes.size(); ++i) {
             Node thisNode = nodes.get(i);

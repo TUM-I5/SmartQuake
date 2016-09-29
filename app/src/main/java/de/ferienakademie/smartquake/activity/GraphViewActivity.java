@@ -3,7 +3,6 @@ package de.ferienakademie.smartquake.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,7 +13,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 
 import java.util.ArrayList;
@@ -25,21 +26,23 @@ import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
+import de.ferienakademie.smartquake.view.DrawHelper;
 
-public class GraphViewActivity extends AppCompatActivity {
+public class GraphViewActivity extends AppCompatActivity implements OnChartValueSelectedListener {
     // should be enough...
     private static int[] graphColors = {Color.RED, Color.BLUE, Color.GRAY, Color.YELLOW, Color.GREEN, Color.BLACK, Color.CYAN, Color.MAGENTA};
 
     private Structure structure;
     private Node selectedNode;
+    private int selectedNodeId;
 
     private LineChart nodeDataChart; // can do just about anything
     private List<Pair<ILineDataSet, Boolean>> sets;
     // LineData requires strings for some reason
     private List<String> graphXPoints;
 
-    private CanvasView nodeView;
-    private CanvasView modelView;
+    private CanvasView nodeSnapshotView;
+    private CanvasView modelSnapshotView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +50,12 @@ public class GraphViewActivity extends AppCompatActivity {
 
         Bundle rcvd = getIntent().getExtras();
         structure = SimulationActivity.getStructure();
-        int selectedNodeId = rcvd.getInt("initialNodeId");
+        selectedNodeId = rcvd.getInt("initialNodeId");
         selectedNode = structure.getNodes().get(selectedNodeId);
 
         setContentView(R.layout.activity_graph_view);
+        modelSnapshotView = (CanvasView) findViewById(R.id.modelSnapshotView);
+        nodeSnapshotView = (CanvasView) findViewById(R.id.nodeSnapshotView);
         setUpChart();
     }
 
@@ -59,6 +64,7 @@ public class GraphViewActivity extends AppCompatActivity {
         nodeDataChart.setBackgroundColor(Color.WHITE);
         nodeDataChart.setDescription("Node displacements");
         nodeDataChart.setPinchZoom(false);
+        nodeDataChart.setOnChartValueSelectedListener(this);
 
         sets = new ArrayList<>();
         graphXPoints = new ArrayList<>();
@@ -120,7 +126,6 @@ public class GraphViewActivity extends AppCompatActivity {
             }
         }
         LineData displacementData = new LineData(graphXPoints, enabledSets);
-        int numGraphXPoints = graphXPoints.size();
         nodeDataChart.setData(displacementData);
         nodeDataChart.invalidate();
     }
@@ -180,7 +185,7 @@ public class GraphViewActivity extends AppCompatActivity {
                 break;
         }
 
-        if (0 <= id && id < selectedNode.getDOF().size() - 2) {
+        if (0 <= id && id < selectedNode.getDOF().size()) {
             if (item.isChecked()) {
                 item.setChecked(false);
             } else {
@@ -191,5 +196,18 @@ public class GraphViewActivity extends AppCompatActivity {
 
         updateDataItemVisibility();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onValueSelected(Entry entry, int i, Highlight highlight) {
+        for (Node n: structure.getNodes()) {
+            n.recallDisplacementOfStep(entry.getXIndex());
+        }
+        DrawHelper.drawStructure(structure, modelSnapshotView, selectedNodeId);
+    }
+
+    @Override
+    public void onNothingSelected() {
+
     }
 }
