@@ -46,6 +46,7 @@
             android:key="pref_numberOfModes"
             android:numeric="integer"
             android:title="@string/modes_slider_title"
+            android:dependency="pref_modal_reduction"
             android:defaultValue="10" />
 
 

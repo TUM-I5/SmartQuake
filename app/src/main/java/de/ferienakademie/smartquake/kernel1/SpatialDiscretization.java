@@ -415,6 +415,9 @@ public class SpatialDiscretization {
         if(PreferenceReader.useModalReduction()){
             Log.i("Reduction:",""+numberOfModes);
 
+            if (numberOfModes > getNumberOfUnconstraintDOF())
+                numberOfModes = getNumberOfUnconstraintDOF();
+
             eigenvalues = new double[numberOfModes];
             eigenvectorsmatrix = new DenseMatrix64F(getNumberOfUnconstraintDOF(), numberOfModes);
             for (int i = 0; i < numberOfModes; i++) {
