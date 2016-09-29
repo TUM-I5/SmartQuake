@@ -15,12 +15,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.util.FileMatching;
 
 public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
@@ -30,6 +31,7 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
 
     private int structureId;
     private String structureName;
+    private Pattern earthquakeFileNamePattern;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,14 +138,23 @@ public class ChooseEarthQuakeDataActivity extends AppCompatActivity {
         values.add("Sensors");
         values.add("Sinusodial");
         String[] fileNames = getFilesDir().list();
-        Pattern pattern = Pattern.compile("[ _A-Za-z0-9-]+\\.earthquake");
-        Matcher matcher;
 
         for (String str : fileNames) {
-            matcher = pattern.matcher(str);
-            if (matcher.matches()) values.add(str.substring(0, str.length() - 11));
+            if (FileMatching.matchesEarthQuakeFileName(str)) {
+                values.add(str.substring(0, str.length() - 11));
+            }
         }
 
+
+
         adapter.notifyDataSetChanged();
+    }
+
+    private String[] getEarthquakeFilesFromAssets() throws IOException {
+        String[] assetFiles = getAssets().list("");
+
+        // todo filter
+
+        return assetFiles;
     }
 }
