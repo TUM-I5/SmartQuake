@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class EarthquakeDataStartActivity extends AppCompatActivity {
         values = new ArrayList<>();
 
         ListView lv = (ListView) findViewById(R.id.list_view_eq_data);
-        registerForContextMenu( lv);
+        registerForContextMenu(lv);
         adapter = new ArrayAdapter<String>(this, R.layout.list_item_eq_data, R.id.list_item_eq_data_text, values);
         setUpValues();
         lv.setAdapter(adapter);
@@ -42,7 +44,16 @@ public class EarthquakeDataStartActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //onItemSelected(position);
-                Log.v("Adapter","Just do nothing");
+                if(!values.get(position).equals("Sensors") && !values.get(position).equals("Sinusodial") && !values.get(position).equals("Last")){
+                Intent intent = new Intent(EarthquakeDataStartActivity.this, AccelerationDataActivity.class);
+                intent.putExtra("eqDataFile", values.get(position));
+                //setResult(Activity.RESULT_OK, intent);
+                //finish();
+                startActivity(intent);}
+                else{
+                    Toast.makeText(getApplicationContext(),
+                            "Sorry, no acceleration data", Toast.LENGTH_SHORT).show();
+                }
                 mPosition = position;
             }
         });
@@ -53,75 +64,6 @@ public class EarthquakeDataStartActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
-
-    /**@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.start, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onItemSelected(Integer dataSourceId) {
-        Intent sel = new Intent();
-        sel.putExtra("eqDataFile", values.get(dataSourceId));
-        setResult(Activity.RESULT_OK, sel);
-        finish();
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_context_quakedata, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int position = info.position;
-        switch(item.getItemId()) {
-            case R.id.delete_quakedata:
-                delete_action(position);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
-    public void delete_action(int position){
-        String name_of_file  = values.get(position) + ".earthquake";
-
-        if (position > 1){
-            File file = new File(getFilesDir().getAbsoluteFile() + "/" + name_of_file);
-            boolean  deleted = false;
-            if(file.exists()) {
-                deleted = file.delete();
-                setUpValues();
-            }
-            if(!deleted) {
-                Log.e("Unable to delete file: " + file.getAbsolutePath(), "IOException");
-            }
-        }
-        else {
-            Toast.makeText(getApplicationContext(),
-                    "You are not allowed to delete this data", Toast.LENGTH_SHORT).show();
-        }
-
-    } */
 
     private void setUpValues() {
         values.clear();
