@@ -4,6 +4,7 @@ package de.ferienakademie.smartquake.view;
 
         import java.util.ArrayList;
         import java.util.List;
+        import java.util.Vector;
 
         import de.ferienakademie.smartquake.model.Beam;
         import de.ferienakademie.smartquake.model.Node;
@@ -14,8 +15,8 @@ package de.ferienakademie.smartquake.view;
  */
 public class DrawHelper {
 
-    public static List<Node> snapNodes = new ArrayList<>();
-    public static List<Beam> snapBeams = new ArrayList<>();
+    public static List<Node> snapNodes = new Vector<>();
+    public static List<Beam> snapBeams = new Vector<>();
     public static double[] boundingBox = new double[4];
 
     public static synchronized void drawStructure(Structure structure, View view1) {
@@ -33,7 +34,7 @@ public class DrawHelper {
         view1.postInvalidate();
     }
 
-    public static void clearCanvas(View view1) {
+    public synchronized static void clearCanvas(View view1) {
         snapBeams.clear();
         snapNodes.clear();
         if (view1 instanceof CanvasView) {
@@ -47,7 +48,7 @@ public class DrawHelper {
         view1.postInvalidate();
     }
 
-    private static void snapShot(List<Node> nodes, List<Beam> beams) {
+    private synchronized static void snapShot(List<Node> nodes, List<Beam> beams) {
         snapBeams.clear();
         snapNodes.clear();
         snapBeams.addAll(beams);

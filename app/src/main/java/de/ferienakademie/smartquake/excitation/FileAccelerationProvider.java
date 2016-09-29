@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
+
 /**
  * Created by David Schneller on 25.09.2016.
  */

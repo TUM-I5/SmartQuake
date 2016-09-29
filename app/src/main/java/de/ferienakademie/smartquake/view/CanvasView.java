@@ -191,60 +191,62 @@ public class CanvasView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        isBeingDrawn = true;
-        super.onDraw(canvas);
+        synchronized (this) {
+            isBeingDrawn = true;
+            super.onDraw(canvas);
 
-        RULER_PAINT.setStrokeWidth(canvas.getWidth() / 144);
-        RULER_PAINT.setTextSize(canvas.getHeight() / 38);
+            RULER_PAINT.setStrokeWidth(canvas.getWidth() / 144);
+            RULER_PAINT.setTextSize(canvas.getHeight() / 38);
 
-        double[] boundingBox = DrawHelper.boundingBox;
-        double modelXSize = boundingBox[1] - boundingBox[0];
-        double modelYSize = boundingBox[3] - boundingBox[2];
-        // special case for single beam
-        if (modelXSize == 0){
-            modelXSize = 8;
+            double[] boundingBox = DrawHelper.boundingBox;
+            double modelXSize = boundingBox[1] - boundingBox[0];
+            double modelYSize = boundingBox[3] - boundingBox[2];
+            // special case for single beam
+            if (modelXSize == 0) {
+                modelXSize = 8;
+            }
+            if (modelYSize == 0) {
+                modelYSize = 8;
+            }
+
+            double widthFitScaling = (1 - 2 * SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth() / modelXSize;
+            double heightFitScaling = (1 - TOP_MARGIN_SCREEN_FRACTION) * canvas.getHeight() / modelYSize;
+
+            if (widthFitScaling < heightFitScaling) {
+                modelScaling = widthFitScaling;
+                drawRuler(modelXSize, canvas);
+            } else {
+                modelScaling = heightFitScaling;
+                drawRuler(modelYSize, canvas);
+            }
+
+            screenCenteringOffsets[0] = 0.5 * (canvas.getWidth() - modelXSize * modelScaling);
+            screenCenteringOffsets[1] = canvas.getHeight() - modelYSize * modelScaling;
+            beamUnitSize = canvas.getWidth() * BEAM_UNIT_SCREEN_FRACTION;
+
+            if (boundingBox[0] < 0) {
+                negativeMinCorrections[0] = -boundingBox[0];
+            } else {
+                negativeMinCorrections[0] = 0;
+            }
+
+            if (boundingBox[2] < 0) {
+                negativeMinCorrections[1] = -boundingBox[1];
+            } else {
+                negativeMinCorrections[1] = 0;
+            }
+
+            BEAM_PAINT.setStyle(Paint.Style.STROKE);
+            for (Beam beam : DrawHelper.snapBeams) {
+                drawBeam(beam, canvas);
+            }
+            BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
+            for (Node node : DrawHelper.snapNodes) {
+                drawNode(node, canvas);
+            }
+
+            isBeingDrawn = false;
         }
-        if (modelYSize == 0) {
-            modelYSize = 8;
-        }
-
-        double widthFitScaling = (1 - 2 * SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth() / modelXSize;
-        double heightFitScaling = (1 - TOP_MARGIN_SCREEN_FRACTION) * canvas.getHeight() / modelYSize;
-
-        if (widthFitScaling < heightFitScaling) {
-            modelScaling = widthFitScaling;
-            drawRuler(modelXSize, canvas);
-        } else {
-            modelScaling = heightFitScaling;
-            drawRuler(modelYSize, canvas);
-        }
-
-        screenCenteringOffsets[0] = 0.5 * (canvas.getWidth() - modelXSize * modelScaling);
-        screenCenteringOffsets[1] = canvas.getHeight() - modelYSize * modelScaling;
-        beamUnitSize = canvas.getWidth() * BEAM_UNIT_SCREEN_FRACTION;
-
-        if (boundingBox[0] < 0) {
-            negativeMinCorrections[0] = -boundingBox[0];
-        } else {
-            negativeMinCorrections[0] = 0;
-        }
-
-        if (boundingBox[2] < 0) {
-            negativeMinCorrections[1] = -boundingBox[1];
-        } else {
-            negativeMinCorrections[1] = 0;
-        }
-
-        BEAM_PAINT.setStyle(Paint.Style.STROKE);
-        for (Beam beam : DrawHelper.snapBeams) {
-            drawBeam(beam, canvas);
-        }
-        BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
-        for (Node node : DrawHelper.snapNodes) {
-            drawNode(node, canvas);
-        }
-
-        isBeingDrawn = false;
     }
 
     private void drawRuler(double meterWidth, Canvas canvas) {

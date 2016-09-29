@@ -58,12 +58,12 @@ public class Simulation implements SimulationStepListener{
             @Override
             public void run() {
                 kernel2.prepareSimulation();
-                timer.schedule(new TimerTask() {
+                timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
                         TimeIntegration.SimulationStep currentStep = kernel2.performSimulationStep(thisSim);
                         }
-                }, 0, 29);
+                }, 0, 30);
                 /*
                 TimeIntegration.SimulationStep currentStep;
                 while(true) {
