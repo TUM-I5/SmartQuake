@@ -35,6 +35,13 @@
             android:summaryOff="@string/pref_modal_analysis_summary_Off"
             android:defaultValue="false"
             />
+        <SwitchPreference
+            android:key="pref_y_excitation"
+            android:title="@string/pref_y_excitation_title"
+            android:summaryOn="@string/pref_y_excitation_summary_On"
+            android:summaryOff="@string/pref_y_excitation_summary_Off"
+            android:defaultValue="true"
+            />
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/loadVector_slider_default"
             android:dialogMessage="@string/loadVector_slider_message"
@@ -61,7 +68,8 @@
         <SwitchPreference
             android:key="pref_use_gravity"
             android:title="@string/pref_gravity_title"
-            android:summary="@string/pref_gravity_summary"
+            android:summaryOn="@string/pref_gravity_summaryOn"
+            android:summaryOff="@string/pref_gravity_summaryOff"
             android:defaultValue="false"
             />
 

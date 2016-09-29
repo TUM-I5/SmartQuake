@@ -26,7 +26,8 @@ public class Beam {
     private double cos_theta;
     private double theta;
 
-    private double[] displacement;
+    // DO NOT DELETE - PLZ YURIY
+    private double[] displacement = new double[6];
 
     private boolean hasBeenOverloaded = false;
 
@@ -144,11 +145,11 @@ public class Beam {
         double alpha = this.material.getAlpha();
         double mass_per_length = material.getMassPerLength();
 
-        elementMassMatrix.set(0, 0, (0.5 * mass_per_length * length)+ startNode.getNodeMass());
-        elementMassMatrix.set(1, 1, (0.5 * mass_per_length * length)+ startNode.getNodeMass());
+        elementMassMatrix.set(0, 0, (0.5 * mass_per_length * length));
+        elementMassMatrix.set(1, 1, (0.5 * mass_per_length * length));
         elementMassMatrix.set(2, 2, alpha * mass_per_length * length * length * length);
-        elementMassMatrix.set(3, 3, (0.5 * mass_per_length * length)+ endNode.getNodeMass());
-        elementMassMatrix.set(4, 4, (0.5 * mass_per_length * length)+ endNode.getNodeMass());
+        elementMassMatrix.set(3, 3, (0.5 * mass_per_length * length));
+        elementMassMatrix.set(4, 4, (0.5 * mass_per_length * length));
         elementMassMatrix.set(5, 5, alpha * mass_per_length * length * length * length);
 
     }

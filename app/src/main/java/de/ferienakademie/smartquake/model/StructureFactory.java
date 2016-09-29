@@ -97,7 +97,11 @@ public class StructureFactory {
         Node n3 = new Node(width, height - 2*half, false);
         Node n4 = new Node(0, height - 2*half, false);
         Node n5 = new Node(width/2, height - 2*half, false);
+
         Node n6 = new Node(width/2, height - half+1, 41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220);
+
+
+        //Master original Node n6 = new Node(width/2, height - half, 50);
 
 
         Beam b2 = new Beam(n2, n3, testMaterial);
@@ -115,13 +119,14 @@ public class StructureFactory {
         con[1]=true;
         con[2]=true;
 
+        //n5.setHinge(true);  //This crashes the example
         n1.setConstraint(con);
         n2.setConstraint(con);
         enumerateDOFs(structure);
         return structure;
     }
 
-    public static Structure getTunedMassExample2() {
+    public static Structure getTunedMassExample2() {    //Where's the Node Mass in this example?
         double width = 8;
         double height = 8;
 
@@ -151,7 +156,9 @@ public class StructureFactory {
 
         n1.setConstraint(con);
         n2.setConstraint(con);
+
         structure.setLumped(true);
+
         enumerateDOFs(structure);
         return structure;
     }
@@ -198,13 +205,13 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
 
-        Node n1 = new Node(0, height);
-        Node n2 = new Node(width, height);
-        Node n3 = new Node(width, height/2);
-        Node n4 = new Node(0, height/2);
-        Node n5 = new Node(width/2, 0,true);
-        Node n6 = new Node(width/2, height*1/4,10);
-        n6.setNodeMass(10000000);
+        Node n1 = new Node(0, height,false);
+        Node n2 = new Node(width, height,false);
+        Node n3 = new Node(width, height/2,false);
+        Node n4 = new Node(0, height/2,false);
+        Node n5 = new Node(width/2, 0,false);
+        Node n6 = new Node(width/2, height*1/4,100);
+
         Beam b2 = new Beam(n2, n3, testMaterial);
         Beam b3 = new Beam(n3, n4, testMaterial);
         Beam b4 = new Beam(n4, n1, testMaterial);
@@ -219,6 +226,8 @@ public class StructureFactory {
         con[0]=true;
         con[1]=true;
         con[2]=true;
+
+
 
         n1.setConstraint(con);
         n2.setConstraint(con);

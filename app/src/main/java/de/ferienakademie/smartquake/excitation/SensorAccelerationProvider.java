@@ -7,7 +7,10 @@ import android.hardware.SensorManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.io.Reader;
 import java.util.ArrayList;
+
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Created by David Schneller on 25.09.2016.
@@ -66,10 +69,8 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
 
     @Override
     public AccelData getAccelerationMeasurement(){
-        AccelData data = super.getAccelerationMeasurement();
-        if(gravityActive) {
-            gravityProvider.getGravity(data);
-        }
+        AccelData data = readings.get(readings.size()-1);
+        modifyData(data);
         notifyNewAccelData(data);
         return data;
     }
@@ -77,9 +78,8 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     @Override
     public AccelData getAccelerationMeasurement(double time){
         AccelData data = super.getAccelerationMeasurement(time);
-        if(gravityActive) {
-            gravityProvider.getGravity(data);
-        }
+        gravityProvider.getGravity(data);
+        modifyData(data);
         notifyNewAccelData(data);
         return data;
     }
@@ -100,13 +100,5 @@ public class SensorAccelerationProvider extends StoredAccelerationProvider imple
     {
         sensorManager.unregisterListener(this);
         gravityProvider.setInactive();
-    }
-
-    /**
-     *
-     * @param active activates gravity if true
-     */
-    public void setGravityActive(boolean active){
-            gravityActive = true;
     }
 }
