@@ -53,7 +53,7 @@ public class PreferenceReader {
     }
 
     public static boolean showRawSensorData() {
-        return sharedPref.getBoolean("pref_show_raw_sensor_data", false);
+        return sharedPref.getBoolean("pref_show_raw_sensor_data", true);
     }
 
     public static boolean showColors()
