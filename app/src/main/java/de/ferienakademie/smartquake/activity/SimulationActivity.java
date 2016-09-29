@@ -27,7 +27,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import de.ferienakademie.smartquake.LiveSimulation;
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.ReplaySimulation;
 import de.ferienakademie.smartquake.Simulation;
 import de.ferienakademie.smartquake.excitation.AccelData;
 import de.ferienakademie.smartquake.excitation.AccelerationProvider;
@@ -69,7 +71,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private TextView tvSensorDataX;
     private TextView tvSensorDataY;
     private LinearLayout layoutSensorDebug;
-    private ReplayDisplacementRunnable replayDisplacementRunnable;
 
     private int structureId;
     private String structureName;
@@ -325,6 +326,11 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
+        if (simulation != null)
+        {
+            simulation.stop();
+        }
+
         if (mCurrentAccelerationProvider != null){
             mCurrentAccelerationProvider.removeObserver(this);
             mCurrentAccelerationProvider.setInactive();
@@ -341,7 +347,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
-        simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
+        simulation = new LiveSimulation(spatialDiscretization, timeIntegration, canvasView);
 
         simulation.start();
         simulation.setListener(this);
@@ -353,10 +359,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         Log.d("STOPSIM STATE", mode.name());
 
         mode = SimulationMode.READY;
-
-        if (replayDisplacementRunnable != null && replayDisplacementRunnable.isRunning) {
-            replayDisplacementRunnable.isRunning = false;
-        }
 
         replaySeekBar.setVisibility(View.GONE);
         replayrunningLabel.setVisibility(View.GONE);
@@ -508,9 +510,10 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         setStopButton();
 
         //This tells us how many time steps were calculated
-        replayDisplacementRunnable = new ReplayDisplacementRunnable();
+        simulation = new ReplaySimulation(structure, this, canvasView);
 
-        new Thread(replayDisplacementRunnable).start();
+        simulation.start();
+        simulation.setListener(this);
     }
 
     // TODO: should this be part of Simulation too?
@@ -519,54 +522,4 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         LIVE,
         REPLAY
     }
-
-    private class ReplayDisplacementRunnable implements Runnable {
-        public boolean isRunning = true;
-
-        @Override
-        public void run() {
-
-            int number_timeSteps = structure.getNodes().get(0).getLengthOfHistory();
-
-            for (Beam beam : structure.getBeams())
-            {
-                beam.resetBeam();
-            }
-
-            //we loop over all frames
-            for (int i = 0; i < number_timeSteps; i++) {
-
-                if (!isRunning) break;
-
-                //loop over all nodes to update positions
-                structure.recallDisplacementOfStep(i);
-
-
-                try {
-                    Thread.sleep(30);
-                } catch (InterruptedException ex) {
-                    Log.e("replayDisplacement", ex.getMessage());
-                }
-
-                while(canvasView.isBeingDrawn) {
-                    try {
-                        Thread.sleep(30);
-                    } catch (InterruptedException ex) {
-                        Log.e("replayDisplacement", ex.getMessage());
-                    }
-                }
-
-                //draw frame
-                DrawHelper.drawStructure(structure, canvasView);
-
-                double percentage = ((double)i/number_timeSteps)*100;
-
-                onNewReplayPercent(percentage);
-            }
-
-            onNewReplayPercent(100);
-            mode = SimulationMode.LIVE;
-        }
-    }
-
 }
