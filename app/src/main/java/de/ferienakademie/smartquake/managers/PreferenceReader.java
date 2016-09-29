@@ -48,7 +48,7 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_use_lumped", false);
     }
 
-    public static boolean groundDisplcements() {
+    public static boolean groundDisplacements() {
         return sharedPref.getBoolean("pref_show_ground_displacements", false);
     }
 
