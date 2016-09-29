@@ -29,7 +29,6 @@ public class PreferenceReader {
 
     public static int getNumberOfModes() {
         return Integer.parseInt(sharedPref.getString("pref_numberOfModes", "10"));
-
     }
 
     public static boolean excitationVerticalDirection() {
