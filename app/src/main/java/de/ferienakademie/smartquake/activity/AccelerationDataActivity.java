@@ -45,7 +45,13 @@ public class AccelerationDataActivity extends AppCompatActivity {
         viewport.setMinY(0);
         viewport.setMaxY(10);
         viewport.setScrollable(true);
+        graph.setTitle(equationData);
         graph.addSeries(series);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

@@ -7,8 +7,6 @@
     <com.jjoe64.graphview.GraphView
         android:layout_width="match_parent"
         android:layout_height="200dip"
-        app:seriesType="line"
-        app:seriesColor="#ee0000"
         android:id="@+id/graph" />
 
 </LinearLayout>
