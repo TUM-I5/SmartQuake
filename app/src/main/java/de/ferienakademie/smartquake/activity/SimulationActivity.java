@@ -189,8 +189,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private void createStructure(int structureId, String structureName) {
         if (structureId == 0) {
             structure = StructureFactory.cantileverBeam();
-        } /*
-        else if (structureId == 1) {
+        } else if (structureId == 1) {
             structure = StructureFactory.getSimpleHouse();
         } else if (structureId == 2) {
             structure = StructureFactory.getCraneBottom();
@@ -226,7 +225,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 structure = StructureFactory.getEierlaufen();
         } else if (structureId == 2) {
             structure = StructureFactory.getDemoTMD();
-        }*/
+        }
         else if (structureId == 1) {
             structure = StructureFactory.getPresOne();
         }
