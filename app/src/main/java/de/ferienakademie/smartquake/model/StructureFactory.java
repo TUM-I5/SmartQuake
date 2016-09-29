@@ -329,7 +329,7 @@ public class StructureFactory {
         double f = 1; //Hz
         double l1 = 1;
         double l2 = 2;
-        double M1 = 1/(f*f*l1);
+        double M1 = 1/(f*f*l1); //for length oscillation
         double M2 = 1/(f*f*l2);
 
         boolean[] con1 = new boolean[3];
@@ -427,8 +427,8 @@ public class StructureFactory {
         double f = 1; //Hz
         double l1 = 2;
         double l2 = 1;
-        double M1 = 1/(f*f*l1*l1*l1);
-        double M2 = 1/(f*f*l2);
+        double M1 = 1/(f*f*l1*l1*l1); //for bending oscillation
+        double M2 = 1/(f*f*l1*l1*l1);
 
         boolean[] con1 = new boolean[3];
         con1[0]=true;
@@ -450,18 +450,66 @@ public class StructureFactory {
 
         Node n1 = new Node(0, l1);
         Node n2 = new Node(0, 0, M1);
-        Node n3 = new Node(l2, 0, M2);
+        Node n3 = new Node(0, l2, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial2);
-        Beam b2 = new Beam(n2, n3, demoMaterial);
+        Beam b2 = new Beam(n2, n3, demoMaterial2);
 
         structure.addNodes(n1, n2, n3);
         structure.addBeams(b1, b2);
 
         n1.setConstraint(con1);
-        n2.setConstraint(con2);
-        n2.setHinge(true);
+        //n2.setConstraint(con2);
+        //n2.setHinge(true);
         n3.setConstraint(con2);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    public static Structure getPresFive() {
+
+        double f = 1; //Hz
+        double l1 = 2;
+        double l2 = 1;
+        double M1 = 1/(f*f*l1*l1*l1); //for bending oscillation
+        double M2 = 1/(f*f*l1*l1*l1);
+
+        boolean[] con1 = new boolean[3];
+        con1[0]=true;
+        con1[1]=true;
+        con1[2]=true;
+        boolean[] con2 = new boolean[3];
+        con2[0]=false;
+        con2[1]=true;
+        con2[2]=false;
+
+        boolean lumped = true; // Make it false for consistent mass matrices!
+
+        Structure structure = new Structure();
+        Material demoMaterial = Material.STEELDEMO;
+        Material demoMaterial2 = Material.STEELDEMO2;
+
+
+
+
+        Node n1 = new Node(0, 4);
+        Node n2 = new Node(0, 0, 0.002);
+        Node n3 = new Node(4, 0, 0.002);
+        Node n4 = new Node(4, 4);
+
+        Beam b1 = new Beam(n1, n2, demoMaterial2);
+        Beam b2 = new Beam(n2, n3, demoMaterial2);
+        Beam b3 = new Beam(n3, n4, demoMaterial2);
+
+        structure.addNodes(n1, n2, n3, n4);
+        structure.addBeams(b1, b2, b3);
+
+        n1.setConstraint(con1);
+        n4.setConstraint(con1);
+        //n2.setConstraint(con2);
+        //n2.setHinge(true);
+        //n3.setConstraint(con2);
         enumerateDOFs(structure);
         return structure;
 
