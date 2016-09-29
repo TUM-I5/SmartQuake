@@ -41,6 +41,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
     private Node node2 = null;
     private Node chosenNode = null;
 
+    private boolean snapToGrid = false;
+
 
     // stuff to detect gestures, specifically long press
     private GestureDetectorCompat mGestureDetector;
@@ -134,6 +136,16 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                     Toast.makeText(CreateActivity.this, "Cannot save empty structure!", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.snap_to_grid:
+                if (snapToGrid) {
+                    snapToGrid = false;
+                    item.setIcon(R.drawable.ic_grid_off_white_24dp);
+                } else {
+                    snapToGrid = true;
+                    item.setIcon(R.drawable.ic_grid_on_white_24dp);
+                }
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -252,7 +264,10 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
                 structure.getBeams().set(structure.getBeams().size() - 1, beam);
 
+                if (snapToGrid) snapToGridTwoFingers(beam);
+
                 magneticConnect();
+
             }
 
             if (event.getAction() == MotionEvent.ACTION_POINTER_UP
@@ -324,6 +339,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                     chosenNode.setInitialY(y);
                     node1 = chosenNode;
                     node2 = null;
+                    if (snapToGrid) snapToGridOneFinger(chosenNode);
                 }
                 magneticConnect();
             }
@@ -552,22 +568,108 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         return false;
     }
 
-/*
-    private void snapToGrid(Beam beam) {
+
+    private void snapToGridTwoFingers(Beam beam) {
 
         Node startNode = beam.getStartNode();
         Node endNode = beam.getEndNode();
 
-        if (startNode.getInitialX() > endNode.getInitialX()) {
-            Node tempNode = startNode;
-            startNode = endNode;
-            endNode = tempNode;
+        double deltaY = Math.abs(startNode.getInitialY() - endNode.getInitialY());
+        double deltaX = Math.abs(startNode.getInitialX() - endNode.getInitialX());
+
+        double tan;
+
+        if (deltaX > 0)
+            tan = deltaY / deltaX;
+        else
+            tan = Double.MAX_VALUE;
+
+        double degrees = Math.toDegrees(Math.atan(tan));
+
+        // snap to horizontal axis
+        if (degrees < 10) {
+
+            // if endNode is higher we have to subtract deltaY/2
+            if (endNode.getInitialY() > startNode.getInitialY()) {
+                endNode.setInitialY(endNode.getInitialY() - deltaY / 2);
+                startNode.setInitialY(startNode.getInitialY() + deltaY / 2);
+            }
+
+            if (endNode.getInitialY() < startNode.getInitialY()) {
+                endNode.setInitialY(endNode.getInitialY() + deltaY / 2);
+                startNode.setInitialY(startNode.getInitialY() - deltaY / 2);
+            }
+
         }
 
+        // snap vertically
 
+        if (degrees > 80) {
+
+            if (endNode.getInitialX() > startNode.getInitialX()) {
+                endNode.setInitialX(endNode.getInitialX() - deltaX / 2);
+                startNode.setInitialX(startNode.getInitialX() + deltaX / 2);
+            }
+
+            if (endNode.getInitialX() < startNode.getInitialX()) {
+                endNode.setInitialX(endNode.getInitialX() + deltaX / 2);
+                startNode.setInitialX(startNode.getInitialX() - deltaX / 2);
+            }
+
+        }
 
     }
-*/
+
+    private void snapToGridOneFinger(Node node) {
+
+        List<Beam> beams = node.getBeams();
+
+        for (Beam beam : beams) {
+
+            Node mNode = beam.getStartNode();
+
+            if (mNode == node) mNode = beam.getEndNode();
+
+            double deltaY = Math.abs(node.getInitialY() - mNode.getInitialY());
+            double deltaX = Math.abs(node.getInitialX() - mNode.getInitialX());
+
+            double tan;
+
+            if (deltaX > 0)
+                tan = deltaY / deltaX;
+            else
+                tan = Double.MAX_VALUE;
+
+            double degrees = Math.toDegrees(Math.atan(tan));
+
+            // snap to horizontal axis
+            if (degrees < 5) {
+                // if endNode is higher we have to subtract deltaY/2
+                if (node.getInitialY() > mNode.getInitialY()) {
+                    node.setInitialY(node.getInitialY() - deltaY);
+                }
+
+                if (node.getInitialY() < mNode.getInitialY()) {
+                    node.setInitialY(node.getInitialY() + deltaY);
+                }
+
+            }
+
+            // snap vertically
+            if (degrees > 85) {
+                if (node.getInitialX() > mNode.getInitialX()) {
+                    node.setInitialX(node.getInitialX() - deltaX);
+                }
+
+                if (node.getInitialX() < mNode.getInitialX()) {
+                    node.setInitialX(node.getInitialX() + deltaX);
+                }
+            }
+
+        }
+
+    }
+
     private void nodePopup(Node node) {
         NodeFragment nodeFragment = new NodeFragment();
         nodeFragment.setNode(node);
