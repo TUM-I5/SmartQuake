@@ -11,9 +11,9 @@ import de.ferienakademie.smartquake.view.DrawHelper;
  * Class that wires everything together.
  * TODO on first run an event is thrown for slow simulation.
  */
-public class Simulation {
+public abstract class Simulation {
 
-    private int slowStateCount = 0;
+
 
     public enum SimulationState {
         RUNNING_NORMAL,
@@ -21,10 +21,9 @@ public class Simulation {
         STOPPED
     }
 
-    private SimulationState state;
+    protected SimulationState state;
 
-    SpatialDiscretization spatialDiscretization;
-    TimeIntegration kernel2;
+
     CanvasView view;
     SimulationProgressListener listener;
     public boolean isRunning() {
@@ -33,25 +32,30 @@ public class Simulation {
 
 
 
-    public Simulation(SpatialDiscretization spatialDiscretization, TimeIntegration kernel2, CanvasView view) {
-        this.spatialDiscretization = spatialDiscretization;
-        this.kernel2 = kernel2;
+    public Simulation(CanvasView view) {
         this.view = view;
         state = SimulationState.STOPPED;
     }
+
+    protected  abstract  void startup();
+    protected  abstract  void updateTick();
+    protected  abstract  void drawTick();
+    protected  abstract  void shutdown();
 
     public void start() {
         state = SimulationState.RUNNING_NORMAL;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                kernel2.prepareSimulation();
-                TimeIntegration.SimulationStep currentStep;
+                startup();
                 while(true) {
                     if (!isRunning()) {
                         break;
                     }
-                    currentStep = kernel2.performSimulationStep();
+                    updateTick();
+                    if (!isRunning()) {
+                        break;
+                    }
                     try {
                         //TODO: think about dynamic frame rate
                         Thread.sleep(30);
@@ -61,25 +65,14 @@ public class Simulation {
                     }
                     while(view.isBeingDrawn) {
                         try {
-                            Thread.sleep(30);
+                            Thread.sleep(10);
                         } catch (InterruptedException ex) {
                             Log.e("Simulation", ex.getMessage());
                         }
                     }
-                    if (currentStep.isRunning()) {
-                        Log.e("Simulation", "Kernel2 can not catch up the gui");
-
-                        slowStateCount++;
-
-                        // If the last speed state was normal and now we're slow, notify the listener
-                        if (listener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 5) {
-                            state = SimulationState.RUNNING_SLOW;
-                            listener.onSimulationStateChanged(state);
-                        }
-                        currentStep.stop();
-                    }
-                    DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
+                    drawTick();
                 }
+                shutdown();
                 if (listener != null) {
                     listener.onSimulationFinished();
                 }

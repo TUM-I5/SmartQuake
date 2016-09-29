@@ -157,7 +157,7 @@ public class StartActivity extends AppCompatActivity
         values.add("Simple Beam");
         /*values.add("Simple House");
         values.add("Crane");
-        values.add("Better Eiffel Tower");
+        values.add("Eiffel Tower");
         values.add("Empire State Building");
         values.add("Golden Gate Bridge");
         values.add("A weird Bridge");

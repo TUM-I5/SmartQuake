@@ -5,9 +5,12 @@ package de.ferienakademie.smartquake.excitation;
  */
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.IOException;
 import java.security.acl.AclEntry;
+
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 
 /**
  * Class for generating a "standard" earthquake
@@ -53,20 +56,25 @@ public class SinCosExcitation extends AccelerationProvider {
 
     @Override
     /**
+     * not used in current code
      * notifys the observer
      */
     public AccelData getAccelerationMeasurement() {
         counter++;
-        AccelData accelData = new AccelData(amplitude * Math.cos(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0,
-                (long) (counter * timestep));
+        AccelData accelData = new AccelData( amplitude *  frequency * frequency
+                * Math.cos(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0, (long) (counter * timestep));
+        accelData.yGravity = 9.81;
+        modifyData(accelData);
         notifyNewAccelData(accelData);
         return accelData;
     }
 
     @Override
     public AccelData getAccelerationMeasurement(double time) {
-        AccelData accelData = new AccelData(amplitude * Math.cos(2 * Math.PI * frequency * time), 0.0,
-                (long) (time * 1e9));
+        AccelData accelData = new AccelData ( amplitude * frequency * frequency
+                * Math.cos(2 * Math.PI * frequency * time), 0.0, (long) (time * 1e9));
+        accelData.yGravity = 9.81;
+        modifyData(accelData);
         notifyNewAccelData(accelData);
         return accelData;
     }

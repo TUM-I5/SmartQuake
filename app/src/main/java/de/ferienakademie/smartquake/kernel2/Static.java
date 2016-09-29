@@ -36,8 +36,8 @@ public class Static extends ImplicitSolver {
     @Override
     public void nextStep(double t, double delta_t) {
 
-        fLoad.zero();
-        fLoad.set(4, 0, 0.001);
+        //fLoad.zero();
+        //fLoad.set(4, 0, 0.001);
 
         Log.i("Solver K: ", K.toString());
         Log.i("Solver F: ", fLoad.toString());
