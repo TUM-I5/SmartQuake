@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
-import java.security.acl.AclEntry;
 
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 
@@ -29,11 +28,8 @@ public class SinCosExcitation extends AccelerationProvider {
         this.timestep = 30_000_000;
         this.counter = 0;
     }
-
-    public SinCosExcitation() {
-        this.amplitude = 10;
-        this.frequency = 1;
-        this.timestep = 30_000_000;
+    public SinCosExcitation(double frequency) {
+        this(10, frequency);
     }
 
     /**
@@ -61,8 +57,8 @@ public class SinCosExcitation extends AccelerationProvider {
      */
     public AccelData getAccelerationMeasurement() {
         counter++;
-        AccelData accelData = new AccelData( amplitude *  frequency * frequency
-                * Math.cos(2 * Math.PI * frequency * counter * timestep * 1e-9), 0.0, (long) (counter * timestep));
+        AccelData accelData = new AccelData( amplitude * Math.cos(2 * Math.PI * frequency * counter * timestep * 1e-9),
+                0.0, (long) (counter * timestep));
         accelData.yGravity = 9.81;
         modifyData(accelData);
         notifyNewAccelData(accelData);
@@ -71,8 +67,8 @@ public class SinCosExcitation extends AccelerationProvider {
 
     @Override
     public AccelData getAccelerationMeasurement(double time) {
-        AccelData accelData = new AccelData ( amplitude * frequency * frequency
-                * Math.cos(2 * Math.PI * frequency * time), 0.0, (long) (time * 1e9));
+        AccelData accelData = new AccelData ( amplitude * Math.cos(2 * Math.PI * frequency * time),
+                0.0, (long) (time * 1e9));
         accelData.yGravity = 9.81;
         modifyData(accelData);
         notifyNewAccelData(accelData);

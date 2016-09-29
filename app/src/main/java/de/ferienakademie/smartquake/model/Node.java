@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +61,10 @@ public class Node {
         this.DOF = DOF;
     }
 
+    public List<List<Double>> getHistoryOfDisplacements() {
+        return historyOfDisplacements;
+    }
+
     public double getInitialX() {
         return initialX;
     }
@@ -93,7 +95,7 @@ public class Node {
     }
 
     public double getDisplacementForDof(int i) {
-        return this.displacements.get( DOF.indexOf(i) );
+        return this.displacements.get(DOF.indexOf(i));
     }
 
     public void addBeam(Beam beam) {
@@ -106,7 +108,7 @@ public class Node {
 
     public void setDOF(List<Integer> DOF) {
         this.DOF = DOF;
-        for (int i=0; i<DOF.size(); i++)
+        for (int i = 0; i < DOF.size(); i++)
             displacements.add(0.0);
     }
 
@@ -115,7 +117,7 @@ public class Node {
     }
 
     public float getCurrentXf() {
-        return (float)(initialX + displacements.get(0));
+        return (float) (initialX + displacements.get(0));
     }
 
     public double getCurrentY() {
@@ -123,7 +125,7 @@ public class Node {
     }
 
     public float getCurrentYf() {
-        return (float)(initialY + displacements.get(1));
+        return (float) (initialY + displacements.get(1));
     }
 
     public double getNodeMass() {
@@ -221,7 +223,7 @@ public class Node {
           displacements.set(j, historyOfDisplacements.get(i).get(j));
 
         // include ground displacements according to settings
-        if (PreferenceReader.groundDisplcements()) {
+        if (PreferenceReader.groundDisplacements()) {
             double[] groundDisplacements = historyOfGroundDisplacement.get(i);
             displacements.set(0, displacements.get(0) + groundDisplacements[0]);
             displacements.set(1, displacements.get(1) + groundDisplacements[1]);
