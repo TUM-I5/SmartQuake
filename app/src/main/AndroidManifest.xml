@@ -53,7 +53,7 @@
             android:parentActivityName=".activity.StartActivity"></activity>
         <activity
             android:name=".activity.AccelerationDataActivity"
-            android:parentActivityName=".activity.EarthquakeDataActivity"></activity>
+            android:parentActivityName=".activity.EarthquakeDataStartActivity"></activity>
 
         <activity android:name=".activity.GraphViewActivity" android:parentActivityName=".activity.SimulationActivity" android:screenOrientation="portrait"></activity>
 
