@@ -1,5 +1,6 @@
 package de.ferienakademie.smartquake.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -154,7 +155,9 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent sel = new Intent();
+        setResult(Activity.RESULT_CANCELED, sel);
+        finish();
     }
 
     @Override
@@ -203,6 +206,9 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
                 }
                 sets.set(1, new Pair<>(sets.get(1).first, !sets.get(1).second));
                 break;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
             default:
                 break;
         }
