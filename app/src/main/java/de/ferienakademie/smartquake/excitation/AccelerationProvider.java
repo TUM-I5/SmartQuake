@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
+
 /**
  * Created by user on 21.09.2016.
  * Superclass for all objects able to return senseor measurements
@@ -57,6 +59,19 @@ public abstract class AccelerationProvider {
     public abstract void setActive();
 
     public abstract void setInactive();
+
+    /**
+     * changes the given Acceldata to exclude gravity and yAcceleration
+     */
+    public static void modifyData(AccelData data){
+        if(!PreferenceReader.excitationVerticalDirection()){
+            data.yAcceleration = 0;
+        }
+        if(!PreferenceReader.includeGravity()){
+            data.xGravity = 0;
+            data.yGravity = 0;
+        }
+    }
 
     public void addObserver(AccelerationProviderObserver observer) {
         if (!accelerationProviderObservers.contains(observer)) {

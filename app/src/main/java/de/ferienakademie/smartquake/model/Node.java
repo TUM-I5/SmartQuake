@@ -28,7 +28,7 @@ public class Node {
     private final static double MASSLESS_RADIUS = 0.05;
 
     private boolean hinge = false;
-    private double nodeMass = 0;
+    private double nodeMass = 1.0;
 
     private List<Beam> beams = new ArrayList<>();
 

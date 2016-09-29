@@ -22,12 +22,22 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_modal_analysis", false);
     }
 
+    public static boolean excitationVerticalDirection() {
+        return sharedPref.getBoolean("pref_y_excitation", true);
+    }
+
     public static double getLoadVectorScaling() {
         return (double) (5.0f * sharedPref.getFloat("loadVector_slider", 0.2f));
     }
 
+    /*
     public static double getExcitationFrequency() {
         return (double) 10.0f * sharedPref.getFloat("frequency_slider", 0.1f);
+    }
+    */
+
+    public static double getExcitationFrequency() {
+        return Double.parseDouble(sharedPref.getString("pref_excitation_frequency", "1.0"));
     }
 
     public static double getDampingCoefficient() {
