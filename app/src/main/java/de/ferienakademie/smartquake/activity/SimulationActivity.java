@@ -189,7 +189,62 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     private void createStructure(int structureId, String structureName) {
-        structure = StructureFactory.getStructure(this, structureId, structureName);
+        if (structureId == 0) {
+            structure = StructureFactory.cantileverBeam();
+        } else if (structureId == 1) {
+            structure = StructureFactory.getSimpleHouse();
+        } else if (structureId == 2) {
+            structure = StructureFactory.getCraneBottom();
+        } else if (structureId == 3) {
+            structure = StructureFactory.getBetterEiffelTower();
+        } else if (structureId == 4) {
+            structure = StructureFactory.getEmpireState();
+        } else if (structureId == 5) {
+            structure = StructureFactory.getGoldenGate();
+        } else if (structureId == 6) {
+            structure = StructureFactory.getWeirdBridge();
+        } else if (structureId == 7) {
+            structure = StructureFactory.getHousingBlock();
+        } else if (structureId == 8) {
+            structure = StructureFactory.getTrumpTower();
+        } else if (structureId == 9) {
+            structure = StructureFactory.getTVtower();
+        } else if (structureId == 10) {
+            structure = StructureFactory.getTaipeh();
+        } else if (structureId == 11) {
+            structure = StructureFactory.getHouseWithMassDamper();
+        } else if (structureId == 12) {
+            structure = StructureFactory.getOneWTC();
+        } else if (structureId == 13) {
+            structure = StructureFactory.getBurjKhalifa();
+        } else if (structureId == 14) {
+        structure = StructureFactory.getPresentation_EX_w_TMD();
+        }else if (structureId == 15) {
+            structure = StructureFactory.getPresentation_EX_wo_TMD();
+        } else if (structureId == 16) {
+            structure = StructureFactory.getSimpleElephant();
+        }   else if (structureId == 17) {
+                structure = StructureFactory.getEierlaufen();
+        } else if (structureId == 18) {
+            structure = StructureFactory.getPresOne();
+        }
+        else if (structureId == 19) {
+            structure = StructureFactory.getPresTwo();
+        }
+        else if (structureId == 20) {
+            structure = StructureFactory.getPresThree();
+        }
+        else if (structureId == 21) {
+            structure = StructureFactory.getPresFour();
+        }
+        else if (structureId == 22) {
+            structure = StructureFactory.getPresFive();
+        } else if (structureId == 23) {
+            structure = StructureFactory.getPresSix();
+        }
+        else {
+            structure = StructureFactory.getStructure(this, structureId, structureName);
+        }
 
         for (Beam beam : structure.getBeams()) {
             beam.computeAll(structure.isLumped());
