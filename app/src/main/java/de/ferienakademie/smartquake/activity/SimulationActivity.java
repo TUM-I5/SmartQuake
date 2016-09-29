@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
@@ -48,24 +49,17 @@ import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener,
-        SaveEarthquakeFragment.SaveEarthquakeListener, AccelerationProviderObserver {
+        SaveEarthquakeFragment.SaveEarthquakeListener, AccelerationProviderObserver, CanvasView.NodePositionChoiceListener, Simulation.StructureUpdateListener {
 
-    // TODO: global enum for this?
+    // TODO: break this up
     private static final int REQUEST_EARTHQUAKE_DATA = 0;
+    private static Structure structure;
+    private static int selectedNodeId;
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
     private FloatingActionButton simFab;
     private CanvasView canvasView;
     private TimeIntegration timeIntegration;
-
-    // probably not the best solution
-    protected static Structure getStructure() {
-        return structure;
-    }
-
-    private static Structure structure;
-    private static int selectedNodeId;
-
     private SpatialDiscretization spatialDiscretization;
     private Simulation simulation;
     private CoordinatorLayout layout;
@@ -79,15 +73,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     private TextView tvSensorDataY;
     private LinearLayout layoutSensorDebug;
     private ReplayDisplacementRunnable replayDisplacementRunnable;
-
     private int structureId;
     private String structureName;
-    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onStopButtonClicked();
-        }
-    };
     // Click listeners
     private View.OnClickListener startSimulationListener = new View.OnClickListener() {
         @Override
@@ -95,7 +82,18 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             onStartButtonClicked();
         }
     };
+    private View.OnClickListener stopSimulationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onStopButtonClicked();
+        }
+    };
     private long lastDebugSensorDataTimestamp;
+
+    // probably not the best solution
+    protected static Structure getStructure() {
+        return structure;
+    }
 
     private void runReplay(String fileName) {
 
@@ -153,9 +151,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             if (simulation != null) toggleStartStopAvailability();
             return true;
         } else if (id == R.id.sim_load_earthquake_data_button) {
-            ActionMenuItemView loadEqDataButton = (ActionMenuItemView)findViewById(id);
+            ActionMenuItemView loadEqDataButton = (ActionMenuItemView) findViewById(id);
             if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
-            ActionMenuItemView replay = (ActionMenuItemView)findViewById(R.id.sim_replay_button);
+            ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_button);
             if (replay != null) replay.setEnabled(false);
             Intent chooseEqIntent = new Intent(this, ChooseEarthQuakeDataActivity.class);
             chooseEqIntent.putExtra("id", structureId);
@@ -166,7 +164,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 simulation.stop();
             }
             new SaveEarthquakeFragment().show(getFragmentManager(), "saveEarthquake");
-        } else if (id == R.id.sim_reset_button){
+        } else if (id == R.id.sim_reset_button) {
             if (mode != SimulationMode.LIVE) {
                 mode = SimulationMode.LIVE;
             }
@@ -177,7 +175,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             tvSensorDataX.setText("");
             tvSensorDataY.setText("");
             createStructure(structureId, structureName);
-            DrawHelper.drawStructure(structure, canvasView);
+            onStructureUpdate(structure);
             return true;
         } else if (id == R.id.sim_replay_displacement) {
             replayDisplacement();
@@ -220,6 +218,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         layout = (CoordinatorLayout) findViewById(R.id.simLayout);
 
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
+        canvasView.setNodePositionChoiceListener(this);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
         if (savedInstanceState != null) {
@@ -241,7 +240,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 public void onGlobalLayout() {
                     canvasView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     createStructure(structureId, structureName);
-                    DrawHelper.drawStructure(structure, canvasView);
+                    onStructureUpdate(structure);
                 }
             });
         }
@@ -284,7 +283,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         simFab.setOnClickListener(stopSimulationListener);
     }
 
-    private  void setStartButton() {
+    private void setStartButton() {
         simFab.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         simFab.setOnClickListener(startSimulationListener);
     }
@@ -295,7 +294,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     }
 
     void startSimulation(AccelerationProvider accelerationProvider) {
-        if (mCurrentAccelerationProvider != null){
+        if (mCurrentAccelerationProvider != null) {
             mCurrentAccelerationProvider.removeObserver(this);
             mCurrentAccelerationProvider.setInactive();
         }
@@ -306,9 +305,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
-
+        simulation.setSimulationProgressListener(this);
+        simulation.setStructureUpdateListener(this);
         simulation.start();
-        simulation.setListener(this);
 
         toggleStartStopAvailability();
     }
@@ -425,7 +424,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
     public void onNewAccelerationValue(AccelData data) {
         long timestamp = System.currentTimeMillis();
-        if (timestamp - lastDebugSensorDataTimestamp  > 100) {
+        if (timestamp - lastDebugSensorDataTimestamp > 100) {
             lastDebugSensorDataTimestamp = System.currentTimeMillis();
             final String xData = String.format("x: %.2f %.2f", data.xAcceleration, data.xGravity);
             final String yData = String.format("y: %.2f %.2f", data.yAcceleration, data.yGravity);
@@ -477,6 +476,31 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         new Thread(replayDisplacementRunnable).start();
     }
 
+    @Override
+    public void onNodePositionChosen(double internalX, double internalY, double scale) {
+        List<Node> nodes = structure.getNodes();
+        double minDist = 100 / scale;
+
+        for (int i = 0; i < nodes.size(); ++i) {
+            Node thisNode = nodes.get(i);
+            if (Math.abs(thisNode.getCurrentX() - internalX)
+                    + Math.abs(thisNode.getCurrentY() - internalY) <= minDist) {
+                selectedNodeId = i;
+            }
+        }
+
+        onStructureUpdate(structure);
+    }
+
+    @Override
+    public void onStructureUpdate(Structure newStructure) {
+        if (newStructure != structure) {
+            structure = newStructure;
+        }
+
+        DrawHelper.drawStructure(structure, canvasView, selectedNodeId);
+    }
+
     // TODO: should this be part of Simulation too?
     private enum SimulationMode {
         READY,
@@ -510,7 +534,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                     Log.e("replayDisplacement", ex.getMessage());
                 }
 
-                while(canvasView.isBeingDrawn) {
+                while (canvasView.isBeingDrawn) {
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException ex) {
@@ -519,9 +543,9 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 }
 
                 //draw frame
-                DrawHelper.drawStructure(structure, canvasView);
+                onStructureUpdate(structure);
 
-                double percentage = ((double)i/number_timeSteps)*100;
+                double percentage = ((double) i / number_timeSteps) * 100;
 
                 onNewReplayPercent(percentage);
             }
@@ -530,5 +554,4 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             mode = SimulationMode.LIVE;
         }
     }
-
 }

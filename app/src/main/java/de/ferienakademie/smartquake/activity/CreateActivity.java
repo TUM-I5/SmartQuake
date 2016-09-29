@@ -18,7 +18,6 @@ import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.ferienakademie.smartquake.R;
@@ -26,7 +25,6 @@ import de.ferienakademie.smartquake.excitation.StructureIO;
 import de.ferienakademie.smartquake.fragment.NodeFragment;
 import de.ferienakademie.smartquake.fragment.SaveDialogFragment;
 import de.ferienakademie.smartquake.model.Beam;
-import de.ferienakademie.smartquake.model.Material;
 import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.DrawCanvasView;
@@ -35,7 +33,7 @@ import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class CreateActivity extends AppCompatActivity implements SaveDialogFragment.SaveDialogListener,
         NodeFragment.NodeParametersListener {
-    private static double DELTA = 100;
+    protected static double DELTA = 100;
     private static boolean adding = false;
     private Node node1 = null;
     private Node node2 = null;
@@ -44,7 +42,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     // stuff to detect gestures, specifically long press
     private GestureDetectorCompat mGestureDetector;
-    private LongPressListener longPressListener;
+    private CreateActivityLongPressListener longPressListener;
 
     private DrawCanvasView canvasView;
     private Structure structure;
@@ -70,7 +68,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
     // is called, when nodes parameters are changed
     public void onChangeNode() {
-        DrawHelper.drawStructure(structure, canvasView);
+        DrawHelper.drawStructure(structure, canvasView, null);
     }
 
     @Override
@@ -80,7 +78,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         canvasView = (DrawCanvasView) findViewById(R.id.crtCanvasView);
         DrawHelper.clearCanvas(canvasView);
         structure = new Structure();
-        longPressListener = new LongPressListener();
+        longPressListener = new CreateActivityLongPressListener();
         mGestureDetector = new GestureDetectorCompat(this, longPressListener);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create);
         setSupportActionBar(toolbar);
@@ -125,7 +123,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
                 break;
             case R.id.clear_canvas:
                 structure.clearAll();
-                DrawHelper.drawStructure(structure, canvasView);
+                DrawHelper.drawStructure(structure, canvasView, null);
                 break;
             case R.id.save_canvas:
                 if (!structure.getNodes().isEmpty() && !structure.getBeams().isEmpty()) {
@@ -417,7 +415,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
 
         DrawHelper.clearCanvas(canvasView);
-        DrawHelper.drawStructure(structure, canvasView);
+        DrawHelper.drawStructure(structure, canvasView, null);
 
         return super.onTouchEvent(event);
     }
@@ -572,7 +570,8 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
         }
     }
 
-    public class LongPressListener extends GestureDetector.SimpleOnGestureListener {
+    // TODO: This should be part of the view
+    public class CreateActivityLongPressListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public void onLongPress(MotionEvent e) {
             super.onLongPress(e);
@@ -581,7 +580,7 @@ public class CreateActivity extends AppCompatActivity implements SaveDialogFragm
 
             if (!setHinge(n)) deleteBeam(n.getCurrentX(), n.getCurrentY());
 
-            DrawHelper.drawStructure(structure, canvasView);
+            DrawHelper.drawStructure(structure, canvasView, null);
         }
 
         @Override

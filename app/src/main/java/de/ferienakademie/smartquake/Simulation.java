@@ -4,6 +4,7 @@ import android.util.Log;
 
 import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
+import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
@@ -26,12 +27,12 @@ public class Simulation {
     SpatialDiscretization spatialDiscretization;
     TimeIntegration kernel2;
     CanvasView view;
-    SimulationProgressListener listener;
+    SimulationProgressListener simulationProgressListener;
+    StructureUpdateListener structureUpdateListener;
+
     public boolean isRunning() {
         return state != SimulationState.STOPPED;
     }
-
-
 
     public Simulation(SpatialDiscretization spatialDiscretization, TimeIntegration kernel2, CanvasView view) {
         this.spatialDiscretization = spatialDiscretization;
@@ -59,6 +60,7 @@ public class Simulation {
                         Log.e("Simulation", ex.getMessage());
                         continue;
                     }
+                    // TODO: completely remove dependency on the View for clean MVC
                     while(view.isBeingDrawn) {
                         try {
                             Thread.sleep(30);
@@ -71,17 +73,17 @@ public class Simulation {
 
                         slowStateCount++;
 
-                        // If the last speed state was normal and now we're slow, notify the listener
-                        if (listener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 5) {
+                        // If the last speed state was normal and now we're slow, notify the simulationProgressListener
+                        if (simulationProgressListener != null && state == SimulationState.RUNNING_NORMAL && slowStateCount > 5) {
                             state = SimulationState.RUNNING_SLOW;
-                            listener.onSimulationStateChanged(state);
+                            simulationProgressListener.onSimulationStateChanged(state);
                         }
                         currentStep.stop();
                     }
-                    DrawHelper.drawStructure(spatialDiscretization.getStructure(), view);
+                    structureUpdateListener.onStructureUpdate(spatialDiscretization.getStructure());
                 }
-                if (listener != null) {
-                    listener.onSimulationFinished();
+                if (simulationProgressListener != null) {
+                    simulationProgressListener.onSimulationFinished();
                 }
             }
 
@@ -95,8 +97,8 @@ public class Simulation {
         state = SimulationState.STOPPED;
     }
 
-    public void setListener(SimulationProgressListener listener) {
-        this.listener = listener;
+    public void setSimulationProgressListener(SimulationProgressListener simulationProgressListener) {
+        this.simulationProgressListener = simulationProgressListener;
     }
 
     public interface SimulationProgressListener {
@@ -111,5 +113,14 @@ public class Simulation {
          */
         void onSimulationStateChanged(SimulationState newSpeedState);
     }
+
+    public void setStructureUpdateListener(StructureUpdateListener structureUpdateListener) {
+        this.structureUpdateListener = structureUpdateListener;
+    }
+
+    public interface StructureUpdateListener {
+        void onStructureUpdate(Structure s);
+    }
+
 
 }

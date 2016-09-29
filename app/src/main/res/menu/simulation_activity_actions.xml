@@ -30,7 +30,7 @@
 
     <item android:id="@+id/sim_view_graphs_button"
         android:icon="@drawable/ic_menu_gallery"
-        android:title="View displacement graphs"
+        android:title="Displacements of selected node"
         app:showAsAction="never" />
 
 </menu>
