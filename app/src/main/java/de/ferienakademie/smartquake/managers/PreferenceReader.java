@@ -30,8 +30,14 @@ public class PreferenceReader {
         return (double) (5.0f * sharedPref.getFloat("loadVector_slider", 0.2f));
     }
 
+    /*
     public static double getExcitationFrequency() {
         return (double) 10.0f * sharedPref.getFloat("frequency_slider", 0.1f);
+    }
+    */
+
+    public static double getExcitationFrequency() {
+        return Double.parseDouble(sharedPref.getString("pref_excitation_frequency", "1.0"));
     }
 
     public static double getDampingCoefficient() {
