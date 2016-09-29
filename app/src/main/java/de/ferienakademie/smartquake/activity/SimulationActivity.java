@@ -480,13 +480,18 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onNodePositionChosen(double internalX, double internalY, double scale) {
         List<Node> nodes = structure.getNodes();
-        double minDist = 50 / scale;
+        double minDist = 75 / scale;
+        double closestDist = minDist;
+        double nodeFingerDistManhattan;
+        Node thisNode;
 
         for (int i = 0; i < nodes.size(); ++i) {
-            Node thisNode = nodes.get(i);
-            if (Math.abs(thisNode.getCurrentX() - internalX)
-                    + Math.abs(thisNode.getCurrentY() - internalY) <= minDist) {
+            thisNode = nodes.get(i);
+            nodeFingerDistManhattan = Math.abs(thisNode.getCurrentX() - internalX)
+                    + Math.abs(thisNode.getCurrentY() - internalY);
+            if (nodeFingerDistManhattan < closestDist) {
                 selectedNodeId = i;
+                closestDist = nodeFingerDistManhattan;
             }
         }
 
