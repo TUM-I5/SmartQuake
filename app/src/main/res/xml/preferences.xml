@@ -54,12 +54,19 @@
             android:key="damping_slider"
             android:summary="@array/damping_slider_summaries"
             android:title="@string/damping_slider_title" />
+        <!--
         <de.ferienakademie.smartquake.preferenceElements.SliderPreference
             android:defaultValue="@string/frequency_slider_default"
             android:dialogMessage="@string/frequency_slider_message"
             android:key="frequency_slider"
             android:summary="@array/frequency_slider_summaries"
             android:title="@string/frequency_slider_title" />
+            -->
+        <EditTextPreference
+            android:key="pref_excitation_frequency"
+            android:numeric="decimal"
+            android:title="@string/pref_excitation_frequency_title"
+            android:defaultValue="1.0"/>
     </PreferenceCategory>
 
     <PreferenceCategory
