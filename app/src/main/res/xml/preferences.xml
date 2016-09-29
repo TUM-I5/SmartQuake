@@ -40,6 +40,7 @@
             android:title="@string/pref_modal_reduction_title"
             android:summaryOn="@string/pref_modal_reduction_summary_On"
             android:summaryOff="@string/pref_modal_reduction_summary_Off"
+            android:dependency="pref_modal_analysis"
             android:defaultValue="false"
             />
         <de.ferienakademie.smartquake.preferenceElements.EditTextPreferenceInt
