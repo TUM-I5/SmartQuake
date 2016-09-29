@@ -142,6 +142,12 @@ public class SpatialDiscretization {
                 }
             }
         }
+
+        for (int k = 0; k < structure.getNodes().size() ; k++) {
+            MassMatrix.add(3*k,3*k,structure.getNodes().get(k).getNodeMass());
+            MassMatrix.add(3*k+1,3*k+1,structure.getNodes().get(k).getNodeMass());
+        }
+
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
             for (int k = 0; k < getNumberOfDOF(); k++) {
@@ -276,7 +282,7 @@ public class SpatialDiscretization {
     public void updateLoadVector(double[] acceleration) {
         if (PreferenceReader.includeGravity()) {
             CommonOps.scale(-acceleration[0] - acceleration[2], influenceVectorX, influenceVectorX_temp);
-            CommonOps.scale(-acceleration[1] - acceleration[3], influenceVectorY, influenceVectorY_temp);
+            CommonOps.scale(-acceleration[1] + acceleration[3], influenceVectorY, influenceVectorY_temp);
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
         } else {
