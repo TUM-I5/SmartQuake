@@ -33,7 +33,6 @@ public class SpatialDiscretization {
 
     //Modal Analysis part
     private DenseMatrix64F eigenvectorsmatrix;
-    private DenseMatrix64F[] eigenvectors;
     private double[] eigenvalues;
 
     private double[] modalMasses;
@@ -192,6 +191,8 @@ public class SpatialDiscretization {
         double a0 =  2 * dampingCoefficient * omega1 * omega2 / (omega1 + omega2);
         double a1 = 2 * dampingCoefficient / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
+
+        // Apply boundary conditions
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
             for (int k = 0; k < getNumberOfDOF(); k++) {
@@ -202,13 +203,14 @@ public class SpatialDiscretization {
         }
     }
 
+
     public void calculateModalAnalysisDampingMatrix() {
         DampingMatrix.zero();
         double omega1 = eigenvalues[0];
         double omega2 = eigenvalues[1];
-        double xi = 0.05;
-        a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
-        a1 = 2 * xi / (omega1 + omega2);
+
+        double a0 =  2 * dampingCoefficient * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 2 * dampingCoefficient / (omega1 + omega2);
         CommonOps.add(a0, MassMatrixModalAnalysis, a1, StiffnessMatrixModalAnalysis, DampingMatrixModalAnalysis);
 
     }
@@ -301,8 +303,6 @@ public class SpatialDiscretization {
             CommonOps.addEquals(influenceVectorX_temp, influenceVectorY_temp);
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
         }
-        Log.i("Load", ""+LoadVector);
-
 
     }
 
@@ -314,7 +314,7 @@ public class SpatialDiscretization {
         if (PreferenceReader.includeGravity()) {
 
             CommonOps.scale(-acceleration[0]- acceleration[2], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
-            CommonOps.scale(-acceleration[1]- acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
+            CommonOps.scale(-acceleration[1]+ acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
             CommonOps.mult(massRed, RedinfluenceVectorX_temp, LoadVectorRed);
 
@@ -325,11 +325,6 @@ public class SpatialDiscretization {
             CommonOps.mult(massRed, RedinfluenceVectorX_temp, LoadVectorRed);
         }
 
-        // TODO MALTE DEbug
-        //RedinfluenceVectorX_temp.zero();
-        //RedinfluenceVectorX_temp.set(1,0,17);
-        Log.i("Load normal", ""+LoadVectorRed);
-
         CommonOps.multTransA(eigenvectorsmatrix, LoadVectorRed, redLoadVectorModalAnalysis);
 
 
@@ -337,15 +332,14 @@ public class SpatialDiscretization {
         for (int i=0; i<getNumberOfUnconstraintDOF(); i++)
             redLoadVectorModalAnalysis.set(i, 0, redLoadVectorModalAnalysis.get(i, 0)/modalMasses[i] );
 
-        Log.i("Load Modal", ""+redLoadVectorModalAnalysis);
-
     }
 
 
 
     public void calculateEigenvaluesAndVectors() {
 
-        // Reduce matrices and vectors
+        // Reduce matrices and vectors to unconstrained dofs
+        //===================================================
         stiffnessRed = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
         massRed = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
 
@@ -393,19 +387,16 @@ public class SpatialDiscretization {
 
 
         // perform eigenvalue analysis
+        //=================================
         GenEig eigen = new GenEig(stiffnessRed, massRed); //solve GEN eigenvalues problem
         eigenvalues = eigen.getLambda();
 
         double[][] ev = eigen.getV();
-        Log.i("EV 6-4", ""+ev[2][0]);
-
-        eigenvectorsmatrix = new DenseMatrix64F(ev);
-        Log.i("EV 6-4", ""+eigenvectorsmatrix.get(2,0));
-
-        eigenvectors = CommonOps.columnsToVector(eigenvectorsmatrix, null);
+        eigenvectorsmatrix = new DenseMatrix64F(ev);                                    // Eigenvectors in a matrix, columnwise
 
         // Calculate modal masses
-        DenseMatrix64F temp = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        //========================
+        DenseMatrix64F temp  = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
         DenseMatrix64F temp2 = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
         modalMasses = new double[getNumberOfUnconstraintDOF()];
 
@@ -416,9 +407,6 @@ public class SpatialDiscretization {
 
         for (int i=0; i<getNumberOfUnconstraintDOF(); i++)
             modalMasses[i] = temp2.get(i,i);
-
-        Log.i("modalMasses", ""+modalMasses);
-
 
     }
 
@@ -444,11 +432,7 @@ public class SpatialDiscretization {
         DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF, 1);
         DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberOfUnconstraintDOF(), 1);
 
-        Log.i("Disp modal", ""+modalSolutionvector);
-
         CommonOps.mult(1, eigenvectorsmatrix, modalSolutionvector, solVecCopy);
-
-        Log.i("Disp normal", ""+solVecCopy);
 
         List<Integer> conDof = structure.getConDOF();
 
@@ -464,10 +448,6 @@ public class SpatialDiscretization {
                 counter++;
             }
         }
-
-
-        Log.i("Disp extend", ""+DisplacementVector);
-
 
         updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
 

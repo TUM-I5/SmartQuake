@@ -135,10 +135,7 @@ public class TimeIntegration {
 
                     CommonOps.scale(loadVectorScaling, loadVector);
                     solver.setFLoad(loadVector);
-                    Log.i("Newmark Load:", ""+loadVector.toString() );
 
-                    // TODO MALTE DEBUG
-                    //solver.nextStep(t, delta_t);
 
                     long firstTime = System.nanoTime();
                     //this loop performs the calculation
@@ -157,7 +154,6 @@ public class TimeIntegration {
 
                     //for checking the calculation time
                     long secondTime = System.nanoTime();
-                  //  Log.e("Timestamp",""+(secondTime-firstTime));
 
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
@@ -165,7 +161,6 @@ public class TimeIntegration {
                     }
                     else {
                         //update the displacement in the node variables
-                        Log.i("Newmark Disp:", ""+solver.getX().toString());
                         spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundDisplacement());
                     }
                     isRunning = false;

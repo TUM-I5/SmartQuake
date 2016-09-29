@@ -100,10 +100,10 @@ public class StructureFactory {
         Node n4 = new Node(0, height - 2*half, false);
         Node n5 = new Node(width/2, height - 2*half, false);
 
-        Node n6 = new Node(width/2, height - half+1, 41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220*0.39806080e-1);
+
+        Node n6 = new Node(width/2, height - half+1, 6.6754785010);
 
 
-        //Master original Node n6 = new Node(width/2, height - half, 50);
 
 
         Beam b2 = new Beam(n2, n3, testMaterial);
