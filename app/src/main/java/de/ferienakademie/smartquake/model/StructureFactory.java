@@ -283,7 +283,7 @@ public class StructureFactory {
     public static Structure getPresOne() {
 
         double f = 1; //Hz
-        double l1 = 1;
+        double l1 = 3;
         double l2 = 1;
         double M1 = 1/(f*f*l1);
         double M2 = 1;
@@ -293,8 +293,8 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material demoMaterial = Material.STEELDEMO;
 
-        Node n1 = new Node(0, 0);
-        Node n2 = new Node(l1, 0, M1);
+        Node n1 = new Node(0, 4);
+        Node n2 = new Node(l1, 4, M1);
         //Node n3 = new Node(l2+l1, 0);
 
         Beam b1 = new Beam(n1, n2, demoMaterial);
@@ -328,7 +328,7 @@ public class StructureFactory {
     public static Structure getPresTwo() {
 
         double f = 1; //Hz
-        double l1 = 1;
+        double l1 = 2;
         double l2 = 2;
         double M1 = 1/(f*f*l1); //for length oscillation
         double M2 = 1/(f*f*l2);
@@ -347,9 +347,9 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material demoMaterial = Material.STEELDEMO;
 
-        Node n1 = new Node(0, 0);
-        Node n2 = new Node(l1, 0, M1);
-        Node n3 = new Node(l2+l1, 0, M2);
+        Node n1 = new Node(0, 4);
+        Node n2 = new Node(l1, 4, M1);
+        Node n3 = new Node(l2+l1, 4, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial);
         Beam b2 = new Beam(n2, n3, demoMaterial);
@@ -374,7 +374,7 @@ public class StructureFactory {
     public static Structure getPresThree() {
 
         double f = 1; //Hz
-        double l1 = 2;
+        double l1 = 8;
         //double l2 = 1;
         double M1 = 1/(f*f*l1*l1*l1);
         //double M2 = 1/(f*f*l2);
@@ -397,8 +397,8 @@ public class StructureFactory {
 
 
 
-        Node n1 = new Node(0, l1);
-        Node n2 = new Node(0, 0, M1);
+        Node n1 = new Node(4, l1);
+        Node n2 = new Node(4, 0, M1);
         //Node n3 = new Node(l2, 0, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial2);
@@ -426,8 +426,8 @@ public class StructureFactory {
     public static Structure getPresFour() {
 
         double f = 1; //Hz
-        double l1 = 2;
-        double l2 = 1;
+        double l1 = 8;
+        double l2 = 4;
         double M1 = 1/(f*f*l1*l1*l1); //for bending oscillation
         double M2 = 1/(f*f*l1*l1*l1);
 
@@ -449,9 +449,9 @@ public class StructureFactory {
 
 
 
-        Node n1 = new Node(0, l1);
-        Node n2 = new Node(0, 0, M1);
-        Node n3 = new Node(0, l2, M2);
+        Node n1 = new Node(4, l1);
+        Node n2 = new Node(4, 0, M1);
+        Node n3 = new Node(4, l2, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial2);
         Beam b2 = new Beam(n2, n3, demoMaterial2);
