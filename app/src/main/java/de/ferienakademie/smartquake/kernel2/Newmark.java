@@ -161,7 +161,7 @@ public class Newmark extends ImplicitSolver {
             throw new AssertionError("Try to multiply and add matrices of uncompatible size.");
         }
         for(int i = 0; i< k1.getNumberOfUnconstraintDOF(); i++) {
-            result.set(i, 0, result.get(i) - delta_t * matrix.get(i, i) * vec.get(i, 0));
+            result.set(i, 0, result.get(i, 0) + delta_t * matrix.get(i, i) * vec.get(i, 0));
         }
     }
 

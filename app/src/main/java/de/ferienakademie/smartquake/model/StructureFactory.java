@@ -87,7 +87,9 @@ public class StructureFactory {
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL3;
+        Material testMaterial = Material.STEEL5;
+        Material zeroDensity = Material.STEEL6;
+
 
         Node n1 = new Node(0, height, false);
         Node n2 = new Node(width, height, false);
@@ -100,10 +102,11 @@ public class StructureFactory {
         Beam b3 = new Beam(n3, n5, testMaterial);
         Beam b4 = new Beam(n5, n4, testMaterial);
         Beam b5 = new Beam(n4, n1, testMaterial);
-        Beam b6 = new Beam(n5, n6, testMaterial);
+        Beam b6 = new Beam(n5, n6, zeroDensity);
 
-        structure.addNodes(n1, n2, n3, n4,n5,n6);
-        structure.addBeams( b2, b3, b4,b5,b6);
+
+        structure.addNodes(n1, n2, n3, n4,n5);
+        structure.addBeams( b2, b3, b4,b5);
 
         boolean[] con = new boolean[3];
         con[0]=true;
@@ -124,7 +127,7 @@ public class StructureFactory {
         double half = width * 0.5;
 
         Structure structure = new Structure();
-        Material testMaterial = Material.STEEL3;
+        Material testMaterial = Material.STEEL5;
 
         Node n1 = new Node(0, height, false);
         Node n2 = new Node(width, height, false);
@@ -148,6 +151,7 @@ public class StructureFactory {
         n1.setConstraint(con);
         n2.setConstraint(con);
         n5.setHinge(true);
+
         enumerateDOFs(structure);
         return structure;
     }
