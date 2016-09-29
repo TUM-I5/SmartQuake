@@ -138,7 +138,7 @@ public class GraphViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        for (int i = 0; i < selectedNode.getDOF().size() - 2; ++i) {
+        for (int i = 0; i < selectedNode.getDOF().size(); ++i) {
             if (menu.findItem(i) == null) {
                 menu.add(R.id.dofCheckboxGroup, i, i + 2, "View beam " + Integer.toString(i + 1) + " rotation");
                 MenuItem newItem = menu.findItem(i);
