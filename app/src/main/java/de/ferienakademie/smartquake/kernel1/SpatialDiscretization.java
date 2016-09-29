@@ -63,6 +63,7 @@ public class SpatialDiscretization {
         this.structure = structure;
         //initialize displacement with zeros
         numberofDOF = structure.getNumberOfDOF();
+        numberOfModes = PreferenceReader.getNumberOfModes();
 
         influenceVectorX = new DenseMatrix64F(getNumberOfDOF(), 1);
         influenceVectorY = new DenseMatrix64F(getNumberOfDOF(), 1);
@@ -411,8 +412,9 @@ public class SpatialDiscretization {
 
         // Modal reduction
         //==================
-        numberOfModes = 2;
-        if (numberOfModes != 999999) {
+        if(PreferenceReader.useModalReduction()){
+            Log.i("Reduction:",""+numberOfModes);
+
             eigenvalues = new double[numberOfModes];
             eigenvectorsmatrix = new DenseMatrix64F(getNumberOfUnconstraintDOF(), numberOfModes);
             for (int i = 0; i < numberOfModes; i++) {
@@ -425,7 +427,10 @@ public class SpatialDiscretization {
 
         else
         {
-            eigenvalues = eigenvalues_temp;
+            numberOfModes = getNumberOfUnconstraintDOF();
+            eigenvalues = new double[getNumberOfUnconstraintDOF()];
+            for (int i=0; i< getNumberOfUnconstraintDOF(); i++)
+                eigenvalues[i] = eigenvalues_temp[i];
             eigenvectorsmatrix = eigenvectorsmatrix_temp;
         }
 
