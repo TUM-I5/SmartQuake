@@ -145,7 +145,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             ActionMenuItemView loadEqDataButton = (ActionMenuItemView) findViewById(id);
             if (loadEqDataButton != null) loadEqDataButton.setEnabled(false);
             // ?
-            ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_displacement);
+            ActionMenuItemView replay = (ActionMenuItemView) findViewById(R.id.sim_replay_excitation_button);
             if (replay != null) replay.setEnabled(false);
             Intent chooseEqIntent = new Intent(this, ChooseEarthQuakeDataActivity.class);
             chooseEqIntent.putExtra("id", structureId);
