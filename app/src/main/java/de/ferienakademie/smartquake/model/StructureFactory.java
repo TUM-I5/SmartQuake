@@ -25,7 +25,7 @@ public class StructureFactory {
 
 
         Node bottom = new Node(4, 8);
-        Node up = new Node(4, 3,41.3623685600*1.0069976050*4*1.0034927030*1.0017448300*1.0008720350*1.0004359220*0.39806080e-1);
+        Node up = new Node(4, 3,6.6754785010);
         Material zeroDensity = Material.STEEL7;
 
         List<Integer> condof = new ArrayList<>();
