@@ -32,7 +32,8 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
     // should be enough...
     private static int[] graphColors = {Color.RED, Color.BLUE, Color.GRAY, Color.YELLOW, Color.GREEN, Color.BLACK, Color.CYAN, Color.MAGENTA};
 
-    private Structure structure;
+    private Structure wholeStructure;
+    private Structure nodeLocalStructure;
     private Node selectedNode;
     private int selectedNodeId;
 
@@ -49,15 +50,34 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
         super.onCreate(savedInstanceState);
 
         Bundle rcvd = getIntent().getExtras();
-        structure = SimulationActivity.getStructure();
+        wholeStructure = SimulationActivity.getMainViewStructure();
         selectedNodeId = rcvd.getInt("initialNodeId");
-        selectedNode = structure.getNodes().get(selectedNodeId);
+        selectedNode = wholeStructure.getNodes().get(selectedNodeId);
+
+        nodeLocalStructure = new Structure();
+        nodeLocalStructure.addNode(selectedNode);
+        nodeLocalStructure.addBeams(selectedNode.getBeams());
 
         setContentView(R.layout.activity_graph_view);
         modelSnapshotView = (CanvasView) findViewById(R.id.modelSnapshotView);
         modelSnapshotView.includeRuler = false;
+        modelSnapshotView.setSelectedNodeId(selectedNodeId);
+        modelSnapshotView.setStructureProvider(new CanvasView.StructureProvider() {
+            @Override
+            public Structure getStructure() {
+                return wholeStructure;
+            }
+        });
+
         nodeSnapshotView = (CanvasView) findViewById(R.id.nodeSnapshotView);
         nodeSnapshotView.includeRuler = false;
+        nodeSnapshotView.setSelectedNodeId(0);
+        nodeSnapshotView.setStructureProvider(new CanvasView.StructureProvider() {
+            @Override
+            public Structure getStructure() {
+                return nodeLocalStructure;
+            }
+        });
         setUpChart();
     }
 
@@ -202,10 +222,11 @@ public class GraphViewActivity extends AppCompatActivity implements OnChartValue
 
     @Override
     public void onValueSelected(Entry entry, int i, Highlight highlight) {
-        for (Node n: structure.getNodes()) {
+        for (Node n: wholeStructure.getNodes()) {
             n.recallDisplacementOfStep(entry.getXIndex());
         }
-        DrawHelper.drawStructure(structure, modelSnapshotView, selectedNodeId);
+        modelSnapshotView.invalidate();
+        nodeSnapshotView.invalidate();
     }
 
     @Override

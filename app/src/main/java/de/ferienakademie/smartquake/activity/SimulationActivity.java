@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.RunnableFuture;
 
 import de.ferienakademie.smartquake.R;
 import de.ferienakademie.smartquake.Simulation;
@@ -42,13 +43,14 @@ import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
+import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
 import de.ferienakademie.smartquake.view.DrawHelper;
 
 public class SimulationActivity extends AppCompatActivity implements Simulation.SimulationProgressListener,
-        SaveEarthquakeFragment.SaveEarthquakeListener, AccelerationProviderObserver, CanvasView.NodePositionChoiceListener, Simulation.StructureUpdateListener {
+        SaveEarthquakeFragment.SaveEarthquakeListener, AccelerationProviderObserver, CanvasView.NodePositionChoiceListener, Simulation.StructureUpdateListener, CanvasView.StructureProvider {
 
     // TODO: break this up
     private static final int REQUEST_EARTHQUAKE_DATA = 0;
@@ -89,8 +91,13 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     };
     private long lastDebugSensorDataTimestamp;
 
-    // probably not the best solution
-    protected static Structure getStructure() {
+    @Override
+    public Structure getStructure() {
+        return structure;
+    }
+
+    // ...
+    public static Structure getMainViewStructure() {
         return structure;
     }
 
@@ -180,7 +187,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             replayDisplacement();
         } else if (id == R.id.sim_view_graphs_button) {
             Intent i = new Intent(this, GraphViewActivity.class);
-            i.putExtra("initialNodeId", selectedNodeId);
+            i.putExtra("initialNodeId", canvasView.getSelectedNodeId());
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);
@@ -218,6 +225,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
 
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         canvasView.setNodePositionChoiceListener(this);
+        canvasView.setStructureProvider(this);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
         if (savedInstanceState != null) {
@@ -495,7 +503,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             nodeFingerDistManhattan = Math.abs(thisNode.getCurrentX() - internalX)
                     + Math.abs(thisNode.getCurrentY() - internalY);
             if (nodeFingerDistManhattan < closestDist) {
-                selectedNodeId = i;
+                canvasView.setSelectedNodeId(i);
                 closestDist = nodeFingerDistManhattan;
             }
         }
@@ -508,8 +516,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         if (newStructure != structure) {
             structure = newStructure;
         }
-
-        DrawHelper.drawStructure(structure, canvasView, selectedNodeId);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                canvasView.invalidate();
+            }
+        });
     }
 
     // TODO: should this be part of Simulation too?

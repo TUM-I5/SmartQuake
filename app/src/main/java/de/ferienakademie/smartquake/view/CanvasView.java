@@ -16,16 +16,25 @@ import java.util.Arrays;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
+import de.ferienakademie.smartquake.model.Structure;
 
 public class CanvasView extends View {
     public void setSelectedNodeId(Integer selectedNodeId) {
         this.selectedNodeId = selectedNodeId;
+    }
+
+    public Integer getSelectedNodeId() {
+        return selectedNodeId;
     }
     // for future reference: 1 dpi = 100 / 2.54 pixels per meter
     // get dpi with context.getResources().getDisplayMetrics().xdpi
 
     public interface NodePositionChoiceListener {
         void onNodePositionChosen(double internalX, double internalY, double scale);
+    }
+
+    public interface StructureProvider {
+        Structure getStructure();
     }
 
     public static final double SIDE_MARGIN_SCREEN_FRACTION = 0.125;
@@ -42,6 +51,13 @@ public class CanvasView extends View {
 
     private NodePositionChoiceListener nodePositionChoiceListener;
     private GestureDetectorCompat mGestureDetector;
+
+    public void setStructureProvider(StructureProvider structureProvider) {
+        this.structureProvider = structureProvider;
+    }
+
+    private StructureProvider structureProvider;
+
     private Integer selectedNodeId;
 
     public boolean includeRuler = true;
@@ -231,7 +247,9 @@ public class CanvasView extends View {
         RULER_PAINT.setStrokeWidth(canvas.getWidth() / 144);
         RULER_PAINT.setTextSize(canvas.getHeight() / 38);
 
-        double[] boundingBox = DrawHelper.boundingBox;
+        Structure s = structureProvider.getStructure();
+
+        double[] boundingBox = s.getBoundingBox();
         double modelXSize = boundingBox[1] - boundingBox[0];
         double modelYSize = boundingBox[3] - boundingBox[2];
         // special case for single beam
@@ -274,16 +292,16 @@ public class CanvasView extends View {
         }
 
         BEAM_PAINT.setStyle(Paint.Style.STROKE);
-        for (Beam beam : DrawHelper.snapBeams) {
+        for (Beam beam : s.getBeams()) {
             drawBeam(beam, canvas);
         }
         BEAM_PAINT.setStyle(Paint.Style.FILL_AND_STROKE);
         boolean nodeSelected = false;
-        for (int i = 0; i < DrawHelper.snapNodes.size(); ++i) {
+        for (int i = 0; i < s.getNodes().size(); ++i) {
             if (selectedNodeId != null && selectedNodeId == i) {
                 nodeSelected = true;
             }
-            drawNode(DrawHelper.snapNodes.get(i), canvas, nodeSelected);
+            drawNode(s.getNodes().get(i), canvas, nodeSelected);
 
             if(nodeSelected) {
                 nodeSelected = false;
