@@ -6,8 +6,8 @@ package de.ferienakademie.smartquake.model;
 public class Material {
 
     public static Material STEEL = new Material(0.01, 0.01, 2.1e11, 7850, 0.005, "rectangular", 400e6); //SI-Units - use this (steel) for creating standard  (10cm x 10cm) beam.
-    public static Material STEEL2 = new Material(0.02978, 0.02978, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
-    public static Material STEEL3 = new Material(0.2978, 0.2978, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL2 = new Material(0.0297800241, 0.0297800241, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
+    public static Material STEEL3 = new Material(0.0297800241, 0.0297800241, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL4 = new Material(0.05956, 0.05956, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL5 = new Material(0.03347, 0.03347, 2.1e11, 7850, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!
     public static Material STEEL6 = new Material(0.03347, 0.03347, 2.1e11, 0.00001, 0.005, "rectangular", 400e6); // for cantilever beam !!! DO NOT CHANGE !!!

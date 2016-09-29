@@ -20,13 +20,11 @@ public class StructureFactory {
 
 
     public static Structure cantileverBeam() {
-        List<Integer> dofNode1 = new LinkedList<>();
-        List<Integer> dofNode2 = new LinkedList<>();
 
 
-        Node bottom = new Node(4, 8);
-        Node up = new Node(4, 3,6.6754785010);
-        Material zeroDensity = Material.STEEL7;
+        Node bottom = new Node(4, 8,0.0);
+        Node up = new Node(4, 3,0.0);
+       // Material zeroDensity = Material.STEEL7;
 
         List<Integer> condof = new ArrayList<>();
 
@@ -36,12 +34,11 @@ public class StructureFactory {
 
 
 
-        Material testMaterial = Material.STEEL4;
+        Material testMaterial = Material.STEEL2;
 
-        Beam b = new Beam(bottom, up, zeroDensity);
+        Beam b = new Beam(bottom, up, testMaterial);
         Structure structure =  new Structure(Arrays.asList(bottom, up), Arrays.asList(b), condof);
 
-        structure.setLumped(true);
         enumerateDOFs(structure);
         return structure;
     }
