@@ -283,7 +283,7 @@ public class StructureFactory {
     public static Structure getPresOne() {
 
         double f = 1; //Hz
-        double l1 = 1;
+        double l1 = 3;
         double l2 = 1;
         double M1 = 1/(f*f*l1);
         double M2 = 1;
@@ -293,8 +293,8 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material demoMaterial = Material.STEELDEMO;
 
-        Node n1 = new Node(0, 0);
-        Node n2 = new Node(l1, 0, M1);
+        Node n1 = new Node(0, 4);
+        Node n2 = new Node(l1, 4, M1);
         //Node n3 = new Node(l2+l1, 0);
 
         Beam b1 = new Beam(n1, n2, demoMaterial);
@@ -328,7 +328,7 @@ public class StructureFactory {
     public static Structure getPresTwo() {
 
         double f = 1; //Hz
-        double l1 = 1;
+        double l1 = 2;
         double l2 = 2;
         double M1 = 1/(f*f*l1); //for length oscillation
         double M2 = 1/(f*f*l2);
@@ -347,9 +347,9 @@ public class StructureFactory {
         Structure structure = new Structure();
         Material demoMaterial = Material.STEELDEMO;
 
-        Node n1 = new Node(0, 0);
-        Node n2 = new Node(l1, 0, M1);
-        Node n3 = new Node(l2+l1, 0, M2);
+        Node n1 = new Node(0, 4);
+        Node n2 = new Node(l1, 4, M1);
+        Node n3 = new Node(l2+l1, 4, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial);
         Beam b2 = new Beam(n2, n3, demoMaterial);
@@ -374,7 +374,7 @@ public class StructureFactory {
     public static Structure getPresThree() {
 
         double f = 1; //Hz
-        double l1 = 2;
+        double l1 = 8;
         //double l2 = 1;
         double M1 = 1/(f*f*l1*l1*l1);
         //double M2 = 1/(f*f*l2);
@@ -397,8 +397,8 @@ public class StructureFactory {
 
 
 
-        Node n1 = new Node(0, l1);
-        Node n2 = new Node(0, 0, M1);
+        Node n1 = new Node(4, l1);
+        Node n2 = new Node(4, 0, M1);
         //Node n3 = new Node(l2, 0, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial2);
@@ -426,8 +426,8 @@ public class StructureFactory {
     public static Structure getPresFour() {
 
         double f = 1; //Hz
-        double l1 = 2;
-        double l2 = 1;
+        double l1 = 8;
+        double l2 = 4;
         double M1 = 1/(f*f*l1*l1*l1); //for bending oscillation
         double M2 = 1/(f*f*l1*l1*l1);
 
@@ -449,9 +449,9 @@ public class StructureFactory {
 
 
 
-        Node n1 = new Node(0, l1);
-        Node n2 = new Node(0, 0, M1);
-        Node n3 = new Node(0, l2, M2);
+        Node n1 = new Node(4, l1);
+        Node n2 = new Node(4, 0, M1);
+        Node n3 = new Node(4, l2, M2);
 
         Beam b1 = new Beam(n1, n2, demoMaterial2);
         Beam b2 = new Beam(n2, n3, demoMaterial2);
@@ -518,9 +518,13 @@ public class StructureFactory {
 
         Structure structure = new Structure();
         Material testMaterial = Material.STEEL;
+        Material demoMaterial2 = Material.STEELDEMO2;
 
         double w = 4; //width
         double h = 3; //height
+        double f = 0.60074819525495005; //Hz
+        double l = 2;
+        double M = 1/(f*f*l*l*l);
 
         Node n1 = new Node(0, 3*h);
         Node n2 = new Node(w, 3*h);
@@ -530,20 +534,24 @@ public class StructureFactory {
         Node n6 = new Node(w, h);
         Node n7 = new Node(0, 0);
         Node n8 = new Node(w, 0);
+        Node n9 = new Node(w/2.0, 0);
+        Node n10 = new Node(w/2.0, l, M);
 
         Beam b1 = new Beam(n1, n2, testMaterial);
         Beam b2 = new Beam(n3, n4, testMaterial);
         Beam b3 = new Beam(n5, n6, testMaterial);
-        Beam b4 = new Beam(n7, n8, testMaterial);
+        Beam b4 = new Beam(n7, n9, testMaterial);
         Beam b5 = new Beam(n1, n3, testMaterial);
         Beam b6 = new Beam(n2, n4, testMaterial);
         Beam b7 = new Beam(n3, n5, testMaterial);
         Beam b8 = new Beam(n4, n6, testMaterial);
         Beam b9 = new Beam(n5, n7, testMaterial);
         Beam b10 = new Beam(n6, n8, testMaterial);
+        Beam b11 = new Beam(n9, n8, testMaterial);
+        Beam b12 = new Beam(n9, n10, demoMaterial2);
 
-        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8);
-        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10);
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12);
 
         boolean[] con = new boolean[3];
         con[0]=true;

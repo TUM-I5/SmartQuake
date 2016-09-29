@@ -38,7 +38,6 @@ public class SinCosExcitation extends AccelerationProvider {
      */
     @Override
     public double[] getAcceleration() {
-        counter++;
         return AccelData.toArray(getAccelerationMeasurement());
     }
 
@@ -57,7 +56,7 @@ public class SinCosExcitation extends AccelerationProvider {
      */
     public AccelData getAccelerationMeasurement() {
         counter++;
-        AccelData accelData = new AccelData( amplitude * Math.cos(2 * Math.PI * frequency * counter * timestep * 1e-9),
+        AccelData accelData = new AccelData( amplitude * Math.cos(2 * Math.PI * frequency * counter * timestep  * 1e-9),
                 0.0, (long) (counter * timestep));
         accelData.yGravity = 9.81;
         modifyData(accelData);

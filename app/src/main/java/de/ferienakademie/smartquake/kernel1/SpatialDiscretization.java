@@ -32,6 +32,7 @@ public class SpatialDiscretization {
     private double dampingCoefficient;
 
     //Modal Analysis part
+    private int numberOfModes = 999999;
     private DenseMatrix64F eigenvectorsmatrix;
     private double[] eigenvalues;
 
@@ -62,6 +63,7 @@ public class SpatialDiscretization {
         this.structure = structure;
         //initialize displacement with zeros
         numberofDOF = structure.getNumberOfDOF();
+        numberOfModes = PreferenceReader.getNumberOfModes();
 
         influenceVectorX = new DenseMatrix64F(getNumberOfDOF(), 1);
         influenceVectorY = new DenseMatrix64F(getNumberOfDOF(), 1);
@@ -223,8 +225,21 @@ public class SpatialDiscretization {
         return getNumberOfDOF() - structure.getConDOF().size();
     }
 
+
     public Structure getStructure() {
         return structure;
+    }
+
+
+    public int getNumberOfModes() {
+        if (numberOfModes == 999999)
+            return getNumberOfUnconstraintDOF();
+        else
+            return numberOfModes;
+    }
+
+    public void setNumberOfModes(int i) {
+        numberOfModes = i;
     }
 
 
@@ -309,7 +324,7 @@ public class SpatialDiscretization {
 
     public void updateLoadVectorModalAnalysis(double[] acceleration) {
 
-        redLoadVectorModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
+        redLoadVectorModalAnalysis = new DenseMatrix64F(getNumberOfModes(),1);
         DenseMatrix64F LoadVectorRed = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
         if (PreferenceReader.includeGravity()) {
 
@@ -329,7 +344,7 @@ public class SpatialDiscretization {
 
 
         // Scale load vector
-        for (int i=0; i<getNumberOfUnconstraintDOF(); i++)
+        for (int i=0; i<getNumberOfModes(); i++)
             redLoadVectorModalAnalysis.set(i, 0, redLoadVectorModalAnalysis.get(i, 0)/modalMasses[i] );
 
     }
@@ -389,24 +404,55 @@ public class SpatialDiscretization {
         // perform eigenvalue analysis
         //=================================
         GenEig eigen = new GenEig(stiffnessRed, massRed); //solve GEN eigenvalues problem
-        eigenvalues = eigen.getLambda();
+        double[] eigenvalues_temp = eigen.getLambda();
 
         double[][] ev = eigen.getV();
-        eigenvectorsmatrix = new DenseMatrix64F(ev);                                    // Eigenvectors in a matrix, columnwise
+        DenseMatrix64F eigenvectorsmatrix_temp = new DenseMatrix64F(ev);                                    // Eigenvectors in a matrix, columnwise
+
+
+        // Modal reduction
+        //==================
+        if(PreferenceReader.useModalReduction()){
+            Log.i("Reduction:",""+numberOfModes);
+
+            if (numberOfModes > getNumberOfUnconstraintDOF())
+                numberOfModes = getNumberOfUnconstraintDOF();
+
+            eigenvalues = new double[numberOfModes];
+            eigenvectorsmatrix = new DenseMatrix64F(getNumberOfUnconstraintDOF(), numberOfModes);
+            for (int i = 0; i < numberOfModes; i++) {
+                eigenvalues[i] = eigenvalues_temp[i];
+                for (int j = 0; j < getNumberOfUnconstraintDOF(); j++) {
+                    eigenvectorsmatrix.set(j, i, eigenvectorsmatrix_temp.get(j, i));
+                }
+            }
+        }
+
+        else
+        {
+            numberOfModes = getNumberOfUnconstraintDOF();
+            eigenvalues = new double[getNumberOfUnconstraintDOF()];
+            for (int i=0; i< getNumberOfUnconstraintDOF(); i++)
+                eigenvalues[i] = eigenvalues_temp[i];
+            eigenvectorsmatrix = eigenvectorsmatrix_temp;
+        }
+
+
 
         // Calculate modal masses
         //========================
-        DenseMatrix64F temp  = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
-        DenseMatrix64F temp2 = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
-        modalMasses = new double[getNumberOfUnconstraintDOF()];
+        DenseMatrix64F temp  = new DenseMatrix64F(getNumberOfModes(), getNumberOfUnconstraintDOF());
+        DenseMatrix64F temp2 = new DenseMatrix64F(getNumberOfModes(), getNumberOfUnconstraintDOF());
+        DenseMatrix64F temp3 = new DenseMatrix64F(getNumberOfModes(), getNumberOfModes());
+        modalMasses = new double[getNumberOfModes()];
 
         CommonOps.transpose(eigenvectorsmatrix, temp2);
 
         CommonOps.mult( temp2, massRed, temp);
-        CommonOps.mult( temp, eigenvectorsmatrix, temp2);
+        CommonOps.mult( temp, eigenvectorsmatrix, temp3);
 
-        for (int i=0; i<getNumberOfUnconstraintDOF(); i++)
-            modalMasses[i] = temp2.get(i,i);
+        for (int i=0; i<getNumberOfModes(); i++)
+            modalMasses[i] = temp3.get(i,i);
 
     }
 
@@ -414,11 +460,11 @@ public class SpatialDiscretization {
 
 
     public void calculateModalAnalysisMatrices(){
-        StiffnessMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
-        MassMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
-        DampingMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        StiffnessMatrixModalAnalysis = new DenseMatrix64F(getNumberOfModes(), getNumberOfModes());
+        MassMatrixModalAnalysis = new DenseMatrix64F(getNumberOfModes(), getNumberOfModes());
+        DampingMatrixModalAnalysis = new DenseMatrix64F(getNumberOfModes(), getNumberOfModes());
 
-        for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
+        for (int i = 0; i < getNumberOfModes(); i++) {
             StiffnessMatrixModalAnalysis.set(i,i,eigenvalues[i]);
             MassMatrixModalAnalysis.set(i,i,1.0);
         }
