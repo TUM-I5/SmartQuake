@@ -1,11 +1,8 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -63,7 +60,7 @@ public class TimeIntegration {
     public void prepareSimulation(){
 
         //initial condition for the velocity.
-        xDot = new DenseMatrix64F(spatialDiscretization.getNumberofDOF(),1);
+        xDot = new DenseMatrix64F(spatialDiscretization.getNumberOfDOF(),1);
         //This is just temporarily. In future this should choosen in the right way
         xDot.zero();
 
@@ -72,20 +69,21 @@ public class TimeIntegration {
 
         //give the class the time step
         //USE timestep between FRAMES
-        accelerationProvider.initTime(2*delta_t*1e9);
 
 
         //if modal analysis is activated we can diagonalize the matrices
         if(PreferenceReader.useModalAnalysis()) {
-            spatialDiscretization.getModalAnalysisMatrices();
+            spatialDiscretization.calculateModalAnalysisMatrices();
         }
 
         //stores the numerical scheme
+        //TODO: why do we instantiate xDot here if it is used only in the solver class?
         solver = new Newmark(spatialDiscretization, accelerationProvider, xDot,delta_t);
         //solver = new Euler(spatialDiscretization, accelerationProvider, xDot);
 
 
-
+        accelerationProvider.setActive();
+        accelerationProvider.initTime(2*delta_t*1e9);
         //for the parallel thread
         executorService = Executors.newSingleThreadExecutor();
     }
@@ -111,11 +109,10 @@ public class TimeIntegration {
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    long temp = System.nanoTime();
                     //reset time
                     t = 0;
 
-                    double[] currExcitation = accelerationProvider.getAcceleration();
+                    double[] currExcitation = accelerationProvider.getAcceleration(globalTime);
 
                    // for(int i=0; i<currExcitation.length; i++){
                    //     currExcitation[i] =0;
@@ -143,13 +140,13 @@ public class TimeIntegration {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         //add ground movement for recording
-                        solver.setGroundPosition(delta_t, currExcitation);
+                        solver.setGroundDisplacement(delta_t, currExcitation);
                         t += delta_t;
 
                     }
 
-                    //for the sensor team the global time since beginnig
-                    globalTime += 0.03;
+                    //for the sensor team the global time since begining
+                    globalTime += (double)3e-2;
 
                     //for checking the calculation time
                     long secondTime = System.nanoTime();
@@ -157,14 +154,13 @@ public class TimeIntegration {
 
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
-                        spatialDiscretization.superimposeModalAnalyisSolutions(solver.getX(), solver.getGroundPosition());
+                        spatialDiscretization.superimposeModalAnalysisSolutions(solver.getX(), solver.getGroundDisplacement());
                     }
                     else {
                         //update the displacement in the node variables
-                        spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
+                        spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundDisplacement());
                     }
                     isRunning = false;
-                    Log.i("TimeIntegration", System.nanoTime()-temp+"");
                 }
             });
             return this;

@@ -13,6 +13,7 @@ import android.view.View;
 
 import java.util.Arrays;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
 import de.ferienakademie.smartquake.model.Node;
 
@@ -95,9 +96,8 @@ public class CanvasView extends View {
 
     private static final InternalColorStop[] colorStops =
             {
-                    new InternalColorStop(Color.argb(255, 0, 0, 255), -250), //BLUE
                     new InternalColorStop(Color.argb(255, 0, 0, 0), 0), //BLACK
-                    new InternalColorStop(Color.argb(255, 255, 0, 0), 250) //RED
+                    new InternalColorStop(Color.argb(255, 255, 0, 0), 1) //RED
 
             };
 
@@ -112,43 +112,51 @@ public class CanvasView extends View {
         );
     }
 
-    private void beamDeformationColor(Beam beam, Paint paint)
-    {
-        double force = beam.calculateNormalForceOfBeam(); //Might still show some errors.
-
-        //Please don't ask for a reason to take such a comparably const-high algo on a small list, I was just lazy.
-        int idx = Arrays.binarySearch(colorStops, new InternalColorStop(0, force));
-
-        //The case why this is needed is explained very well in the documentation.
-        if (idx < 0) {
-            idx = -(idx + 1);
-        }
+    private void beamDeformationColor(Beam beam, Paint paint) {
         //Handling
-        if (idx <= 0)
+        if (!PreferenceReader.showColors())
         {
-            paint.setColor(colorStops[0].color);
+            paint.setColor(Color.BLACK);
+            return;
         }
-        else if (idx >= colorStops.length)
+
+        if (beam.isOverloaded())
         {
-            paint.setColor(colorStops[colorStops.length - 1].color);
+            paint.setColor(Color.argb(255, 255, 0, 255));
         }
-        else
-        {
-            //We interpolate.
-            InternalColorStop thisStep = colorStops[idx];
-            InternalColorStop lastStep = colorStops[idx - 1];
+        else {
 
-            double factor = (force - lastStep.pos) / (thisStep.pos - lastStep.pos);
+            double force = beam.returnMaximumStress() / beam.getTensileStrength(); //Might still show some errors.
 
-            int color = lerp(lastStep.color, thisStep.color, factor);
+            //Please don't ask for a reason to take such a comparably const-high algo on a small list, I was just lazy.
+            int idx = Arrays.binarySearch(colorStops, new InternalColorStop(0, force));
 
-            paint.setColor(color);
+            //The case why this is needed is explained very well in the documentation.
+            if (idx < 0) {
+                idx = -(idx + 1);
+            }
+            //Handling
+            if (idx <= 0) {
+                paint.setColor(colorStops[0].color);
+            } else if (idx >= colorStops.length) {
+                paint.setColor(colorStops[colorStops.length - 1].color);
+            } else {
+                //We interpolate.
+                InternalColorStop thisStep = colorStops[idx];
+                InternalColorStop lastStep = colorStops[idx - 1];
+
+                double factor = (force - lastStep.pos) / (thisStep.pos - lastStep.pos);
+
+                int color = lerp(lastStep.color, thisStep.color, factor);
+
+                paint.setColor(color);
+            }
         }
     }
 
     private void resetBeamColor(Paint paint)
     {
-        paint.setColor(Color.RED);
+        paint.setColor(Color.BLACK);
     }
 
     private void drawBeam(Beam beam, Canvas canvas) {

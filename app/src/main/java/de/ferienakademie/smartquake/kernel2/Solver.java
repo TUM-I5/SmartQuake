@@ -39,7 +39,7 @@ public class Solver implements TimeIntegrationSolver {
     SpatialDiscretization k1;
 
     //Ground position, velocity and acceleration
-    double[] groundPosition;
+    double[] groundDisplacement;
     double[] groundVelocity;
     double[] groundAcceleration;
 
@@ -54,13 +54,12 @@ public class Solver implements TimeIntegrationSolver {
         this.k1 = k1;
         this.accelerationProvider = accelerationProvider;
 
-
         //x and xDot set
-        this.x = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        this.x = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         this.xDot = xDot;
 
         //fill xDotDot with zeros
-        xDotDot = new DenseMatrix64F(k1.getNumberofDOF(), 1);
+        xDotDot = new DenseMatrix64F(k1.getNumberOfDOF(), 1);
         xDotDot.zero();
 
         //it depends on Modal analysis which matrices we have to use
@@ -68,24 +67,23 @@ public class Solver implements TimeIntegrationSolver {
             this.M = k1.getMassMatrixModalAnalysis();
             this.K = k1.getStiffnessMatrixModalAnalysis();
             this.C = k1.getDampingMatrixModalAnalysis();
+            //TODO: this looks really strange. In modal analysis xDot will be filled with zeros, in normal case
+            //TODO: the given vector is used. WTF?
             x = new DenseMatrix64F(M.getNumRows(),1);
             this.xDot = new DenseMatrix64F(M.getNumRows(),1);
             xDotDot = new DenseMatrix64F(M.getNumRows(),1);
-
-        }
-        else {
+        } else {
             this.M = k1.getMassMatrix();
             this.K = k1.getStiffnessMatrix();
             this.C = k1.getDampingMatrix();
         }
 
-
-
         //create and fill fLoad vector with zeros
-        fLoad = new DenseMatrix64F(k1.getNumberofDOF(),1);
+        //TODO: in modal analysis case fLoad should have other dimensions, right?
+        fLoad = new DenseMatrix64F(k1.getNumberOfDOF(),1);
 
         //create ground position, velocity and acceleration
-        groundPosition = new double[2];
+        groundDisplacement = new double[2];
         groundVelocity = new double[2];
         groundAcceleration = new double[2];
 
@@ -146,24 +144,34 @@ public class Solver implements TimeIntegrationSolver {
         return xDot;
     }
 
-    public double[] getGroundPosition() { return groundPosition; }
+    public double[] getGroundDisplacement() { return groundDisplacement; }
+
 
     /**
      * Updates ground position
      * @param delta_t
      */
-    public void setGroundPosition(double delta_t, double[] acc_new){
+    public void setGroundDisplacement(double delta_t, double[] acc_new){
 
-        //Initialize new acceleration and save old velocity
-        double[] velo_old = groundVelocity.clone();
+        // save old values at t^n
+        double[] vel_old  = groundVelocity.clone();
+        double[] acc_old  = groundAcceleration.clone();
 
-        //Get new velocity
-        groundVelocity[0] = 0.5*delta_t*(groundAcceleration[0]+acc_new[0]);
-        groundVelocity[1] = 0.5*delta_t*(groundAcceleration[1]+acc_new[1]);
+
+        // Set new accelerations at t^{n+1} and scale them with LoadVectorScaling
+        double loadVectorScaling = PreferenceReader.getLoadVectorScaling();
+        groundAcceleration[0] = loadVectorScaling * acc_new[0];
+        groundAcceleration[1] = loadVectorScaling * acc_new[1];
+
+
+        // Calculate new velocity at t^{n+1}
+        groundVelocity[0] += 0.5*delta_t*(acc_old[0]+groundAcceleration[0]);
+        groundVelocity[1] += 0.5*delta_t*(acc_old[1]+groundAcceleration[1]);
+
 
         //Get new position
-        groundPosition[0] = 0.5*delta_t*(velo_old[0]+groundVelocity[0]);
-        groundPosition[1] = 0.5*delta_t*(velo_old[1]+groundVelocity[1]);
+        groundDisplacement[0] += 0.5*delta_t*(vel_old[0]+groundVelocity[0]);
+        groundDisplacement[1] += 0.5*delta_t*(vel_old[1]+groundVelocity[1]);
 
     }
 

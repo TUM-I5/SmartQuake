@@ -2,14 +2,15 @@ package de.ferienakademie.smartquake.excitation;
 
 /**
  * Created by user on 22.09.2016.
+ * Data structure to store measurements provided by sensors
  */
 public class AccelData implements Comparable {
 
     public long timestamp;
-    public double xAcceleration;
-    public double yAcceleration;
-    public double xGravity;
-    public double yGravity;
+    public double xAcceleration; // acceleration decoupled from gravity applied to the phone in X direction to the right
+    public double yAcceleration; // acceleration decoupled from gravity applied to the phone in Y direction to the top
+    public double xGravity;      // gravitation applied to the phone in X direction to the lefr (?)
+    public double yGravity;      // gravitation applied to the phone in Y direction to the bottom
 
     public AccelData(){
         timestamp = 0;
