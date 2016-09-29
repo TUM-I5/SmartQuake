@@ -55,7 +55,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     // TODO: break this up
     private static final int REQUEST_EARTHQUAKE_DATA = 0;
     private static Structure structure;
-    private static int selectedNodeId;
     private SensorManager mSensorManager; // manager to subscribe for sensor events
     private AccelerationProvider mCurrentAccelerationProvider = new EmptyAccelerationProvider();
     private FloatingActionButton simFab;
@@ -226,6 +225,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         canvasView = (CanvasView) findViewById(R.id.simCanvasView);
         canvasView.setNodePositionChoiceListener(this);
         canvasView.setStructureProvider(this);
+        canvasView.setSelectedNodeId(1);
         ViewTreeObserver viewTreeObserver = canvasView.getViewTreeObserver();
 
         if (savedInstanceState != null) {
@@ -238,7 +238,6 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structureName = getIntent().getExtras().getString("name");
         }
 
-        selectedNodeId = 1;
         findSensorDataDebugViews();
 
         if (viewTreeObserver.isAlive()) {
@@ -493,8 +492,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
     @Override
     public void onNodePositionChosen(double internalX, double internalY, double scale) {
         List<Node> nodes = structure.getNodes();
-        double minDist = 75 / scale;
-        double closestDist = minDist;
+        double maxDist = 50;
+        double closestDist = maxDist;
         double nodeFingerDistManhattan;
         Node thisNode;
 
@@ -516,7 +515,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         if (newStructure != structure) {
             structure = newStructure;
         }
-        DrawHelper.drawStructure(structure, canvasView, selectedNodeId);
+        DrawHelper.drawStructure(structure, canvasView, null);
     }
 
     // TODO: should this be part of Simulation too?
