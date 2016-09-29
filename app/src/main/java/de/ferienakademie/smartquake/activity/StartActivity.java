@@ -23,10 +23,9 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.util.FileMatching;
 
 public class StartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -176,12 +175,10 @@ public class StartActivity extends AppCompatActivity
 
         String[] structures = getFilesDir().list();
 
-        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
-        Matcher matcher;
-
         for (String str : structures) {
-            matcher = pattern.matcher(str);
-            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
+            if (FileMatching.matchesStructureFileName(str)) {
+                values.add(str.substring(0, str.length() - 10));
+            }
         }
 
         adapter.notifyDataSetChanged();
