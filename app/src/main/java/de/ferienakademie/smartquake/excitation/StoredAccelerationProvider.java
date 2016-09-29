@@ -52,10 +52,7 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
             ++currentPosition;
         }
         AccelData temp = readings.get(currentPosition);
-        if(PreferenceReader.excitationVerticalDirection()){
-            temp.yAcceleration = 0;
-        }
-        return readings.get(currentPosition);
+        return temp;
     }
 
     /**
