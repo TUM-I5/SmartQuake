@@ -42,7 +42,6 @@ import de.ferienakademie.smartquake.kernel1.SpatialDiscretization;
 import de.ferienakademie.smartquake.kernel2.TimeIntegration;
 import de.ferienakademie.smartquake.managers.PreferenceReader;
 import de.ferienakademie.smartquake.model.Beam;
-import de.ferienakademie.smartquake.model.Node;
 import de.ferienakademie.smartquake.model.Structure;
 import de.ferienakademie.smartquake.model.StructureFactory;
 import de.ferienakademie.smartquake.view.CanvasView;
@@ -303,6 +302,12 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         mCurrentAccelerationProvider = accelerationProvider;
         mCurrentAccelerationProvider.addObserver(this);
 
+
+        // reset structure if this is a resimulation
+        structure.resetHistoryOfNodes();
+        structure.resetBeams();
+
+
         spatialDiscretization = new SpatialDiscretization(structure);
         timeIntegration = new TimeIntegration(spatialDiscretization, accelerationProvider);
         simulation = new Simulation(spatialDiscretization, timeIntegration, canvasView);
@@ -520,7 +525,7 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
         @Override
         public void run() {
 
-            int number_timeSteps = structure.getNodes().get(0).getLengthofHistory();
+            int number_timeSteps = structure.getNodes().get(0).getLengthOfHistory();
 
             //we loop over all frames
             for (int i = 0; i < number_timeSteps; i++) {
@@ -528,11 +533,8 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
                 if (!isRunning) break;
 
                 //loop over all nodes to update positions
-                for (Node in : structure.getNodes()) {
+                structure.recallDisplacementOfStep(i);
 
-                    in.recallDisplacementOfStep(i);
-
-                }
 
                 try {
                     Thread.sleep(30);

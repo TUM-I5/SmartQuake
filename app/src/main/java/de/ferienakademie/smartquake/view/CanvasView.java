@@ -297,8 +297,14 @@ public class CanvasView extends View {
         canvas.drawLine((float) (SIDE_MARGIN_SCREEN_FRACTION * canvas.getWidth()), (float) (0.5 * TOP_MARGIN_SCREEN_FRACTION * canvas.getHeight()),
                 (float) ((1 - SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth()), (float) (0.5 * TOP_MARGIN_SCREEN_FRACTION * canvas.getHeight()),
                 RULER_PAINT);
-        canvas.drawText(Double.toString(meterWidth) + " meter(s)",
-                (float) SIDE_MARGIN_SCREEN_FRACTION * canvas.getWidth(),
+        canvas.drawLine((float) (SIDE_MARGIN_SCREEN_FRACTION * canvas.getWidth()), (float) (TOP_MARGIN_SCREEN_FRACTION * canvas.getHeight() * 3.0 / 8.0),
+                (float) (SIDE_MARGIN_SCREEN_FRACTION * canvas.getWidth()), (float) (5.0 / 8.0 * TOP_MARGIN_SCREEN_FRACTION * canvas.getHeight()),
+                RULER_PAINT);
+        canvas.drawLine((float) ((1 - SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth()), (float) (TOP_MARGIN_SCREEN_FRACTION * canvas.getHeight() * 3.0 / 8.0),
+                (float) ((1 - SIDE_MARGIN_SCREEN_FRACTION) * canvas.getWidth()), (float) (5.0 / 8.0 * TOP_MARGIN_SCREEN_FRACTION * canvas.getHeight()),
+                RULER_PAINT);
+        canvas.drawText(Double.toString(meterWidth) + " m",
+                (float) ((canvas.getWidth() - RULER_PAINT.measureText(Double.toString(meterWidth) + " m")) / 2.0),
                 (float) ((TOP_MARGIN_SCREEN_FRACTION - 0.025) * canvas.getHeight()), RULER_PAINT);
     }
 

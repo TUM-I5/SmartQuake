@@ -1,7 +1,5 @@
 package de.ferienakademie.smartquake.kernel2;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
@@ -142,7 +140,7 @@ public class TimeIntegration {
                         //calculate new displacement
                         solver.nextStep(t, delta_t);
                         //add ground movement for recording
-                        solver.setGroundPosition(delta_t, currExcitation);
+                        solver.setGroundDisplacement(delta_t, currExcitation);
                         t += delta_t;
 
                     }
@@ -156,11 +154,11 @@ public class TimeIntegration {
 
                     if(PreferenceReader.useModalAnalysis()){
                         //update the displacement in the node variables using modal analysis
-                        spatialDiscretization.superimposeModalAnalysisSolutions(solver.getX(), solver.getGroundPosition());
+                        spatialDiscretization.superimposeModalAnalysisSolutions(solver.getX(), solver.getGroundDisplacement());
                     }
                     else {
                         //update the displacement in the node variables
-                        spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundPosition());
+                        spatialDiscretization.updateDisplacementsOfStructure(solver.getX(), solver.getGroundDisplacement());
                     }
                     isRunning = false;
                 }
