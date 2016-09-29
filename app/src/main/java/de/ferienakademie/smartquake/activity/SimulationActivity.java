@@ -223,23 +223,22 @@ public class SimulationActivity extends AppCompatActivity implements Simulation.
             structure = StructureFactory.getSimpleElephant();
         }   else if (structureId == 17) {
                 structure = StructureFactory.getEierlaufen();
-        } else if (structureId == 2) {
-            structure = StructureFactory.getDemoTMD();
-        }
-        else if (structureId == 1) {
+        } else if (structureId == 18) {
             structure = StructureFactory.getPresOne();
         }
-        else if (structureId == 2) {
+        else if (structureId == 19) {
             structure = StructureFactory.getPresTwo();
         }
-        else if (structureId == 3) {
+        else if (structureId == 20) {
             structure = StructureFactory.getPresThree();
         }
-        else if (structureId == 4) {
+        else if (structureId == 21) {
             structure = StructureFactory.getPresFour();
         }
-        else if (structureId == 5) {
+        else if (structureId == 22) {
             structure = StructureFactory.getPresFive();
+        } else if (structureId == 23) {
+            structure = StructureFactory.getPresSix();
         }
         else {
             structure = StructureFactory.getStructure(this, structureName);

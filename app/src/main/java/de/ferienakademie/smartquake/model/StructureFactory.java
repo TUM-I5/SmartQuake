@@ -193,50 +193,6 @@ public class StructureFactory {
         return structure;
     }
 
-    public static Structure getDemo() {
-
-        boolean lumped = true; // Make it false for consistent mass matrices!
-
-        Structure structure = new Structure();
-        Material testMaterial = Material.STEEL;
-
-        double w = 4; //width
-        double h = 3; //height
-
-        Node n1 = new Node(0, 3*h);
-        Node n2 = new Node(w, 3*h);
-        Node n3 = new Node(0, 2*h);
-        Node n4 = new Node(w, 2*h);
-        Node n5 = new Node(0, h);
-        Node n6 = new Node(w, h);
-        Node n7 = new Node(0, 0);
-        Node n8 = new Node(w, 0);
-
-        Beam b1 = new Beam(n1, n2, testMaterial);
-        Beam b2 = new Beam(n3, n4, testMaterial);
-        Beam b3 = new Beam(n5, n6, testMaterial);
-        Beam b4 = new Beam(n7, n8, testMaterial);
-        Beam b5 = new Beam(n1, n3, testMaterial);
-        Beam b6 = new Beam(n2, n4, testMaterial);
-        Beam b7 = new Beam(n3, n5, testMaterial);
-        Beam b8 = new Beam(n4, n6, testMaterial);
-        Beam b9 = new Beam(n5, n7, testMaterial);
-        Beam b10 = new Beam(n6, n8, testMaterial);
-
-        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8);
-        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10);
-
-        boolean[] con = new boolean[3];
-        con[0]=true;
-        con[1]=true;
-        con[2]=true;
-        n1.setConstraint(con);
-        n2.setConstraint(con);
-        enumerateDOFs(structure);
-        return structure;
-
-    }
-
     public static Structure getDemoTMD() {
 
         double f = 1; //Hz
@@ -471,47 +427,87 @@ public class StructureFactory {
 
     public static Structure getPresFive() {
 
-        double f = 1; //Hz
-        double l1 = 2;
-        double l2 = 1;
-        double M1 = 1/(f*f*l1*l1*l1); //for bending oscillation
-        double M2 = 1/(f*f*l1*l1*l1);
+        boolean lumped = true; // Make it false for consistent mass matrices!
 
-        boolean[] con1 = new boolean[3];
-        con1[0]=true;
-        con1[1]=true;
-        con1[2]=true;
-        boolean[] con2 = new boolean[3];
-        con2[0]=false;
-        con2[1]=true;
-        con2[2]=false;
+        Structure structure = new Structure();
+        Material testMaterial = Material.STEEL;
+
+        double w = 4; //width
+        double h = 3; //height
+
+        Node n1 = new Node(0, 3*h);
+        Node n2 = new Node(w, 3*h);
+        Node n3 = new Node(0, 2*h);
+        Node n4 = new Node(w, 2*h);
+        Node n5 = new Node(0, h);
+        Node n6 = new Node(w, h);
+        Node n7 = new Node(0, 0);
+        Node n8 = new Node(w, 0);
+
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n3, n4, testMaterial);
+        Beam b3 = new Beam(n5, n6, testMaterial);
+        Beam b4 = new Beam(n7, n8, testMaterial);
+        Beam b5 = new Beam(n1, n3, testMaterial);
+        Beam b6 = new Beam(n2, n4, testMaterial);
+        Beam b7 = new Beam(n3, n5, testMaterial);
+        Beam b8 = new Beam(n4, n6, testMaterial);
+        Beam b9 = new Beam(n5, n7, testMaterial);
+        Beam b10 = new Beam(n6, n8, testMaterial);
+
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10);
+
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n2.setConstraint(con);
+        enumerateDOFs(structure);
+        return structure;
+
+    }
+
+    public static Structure getPresSix() {
 
         boolean lumped = true; // Make it false for consistent mass matrices!
 
         Structure structure = new Structure();
-        Material demoMaterial = Material.STEELDEMO;
-        Material demoMaterial2 = Material.STEELDEMO2;
+        Material testMaterial = Material.STEEL;
 
+        double w = 4; //width
+        double h = 3; //height
 
+        Node n1 = new Node(0, 3*h);
+        Node n2 = new Node(w, 3*h);
+        Node n3 = new Node(0, 2*h);
+        Node n4 = new Node(w, 2*h);
+        Node n5 = new Node(0, h);
+        Node n6 = new Node(w, h);
+        Node n7 = new Node(0, 0);
+        Node n8 = new Node(w, 0);
 
+        Beam b1 = new Beam(n1, n2, testMaterial);
+        Beam b2 = new Beam(n3, n4, testMaterial);
+        Beam b3 = new Beam(n5, n6, testMaterial);
+        Beam b4 = new Beam(n7, n8, testMaterial);
+        Beam b5 = new Beam(n1, n3, testMaterial);
+        Beam b6 = new Beam(n2, n4, testMaterial);
+        Beam b7 = new Beam(n3, n5, testMaterial);
+        Beam b8 = new Beam(n4, n6, testMaterial);
+        Beam b9 = new Beam(n5, n7, testMaterial);
+        Beam b10 = new Beam(n6, n8, testMaterial);
 
-        Node n1 = new Node(0, 4);
-        Node n2 = new Node(0, 0, 0.002);
-        Node n3 = new Node(4, 0, 0.002);
-        Node n4 = new Node(4, 4);
+        structure.addNodes(n1, n2, n3, n4, n5, n6, n7, n8);
+        structure.addBeams(b1, b2, b3, b4, b5, b6, b7, b8, b9, b10);
 
-        Beam b1 = new Beam(n1, n2, demoMaterial2);
-        Beam b2 = new Beam(n2, n3, demoMaterial2);
-        Beam b3 = new Beam(n3, n4, demoMaterial2);
-
-        structure.addNodes(n1, n2, n3, n4);
-        structure.addBeams(b1, b2, b3);
-
-        n1.setConstraint(con1);
-        n4.setConstraint(con1);
-        //n2.setConstraint(con2);
-        //n2.setHinge(true);
-        //n3.setConstraint(con2);
+        boolean[] con = new boolean[3];
+        con[0]=true;
+        con[1]=true;
+        con[2]=true;
+        n1.setConstraint(con);
+        n2.setConstraint(con);
         enumerateDOFs(structure);
         return structure;
 
