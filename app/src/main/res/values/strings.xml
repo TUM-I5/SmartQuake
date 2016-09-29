@@ -37,6 +37,11 @@
     <string name="pref_modal_analysis_summary_Off">Use normal scheme.</string>
     <string name="pref_modal_analysis_summary_On">Use modal analysis.</string>
 
+    <!-- Preference y excitation -->
+    <string name="pref_y_excitation_title">Earth quake in vertical direction</string>
+    <string name="pref_y_excitation_summary_Off">Ground cannot move in vertical direction during earth quake.</string>
+    <string name="pref_y_excitation_summary_On">Ground can move in vertical direction during earth quake.</string>
+
     <!-- Preference slider excitation frequency -->
     <string name="frequency_slider_title">Excitation frequency</string>
     <item name="frequency_slider_default" format="float" type="string">0.1</item>
