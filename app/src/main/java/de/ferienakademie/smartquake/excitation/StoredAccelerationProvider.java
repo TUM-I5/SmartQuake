@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import de.ferienakademie.smartquake.managers.PreferenceReader;
+
 /**
  * Created by David Schneller on 25.09.2016.
  * Super class for all acceleration providers that could be saved in the file after simulation: NO sinusoidal acceleration
@@ -49,7 +51,10 @@ public abstract class StoredAccelerationProvider extends AccelerationProvider {
                 && readings.get(currentPosition).timestamp < (long)(time * 1e9)) {
             ++currentPosition;
         }
-
+        AccelData temp = readings.get(currentPosition);
+        if(PreferenceReader.excitationVerticalDirection()){
+            temp.yAcceleration = 0;
+        }
         return readings.get(currentPosition);
     }
 
