@@ -62,11 +62,11 @@
             android:summary="@array/frequency_slider_summaries"
             android:title="@string/frequency_slider_title" />
             -->
-        <EditTextPreference
+        <de.ferienakademie.smartquake.preferenceElements.EditTextPreference
             android:key="pref_excitation_frequency"
             android:numeric="decimal"
             android:title="@string/pref_excitation_frequency_title"
-            android:defaultValue="1.0"/>
+            android:defaultValue="1.0" />
     </PreferenceCategory>
 
     <PreferenceCategory

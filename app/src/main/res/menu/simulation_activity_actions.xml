@@ -24,7 +24,7 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/sim_replay_button"
+        android:id="@+id/sim_replay_excitation_button"
         android:title="@string/resimulate_button"
         smartquake:showAsAction="never"/>
 

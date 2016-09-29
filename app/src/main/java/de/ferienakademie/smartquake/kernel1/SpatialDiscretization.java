@@ -33,19 +33,22 @@ public class SpatialDiscretization {
 
     //Modal Analysis part
     private DenseMatrix64F eigenvectorsmatrix;
-    private DenseMatrix64F[] eigenvectors;
     private double[] eigenvalues;
+
+    private double[] modalMasses;
+    DenseMatrix64F stiffnessRed;
+    DenseMatrix64F massRed;
+
     private DenseMatrix64F StiffnessMatrixModalAnalysis;
     private DenseMatrix64F MassMatrixModalAnalysis;
     private DenseMatrix64F DampingMatrixModalAnalysis;
-    private double[] ReducedEigenvalues;
     private DenseMatrix64F redLoadVectorModalAnalysis;
-    private  DenseMatrix64F[] Reducedeigenvectors;
-    private DenseMatrix64F ReducedeigenvectorsMatrixTranspose;
+
     private DenseMatrix64F RedinfluenceVectorX;
     private DenseMatrix64F RedinfluenceVectorY;
     private DenseMatrix64F RedinfluenceVectorX_temp;
     private DenseMatrix64F RedinfluenceVectorY_temp;
+
     double a0;
     double a1;
     private int numberofDOF;
@@ -139,8 +142,14 @@ public class SpatialDiscretization {
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < 6; j++) {
                     MassMatrix.add(dofs[i], dofs[j], beam.getElementMassMatrix_globalized().get(i, j));
+
                 }
             }
+            for (Node i: structure.getNodes()) {
+                MassMatrix.add(i.getDOF().get(0),i.getDOF().get(0),i.getNodeMass()); //write NodeMass on x-dofs
+                MassMatrix.add(i.getDOF().get(1),i.getDOF().get(1),i.getNodeMass());//write NodeMass on y-dofs
+            }
+
         }
 
         for (int k = 0; k < structure.getNodes().size() ; k++) {
@@ -176,12 +185,14 @@ public class SpatialDiscretization {
 
     public void calculateDampingMatrix() {
         DampingMatrix.zero();
-        double omega1 = ReducedEigenvalues[0];
-        double omega2 = ReducedEigenvalues[1];
+        double omega1 = eigenvalues[0];
+        double omega2 = eigenvalues[1];
 
         double a0 =  2 * dampingCoefficient * omega1 * omega2 / (omega1 + omega2);
         double a1 = 2 * dampingCoefficient / (omega1 + omega2);
         CommonOps.add(a0, MassMatrix, a1, StiffnessMatrix, DampingMatrix);
+
+        // Apply boundary conditions
         for (int i = 0; i < structure.getConDOF().size(); i++) {
             int j = structure.getConDOF().get(i);
             for (int k = 0; k < getNumberOfDOF(); k++) {
@@ -192,13 +203,14 @@ public class SpatialDiscretization {
         }
     }
 
+
     public void calculateModalAnalysisDampingMatrix() {
         DampingMatrix.zero();
-        double omega1 = ReducedEigenvalues[0];
-        double omega2 = ReducedEigenvalues[1];
-        double xi = 0.05;
-        a0 =  2 * xi * omega1 * omega2 / (omega1 + omega2);
-        a1 = 2 * xi / (omega1 + omega2);
+        double omega1 = eigenvalues[0];
+        double omega2 = eigenvalues[1];
+
+        double a0 =  2 * dampingCoefficient * omega1 * omega2 / (omega1 + omega2);
+        double a1 = 2 * dampingCoefficient / (omega1 + omega2);
         CommonOps.add(a0, MassMatrixModalAnalysis, a1, StiffnessMatrixModalAnalysis, DampingMatrixModalAnalysis);
 
     }
@@ -292,39 +304,45 @@ public class SpatialDiscretization {
             CommonOps.mult(MassMatrix, influenceVectorX_temp, LoadVector);
         }
 
-
     }
 
 
     public void updateLoadVectorModalAnalysis(double[] acceleration) {
 
         redLoadVectorModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
+        DenseMatrix64F LoadVectorRed = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
         if (PreferenceReader.includeGravity()) {
 
             CommonOps.scale(-acceleration[0]- acceleration[2], RedinfluenceVectorX, RedinfluenceVectorX_temp); //influenceVectorX_temp
-            CommonOps.scale(-acceleration[1]- acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
+            CommonOps.scale(-acceleration[1]+ acceleration[3], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
+            CommonOps.mult(massRed, RedinfluenceVectorX_temp, LoadVectorRed);
+
         } else {
             CommonOps.scale(-acceleration[0], RedinfluenceVectorX, RedinfluenceVectorX_temp);
             CommonOps.scale(-acceleration[1], RedinfluenceVectorY, RedinfluenceVectorY_temp);
             CommonOps.addEquals(RedinfluenceVectorX_temp, RedinfluenceVectorY_temp);
+            CommonOps.mult(massRed, RedinfluenceVectorX_temp, LoadVectorRed);
         }
 
-        CommonOps.mult(ReducedeigenvectorsMatrixTranspose, RedinfluenceVectorX_temp, redLoadVectorModalAnalysis);
+        CommonOps.multTransA(eigenvectorsmatrix, LoadVectorRed, redLoadVectorModalAnalysis);
+
+
+        // Scale load vector
+        for (int i=0; i<getNumberOfUnconstraintDOF(); i++)
+            redLoadVectorModalAnalysis.set(i, 0, redLoadVectorModalAnalysis.get(i, 0)/modalMasses[i] );
 
     }
 
 
-    public void calculateEigenvaluesAndVectors() {
-        GenEig eigen = new GenEig(StiffnessMatrix, MassMatrix); //solve GEN eigenvalues problem
-        eigenvalues = eigen.getLambda();
-        double[][] ev = eigen.getV();
-        eigenvectorsmatrix = new DenseMatrix64F(ev);
-        CommonOps.transpose(eigenvectorsmatrix, eigenvectorsmatrix); //transpose due to constructor of DenseMatrix64F in which rows and column are switched
-        eigenvectors = CommonOps.columnsToVector(eigenvectorsmatrix, null);
-        ReducedEigenvalues = new double[getNumberOfUnconstraintDOF()];
 
-        Reducedeigenvectors = new DenseMatrix64F[getNumberOfUnconstraintDOF()];
+    public void calculateEigenvaluesAndVectors() {
+
+        // Reduce matrices and vectors to unconstrained dofs
+        //===================================================
+        stiffnessRed = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        massRed = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+
 
         RedinfluenceVectorX = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
         RedinfluenceVectorY = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
@@ -332,90 +350,110 @@ public class SpatialDiscretization {
         RedinfluenceVectorY_temp  = new DenseMatrix64F(getNumberOfUnconstraintDOF(),1);
 
 
-        for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
-            Reducedeigenvectors[i]=new DenseMatrix64F(getNumberOfUnconstraintDOF());
-        }
-        int counter =0;
-        // Throw away eigenvectors that belong to constraint frequencies
-        for (int i = 0; i < numberofDOF; i++) {
+        List<Integer> conDof = structure.getConDOF();
 
-            if (eigenvalues[i]<0){
-                continue;
-            }else {
-                ReducedEigenvalues[counter]=eigenvalues[i];
-                Reducedeigenvectors[counter] = eigenvectors[i];
-                RedinfluenceVectorX.set(counter,0,influenceVectorX.get(i,0));
-                RedinfluenceVectorY.set(counter,0,influenceVectorY.get(i,0));
-                RedinfluenceVectorY_temp.set(counter,0,influenceVectorY_temp.get(i,0));
-                RedinfluenceVectorX_temp.set(counter,0,influenceVectorX_temp.get(i,0));
-                counter++;
-            }
-        }
-        double[][] temporary = new double[getNumberOfUnconstraintDOF()][getNumberOfUnconstraintDOF()];
-        // Throw away eigenvector entries that belong to constraint dofs.
-
-        for (int j = 0; j < getNumberOfUnconstraintDOF(); j++) {
-            int counter_k=0;
-            for (int k = 0; k < numberofDOF; k++) {
-                boolean isConstraint = false;
-                for (int i: structure.getConDOF()) {
-                    if (k == i) {
-                        isConstraint = true;
-                        break;
-                    }
-                }
-                if (!isConstraint) {
-                    temporary[j][counter_k++] = Reducedeigenvectors[j].get(k);
-                }
-            }
-        }
-        ReducedeigenvectorsMatrixTranspose = new DenseMatrix64F(temporary);
-    }
-
-
-    //Normalise eigenvectors
-    public void normaliseEigenvectors() {
+        int row = 0;
+        int col = 0;
+        // loop all rows
         for (int i = 0; i < getNumberOfDOF(); i++) {
-            CommonOps.scale(1 / Math.sqrt(MassMatrix.get(i, i)), eigenvectors[i]);
+
+            // skip constrained dofs
+            if (conDof.contains(i))
+                continue;
+
+            // Do vectors
+            RedinfluenceVectorX.set(row, 0, influenceVectorX.get(i,0));
+            RedinfluenceVectorY.set(row, 0, influenceVectorY.get(i,0));
+            RedinfluenceVectorY_temp.set(row, 0, influenceVectorY_temp.get(i,0));
+            RedinfluenceVectorX_temp.set(row, 0, influenceVectorX_temp.get(i,0));
+
+            //loop all columns
+            for (int j = 0; j < getNumberOfDOF(); j++) {
+
+                // skip constrained dofs
+                if (conDof.contains(j))
+                    continue;
+
+                // copy entry to reduced matrix
+                stiffnessRed.set(row, col, StiffnessMatrix.get(i,j) );
+                massRed.set(row, col, MassMatrix.get(i,j) );
+                col++;
+
+            }
+            row++;
+            col = 0;
         }
+
+
+
+        // perform eigenvalue analysis
+        //=================================
+        GenEig eigen = new GenEig(stiffnessRed, massRed); //solve GEN eigenvalues problem
+        eigenvalues = eigen.getLambda();
+
+        double[][] ev = eigen.getV();
+        eigenvectorsmatrix = new DenseMatrix64F(ev);                                    // Eigenvectors in a matrix, columnwise
+
+        // Calculate modal masses
+        //========================
+        DenseMatrix64F temp  = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        DenseMatrix64F temp2 = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
+        modalMasses = new double[getNumberOfUnconstraintDOF()];
+
+        CommonOps.transpose(eigenvectorsmatrix, temp2);
+
+        CommonOps.mult( temp2, massRed, temp);
+        CommonOps.mult( temp, eigenvectorsmatrix, temp2);
+
+        for (int i=0; i<getNumberOfUnconstraintDOF(); i++)
+            modalMasses[i] = temp2.get(i,i);
+
     }
+
 
 
 
     public void calculateModalAnalysisMatrices(){
-        normaliseEigenvectors();
         StiffnessMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
         MassMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
         DampingMatrixModalAnalysis = new DenseMatrix64F(getNumberOfUnconstraintDOF(), getNumberOfUnconstraintDOF());
 
         for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
-            StiffnessMatrixModalAnalysis.set(i,i,ReducedEigenvalues[i]);
+            StiffnessMatrixModalAnalysis.set(i,i,eigenvalues[i]);
             MassMatrixModalAnalysis.set(i,i,1.0);
         }
         calculateModalAnalysisDampingMatrix();
-
-
     }
+
+
+
+
     public void superimposeModalAnalysisSolutions(DenseMatrix64F modalSolutionvector, double[] groundDisplacement){
         DenseMatrix64F DisplacementVector = new DenseMatrix64F(numberofDOF, 1);
         DenseMatrix64F solVecCopy = new DenseMatrix64F(getNumberOfUnconstraintDOF(), 1);
 
-        CommonOps.multTransA(1, ReducedeigenvectorsMatrixTranspose, modalSolutionvector, solVecCopy);
+        CommonOps.mult(1, eigenvectorsmatrix, modalSolutionvector, solVecCopy);
 
+        List<Integer> conDof = structure.getConDOF();
 
         // Extend displacements by inserting zeros in the position of constraint dofs
-        for (int i = 0; i < getNumberOfUnconstraintDOF(); i++) {
-            int disp = 0;
-            for (int k: structure.getConDOF()) {
-                if (k <= i) {
-                    disp++;
-                }
+        int counter = 0;
+        for (int i = 0; i < getNumberOfDOF(); i++) {
+
+            // skip constrained dofs
+            if (conDof.contains(i))
+                DisplacementVector.set(i, 0, 0.0);
+            else {
+                DisplacementVector.set(i, 0, solVecCopy.get(counter, 0));
+                counter++;
             }
-            DisplacementVector.set(i+disp, 0, solVecCopy.get(i, 0));
         }
+
         updateDisplacementsOfStructure(DisplacementVector, groundDisplacement);
 
     }
+
+
 
     public DenseMatrix64F getDampingMatrixModalAnalysis() {
         return DampingMatrixModalAnalysis;
