@@ -18,11 +18,14 @@ public class DrawHelper {
     public static List<Beam> snapBeams = new ArrayList<>();
     public static double[] boundingBox = new double[4];
 
-    public static void drawStructure(Structure structure, View view1) {
+    public static void drawStructure(Structure structure, View view1, Integer selectedNodeId) {
         snapShot(structure.getNodes(), structure.getBeams());
         boundingBox = structure.getBoundingBox();
         if (view1 instanceof CanvasView) {
             CanvasView view = (CanvasView)view1;
+            if (selectedNodeId != null) {
+                view.setSelectedNodeId(selectedNodeId);
+            }
             view.isBeingDrawn = true;
         }
         if (view1 instanceof DrawCanvasView) {

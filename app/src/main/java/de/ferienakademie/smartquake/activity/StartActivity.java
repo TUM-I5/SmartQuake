@@ -2,7 +2,6 @@ package de.ferienakademie.smartquake.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PatternMatcher;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,12 +22,10 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.ferienakademie.smartquake.R;
+import de.ferienakademie.smartquake.util.FileMatching;
 
 public class StartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -133,7 +130,7 @@ public class StartActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_slideshow) {
-            startActivity(new Intent(this, EarthquakeDataActivity.class));
+            startActivity(new Intent(this, EarthquakeDataStartActivity.class));
             return true;
 
         } else if (id == R.id.nav_manage) {
@@ -168,8 +165,8 @@ public class StartActivity extends AppCompatActivity
         values.add("House with Mass Damper");
         values.add("One World Trade Center");
         values.add("Burj Khalifa");
-        values.add("TunedMassExample1");
-        values.add("TunedMassExample2");
+        values.add("Presentation Example 1 with TMD");
+        values.add("Presentation Example 2 without TMD");
         values.add("Elephant");
         values.add("Eierlaufen");
         values.add("Presentation Demo 1");
@@ -184,12 +181,10 @@ public class StartActivity extends AppCompatActivity
 
         String[] structures = getFilesDir().list();
 
-        Pattern pattern = Pattern.compile("[_A-Za-z0-9-]+\\.structure");
-        Matcher matcher;
-
         for (String str : structures) {
-            matcher = pattern.matcher(str);
-            if (matcher.matches()) values.add(str.substring(0, str.length() - 10));
+            if (FileMatching.matchesStructureFileName(str)) {
+                values.add(str.substring(0, str.length() - 10));
+            }
         }
 
         adapter.notifyDataSetChanged();

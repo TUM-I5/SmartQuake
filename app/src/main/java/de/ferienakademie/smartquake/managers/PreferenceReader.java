@@ -48,12 +48,12 @@ public class PreferenceReader {
         return sharedPref.getBoolean("pref_use_lumped", false);
     }
 
-    public static boolean groundDisplcements() {
+    public static boolean groundDisplacements() {
         return sharedPref.getBoolean("pref_show_ground_displacements", false);
     }
 
     public static boolean showRawSensorData() {
-        return sharedPref.getBoolean("pref_show_raw_sensor_data", false);
+        return sharedPref.getBoolean("pref_show_raw_sensor_data", true);
     }
 
     public static boolean showColors()
