@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by David Schneller on 25.09.2016.
@@ -77,5 +78,9 @@ public class FileAccelerationProvider extends StoredAccelerationProvider {
 
     public void setInactive() {
 
+    }
+
+    public ArrayList<AccelData> readData(){
+        return this.readings;
     }
 }
