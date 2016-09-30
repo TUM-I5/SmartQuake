@@ -1,53 +1,55 @@
 Statistical information for the repository 'smartquake' was gathered on
-2016/09/29.
+2016/09/30.
 The following historical commit information, by author, was found in the
 repository:
 
 Author                     Commits    Insertions      Deletions    % of changes
-Alex Melkonyan                  38           716            527            5.49
-Alexander Mueller               61          1942           1009           13.02
-Claudius                        11           240             41            1.24
-DEXIS                            2            96              1            0.43
-David Schneller                 31          1068            510            6.96
-Felix Wechsler                  77          1104            533            7.22
-Ivana                            8           562             55            2.72
-JohnH                           17          1064            476            6.80
-Lukas Koenig                     3            52            153            0.90
-Maximilian Berger               32           935            356            5.70
-Michael Zintl                    5           156             65            0.98
-Nepomuk Ritz                    18           473             64            2.37
-Patrick                          2            40              5            0.20
-Paul                            25           540            163            3.10
-Simon                           48          1191            852            9.02
-Vincent Stimper                 26           640             79            3.17
-Yehor Yudin                     49           542            167            3.13
-Zan                             16           726            598            5.84
-amelie                           7           369             88            2.02
-geldnens                        25           712            430            5.04
-vonscheven                      16           383            179            2.48
-yuriyarabskyy                   80          2176            582           12.17
+Alex Melkonyan                  39           717            528            4.86
+Alexander Mueller               70          2046           1064           12.14
+Claudius                        11           240             41            1.10
+DEXIS                            2            96              1            0.38
+David Schneller                 31          1068            510            6.16
+Felix Wechsler                  80          1108            536            6.42
+Ivana                           15           745            173            3.58
+JohnH                           24          1293            595            7.37
+Lukas Koenig                     6           224            164            1.51
+Lukas S                          1             1              1            0.01
+Maximilian Berger               40          1206            481            6.58
+Michael Zintl                    5           156             65            0.86
+Nepomuk Ritz                    18           473             64            2.10
+Patrick                          2            40              5            0.18
+Paul                            25           540            163            2.74
+Simon                           48          1191            852            7.97
+Vincent Stimper                 29           650             83            2.86
+Yehor Yudin                     53           560            180            2.89
+Zan                             16           726            598            5.17
+amelie                           7           369             88            1.78
+geldnens                        45          1466            812            8.89
+vonscheven                      21           635            304            3.66
+yuriyarabskyy                   81          2183            583           10.79
 
 Below are the number of rows from each author that have survived and are still
 intact in the current revision:
 
 Author                     Rows      Stability          Age       % in comments
-Alex Melkonyan              311           43.4          0.2               12.86
-Alexander Mueller           609           31.4          0.1                3.28
+Alex Melkonyan              300           41.8          0.2               13.33
+Alexander Mueller           666           32.6          0.1                8.26
 Claudius                     87           36.2          0.1               28.74
-David Schneller             832           77.9          0.1                9.62
-Felix Wechsler              540           48.9          0.2               37.59
-Ivana                       431           76.7          0.1               21.11
-JohnH                       744           69.9          0.1                0.13
-Lukas Koenig                 12           23.1          0.2               58.33
-Maximilian Berger           636           68.0          0.2                3.93
-Michael Zintl                62           39.7          0.1                1.61
+David Schneller             793           74.3          0.1                9.96
+Felix Wechsler              542           48.9          0.2               37.64
+Ivana                       467           62.7          0.1                7.71
+JohnH                       876           67.7          0.1                1.37
+Lukas Koenig                156           69.6          0.0               22.44
+Lukas S                       1          100.0          0.0                0.00
+Maximilian Berger           872           72.3          0.1                4.93
+Michael Zintl                47           30.1          0.1                0.00
 Nepomuk Ritz                 73           15.4          0.1                8.22
 Paul                        227           42.0          0.1                3.96
-Simon                       363           30.5          0.1               11.29
-Vincent Stimper             556           86.9          0.2               17.27
-Yehor Yudin                 157           29.0          0.1               36.31
-Zan                         349           48.1          0.1                7.16
-amelie                      157           42.5          0.1                1.91
-geldnens                    330           46.3          0.1                3.03
-vonscheven                  454          118.5          0.1               15.20
-yuriyarabskyy              1435           65.9          0.1                2.86
+Simon                       359           30.1          0.1               11.42
+Vincent Stimper             563           86.6          0.2               17.05
+Yehor Yudin                 153           27.3          0.1               37.25
+Zan                         347           47.8          0.1                6.92
+amelie                      155           42.0          0.1                1.94
+geldnens                    852           58.1          0.1                3.05
+vonscheven                  541           85.2          0.0               13.68
+yuriyarabskyy              1389           63.6          0.1                2.95
