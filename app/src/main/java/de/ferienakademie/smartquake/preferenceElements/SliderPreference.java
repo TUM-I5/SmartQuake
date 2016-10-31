@@ -1,10 +1,10 @@
-package de.ferienakademie.smartquake.preferenceElements;
-
 /*
  * Copyright 2012 Jay Weisskopf
  *
  * Licensed under the MIT License (see LICENSE.txt)
  */
+
+package de.ferienakademie.smartquake.preferenceElements;
 
 import android.content.Context;
 import android.content.res.TypedArray;
