@@ -31,18 +31,20 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
-    compile files('libs/fab-1.6.4-sources.jar')
-    compile files('libs/EJML-core-0.29.jar')
-    compile files('libs/EJML-dense64-0.29.jar')
+
+
+    compile group: 'org.ejml', name: 'core', version: '0.29'
+    compile group: 'org.ejml', name: 'dense64', version: '0.29'
     compile files('libs/blas.jar')
     compile files('libs/f2jutil.jar')
     compile files('libs/lapack.jar')
     compile files('libs/xerbla.jar')
-    compile files('libs/fab-1.6.4-javadoc.jar')
-    compile files('libs/mpandroidchartlibrary-2-2-4.jar')
-    compile files('libs/GraphView-4.2.1.jar')
 
-    testCompile files('libs/junit-4.12.jar')
-    testCompile files('libs/hamcrest-all-1.3.jar')
+    // UI Libraries
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+    compile 'com.jjoe64:graphview:4.2.1'
+    compile 'com.github.clans:fab:1.6.4'
 
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
 }
