@@ -1,4 +1,4 @@
-Steel:		YoungsModulus=210e9 N/m^2	density=7860 kg/m^3
-concrete:	YoungsModulus=32e9 N/m^2	density=2400 kg/m^3
-wood:		YoungsModulus=12e9 N/m^2	density=600 kg/m^3
-bamboo:		YoungsModulus=19e9 N/m^2	density=1000 kg/m^3
+Steel:		E=210e9 N/m^2	rho=7860 kg/m^3
+concrete:	E=32e9 N/m^2	rho=2400 kg/m^3
+wood:		E=12e9 N/m^2	rho=600 kg/m^3
+bamboo:		E=19e9 N/m^2	rho=1000 kg/m^3
