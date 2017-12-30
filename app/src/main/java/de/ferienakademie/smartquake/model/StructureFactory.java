@@ -1658,6 +1658,8 @@ public class StructureFactory {
         } else if (structureId == 13) {
             return StructureFactory.getBurjKhalifa();
         }  else if (structureId == 14) {
+            return StructureFactory.getSimpleElephant();
+        /**
             return StructureFactory.getPresentation_EX_w_TMD();
         } else if (structureId == 15) {
             return StructureFactory.getPresentation_EX_wo_TMD();
@@ -1667,6 +1669,7 @@ public class StructureFactory {
             return StructureFactory.getEierlaufen();
         } else if (structureId == 18) {
             return StructureFactory.getDemoTMD();
+         */
         }
 
         FileInputStream fileInputStream = null;

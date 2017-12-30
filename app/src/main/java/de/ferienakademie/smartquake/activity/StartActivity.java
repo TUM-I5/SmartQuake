@@ -183,9 +183,12 @@ public class StartActivity extends AppCompatActivity
         values.add("House with Mass Damper");
         values.add("One World Trade Center");
         values.add("Burj Khalifa");
+        /**
         values.add("Presentation Example 1 with TMD");
         values.add("Presentation Example 2 without TMD");
+         */
         values.add("Elephant");
+        /**
         values.add("Eierlaufen");
         values.add("Presentation Demo 1");
         values.add("Presentation Demo 2");
@@ -193,6 +196,7 @@ public class StartActivity extends AppCompatActivity
         values.add("Presentation Demo 4");
         values.add("Presentation Demo 5");
         values.add("Presentation Demo 6");
+         */
         //values.add("DemoTMD");
         // has to be after the standard added constructions
         fixedObjectsSize = values.size();
